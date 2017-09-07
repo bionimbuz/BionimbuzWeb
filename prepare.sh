@@ -1,6 +1,7 @@
 #!/bin/bash
 ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SYSTEM_FOLDER=${ROOT_DIR}/system
+SOURCE_FOLDER=${ROOT_DIR}/src
 PLAY_FOLDER=${SYSTEM_FOLDER}/playframework
 PLAY_BIN=${PLAY_FOLDER}/play
 
@@ -83,6 +84,8 @@ fi
 echo "# Preparing project"
 echo "# ======================================="
 
+cd ${SOURCE_FOLDER}
+
 echo "# Computing dependencies"    
 ${PLAY_BIN} deps
 
@@ -96,3 +99,4 @@ if [ ! -z "$PREPARE_NETBEANS" ]; then
     ${PLAY_BIN} netbeansify
 fi    
 
+cd ${ROOT_DIR}
