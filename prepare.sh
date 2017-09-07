@@ -46,7 +46,7 @@ echo "##################################################"
 echo "####### Preparing development environment"
 echo "##################################################"
 
-if [ ! -z "$OPEN_BROWSER" ]; then 
+if [ ! -z "$PREPARE_ALL" ]; then 
 
     echo "# Installing dependencies"
     echo "# ======================================="
@@ -67,13 +67,14 @@ if [ ! -z "$OPEN_BROWSER" ]; then
     PACKAGE_ZIP=${PACKAGE}.zip
 
     echo "# Removing current"
-    rm -rf ${PACKAGE_ZIP} ${ROOT_DIR}/system/playframework
+    rm -rf ${PACKAGE_ZIP} ${PLAY_FOLDER}
 
     echo "# Downloading"
     wget https://downloads.typesafe.com/play/${VERSION}/${PACKAGE_ZIP}
     
     echo "# Unzipping"
     unzip ${PACKAGE_ZIP}
+    rm -rf ${PACKAGE_ZIP} 
 
     echo "# Creating directories"    
     mkdir ${ROOT_DIR}/system
