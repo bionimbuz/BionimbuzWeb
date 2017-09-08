@@ -1,3 +1,14 @@
 # You can specialize this file for each language.
 # For example, for French create a messages.fr file
 #
+
+# Secure Messages
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+secure.title=
+secure.username=Username:
+secure.password=Password:
+secure.remember=Remember me
+secure.signin=Sign in
+secure.error=Oops, unknown username or password.
+secure.logout=You have been logged out.
+

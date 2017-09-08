@@ -2,6 +2,16 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
+# Secure Routes
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+GET         /                                   Secure.login
+GET         /login                              Secure.login
+POST        /login                              Secure.authenticate
+GET         /logout                             Secure.logout
+
+# Play default routes
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 # Home page
 GET     /                                       Application.index
 
