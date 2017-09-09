@@ -52,3 +52,9 @@ form .success {
     color: #428bca; 
     font-weight: bold;
 }
+.logo-description{
+    font-family: Laksaman;
+    font-weight: bold;
+    color:#82817e;
+    text-align: center;
+}

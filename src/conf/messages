@@ -16,4 +16,5 @@ secure.logout=You have been logged out.
 # Application Messages
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 application.title=BioNimbuZ
+application.description=Cloud Federation Platform
 
