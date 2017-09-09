@@ -5,10 +5,15 @@
 # Secure Messages
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 secure.title=
-secure.username=Username:
-secure.password=Password:
+secure.username=Username
+secure.password=Password
 secure.remember=Remember me
-secure.signin=Sign in
+secure.signin=Login
 secure.error=Oops, unknown username or password.
 secure.logout=You have been logged out.
+
+
+# Application Messages
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+application.title=BioNimbuZ
 
