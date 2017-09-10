@@ -1,0 +1,32 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <!-- This file has been downloaded from Bootsnipp.com. Enjoy! -->
+        <title>&{'application.title'}</title>
+        <link href="@{'/public/images/favicon.png'}" rel="icon" type="image/png">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+        <link href="@{'/public/stylesheets/bootstrap.min.css'}" rel="stylesheet" type="text/css">
+        <link href="@{'/public/stylesheets/main.css'}" rel="stylesheet" type="text/css">
+    
+        <script src="@{'/public/javascripts/jquery-1.11.1.min.js'}" type="text/javascript"></script>    
+        <script src="@{'/public/javascripts/bootstrap.min.js'}" type="text/javascript"></script>
+        
+        #{get 'moreStyles' /}
+        
+    </head>
+    
+    <body>    
+        
+        #{doLayout /}     
+        
+        <script src="@{'/public/javascripts/main.js'}" type="text/javascript"></script>
+        
+        #{get 'moreScripts' /}
+        
+    </body>
+    
+</html>
