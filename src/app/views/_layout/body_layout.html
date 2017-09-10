@@ -12,45 +12,93 @@
                 <div class="brand-wrapper">
                     <!-- Hamburger -->
                     <button type="button" class="navbar-toggle">
-                    <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     </button>
                     <!-- Brand -->
                     <div class="brand-name-wrapper">
-                        <a class="navbar-brand" href="#">
-                        Brand
-                        </a>
+                        <a class="navbar-brand" href="@{HomeController.index}">&{'application.title'}</a>
                     </div>
                     <!-- Search -->
                     <a data-toggle="collapse" href="#search" class="btn btn-default" id="search-trigger">
-                    <span class="glyphicon glyphicon-search"></span>
+                    <span class="glyphicon glyphicon-user"></span>
                     </a>
+                           
                     <!-- Search body -->
                     <div id="search" class="panel-collapse collapse">
                         <div class="panel-body">
-                            <form class="navbar-form" role="search">
+                        
+                            *{
+                            <!-- Old menu for search -->
+                            <form class="navbar-form" >                            
                                 <div class="form-group">
                                     <input type="text" class="form-control" placeholder="Search">
                                 </div>
-                                <button type="submit" class="btn btn-default "><span class="glyphicon glyphicon-ok"></span></button>
-                            </form>
+                                <button type="submit" class="btn btn-default ">
+                                    <span class="glyphicon glyphicon-ok"></span>
+                                </button>                           
+                            </form>       
+                            }*
+                            <div class="navbar-form form-group" >                            
+                                <ul class="nav navbar-nav">
+                                    <li><a href="#"><span class="glyphicon glyphicon-pencil"></span> Edit</a></li>
+                                    <li><a href="@{Secure.logout}"><span class="glyphicon glyphicon-off"></span> Logout</a></li>
+                                </ul>               
+                            </div>                   
+                            
                         </div>
-                    </div>
+                    </div>                   
+                    
                 </div>
             </div>
             <!-- Main Menu -->
             <div class="side-menu-container">
                 <ul class="nav navbar-nav">
-                    <li><a href="#"><span class="glyphicon glyphicon-send"></span> Link</a></li>
-                    <li class="active"><a href="#"><span class="glyphicon glyphicon-plane"></span> Active Link</a></li>
-                    <li><a href="#"><span class="glyphicon glyphicon-cloud"></span> Link</a></li>
+                    <!-- Dropdown-->
+                    <li class="panel panel-default" id="dropdown">
+                        <a data-toggle="collapse" href="#dropdown-workflow-lvl1">
+                        <span class="glyphicon glyphicon-random"></span> Workflows<span class="caret"></span>
+                        </a>
+                        <!-- Dropdown level 1 -->
+                        <div id="dropdown-workflow-lvl1" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <ul class="nav navbar-nav">
+                                    <li><a href="#">Create New</a></li>
+                                    <li><a href="#">Execution Status</a></li>                        
+                                </ul>
+                            </div>
+                        </div>
+                    </li>  
+                    
+                    <!-- Dropdown-->
+                    <li class="panel panel-default" id="dropdown">
+                        <a data-toggle="collapse" href="#dropdown-storage-lvl1">
+                        <span class="glyphicon glyphicon-hdd"></span> Storage<span class="caret"></span>
+                        </a>
+                        <!-- Dropdown level 1 -->
+                        <div id="dropdown-storage-lvl1" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <ul class="nav navbar-nav">
+                                    <li><a href="#">My Storage</a></li>
+                                    <li><a href="#">Send File</a></li>
+                                    <li><a href="#">Delete File</a></li>
+                                    <li><a href="#">Download File</a></li>                        
+                                </ul>
+                            </div>
+                        </div>
+                    </li>                     
+                    <li><a href="#"><span class="glyphicon glyphicon-signal"></span> Statistics</a></li>
+                    <li><a href="#"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
+                    
+                    <!-- ################################### -->
+                    <!-- ### Template Menu for 1 and 2 level menus -->
+                    *{
                     <!-- Dropdown-->
                     <li class="panel panel-default" id="dropdown">
                         <a data-toggle="collapse" href="#dropdown-lvl1">
-                        <span class="glyphicon glyphicon-user"></span> Sub Level <span class="caret"></span>
-                        </a>
+                            <span class="glyphicon glyphicon-user"></span> Template Menu<span class="caret"></span>
+                        </a>       
                         <!-- Dropdown level 1 -->
                         <div id="dropdown-lvl1" class="panel-collapse collapse">
                             <div class="panel-body">
@@ -77,7 +125,9 @@
                             </div>
                         </div>
                     </li>
-                    <li><a href="#"><span class="glyphicon glyphicon-signal"></span> Link</a></li>
+                    }*
+                    <!-- ################################### -->                    
+                    
                 </ul>
             </div>
             <!-- /.navbar-collapse -->
