@@ -1,7 +1,7 @@
 #!/bin/bash
 ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SYSTEM_FOLDER=${ROOT_DIR}/system
-SOURCE_FOLDER=${ROOT_DIR}/src
+SOURCE_FOLDER=${ROOT_DIR}/projects/web
 PLAY_FOLDER=${SYSTEM_FOLDER}/playframework
 PLAY_BIN=${PLAY_FOLDER}/play
 
