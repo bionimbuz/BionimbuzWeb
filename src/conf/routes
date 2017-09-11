@@ -4,16 +4,16 @@
 
 # Secure Routes
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-GET         /                                   Secure.login
-GET         /login                              Secure.login
-POST        /login                              Secure.authenticate
-GET         /logout                             Secure.logout
+GET     /                                       Secure.login
+GET     /login                                  Secure.login
+POST    /login                                  Secure.authenticate
+GET     /logout                                 Secure.logout
 
 # Play default routes
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Home page
-GET     /                                       Application.index
+GET     /adm/index                              adm.HomeController.index
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

@@ -1,17 +1,22 @@
 body {
     background-color: #444;
-    background: url('../images/background.jpg');
+    background-image: url(../images/background.jpg);
+    background-repeat: repeat;
+    background-size: cover;
 }
+
 .form-signin input[type="text"] {
     margin-bottom: 5px;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
 }
+
 .form-signin input[type="password"] {
     margin-bottom: 10px;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
 }
+
 .form-signin .form-control {
     position: relative;
     font-size: 16px;
@@ -22,39 +27,55 @@ body {
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
+
 .vertical-offset-100 {
     padding-top: 100px;
 }
+
 .img-responsive {
     display: block;
     max-width: 100%;
     height: auto;
     margin: auto;
 }
+
 .panel {
     margin-bottom: 20px;
-    background-color: rgba(255, 255, 255, 0.4);
-    border: 1px solid transparent;
+    background-color: rgba(0, 0, 0, 0.4);
+    border: 0;
     border-radius: 4px;
     -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
     box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+    color: white;
 }
+
 .panel-default>.panel-heading {
     color: #333;
     background-color: #ffffff;
     border-color: #ddd;
 }
-form .error {
-    color: red; 
-    font-weight: bold;
+
+.error {
+    color: red;
+    margin: 0;
 }
+
 form .success {
-    color: #428bca; 
+    color: #428bca;
     font-weight: bold;
 }
-.logo-description{
+
+.logo-description {
     font-family: Laksaman;
     font-weight: bold;
-    color:#82817e;
+    color: #82817e;
     text-align: center;
+}
+
+input, button, select, textarea {
+    margin-bottom: 1em;
+}
+
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 30px white inset;
 }

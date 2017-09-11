@@ -8,6 +8,7 @@
     <div class="side-menu">
         <nav class="navbar navbar-default" role="navigation">
             <!-- Brand and toggle get grouped for better mobile display -->
+            
             <div class="navbar-header">
                 <div class="brand-wrapper">
                     <!-- Hamburger -->
@@ -18,37 +19,44 @@
                     </button>
                     <!-- Brand -->
                     <div class="brand-name-wrapper">
-                        <a class="navbar-brand" href="@{HomeController.index}">&{'application.title'}</a>
+                        <a class="navbar-brand" href="@{adm.HomeController.index}">&{'application.title'}</a>
                     </div>
-                    <!-- Search -->
-                    <a data-toggle="collapse" href="#search" class="btn btn-default" id="search-trigger">
-                    <span class="glyphicon glyphicon-user"></span>
-                    </a>
-                           
-                    <!-- Search body -->
-                    <div id="search" class="panel-collapse collapse">
-                        <div class="panel-body">
-                        
-                            *{
-                            <!-- Old menu for search -->
-                            <form class="navbar-form" >                            
-                                <div class="form-group">
-                                    <input type="text" class="form-control" placeholder="Search">
-                                </div>
-                                <button type="submit" class="btn btn-default ">
-                                    <span class="glyphicon glyphicon-ok"></span>
-                                </button>                           
-                            </form>       
-                            }*
-                            <div class="navbar-form form-group" >                            
-                                <ul class="nav navbar-nav">
-                                    <li><a href="#"><span class="glyphicon glyphicon-pencil"></span> Edit</a></li>
-                                    <li><a href="@{Secure.logout}"><span class="glyphicon glyphicon-off"></span> Logout</a></li>
-                                </ul>               
-                            </div>                   
+
+                    <div class="navbar-collapse collapse user-profile-menu-div">
+                        <ul class="nav navbar-nav navbar-right" style="margin: 0px; margin-right: -15px; background-color: #fff; ">
+                            <li class="dropdown">
                             
-                        </div>
-                    </div>                   
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="padding-bottom: 35px;">
+                                    <span class="user-profile-menu pull-left btn btn-default">
+                                        <span class="glyphicon glyphicon-user"></span>
+                                    </span>
+                                </a>
+                                
+                                <ul class="dropdown-menu">
+                                    <li class="profile-menu">
+                                        <div class="navbar-content">
+                                            <div class="row">
+                                                <div class="col-md-7">
+                                                    <span class="username-profile-popup">
+                                                        ${connectedUser.name}
+                                                    </span>
+                                                    <p class="text-muted">
+                                                        ${session.username}    
+                                                    </p>
+                                                    <div class="divider">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="profile-menu"><a href="#"><span class="glyphicon glyphicon-edit"></span>&{'personal.data'}</a></li>
+                                    <li class="profile-menu"><a href="#"><span class="glyphicon glyphicon-lock"></span>&{'change.password'}</a></li>
+                                    <li class="divider" style="margin-right: 15px; margin-left: 15px;"></li>
+                                    <li class="profile-menu"><a href="@{Secure.logout}"><span class="glyphicon glyphicon-off"></span>&{'secure.signout'}</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
                     
                 </div>
             </div>
@@ -94,19 +102,17 @@
                     <!-- ################################### -->
                     <!-- ### Template Menu for 1 and 2 level menus -->
                     *{
-                    <!-- Dropdown-->
+                    <!-- 
                     <li class="panel panel-default" id="dropdown">
                         <a data-toggle="collapse" href="#dropdown-lvl1">
                             <span class="glyphicon glyphicon-user"></span> Template Menu<span class="caret"></span>
                         </a>       
-                        <!-- Dropdown level 1 -->
                         <div id="dropdown-lvl1" class="panel-collapse collapse">
                             <div class="panel-body">
                                 <ul class="nav navbar-nav">
                                     <li><a href="#">Link</a></li>
                                     <li><a href="#">Link</a></li>
                                     <li><a href="#">Link</a></li>
-                                    <!-- Dropdown level 2 -->
                                     <li class="panel panel-default" id="dropdown">
                                         <a data-toggle="collapse" href="#dropdown-lvl2">
                                         <span class="glyphicon glyphicon-off"></span> Sub Level <span class="caret"></span>
@@ -125,6 +131,7 @@
                             </div>
                         </div>
                     </li>
+                     -->
                     }*
                     <!-- ################################### -->                    
                     

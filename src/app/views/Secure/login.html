@@ -11,20 +11,19 @@
                           &{'application.description'}
                         </p>
                     </div>
+                    #{if flash.error}
+                        <p class="error">
+                            ${messages.get(flash.error)}
+                        </p>
+                    #{/if}
+                    #{if flash.success}
+                        <p class="success">
+                            ${messages.get(flash.success)}
+                        </p>
+                    #{/if}
                 </div>
                 <div class="panel-body">
-                
                     #{form @authenticate()}                    
-                        #{if flash.error}
-                            <p class="error">
-                                ${messages.get(flash.error)}
-                            </p>
-                        #{/if}
-                        #{if flash.success}
-                            <p class="success">
-                                ${messages.get(flash.success)}
-                            </p>
-                        #{/if}
                         <fieldset>
                             <label class="panel-login">
                                 <div class="login_result"></div>

@@ -6,9 +6,10 @@ import java.security.NoSuchAlgorithmException;
 
 import javax.transaction.SystemException;
 
-import controllers.HomeController;
 import controllers.Secure;
+import controllers.adm.HomeController;
 import models.UserModel;
+import play.Logger;
 
 public class SecurityController extends Secure.Security {
     
@@ -30,13 +31,21 @@ public class SecurityController extends Secure.Security {
             return true;  
             
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
-            e.printStackTrace();
+            Logger.error(e.getMessage(), e);
             return false;  
         }        
     }
     
     public static void onAuthenticated() {
         HomeController.index();
+    }
+    
+    public static boolean isConnected() {
+        return session.contains("username");
+    }
+    
+    public static String connected() {
+        return session.get("username");
     }
     
     public static String getSHA512(final String password) 
