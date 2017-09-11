@@ -1,3 +1,15 @@
+@media ( max-width : 767px) {
+    .navbar-nav .open .dropdown-menu {
+        position: relative;
+        float: none;
+        width: auto;
+        margin-top: 0;
+        background-color: #fff;
+        border: 1px solid rgba(0,0,0,.15);
+        -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+        box-shadow: 0 6px 12px rgba(0,0,0,.175);
+    }
+}
 
 @media ( min-width :768px) {
     .navbar-toggle {
@@ -29,7 +41,7 @@
     right: 0;
     border: 0;
     position: absolute;
-    display: block!important;
+    display: block !important;
 }
 
 .user-profile-menu {
