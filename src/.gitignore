@@ -3,3 +3,5 @@
 /.settings/
 /eclipse/
 /tmp/
+/modules/crud
+/modules/secure
