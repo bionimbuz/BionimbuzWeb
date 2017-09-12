@@ -1,7 +1,8 @@
 #!/bin/bash
 ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SYSTEM_FOLDER=${ROOT_DIR}/system
-SOURCE_FOLDER=${ROOT_DIR}/projects/web
+WEB_FOLDER=${ROOT_DIR}/projects/web
+PLUGINS_FOLDER=${ROOT_DIR}/projects/plugins
 PLAY_FOLDER=${SYSTEM_FOLDER}/playframework
 PLAY_BIN=${PLAY_FOLDER}/play
 
@@ -57,7 +58,7 @@ if [ ! -z "$PREPARE_ALL" ]; then
     sudo apt-get install -y \
         oracle-java8-installer \
         postgresql postgresql-client \
-
+        maven
 
     echo "# Downloading Playframework"
     echo "# ======================================="
@@ -82,10 +83,10 @@ if [ ! -z "$PREPARE_ALL" ]; then
     
 fi
 
-echo "# Preparing project"
+echo "# Preparing web project"
 echo "# ======================================="
 
-cd ${SOURCE_FOLDER}
+cd ${WEB_FOLDER}
 
 echo "# Computing dependencies"    
 ${PLAY_BIN} deps
@@ -99,5 +100,24 @@ if [ ! -z "$PREPARE_NETBEANS" ]; then
     echo "# Preparing Netbeans environment"    
     ${PLAY_BIN} netbeansify
 fi    
+
+cd ${ROOT_DIR}
+
+
+echo "# Preparing plugins projects"
+echo "# ======================================="
+
+cd ${PLUGINS_FOLDER}
+
+for d in */ ; do
+
+    echo ""
+    echo "# Project found: $d"
+    echo ""
+    
+    cd $d
+    mvn clean package
+    cd ..
+done
 
 cd ${ROOT_DIR}
