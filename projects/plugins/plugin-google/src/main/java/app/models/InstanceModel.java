@@ -1,6 +1,8 @@
 package app.models;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class InstanceModel {
 
@@ -22,6 +24,13 @@ public class InstanceModel {
         this.machineType = machineType;
         this.creationDate = creationDate;
     }
+    
+    public static List<String> generateUniqueNames(
+            List<ZoneModel> zones, int size) {
+        
+        List<String> res = new ArrayList<>();
+        return res;
+    }  
     
     public String getId() {
         return id;

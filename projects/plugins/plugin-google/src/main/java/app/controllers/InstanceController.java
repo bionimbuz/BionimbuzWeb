@@ -91,10 +91,18 @@ public class InstanceController {
     
     @RequestMapping(path = "/instances", method = RequestMethod.GET)
     public List<ZoneModel> instances() {
-        GoogleComputeEngineApi googleApi = GoogleComputeEngineUtils.createApi();  
+        GoogleComputeEngineApi googleApi = GoogleComputeEngineUtils.createApi(); 
+        List<ZoneModel> res = getZonesWithInstances(googleApi);
+        return res;        
+    }
+
+    /*
+     * Class Methods
+     */
+    
+    private List<ZoneModel> getZonesWithInstances(final GoogleComputeEngineApi googleApi){
         
-        List<ZoneModel> res = new ArrayList<>();
-        
+        List<ZoneModel> res = new ArrayList<>();        
         ZoneApi zoneApi = googleApi.zones();
         Iterator<ListPage<Zone>> listPages = zoneApi.list();
         while (listPages.hasNext()) {
@@ -110,50 +118,54 @@ public class InstanceController {
         
         return res;        
     }
-
-    /*
-     * Class Methods
-     */
+    
     private List<InstanceModel> getInstanceListForZone(
             final GoogleComputeEngineApi googleApi, 
             final String zone) {        
         
         List<InstanceModel> res = new ArrayList<>();
-
         InstanceApi instanceApi = googleApi.instancesInZone(zone);
         Iterator<ListPage<Instance>> listPages = instanceApi.list();
         while(listPages.hasNext()){
             ListPage<Instance> instances = listPages.next();
-            for (Instance instance : instances) {   
-                if(!instance.name().startsWith(SystemConstants.BNZ_INSTANCE))
-                    continue;   
-                
-                InstanceModel instanceModel = new InstanceModel(
-                        instance.id(),
-                        instance.name(),
-                        instance.machineType().toString(),
-                        instance.creationTimestamp());
-
-                res.add(instanceModel);
-                
-                List<NetworkInterface> interfaces = instance.networkInterfaces();
-                if(interfaces.size() <= 0) 
-                    continue;               
-                    
-                NetworkInterface netInterface = 
-                        interfaces.get(0); 
-                instanceModel.setInternalIp(netInterface.networkIP());
-                
-                if(netInterface.accessConfigs().size() <= 0)
-                    continue;
-                
-                AccessConfig accessConfig = 
-                        netInterface.accessConfigs().get(0);
-                instanceModel.setExternalIp(accessConfig.natIP());      
+            for (Instance instance : instances) {
+                InstanceModel model = createInstanceModel(instance);
+                if(model != null) {
+                    res.add(model);
+                }
             }            
         }
         
         return res;
+    }
+
+    private InstanceModel createInstanceModel(final Instance instance) {
+        
+        if(!instance.name().startsWith(SystemConstants.BNZ_INSTANCE))
+            return null;;   
+        
+        InstanceModel instanceModel = new InstanceModel(
+                instance.id(),
+                instance.name(),
+                instance.machineType().toString(),
+                instance.creationTimestamp());
+        
+        List<NetworkInterface> interfaces = instance.networkInterfaces();
+        if(interfaces.size() <= 0) 
+            return instanceModel;               
+            
+        NetworkInterface netInterface = 
+                interfaces.get(0); 
+        instanceModel.setInternalIp(netInterface.networkIP());
+        
+        if(netInterface.accessConfigs().size() <= 0)
+            return instanceModel;        
+        
+        AccessConfig accessConfig = 
+                netInterface.accessConfigs().get(0);
+        instanceModel.setExternalIp(accessConfig.natIP());
+        
+        return instanceModel;        
     }
 
     private ArrayList<URI> createInstances(

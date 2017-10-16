@@ -103,10 +103,9 @@ public class NetworkController {
             while (listPages.hasNext()) {
                 ListPage<Firewall> firewalls = listPages.next();
                 for (Firewall firewall : firewalls) {                         
-                    FirewallModel firewallModel = 
-                            createFirewallModel(firewall);
-                    if(firewallModel != null) {
-                        res.add(firewallModel);
+                    FirewallModel model = createFirewallModel(firewall);
+                    if(model != null) {
+                        res.add(model);
                     }
                 }
             }     
