@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.google.common.collect.ImmutableList;
+import com.google.gson.Gson;
 
 import app.common.GoogleComputeEngineUtils;
 import app.common.Response;
@@ -39,42 +40,50 @@ public class NetworkController {
                         80, 
                         new ArrayList<>());
         
-        return rule(firewallRule.getName());
+        return ruless(firewallRule.getName());
     }
     
-    @RequestMapping(path = "/rule/create", method = RequestMethod.GET)
-    public Object create() {
-        
-        List<String> lstRanges = new ArrayList<>();
-        lstRanges.add("0.0.0.0/0");
-//        lstRanges.add("10.0.0.0/8");
-        
-        FirewallModel firewallRule = 
-                new FirewallModel(
-                        FirewallModel.PROTOCOL.tcp, 
-                        80, 
-                        lstRanges);
-        
-        return rule(firewallRule);
-    }
+//    @RequestMapping(path = "/rule/create", method = RequestMethod.GET)
+//    public Object create() {
+//        
+//        List<String> lstRanges = new ArrayList<>();
+//        lstRanges.add("0.0.0.0/0");
+////        lstRanges.add("10.0.0.0/8");
+//        
+//        FirewallModel firewallRule = 
+//                new FirewallModel(
+//                        FirewallModel.PROTOCOL.tcp, 
+//                        80, 
+//                        lstRanges);
+//        
+//        return rule(firewallRule);
+//    }
     
     /*
      * Controller Methods
      */
     @RequestMapping(path = Routes.NETWORK_RULE, method = RequestMethod.POST)
-    public Response rule(
-            @RequestParam(value = "firewall") FirewallModel firewall) {
+    public Response<Object> rule(
+//            @RequestParam(value = "firewall") FirewallModel firewall
+          @RequestParam(value = "firewall") String json
+//          ,@RequestParam(value = "json2") String json2
+            ) {
+        
+        Gson gson = new Gson();
+        FirewallModel firewall = gson.fromJson(json, FirewallModel.class);
+        
         try {
             GoogleComputeEngineApi googleApi = GoogleComputeEngineUtils.createApi();  
             configureFirewallRule(googleApi, firewall);
         } catch (Exception e) {
             e.printStackTrace();
+            return Response.error(e.getMessage());
         }
         return Response.success();
     }
     
     @RequestMapping(path = Routes.NETWORK_RULE, method = RequestMethod.DELETE)
-    public Response rule(
+    public Response ruless(
             @RequestParam(value = "name") String name) {
         try {
             GoogleComputeEngineApi googleApi = GoogleComputeEngineUtils.createApi();  

@@ -17,6 +17,8 @@ public class FirewallModel {
     private PROTOCOL protocol;
     private List<String> lstRanges;   
     private Date creationDate;     
+
+    public FirewallModel() {}
     
     public FirewallModel(PROTOCOL protocol, Integer port, List<String> lstRanges) {
         this(generateName(protocol, port), protocol, port, lstRanges, null);

@@ -18,8 +18,11 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+
+import com.google.gson.Gson;
 
 import app.common.Response;
 import app.common.Response.Type;
@@ -55,7 +58,6 @@ public class NetworkControllerTest {
 
         assertThat(responseList.getType()).isEqualTo(Type.SUCCESS);
         assertThat(responseList.getContent()).isNotNull();
-        assertThat(responseList.getContent()).isNotNull(); 
         
         List<FirewallModel> currentRules = responseList.getContent();
         Set<Integer> currentPorts = new TreeSet<>();
@@ -66,7 +68,7 @@ public class NetworkControllerTest {
         Integer portFinder = 5000;
         while(currentPorts.contains(++portFinder));
         
-        FirewallModel firewallRule = 
+        FirewallModel firewall = 
                 new FirewallModel(
                         FirewallModel.PROTOCOL.tcp, 
                         portFinder, 
@@ -74,18 +76,27 @@ public class NetworkControllerTest {
         
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+//        headers.setContentType(MediaType.APPLICATION_JSON);          
+
+        Gson gson = new Gson();
+        String json = gson.toJson(firewall, FirewallModel.class);
+
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
+        map.add("firewall", json);       
+//        map.add("json2", json);   
         
-        HttpEntity<FirewallModel> entity = 
-                new HttpEntity<>(firewallRule, headers);
+        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
         
-        Response<?> responseCreate = this.restTemplate
+        Response<Object> responseCreate = this.restTemplate
                 .exchange(
                         Routes.NETWORK_RULE, 
                         HttpMethod.POST, 
                         entity,
-                        new ParameterizedTypeReference< Response<?> >() {})
-                .getBody();        
+                        new ParameterizedTypeReference< Response<Object> >() {}
+//                        ,map
+                        )
+                .getBody();             
+        
+        assertThat(responseCreate).isNotNull(); 
     }
-
 }
