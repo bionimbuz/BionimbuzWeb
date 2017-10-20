@@ -47,7 +47,6 @@ public class Response <T> {
         return success("", null);        
     }
 
-
     /*
      * Getters and Setters
      */

@@ -20,6 +20,7 @@ import com.google.common.collect.ImmutableList;
 
 import app.common.GoogleComputeEngineUtils;
 import app.common.Response;
+import app.common.Routes;
 import app.common.SystemConstants;
 import app.models.FirewallModel;
 
@@ -86,12 +87,13 @@ public class NetworkController {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            return Response.error(e.getMessage());
         }
         return Response.success();
     }
     
-    @RequestMapping(path = "/rules", method = RequestMethod.GET)
-    public Object rules() {
+    @RequestMapping(path = Routes.NETWORK_RULES, method = RequestMethod.GET)
+    public Response<List<FirewallModel>> rules() {
         try {
             GoogleComputeEngineApi googleApi = GoogleComputeEngineUtils.createApi();  
             URI networkURL = GoogleComputeEngineUtils.assertDefaultNetwork(googleApi);
@@ -109,7 +111,7 @@ public class NetworkController {
                     }
                 }
             }     
-            return res;            
+            return Response.success(res);            
         } catch (Exception e) {
             e.printStackTrace();
             return Response.error(e.getMessage());
