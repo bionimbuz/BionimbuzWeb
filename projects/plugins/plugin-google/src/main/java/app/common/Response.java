@@ -1,6 +1,6 @@
 package app.common;
 
-public class Response {
+public class Response <T> {
 
     public enum Type {
         SUCCESS, ERROR
@@ -11,14 +11,42 @@ public class Response {
      */
     private Type type;
     private String message;
+    private T content;
 
     /*
      * Constructors
      */
-    public Response(Type type, String message) {
+    private Response() {
+    }    
+    private Response(Type type, String message) {
         this.type = type;
         this.message = message;
     }
+    private Response(Type type, String message, T content) {
+    	this(type, message);    	
+        this.content = content;
+    }    
+    
+    public static <T> Response<T> error(final String message) {
+        return new Response<T>(Type.ERROR, message);        
+    }
+    
+    public static <T> Response<T> success(final String message, T content) {
+        return new Response<T>(Type.SUCCESS, message, content);        
+    }    
+    
+    public static <T> Response<T> success(final String message) {
+        return success(message, null);        
+    }
+    
+    public static <T> Response<T> success(T content) {
+        return success("", content);        
+    }
+    
+    public static <T> Response<T> success() {
+        return success("", null);        
+    }
+
 
     /*
      * Getters and Setters
@@ -34,5 +62,11 @@ public class Response {
     }
     public void setType(Type type) {
         this.type = type;
+    }
+    public T getContent() {
+        return content;
+    }
+    public void setContent(T content) {
+        this.content = content;
     }
 }

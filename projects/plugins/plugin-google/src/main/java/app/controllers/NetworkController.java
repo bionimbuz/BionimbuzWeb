@@ -69,7 +69,7 @@ public class NetworkController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return (new Response(Response.Type.SUCCESS, "Success!!"));
+        return Response.success();
     }
     
     @RequestMapping(path = "/rule", method = RequestMethod.DELETE)
@@ -87,7 +87,7 @@ public class NetworkController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return (new Response(Response.Type.SUCCESS, "Success."));
+        return Response.success();
     }
     
     @RequestMapping(path = "/rules", method = RequestMethod.GET)
@@ -112,7 +112,7 @@ public class NetworkController {
             return res;            
         } catch (Exception e) {
             e.printStackTrace();
-            return (new Response(Response.Type.ERROR, e.getMessage()));
+            return Response.error(e.getMessage());
         }
     }
     

@@ -2,11 +2,14 @@ package app.models;
 
 public class InfoModel {
 
-    private final String version;
-    private final String cloud;
+    private String version;
+    private String cloud;
         
+    @SuppressWarnings("unused") //Reflection purposes
+    private InfoModel() {    	
+    }
+    
     public InfoModel(String version, String cloud) {
-        super();
         this.version = version;
         this.cloud = cloud;
     }

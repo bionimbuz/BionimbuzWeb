@@ -58,8 +58,9 @@ public class InstanceController {
     /*
      * Controller Methods
      */
+    
     @RequestMapping(path = "/instance", method = RequestMethod.POST)
-    public Response instance(
+    public Response<?> instance(
             @RequestParam(value = "instance") List<InstanceCreationModel> instances) {
         
         try {            
@@ -67,14 +68,14 @@ public class InstanceController {
             ArrayList<URI> createdInstances = createInstances(googleApi, instances);
         } catch (Exception e) {
             e.printStackTrace();
-            return (new Response(Response.Type.ERROR, e.getMessage()));   
+            return Response.error(e.getMessage());  
         }
         
-        return (new Response(Response.Type.SUCCESS, "Success!!"));
+        return Response.success();
     }
     
     @RequestMapping(path = "/instance", method = RequestMethod.DELETE)
-    public Response instance(
+    public Response<?> instance(
             @RequestParam(value = "name") String name,
             @RequestParam(value = "zone") String zone) {
 
@@ -85,8 +86,8 @@ public class InstanceController {
             Operation operation = instanceApi.delete(name);
             GoogleComputeEngineUtils.waitOperation(googleApi, operation);
         }
-        
-        return (new Response(Response.Type.SUCCESS, "Success!!"));
+
+        return Response.success();
     }
     
     @RequestMapping(path = "/instances", method = RequestMethod.GET)
