@@ -61,7 +61,7 @@ public class NetworkController {
     /*
      * Controller Methods
      */
-    @RequestMapping(path = "/rule", method = RequestMethod.POST)
+    @RequestMapping(path = Routes.NETWORK_RULE, method = RequestMethod.POST)
     public Response rule(
             @RequestParam(value = "firewall") FirewallModel firewall) {
         try {
@@ -73,7 +73,7 @@ public class NetworkController {
         return Response.success();
     }
     
-    @RequestMapping(path = "/rule", method = RequestMethod.DELETE)
+    @RequestMapping(path = Routes.NETWORK_RULE, method = RequestMethod.DELETE)
     public Response rule(
             @RequestParam(value = "name") String name) {
         try {

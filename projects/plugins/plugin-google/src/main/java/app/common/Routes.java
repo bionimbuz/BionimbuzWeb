@@ -10,4 +10,5 @@ public class Routes {
      * NetworkController
      */
     public static final String NETWORK_RULES = "/rules";
+    public static final String NETWORK_RULE = "/rule";
 }

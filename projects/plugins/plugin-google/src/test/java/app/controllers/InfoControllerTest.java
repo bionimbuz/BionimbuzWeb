@@ -14,6 +14,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import app.common.Response;
+import app.common.Response.Type;
 import app.common.Routes;
 import app.common.SystemConstants;
 import app.models.InfoModel;
@@ -37,7 +38,7 @@ public class InfoControllerTest {
     @Test
     public void infoTest() {
 
-        Response<InfoModel> model = this.restTemplate
+        Response<InfoModel> response = this.restTemplate
                 .exchange(
                         Routes.INFO, 
                         HttpMethod.GET, 
@@ -45,8 +46,9 @@ public class InfoControllerTest {
                         new ParameterizedTypeReference<Response<InfoModel>>() {})
                 .getBody();
 
-        assertThat(model.getContent()).isNotNull();
-        assertThat(model.getContent().getVersion())
+        assertThat(response.getType()).isEqualTo(Type.SUCCESS);
+        assertThat(response.getContent()).isNotNull();
+        assertThat(response.getContent().getVersion())
                 .isEqualTo(SystemConstants.SYSTEM_VERSION);
     }
 
