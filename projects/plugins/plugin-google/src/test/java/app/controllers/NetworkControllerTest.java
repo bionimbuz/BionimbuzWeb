@@ -18,11 +18,8 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-
-import com.google.gson.Gson;
 
 import app.common.Response;
 import app.common.Response.Type;
@@ -46,20 +43,74 @@ public class NetworkControllerTest {
     }
 
     @Test
-    public void creatingNewRuleTest() {
+    public void rule_CRUD_Test() {
 
-        Response<List<FirewallModel>> responseList = this.restTemplate
+        Response<FirewallModel> responseGet = null;        
+        Response<List<FirewallModel>> responseList = listAllTest();
+        
+        FirewallModel firewall = searchAvailableFirewallPort(responseList.getContent());     
+                        
+        responseGet = getRuleTest(firewall);        
+        assertThat(responseGet.getType()).isEqualTo(Type.ERROR);
+
+        createRuleTest(firewall); 
+               
+        responseGet = getRuleTest(firewall);        
+        assertThat(responseGet.getType()).isEqualTo(Type.SUCCESS);
+        assertThat(firewall.getName())
+        		.isEqualTo(responseGet.getContent().getName());   
+
+        deleteRuleTest(firewall);             
+        
+        responseGet = getRuleTest(firewall);        
+        assertThat(responseGet.getType()).isEqualTo(Type.ERROR);
+    }
+
+	private void deleteRuleTest(FirewallModel firewall) {
+		Response<Object> response = this.restTemplate
                 .exchange(
-                        Routes.NETWORK_RULES, 
+                        Routes.NETWORK_RULE+"/"+firewall.getName(), 
+                        HttpMethod.DELETE, 
+                        null,
+                        new ParameterizedTypeReference< Response<Object> >() {}
+                        )
+                .getBody();          
+        assertThat(response).isNotNull();    
+        assertThat(response.getType()).isEqualTo(Type.SUCCESS);
+	}
+    
+	private void createRuleTest(FirewallModel firewall) {
+		HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);        
+        
+        HttpEntity<FirewallModel> entity = 
+        		new HttpEntity<>(firewall, headers);
+        
+        Response<?> response = this.restTemplate
+                .exchange(
+                        Routes.NETWORK_RULE, 
+                        HttpMethod.POST, 
+                        entity,
+                        new ParameterizedTypeReference< Response<?> >() {})
+                .getBody();                     
+        assertThat(response).isNotNull();
+        assertThat(response.getType()).isEqualTo(Type.SUCCESS);
+	}
+
+	private Response<FirewallModel> getRuleTest(FirewallModel firewall) {
+		Response<FirewallModel> response = this.restTemplate
+                .exchange(
+                        Routes.NETWORK_RULE+"/"+firewall.getName(), 
                         HttpMethod.GET, 
                         null,
-                        new ParameterizedTypeReference< Response<List<FirewallModel>> >() {})
-                .getBody();
+                        new ParameterizedTypeReference< Response<FirewallModel> >() {}
+                        )
+                .getBody();          
+        assertThat(response).isNotNull();  
+        return response;
+	}
 
-        assertThat(responseList.getType()).isEqualTo(Type.SUCCESS);
-        assertThat(responseList.getContent()).isNotNull();
-        
-        List<FirewallModel> currentRules = responseList.getContent();
+	private FirewallModel searchAvailableFirewallPort(List<FirewallModel> currentRules) {
         Set<Integer> currentPorts = new TreeSet<>();
         for (FirewallModel model : currentRules) {
             currentPorts.add(model.getPort());
@@ -72,31 +123,21 @@ public class NetworkControllerTest {
                 new FirewallModel(
                         FirewallModel.PROTOCOL.tcp, 
                         portFinder, 
-                        new ArrayList<>());        
-        
+                        new ArrayList<>());
+		return firewall;
+	}
 
-        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);          
-
-        Gson gson = new Gson();
-        String json = gson.toJson(firewall, FirewallModel.class);
-
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-        map.add("firewall", json);       
-//        map.add("json2", json);   
-        
-        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
-        
-        Response<Object> responseCreate = this.restTemplate
+	private Response<List<FirewallModel>> listAllTest() {
+		Response<List<FirewallModel>> responseList = this.restTemplate
                 .exchange(
-                        Routes.NETWORK_RULE, 
-                        HttpMethod.POST, 
-                        entity,
-                        new ParameterizedTypeReference< Response<Object> >() {}
-//                        ,map
-                        )
-                .getBody();             
-        
-        assertThat(responseCreate).isNotNull(); 
-    }
+                        Routes.NETWORK_RULES, 
+                        HttpMethod.GET, 
+                        null,
+                        new ParameterizedTypeReference< Response<List<FirewallModel>> >() {})
+                .getBody();
+
+        assertThat(responseList.getType()).isEqualTo(Type.SUCCESS);
+        assertThat(responseList.getContent()).isNotNull();
+		return responseList;
+	}    
 }

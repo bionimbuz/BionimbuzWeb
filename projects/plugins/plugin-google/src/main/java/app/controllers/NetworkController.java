@@ -11,13 +11,13 @@ import org.jclouds.googlecomputeengine.domain.Firewall;
 import org.jclouds.googlecomputeengine.domain.Operation;
 import org.jclouds.googlecomputeengine.features.FirewallApi;
 import org.jclouds.googlecomputeengine.options.FirewallOptions;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.google.common.collect.ImmutableList;
-import com.google.gson.Gson;
 
 import app.common.GoogleComputeEngineUtils;
 import app.common.Response;
@@ -27,54 +27,17 @@ import app.models.FirewallModel;
 
 @RestController
 public class NetworkController {  
-    
-    /*
-     * Temp Methods
-     */
-    @RequestMapping(path = "/rule/delete", method = RequestMethod.GET)
-    public Object delete() {
-        
-        FirewallModel firewallRule = 
-                new FirewallModel(
-                        FirewallModel.PROTOCOL.tcp, 
-                        80, 
-                        new ArrayList<>());
-        
-        return ruless(firewallRule.getName());
-    }
-    
-//    @RequestMapping(path = "/rule/create", method = RequestMethod.GET)
-//    public Object create() {
-//        
-//        List<String> lstRanges = new ArrayList<>();
-//        lstRanges.add("0.0.0.0/0");
-////        lstRanges.add("10.0.0.0/8");
-//        
-//        FirewallModel firewallRule = 
-//                new FirewallModel(
-//                        FirewallModel.PROTOCOL.tcp, 
-//                        80, 
-//                        lstRanges);
-//        
-//        return rule(firewallRule);
-//    }
-    
+
     /*
      * Controller Methods
      */
+	
     @RequestMapping(path = Routes.NETWORK_RULE, method = RequestMethod.POST)
-    public Response<Object> rule(
-//            @RequestParam(value = "firewall") FirewallModel firewall
-          @RequestParam(value = "firewall") String json
-//          ,@RequestParam(value = "json2") String json2
-            ) {
-        
-        Gson gson = new Gson();
-        FirewallModel firewall = gson.fromJson(json, FirewallModel.class);
-        
+    public Response<?> replaceRule(
+            @RequestBody FirewallModel firewall) {        
         try {
             GoogleComputeEngineApi googleApi = GoogleComputeEngineUtils.createApi();  
-            configureFirewallRule(googleApi, firewall);
+            replaceFirewallRule(googleApi, firewall);
         } catch (Exception e) {
             e.printStackTrace();
             return Response.error(e.getMessage());
@@ -82,18 +45,40 @@ public class NetworkController {
         return Response.success();
     }
     
-    @RequestMapping(path = Routes.NETWORK_RULE, method = RequestMethod.DELETE)
-    public Response ruless(
-            @RequestParam(value = "name") String name) {
+	@RequestMapping(path = Routes.NETWORK_RULE+"/{name}", method = RequestMethod.GET)
+    public Response<FirewallModel> getRule(
+    		@PathVariable(value="name") final String name) {
         try {
             GoogleComputeEngineApi googleApi = GoogleComputeEngineUtils.createApi();  
-
+            FirewallApi firewallApi = googleApi.firewalls();
+                  
+            Firewall firewall = firewallApi.get(name);
+            if(firewall == null) {   
+                return Response.error("Object not found.");
+            }
+            
+            FirewallModel model = createFirewallModel(firewall);            
+            return Response.success(model);     
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.error(e.getMessage());
+        }
+    }
+    
+    @RequestMapping(path = Routes.NETWORK_RULE+"/{name}", method = RequestMethod.DELETE)
+    public Response<?> deleteRule(
+    		@PathVariable(value="name") final String name) {
+        try {
+            GoogleComputeEngineApi googleApi = GoogleComputeEngineUtils.createApi(); 
             FirewallApi firewallApi = googleApi.firewalls();
                     
-            if(firewallApi.get(name) != null) {            
-                Operation operation = firewallApi.delete(name);
-                GoogleComputeEngineUtils.waitOperation(googleApi, operation);
+            Firewall firewall = firewallApi.get(name);
+            if(firewall == null) {   
+                return Response.error("Object not found.");
             }
+                      
+            Operation operation = firewallApi.delete(name);
+            GoogleComputeEngineUtils.waitOperation(googleApi, operation);
         } catch (Exception e) {
             e.printStackTrace();
             return Response.error(e.getMessage());
@@ -102,7 +87,7 @@ public class NetworkController {
     }
     
     @RequestMapping(path = Routes.NETWORK_RULES, method = RequestMethod.GET)
-    public Response<List<FirewallModel>> rules() {
+    public Response<List<FirewallModel>> listRules() {
         try {
             GoogleComputeEngineApi googleApi = GoogleComputeEngineUtils.createApi();  
             URI networkURL = GoogleComputeEngineUtils.assertDefaultNetwork(googleApi);
@@ -152,7 +137,7 @@ public class NetworkController {
                         firewall.creationTimestamp());
     }
     
-    private void configureFirewallRule(
+    private void replaceFirewallRule(
             GoogleComputeEngineApi googleApi, 
             FirewallModel firewallRule
                 ) throws Exception {

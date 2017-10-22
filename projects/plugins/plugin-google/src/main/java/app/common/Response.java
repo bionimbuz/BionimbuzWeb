@@ -1,5 +1,6 @@
 package app.common;
 
+//TODO: replace by ResponseEntity
 public class Response <T> {
 
     public enum Type {
