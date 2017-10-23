@@ -9,7 +9,17 @@ public class InstanceCreationModel {
     private String zone;
     private String imageUrl;
     private String type;
-
+    private String name;
+        
+    public InstanceCreationModel() {
+    }
+    
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
     public String getStartupScript() {
         return startupScript;
     }

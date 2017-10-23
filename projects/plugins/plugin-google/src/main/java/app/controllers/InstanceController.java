@@ -177,9 +177,18 @@ public class InstanceController {
                     throws Exception {
 
         ArrayList<Operation> operations = new ArrayList<Operation>();
+        List<ZoneModel> listZones = getZonesWithInstances(googleApi);
+        List<String> newNames = InstanceModel.generateUniqueNames(listZones, instances.size(), SystemConstants.BNZ_INSTANCE);        
         
-        for (InstanceCreationModel instance : instances) {        
-            operations.add(createInstance(googleApi, instance));            
+        Iterator<InstanceCreationModel> itModel = instances.iterator();
+        Iterator<String> itNames = newNames.iterator();
+
+        InstanceCreationModel model;
+        while(itModel.hasNext() && itNames.hasNext()) {
+            model = itModel.next();
+            model.setName(itNames.next());
+            Operation operation = createInstance(googleApi, model);
+            operations.add(operation);    
         }
 
         ArrayList<URI> createdInstances = new ArrayList<URI>();
@@ -205,7 +214,7 @@ public class InstanceController {
                   
         NewInstance newInstance = 
                 NewInstance.create(
-                    SystemConstants.BNZ_INSTANCE, 
+                    instance.getName(), 
                     machineTypeURL, 
                     networkURL,
                     instance.getImageUri());
