@@ -23,7 +23,6 @@ public class InstanceModel {
             String name, 
             String machineType,
             Date creationDate) {
-        super();
         this.id = id;
         this.name = name;
         this.machineType = machineType;

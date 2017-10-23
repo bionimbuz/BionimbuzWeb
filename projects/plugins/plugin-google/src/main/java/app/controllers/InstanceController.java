@@ -65,7 +65,7 @@ public class InstanceController {
             @RequestParam(value = "instance") List<InstanceCreationModel> instances) {
         
         try {            
-            GoogleComputeEngineApi googleApi = GoogleComputeEngineUtils.createApi();  
+            GoogleComputeEngineApi googleApi = GoogleComputeEngineUtils.createApi("");  
             ArrayList<URI> createdInstances = createInstances(googleApi, instances);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
@@ -81,7 +81,7 @@ public class InstanceController {
             @RequestParam(value = "name") String name,
             @RequestParam(value = "zone") String zone) {
 
-        GoogleComputeEngineApi googleApi = GoogleComputeEngineUtils.createApi(); 
+        GoogleComputeEngineApi googleApi = GoogleComputeEngineUtils.createApi(""); 
         InstanceApi instanceApi = googleApi.instancesInZone(zone);
         
         if(instanceApi.get(name) != null) {            
@@ -94,7 +94,7 @@ public class InstanceController {
     
     @RequestMapping(path = "/instances", method = RequestMethod.GET)
     public List<ZoneModel> instances() {
-        GoogleComputeEngineApi googleApi = GoogleComputeEngineUtils.createApi(); 
+        GoogleComputeEngineApi googleApi = GoogleComputeEngineUtils.createApi(""); 
         List<ZoneModel> res = getZonesWithInstances(googleApi);
         return res;        
     }

@@ -1,8 +1,6 @@
 package app.common;
 
-import java.io.File;
 import java.net.URI;
-import java.nio.charset.Charset;
 
 import org.jclouds.ContextBuilder;
 import org.jclouds.compute.ComputeServiceContext;
@@ -15,22 +13,14 @@ import org.jclouds.googlecomputeengine.features.NetworkApi;
 import org.jclouds.googlecomputeengine.features.OperationApi;
 
 import com.google.common.base.Supplier;
-import com.google.common.io.Files;
 import com.google.inject.Injector;
 
 public class GoogleComputeEngineUtils {    
     
-    public static GoogleComputeEngineApi createApi() {
+    public static GoogleComputeEngineApi createApi(final String credential) {
         try {
-            //TODO: will be passed by parameter
-            String jsonKeyFile = "/tmp/credential.json";
-
-            String fileContents = null;
-            fileContents = Files.toString(new File(jsonKeyFile),
-                    Charset.defaultCharset());
-
             Supplier<Credentials> credentialSupplier = new GoogleCredentialsFromJson(
-                    fileContents);
+                    credential);
 
             ComputeServiceContext context = ContextBuilder
                     .newBuilder(SystemConstants.CLOUD_TYPE)

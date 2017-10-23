@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableList;
 import app.common.GoogleComputeEngineUtils;
 import app.common.Routes;
 import app.common.SystemConstants;
+import app.models.CredentialModel;
 import app.models.FirewallModel;
 
 @RestController
@@ -35,10 +36,11 @@ public class NetworkController {
 	
     @RequestMapping(path = Routes.NETWORK_RULE, method = RequestMethod.POST)
     public ResponseEntity<?> replaceRule(
-            @RequestBody FirewallModel firewall) {        
+            @RequestBody CredentialModel<FirewallModel> credential) {        
         try {
-            GoogleComputeEngineApi googleApi = GoogleComputeEngineUtils.createApi();  
-            replaceFirewallRule(googleApi, firewall);
+            GoogleComputeEngineApi googleApi = 
+                    GoogleComputeEngineUtils.createApi(credential.getCredential());  
+            replaceFirewallRule(googleApi, credential.getModel());
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();            
@@ -48,11 +50,13 @@ public class NetworkController {
         }
     }
     
-	@RequestMapping(path = Routes.NETWORK_RULE+"/{name}", method = RequestMethod.GET)
+	@RequestMapping(path = Routes.NETWORK_RULE+"/{name}", method = RequestMethod.POST)
     public ResponseEntity<?> getRule(
-    		@PathVariable(value="name") final String name) {
+    		@PathVariable(value="name") final String name,
+            @RequestBody CredentialModel<Void> credential) {
         try {
-            GoogleComputeEngineApi googleApi = GoogleComputeEngineUtils.createApi();  
+            GoogleComputeEngineApi googleApi = 
+                    GoogleComputeEngineUtils.createApi(credential.getCredential());  
             FirewallApi firewallApi = googleApi.firewalls();
                   
             Firewall firewall = firewallApi.get(name);
@@ -74,9 +78,11 @@ public class NetworkController {
     
     @RequestMapping(path = Routes.NETWORK_RULE+"/{name}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteRule(
-    		@PathVariable(value="name") final String name) {
+    		@PathVariable(value="name") final String name,
+            @RequestBody CredentialModel<Void> credential) {
         try {
-            GoogleComputeEngineApi googleApi = GoogleComputeEngineUtils.createApi(); 
+            GoogleComputeEngineApi googleApi = 
+                    GoogleComputeEngineUtils.createApi(credential.getCredential()); 
             FirewallApi firewallApi = googleApi.firewalls();
                     
             Firewall firewall = firewallApi.get(name);
@@ -95,10 +101,12 @@ public class NetworkController {
         }
     }
     
-    @RequestMapping(path = Routes.NETWORK_RULES, method = RequestMethod.GET)
-    public ResponseEntity<?> listRules() {
+    @RequestMapping(path = Routes.NETWORK_RULES, method = RequestMethod.POST)
+    public ResponseEntity<?> listRules(
+            @RequestBody CredentialModel<Void> credential) {
         try {
-            GoogleComputeEngineApi googleApi = GoogleComputeEngineUtils.createApi();  
+            GoogleComputeEngineApi googleApi = 
+                    GoogleComputeEngineUtils.createApi(credential.getCredential()); 
             URI networkURL = GoogleComputeEngineUtils.assertDefaultNetwork(googleApi);
             FirewallApi firewallApi = googleApi.firewalls();
                         
