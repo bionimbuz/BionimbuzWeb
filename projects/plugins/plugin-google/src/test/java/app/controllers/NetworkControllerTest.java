@@ -18,11 +18,11 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import app.common.Response;
-import app.common.Response.Type;
 import app.common.Routes;
 import app.models.FirewallModel;
 
@@ -45,38 +45,37 @@ public class NetworkControllerTest {
     @Test
     public void rule_CRUD_Test() {
 
-        Response<FirewallModel> responseGet = null;        
-        Response<List<FirewallModel>> responseList = listAllTest();
+    	ResponseEntity<FirewallModel> responseGet = null;        
+        List<FirewallModel> responseList = listAllTest();
         
-        FirewallModel firewall = searchAvailableFirewallPort(responseList.getContent());     
+        FirewallModel firewall = searchAvailableFirewallPort(responseList);     
                         
         responseGet = getRuleTest(firewall);        
-        assertThat(responseGet.getType()).isEqualTo(Type.ERROR);
+        assertThat(responseGet.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 
         createRuleTest(firewall); 
                
         responseGet = getRuleTest(firewall);        
-        assertThat(responseGet.getType()).isEqualTo(Type.SUCCESS);
+        assertThat(responseGet.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(firewall.getName())
-        		.isEqualTo(responseGet.getContent().getName());   
+        		.isEqualTo(responseGet.getBody().getName());   
 
         deleteRuleTest(firewall);             
         
         responseGet = getRuleTest(firewall);        
-        assertThat(responseGet.getType()).isEqualTo(Type.ERROR);
+        assertThat(responseGet.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
 	private void deleteRuleTest(FirewallModel firewall) {
-		Response<Object> response = this.restTemplate
+		ResponseEntity<Object> response = this.restTemplate
                 .exchange(
                         Routes.NETWORK_RULE+"/"+firewall.getName(), 
                         HttpMethod.DELETE, 
                         null,
-                        new ParameterizedTypeReference< Response<Object> >() {}
-                        )
-                .getBody();          
+                        new ParameterizedTypeReference< Object >() {}
+                        );          
         assertThat(response).isNotNull();    
-        assertThat(response.getType()).isEqualTo(Type.SUCCESS);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
     
 	private void createRuleTest(FirewallModel firewall) {
@@ -86,26 +85,25 @@ public class NetworkControllerTest {
         HttpEntity<FirewallModel> entity = 
         		new HttpEntity<>(firewall, headers);
         
-        Response<?> response = this.restTemplate
+        ResponseEntity<Object> response = this.restTemplate
                 .exchange(
                         Routes.NETWORK_RULE, 
                         HttpMethod.POST, 
                         entity,
-                        new ParameterizedTypeReference< Response<?> >() {})
-                .getBody();                     
+                        new ParameterizedTypeReference< Object >() {});                     
         assertThat(response).isNotNull();
-        assertThat(response.getType()).isEqualTo(Type.SUCCESS);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
-	private Response<FirewallModel> getRuleTest(FirewallModel firewall) {
-		Response<FirewallModel> response = this.restTemplate
-                .exchange(
-                        Routes.NETWORK_RULE+"/"+firewall.getName(), 
-                        HttpMethod.GET, 
-                        null,
-                        new ParameterizedTypeReference< Response<FirewallModel> >() {}
-                        )
-                .getBody();          
+	private ResponseEntity<FirewallModel> getRuleTest(FirewallModel firewall) {
+		ResponseEntity<FirewallModel> response = 
+				this.restTemplate
+	                .exchange(
+	                        Routes.NETWORK_RULE+"/"+firewall.getName(), 
+	                        HttpMethod.GET, 
+	                        null,
+	                        FirewallModel.class
+                        );          
         assertThat(response).isNotNull();  
         return response;
 	}
@@ -127,17 +125,18 @@ public class NetworkControllerTest {
 		return firewall;
 	}
 
-	private Response<List<FirewallModel>> listAllTest() {
-		Response<List<FirewallModel>> responseList = this.restTemplate
-                .exchange(
-                        Routes.NETWORK_RULES, 
-                        HttpMethod.GET, 
-                        null,
-                        new ParameterizedTypeReference< Response<List<FirewallModel>> >() {})
-                .getBody();
-
-        assertThat(responseList.getType()).isEqualTo(Type.SUCCESS);
-        assertThat(responseList.getContent()).isNotNull();
-		return responseList;
+	private List<FirewallModel> listAllTest() {	
+		
+        ResponseEntity<List<FirewallModel>> responseList = 
+				this.restTemplate
+	                .exchange(
+	                        Routes.NETWORK_RULES, 
+	                        HttpMethod.GET, 
+	                        null,
+	                        new ParameterizedTypeReference< List<FirewallModel> >() {});          
+        
+        assertThat(responseList.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseList.getBody()).isNotNull();
+		return responseList.getBody();
 	}    
 }

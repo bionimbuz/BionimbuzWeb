@@ -1,10 +1,11 @@
 package app.controllers;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import app.common.Response;
 import app.common.Routes;
 import app.common.SystemConstants;
 import app.models.InfoModel;
@@ -13,11 +14,14 @@ import app.models.InfoModel;
 public class InfoController {	
     
     @RequestMapping(path = Routes.INFO, method = RequestMethod.GET)
-    public Response <InfoModel> info() {
+    public ResponseEntity <InfoModel> info() {
+    	
     	InfoModel model = new InfoModel(
                 SystemConstants.SYSTEM_VERSION,
-                SystemConstants.CLOUD_TYPE);    	
-    	Response<InfoModel> response = Response.success(model);
-        return response;
+                SystemConstants.CLOUD_TYPE);        	
+
+        return ResponseEntity
+	            .status(HttpStatus.OK)
+	            .body(model);
     }    
 }

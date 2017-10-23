@@ -15,13 +15,14 @@ import org.jclouds.googlecomputeengine.domain.Operation;
 import org.jclouds.googlecomputeengine.domain.Zone;
 import org.jclouds.googlecomputeengine.features.InstanceApi;
 import org.jclouds.googlecomputeengine.features.ZoneApi;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.common.GoogleComputeEngineUtils;
-import app.common.Response;
 import app.common.SystemConstants;
 import app.models.InstanceCreationModel;
 import app.models.InstanceModel;
@@ -33,49 +34,50 @@ public class InstanceController {
     /*
      * Temp Methods
      */
-    @RequestMapping(path = "/instance/delete", method = RequestMethod.GET)
-    public Object delete() {               
-        return instance(SystemConstants.BNZ_INSTANCE, "us-east1-b");
-    }
-    
-    @RequestMapping(path = "/instance/create", method = RequestMethod.GET)
-    public Object create() {
-        
-        List<InstanceCreationModel> instances = new ArrayList<>();        
-        
-        InstanceCreationModel instance = new InstanceCreationModel();
-        instance.setImageUrl("https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1604-xenial-v20170919");
-        instance.setStartupScript("apt-get update && apt-get install -y apache2 && hostname > /var/www/index.html");
-        instance.setType("f1-micro");
-        instance.setRegion("us-east1");
-        instance.setZone("us-east1-b");
-        
-        instances.add(instance);
-        
-        return instance(instances);
-    }
+//    @RequestMapping(path = "/instance/delete", method = RequestMethod.GET)
+//    public Object delete() {               
+//        return instance(SystemConstants.BNZ_INSTANCE, "us-east1-b");
+//    }
+//    
+//    @RequestMapping(path = "/instance/create", method = RequestMethod.GET)
+//    public Object create() {
+//        
+//        List<InstanceCreationModel> instances = new ArrayList<>();        
+//        
+//        InstanceCreationModel instance = new InstanceCreationModel();
+//        instance.setImageUrl("https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1604-xenial-v20170919");
+//        instance.setStartupScript("apt-get update && apt-get install -y apache2 && hostname > /var/www/index.html");
+//        instance.setType("f1-micro");
+//        instance.setRegion("us-east1");
+//        instance.setZone("us-east1-b");
+//        
+//        instances.add(instance);
+//        
+//        return instance(instances);
+//    }
 
     /*
      * Controller Methods
      */
     
     @RequestMapping(path = "/instance", method = RequestMethod.POST)
-    public Response<?> instance(
+    public ResponseEntity<?> instance(
             @RequestParam(value = "instance") List<InstanceCreationModel> instances) {
         
         try {            
             GoogleComputeEngineApi googleApi = GoogleComputeEngineUtils.createApi();  
             ArrayList<URI> createdInstances = createInstances(googleApi, instances);
+            return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
-            e.printStackTrace();
-            return Response.error(e.getMessage());  
+            e.printStackTrace(); 
+            return ResponseEntity
+		            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+		            .body(e.getMessage());
         }
-        
-        return Response.success();
     }
     
     @RequestMapping(path = "/instance", method = RequestMethod.DELETE)
-    public Response<?> instance(
+    public ResponseEntity<?> instance(
             @RequestParam(value = "name") String name,
             @RequestParam(value = "zone") String zone) {
 
@@ -87,7 +89,7 @@ public class InstanceController {
             GoogleComputeEngineUtils.waitOperation(googleApi, operation);
         }
 
-        return Response.success();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
     
     @RequestMapping(path = "/instances", method = RequestMethod.GET)
