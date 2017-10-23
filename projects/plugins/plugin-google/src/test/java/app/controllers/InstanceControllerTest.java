@@ -28,6 +28,6 @@ public class InstanceControllerTest {
     }
 
     @Test
-    public void rule_CRUD_Test() {
+    public void instance_CRUD_Test() {
     }
 }

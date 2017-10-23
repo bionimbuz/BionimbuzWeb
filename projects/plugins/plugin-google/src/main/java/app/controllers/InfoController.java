@@ -14,7 +14,7 @@ import app.models.InfoModel;
 public class InfoController {	
     
     @RequestMapping(path = Routes.INFO, method = RequestMethod.GET)
-    public ResponseEntity <InfoModel> info() {
+    public ResponseEntity <InfoModel> getInfo() {
     	
     	InfoModel model = new InfoModel(
                 SystemConstants.SYSTEM_VERSION,

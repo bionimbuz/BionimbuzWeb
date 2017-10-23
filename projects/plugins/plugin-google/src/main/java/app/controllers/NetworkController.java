@@ -11,6 +11,8 @@ import org.jclouds.googlecomputeengine.domain.Firewall;
 import org.jclouds.googlecomputeengine.domain.Operation;
 import org.jclouds.googlecomputeengine.features.FirewallApi;
 import org.jclouds.googlecomputeengine.options.FirewallOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +31,7 @@ import app.models.FirewallModel;
 
 @RestController
 public class NetworkController {  
+    private static final Logger LOGGER = LoggerFactory.getLogger(NetworkController.class);  
 
     /*
      * Controller Methods
@@ -43,7 +46,7 @@ public class NetworkController {
             replaceFirewallRule(googleApi, credential.getModel());
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
-            e.printStackTrace();            
+            LOGGER.error(e.getMessage(), e);
             return ResponseEntity
 		            .status(HttpStatus.INTERNAL_SERVER_ERROR)
 		            .body(e.getMessage());
@@ -69,7 +72,7 @@ public class NetworkController {
 		            .status(HttpStatus.OK)
 		            .body(model); 
         } catch (Exception e) {
-            e.printStackTrace();  
+            LOGGER.error(e.getMessage(), e);
             return ResponseEntity
 		            .status(HttpStatus.INTERNAL_SERVER_ERROR)
 		            .body(e.getMessage());
@@ -94,7 +97,7 @@ public class NetworkController {
             GoogleComputeEngineUtils.waitOperation(googleApi, operation);            
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
             return ResponseEntity
 		            .status(HttpStatus.INTERNAL_SERVER_ERROR)
 		            .body(e.getMessage());
@@ -126,7 +129,7 @@ public class NetworkController {
 		            .status(HttpStatus.OK)
 		            .body(res);    
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
             return ResponseEntity
 		            .status(HttpStatus.INTERNAL_SERVER_ERROR)
 		            .body(e.getMessage());

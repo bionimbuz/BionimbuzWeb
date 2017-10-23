@@ -15,6 +15,8 @@ import org.jclouds.googlecomputeengine.domain.Operation;
 import org.jclouds.googlecomputeengine.domain.Zone;
 import org.jclouds.googlecomputeengine.features.InstanceApi;
 import org.jclouds.googlecomputeengine.features.ZoneApi;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +32,7 @@ import app.models.ZoneModel;
 
 @RestController
 public class InstanceController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(InstanceController.class);  
 
     /*
      * Temp Methods
