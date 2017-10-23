@@ -82,7 +82,7 @@ public class InstanceController {
         }
     }
     
-    @RequestMapping(path = Routes.INSTANCE+"/{zone}"+"/{name}", method = RequestMethod.DELETE)
+    @RequestMapping(path = Routes.INSTANCE + "/{zone}" + "/{name}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteInstance(
             @PathVariable(value = "zone") String zone,
             @PathVariable(value = "name") String name,

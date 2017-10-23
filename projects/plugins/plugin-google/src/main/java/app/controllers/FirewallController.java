@@ -30,14 +30,14 @@ import app.models.CredentialModel;
 import app.models.FirewallModel;
 
 @RestController
-public class NetworkController {  
-    private static final Logger LOGGER = LoggerFactory.getLogger(NetworkController.class);  
+public class FirewallController {  
+    private static final Logger LOGGER = LoggerFactory.getLogger(FirewallController.class);  
 
     /*
      * Controller Methods
      */
 	
-    @RequestMapping(path = Routes.NETWORK_RULE, method = RequestMethod.POST)
+    @RequestMapping(path = Routes.FIREWALL, method = RequestMethod.POST)
     public ResponseEntity<?> replaceRule(
             @RequestBody CredentialModel<FirewallModel> credential) {        
         try {
@@ -53,7 +53,7 @@ public class NetworkController {
         }
     }
     
-	@RequestMapping(path = Routes.NETWORK_RULE+"/{name}", method = RequestMethod.POST)
+	@RequestMapping(path = Routes.FIREWALL+"/{name}", method = RequestMethod.POST)
     public ResponseEntity<?> getRule(
     		@PathVariable(value="name") final String name,
             @RequestBody CredentialModel<Void> credential) {
@@ -79,7 +79,7 @@ public class NetworkController {
         }
     }
     
-    @RequestMapping(path = Routes.NETWORK_RULE+"/{name}", method = RequestMethod.DELETE)
+    @RequestMapping(path = Routes.FIREWALL+"/{name}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteRule(
     		@PathVariable(value="name") final String name,
             @RequestBody CredentialModel<Void> credential) {
@@ -104,7 +104,7 @@ public class NetworkController {
         }
     }
     
-    @RequestMapping(path = Routes.NETWORK_RULES, method = RequestMethod.POST)
+    @RequestMapping(path = Routes.FIREWALLS, method = RequestMethod.POST)
     public ResponseEntity<?> listRules(
             @RequestBody CredentialModel<Void> credential) {
         try {

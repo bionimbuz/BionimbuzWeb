@@ -28,10 +28,10 @@ import app.models.FirewallModel;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class NetworkControllerTest {
+public class FirewallControllerTest {
 
     @Autowired
-    private NetworkController controller;
+    private FirewallController controller;
     @Autowired
     private TestRestTemplate restTemplate;
     @Value("${local.server.port}")
@@ -72,7 +72,7 @@ public class NetworkControllerTest {
         
 		ResponseEntity<Object> response = this.restTemplate
                 .exchange(
-                        Routes.NETWORK_RULE+"/"+firewall.getName(), 
+                        Routes.FIREWALL+"/"+firewall.getName(), 
                         HttpMethod.DELETE, 
                         entity,
                         new ParameterizedTypeReference< Object >() {}
@@ -87,7 +87,7 @@ public class NetworkControllerTest {
         
         ResponseEntity<Object> response = this.restTemplate
                 .exchange(
-                        Routes.NETWORK_RULE, 
+                        Routes.FIREWALL, 
                         HttpMethod.POST, 
                         entity,
                         new ParameterizedTypeReference< Object >() {});                     
@@ -102,7 +102,7 @@ public class NetworkControllerTest {
 		ResponseEntity<FirewallModel> response = 
 				this.restTemplate
 	                .exchange(
-	                        Routes.NETWORK_RULE+"/"+firewall.getName(), 
+	                        Routes.FIREWALL+"/"+firewall.getName(), 
 	                        HttpMethod.POST, 
 	                        entity,
 	                        FirewallModel.class
@@ -118,7 +118,7 @@ public class NetworkControllerTest {
         ResponseEntity<List<FirewallModel>> responseList = 
 				this.restTemplate
 	                .exchange(
-	                        Routes.NETWORK_RULES, 
+	                        Routes.FIREWALLS, 
 	                        HttpMethod.POST, 
 	                        entity,
 	                        new ParameterizedTypeReference< List<FirewallModel> >() {});          
