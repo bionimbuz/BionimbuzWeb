@@ -19,13 +19,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.common.GoogleComputeEngineUtils;
+import app.common.Routes;
 import app.common.SystemConstants;
+import app.models.CredentialModel;
 import app.models.InstanceCreationModel;
 import app.models.InstanceModel;
 import app.models.ZoneModel;
@@ -63,13 +66,13 @@ public class InstanceController {
      * Controller Methods
      */
     
-    @RequestMapping(path = "/instance", method = RequestMethod.POST)
-    public ResponseEntity<?> instance(
-            @RequestParam(value = "instance") List<InstanceCreationModel> instances) {
-        
+    @RequestMapping(path = Routes.INSTANCE, method = RequestMethod.POST)
+    public ResponseEntity<?> createInstance(
+            @RequestBody CredentialModel<List<InstanceCreationModel>> credential) {        
         try {            
-            GoogleComputeEngineApi googleApi = GoogleComputeEngineUtils.createApi("");  
-            ArrayList<URI> createdInstances = createInstances(googleApi, instances);
+            GoogleComputeEngineApi googleApi = 
+                    GoogleComputeEngineUtils.createApi(credential.getCredential()); 
+            ArrayList<URI> createdInstances = createInstances(googleApi, credential.getModel());
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace(); 
@@ -79,27 +82,48 @@ public class InstanceController {
         }
     }
     
-    @RequestMapping(path = "/instance", method = RequestMethod.DELETE)
-    public ResponseEntity<?> instance(
-            @RequestParam(value = "name") String name,
-            @RequestParam(value = "zone") String zone) {
+    @RequestMapping(path = Routes.INSTANCE+"/{zone}"+"/{name}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteInstance(
+            @PathVariable(value = "zone") String zone,
+            @PathVariable(value = "name") String name,
+            @RequestBody CredentialModel<Void> credential) {       
+        try {
+            GoogleComputeEngineApi googleApi = 
+                    GoogleComputeEngineUtils.createApi(credential.getCredential()); 
+            InstanceApi instanceApi = googleApi.instancesInZone(zone);
 
-        GoogleComputeEngineApi googleApi = GoogleComputeEngineUtils.createApi(""); 
-        InstanceApi instanceApi = googleApi.instancesInZone(zone);
-        
-        if(instanceApi.get(name) != null) {            
+            Instance instance = instanceApi.get(name);
+            if(instance == null) {   
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND); 
+            }
+                      
             Operation operation = instanceApi.delete(name);
-            GoogleComputeEngineUtils.waitOperation(googleApi, operation);
+            GoogleComputeEngineUtils.waitOperation(googleApi, operation);            
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(e.getMessage());
         }
-
-        return new ResponseEntity<>(HttpStatus.OK);
     }
     
-    @RequestMapping(path = "/instances", method = RequestMethod.GET)
-    public List<ZoneModel> instances() {
-        GoogleComputeEngineApi googleApi = GoogleComputeEngineUtils.createApi(""); 
-        List<ZoneModel> res = getZonesWithInstances(googleApi);
-        return res;        
+    @RequestMapping(path = Routes.INSTANCES, method = RequestMethod.POST)
+    public ResponseEntity<?> listInstances(
+            @RequestBody CredentialModel<Void> credential) {        
+        try {
+            GoogleComputeEngineApi googleApi = 
+                    GoogleComputeEngineUtils.createApi(credential.getCredential()); 
+            List<ZoneModel> res = getZonesWithInstances(googleApi);         
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(res);    
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(e.getMessage());
+        }
     }
 
     /*

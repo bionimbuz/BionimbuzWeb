@@ -43,7 +43,7 @@ public class NetworkControllerTest {
     }
 
     @Test
-    public void rule_CRUD_Test() {
+    public void CRUD_Test() {
 
     	ResponseEntity<FirewallModel> responseGet = null;        
         List<FirewallModel> responseList = listAllTest();
