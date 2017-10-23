@@ -28,6 +28,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.google.common.io.Files;
 
+import app.common.CmdLineArgs;
 import app.common.Routes;
 import app.models.CredentialModel;
 import app.models.FirewallModel;
@@ -42,8 +43,6 @@ public class NetworkControllerTest {
     private TestRestTemplate restTemplate;
     @Value("${local.server.port}")
     private int PORT;
-
-    private static final String JSON_KEY = "/tmp/credential.json";
 
     @Test
     public void contexLoads() throws Exception {
@@ -82,7 +81,7 @@ public class NetworkControllerTest {
                 .exchange(
                         Routes.NETWORK_RULE+"/"+firewall.getName(), 
                         HttpMethod.DELETE, 
-                        null,
+                        entity,
                         new ParameterizedTypeReference< Object >() {}
                         );          
         assertThat(response).isNotNull();    
@@ -176,7 +175,7 @@ public class NetworkControllerTest {
         try {
             fileContents = 
                     Files.toString(
-                        new File(JSON_KEY),
+                        new File(CmdLineArgs.getCredentialFile()),
                         Charset.defaultCharset());
         } catch (IOException e) {
             e.printStackTrace();
