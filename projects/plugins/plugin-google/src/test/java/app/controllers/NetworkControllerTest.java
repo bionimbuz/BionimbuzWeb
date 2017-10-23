@@ -2,9 +2,6 @@ package app.controllers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -19,17 +16,13 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.google.common.io.Files;
-
-import app.common.CmdLineArgs;
 import app.common.Routes;
+import app.common.TestUtils;
 import app.models.CredentialModel;
 import app.models.FirewallModel;
 
@@ -75,7 +68,7 @@ public class NetworkControllerTest {
 
 	private void deleteRuleTest(FirewallModel firewall) {
 	    
-        HttpEntity<CredentialModel<Void>> entity = createEntity();
+        HttpEntity<CredentialModel<Void>> entity = TestUtils.createEntity();
         
 		ResponseEntity<Object> response = this.restTemplate
                 .exchange(
@@ -90,7 +83,7 @@ public class NetworkControllerTest {
     
 	private void createRuleTest(FirewallModel firewall) {
 
-        HttpEntity<CredentialModel<FirewallModel>> entity = createEntity(firewall);
+        HttpEntity<CredentialModel<FirewallModel>> entity = TestUtils.createEntity(firewall);
         
         ResponseEntity<Object> response = this.restTemplate
                 .exchange(
@@ -104,7 +97,7 @@ public class NetworkControllerTest {
 
 	private ResponseEntity<FirewallModel> getRuleTest(FirewallModel firewall) {
 	    
-        HttpEntity<CredentialModel<Void>> entity = createEntity();
+        HttpEntity<CredentialModel<Void>> entity = TestUtils.createEntity();
         
 		ResponseEntity<FirewallModel> response = 
 				this.restTemplate
@@ -120,7 +113,7 @@ public class NetworkControllerTest {
 
 	private List<FirewallModel> listAllTest() {			
 
-        HttpEntity<CredentialModel<Void>> entity = createEntity();
+        HttpEntity<CredentialModel<Void>> entity = TestUtils.createEntity();
 	    
         ResponseEntity<List<FirewallModel>> responseList = 
 				this.restTemplate
@@ -133,25 +126,7 @@ public class NetworkControllerTest {
         assertThat(responseList.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseList.getBody()).isNotNull();
 		return responseList.getBody();
-	}    
-    
-	private static <T> HttpEntity<CredentialModel<T>> createEntity(){
-        return createEntity(null);
-    }
-    
-	private static <T> HttpEntity<CredentialModel<T>> createEntity(T content){
-        CredentialModel<T> credential = 
-                new CredentialModel<>(readCredentialTest());        
-        credential.setModel(content);
-        
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-    
-        HttpEntity<CredentialModel<T>> entity = 
-                new HttpEntity<>(credential, headers);    
-        
-        return entity;
-	}
+	}        
 
     private FirewallModel searchAvailableFirewallPort(List<FirewallModel> currentRules) {
         Set<Integer> currentPorts = new TreeSet<>();
@@ -169,18 +144,5 @@ public class NetworkControllerTest {
                         new ArrayList<>());
         return firewall;
     }
-    
-	private static String readCredentialTest() {
-        String fileContents = null;        
-        try {
-            fileContents = 
-                    Files.toString(
-                        new File(CmdLineArgs.getCredentialFile()),
-                        Charset.defaultCharset());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        assertThat(fileContents).isNotNull();
-        return fileContents;
-	}
+
 }
