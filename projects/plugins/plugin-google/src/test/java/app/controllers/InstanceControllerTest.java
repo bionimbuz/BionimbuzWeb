@@ -2,6 +2,7 @@ package app.controllers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
@@ -21,12 +22,19 @@ import org.springframework.test.context.junit4.SpringRunner;
 import app.common.Routes;
 import app.common.TestUtils;
 import app.models.CredentialModel;
+import app.models.InstanceCreationModel;
 import app.models.InstanceModel;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class InstanceControllerTest {
 
+    private static final String INSTANCE_ZONE = "us-east1-b";
+    private static final String INSTANCE_REGION = "us-east1";
+    private static final String INSTANCE_TYPE = "f1-micro";
+    private static final String INSTANCE_STARTUP_SCRIPT = "apt-get update && apt-get install -y apache2 && hostname > /var/www/index.html";
+    private static final String INSTANCE_IMAGE_URL = "https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1604-xenial-v20170919";
+    
     @Autowired
     private InstanceController controller;
     @Autowired
@@ -42,6 +50,20 @@ public class InstanceControllerTest {
     @Test
     public void CRUD_Test() {
         List<InstanceModel> responseList = listAllTest();
+        
+        List<InstanceCreationModel> newInstances = getInstancesToCreate(3);
+        
+        HttpEntity<CredentialModel<List<InstanceCreationModel>>> entity = 
+                TestUtils.createEntity(newInstances);
+        
+        ResponseEntity<Object> response = this.restTemplate
+                .exchange(
+                        Routes.FIREWALL, 
+                        HttpMethod.POST, 
+                        entity,
+                        new ParameterizedTypeReference< Object >() {});                     
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
     
     private List<InstanceModel> listAllTest() {         
@@ -60,5 +82,22 @@ public class InstanceControllerTest {
         assertThat(responseList.getBody()).isNotNull();
         return responseList.getBody();
     }        
+    
+    private List<InstanceCreationModel> getInstancesToCreate(int length) {
+        List<InstanceCreationModel> instances = new ArrayList<>();
+
+        for(int i=0;i<length;i++) {
+            InstanceCreationModel instance = new InstanceCreationModel();
+            instance.setImageUrl(INSTANCE_IMAGE_URL);
+            instance.setStartupScript(INSTANCE_STARTUP_SCRIPT);
+            instance.setType(INSTANCE_TYPE);
+            instance.setRegion(INSTANCE_REGION);
+            instance.setZone(INSTANCE_ZONE);
+            
+            instances.add(instance);
+        }
+        
+        return instances;
+    }
 
 }

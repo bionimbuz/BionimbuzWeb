@@ -38,31 +38,6 @@ public class InstanceController {
     private static final Logger LOGGER = LoggerFactory.getLogger(InstanceController.class);  
 
     /*
-     * Temp Methods
-     */
-//    @RequestMapping(path = "/instance/delete", method = RequestMethod.GET)
-//    public Object delete() {               
-//        return instance(SystemConstants.BNZ_INSTANCE, "us-east1-b");
-//    }
-//    
-//    @RequestMapping(path = "/instance/create", method = RequestMethod.GET)
-//    public Object create() {
-//        
-//        List<InstanceCreationModel> instances = new ArrayList<>();        
-//        
-//        InstanceCreationModel instance = new InstanceCreationModel();
-//        instance.setImageUrl("https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1604-xenial-v20170919");
-//        instance.setStartupScript("apt-get update && apt-get install -y apache2 && hostname > /var/www/index.html");
-//        instance.setType("f1-micro");
-//        instance.setRegion("us-east1");
-//        instance.setZone("us-east1-b");
-//        
-//        instances.add(instance);
-//        
-//        return instance(instances);
-//    }
-
-    /*
      * Controller Methods
      */
     
