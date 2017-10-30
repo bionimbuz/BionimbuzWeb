@@ -40,6 +40,8 @@ public class InstanceControllerTest {
     private static final String INSTANCE_IMAGE_URL = "https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1604-xenial-v20170919";
     
     private static final Integer STARTUP_SCRIPT_APACHE_PORT = 80;
+    private static final Integer WAIT_MS_TO_START_INSTANCE = 20 * 1000;
+    private static final Integer LENGTH_CREATION = 2;
     
     @Autowired
     private InstanceController controller;
@@ -63,8 +65,6 @@ public class InstanceControllerTest {
 
     @Test
     public void CRUD_Test() {
-        final int LENGTH_CREATION = 3;
-
         ResponseEntity<InstanceModel> responseGet = null;        
         
         List<InstanceModel> responseList = listAllTest();        
@@ -86,7 +86,7 @@ public class InstanceControllerTest {
 
             try {
                 // Wait for instances configuration start
-                Thread.sleep(10000);
+                Thread.sleep(WAIT_MS_TO_START_INSTANCE);
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 assertThat(e).isNull();
