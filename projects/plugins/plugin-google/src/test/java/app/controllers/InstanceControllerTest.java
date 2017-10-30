@@ -22,7 +22,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import app.common.Routes;
 import app.common.TestUtils;
 import app.models.CredentialModel;
-import app.models.InstanceCreationModel;
 import app.models.InstanceModel;
 
 @RunWith(SpringRunner.class)
@@ -49,21 +48,71 @@ public class InstanceControllerTest {
 
     @Test
     public void CRUD_Test() {
-        List<InstanceModel> responseList = listAllTest();
+        final int LENGTH_CREATION = 3;
+
+        ResponseEntity<InstanceModel> responseGet = null;        
         
-        List<InstanceCreationModel> newInstances = getInstancesToCreate(3);
+        List<InstanceModel> responseList = listAllTest();        
+        List<InstanceModel> newInstances = getInstancesToCreate(LENGTH_CREATION); 
+        for (InstanceModel model : newInstances) {
+            responseGet = getInstanceTest(model);
+            assertThat(responseGet.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        }        
         
-        HttpEntity<CredentialModel<List<InstanceCreationModel>>> entity = 
-                TestUtils.createEntity(newInstances);
+        List<InstanceModel> createdInstances = createInstancesTest(newInstances);
+        assertThat(createdInstances.size()).isEqualTo(LENGTH_CREATION);        
+
+        int initialSize = responseList.size();
+        responseList = listAllTest();        
+        assertThat(responseList.size()).isEqualTo(initialSize + LENGTH_CREATION);
+        
+        for (InstanceModel model : createdInstances) {
+            responseGet = getInstanceTest(model);
+            assertThat(responseGet.getStatusCode()).isEqualTo(HttpStatus.OK);
+        }         
+           
+        for (InstanceModel model : createdInstances) {
+            deleteInstanceTest(model);
+        }        
+        
+        for (InstanceModel model : newInstances) {
+            responseGet = getInstanceTest(model);
+            assertThat(responseGet.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        }   
+
+        responseList = listAllTest();        
+        assertThat(responseList.size()).isEqualTo(initialSize);        
+    }
+    
+    private void deleteInstanceTest(InstanceModel model) {
+        
+        HttpEntity<CredentialModel<Void>> entity = TestUtils.createEntity();
         
         ResponseEntity<Object> response = this.restTemplate
                 .exchange(
-                        Routes.FIREWALL, 
+                        Routes.INSTANCE+"/"+model.getZone() + "/"+model.getName(), 
+                        HttpMethod.DELETE, 
+                        entity,
+                        new ParameterizedTypeReference< Object >() {}
+                        );          
+        assertThat(response).isNotNull();    
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+    
+    private List<InstanceModel> createInstancesTest(List<InstanceModel> instances){
+        HttpEntity<CredentialModel<List<InstanceModel>>> entity = 
+                TestUtils.createEntity(instances);
+        
+        ResponseEntity<List<InstanceModel>> response = this.restTemplate
+                .exchange(
+                        Routes.INSTANCE, 
                         HttpMethod.POST, 
                         entity,
-                        new ParameterizedTypeReference< Object >() {});                     
+                        new ParameterizedTypeReference< List<InstanceModel> >() {});                     
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        
+        return response.getBody();
     }
     
     private List<InstanceModel> listAllTest() {         
@@ -83,11 +132,27 @@ public class InstanceControllerTest {
         return responseList.getBody();
     }        
     
-    private List<InstanceCreationModel> getInstancesToCreate(int length) {
-        List<InstanceCreationModel> instances = new ArrayList<>();
+    private ResponseEntity<InstanceModel> getInstanceTest(InstanceModel model) {
+        
+        HttpEntity<CredentialModel<Void>> entity = TestUtils.createEntity();
+        
+        ResponseEntity<InstanceModel> response = 
+                this.restTemplate
+                    .exchange(
+                            Routes.INSTANCE+"/"+model.getZone() + "/"+model.getName(), 
+                            HttpMethod.POST, 
+                            entity,
+                            InstanceModel.class
+                        );          
+        assertThat(response).isNotNull();  
+        return response;
+    }
+    
+    private List<InstanceModel> getInstancesToCreate(int length) {
+        List<InstanceModel> instances = new ArrayList<>();
 
         for(int i=0;i<length;i++) {
-            InstanceCreationModel instance = new InstanceCreationModel();
+            InstanceModel instance = new InstanceModel();
             instance.setImageUrl(INSTANCE_IMAGE_URL);
             instance.setStartupScript(INSTANCE_STARTUP_SCRIPT);
             instance.setType(INSTANCE_TYPE);

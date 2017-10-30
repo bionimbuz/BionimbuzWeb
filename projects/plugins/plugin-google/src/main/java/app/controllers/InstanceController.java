@@ -26,16 +26,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.common.GoogleComputeEngineUtils;
+import app.common.Pair;
 import app.common.Routes;
 import app.common.SystemConstants;
 import app.models.CredentialModel;
-import app.models.InstanceCreationModel;
 import app.models.InstanceModel;
-import app.models.ZoneModel;
 
 @RestController
 public class InstanceController {
     private static final Logger LOGGER = LoggerFactory.getLogger(InstanceController.class);  
+    private static final int CREATION_ATTEMPTS = 3;
 
     /*
      * Controller Methods
@@ -43,12 +43,15 @@ public class InstanceController {
     
     @RequestMapping(path = Routes.INSTANCE, method = RequestMethod.POST)
     public ResponseEntity<?> createInstance(
-            @RequestBody CredentialModel<List<InstanceCreationModel>> credential) {        
+            @RequestBody CredentialModel<List<InstanceModel>> credential) {        
         try {            
+        	List<InstanceModel> res = credential.getModel();
             GoogleComputeEngineApi googleApi = 
                     GoogleComputeEngineUtils.createApi(credential.getCredential()); 
-            ArrayList<URI> createdInstances = createInstances(googleApi, credential.getModel());
-            return new ResponseEntity<>(HttpStatus.OK);
+            createInstances(googleApi, res);            
+            return ResponseEntity
+		            .status(HttpStatus.OK)
+		            .body(res); 
         } catch (Exception e) {
             e.printStackTrace(); 
             return ResponseEntity
@@ -57,24 +60,25 @@ public class InstanceController {
         }
     }
     
-    @RequestMapping(path = Routes.INSTANCE + "/{zone}" + "/{name}", method = RequestMethod.DELETE)
-    public ResponseEntity<?> deleteInstance(
-            @PathVariable(value = "zone") String zone,
-            @PathVariable(value = "name") String name,
-            @RequestBody CredentialModel<Void> credential) {       
+    @RequestMapping(path = Routes.INSTANCE + "/{zone}" + "/{name}", method = RequestMethod.POST)
+    public ResponseEntity<?> getInstance(
+            @PathVariable(value = "zone") final String zone,
+            @PathVariable(value = "name") final String name,
+            @RequestBody CredentialModel<Void> credential) {
         try {
             GoogleComputeEngineApi googleApi = 
                     GoogleComputeEngineUtils.createApi(credential.getCredential()); 
-            InstanceApi instanceApi = googleApi.instancesInZone(zone);
-
+            InstanceApi instanceApi = googleApi.instancesInZone(zone);                
             Instance instance = instanceApi.get(name);
-            if(instance == null) {   
+            if(instance == null) { 
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND); 
             }
-                      
-            Operation operation = instanceApi.delete(name);
-            GoogleComputeEngineUtils.waitOperation(googleApi, operation);            
-            return new ResponseEntity<>(HttpStatus.OK);
+            
+            InstanceModel model = new InstanceModel();
+            updateInstanceModel(instance, model);            
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(model); 
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             return ResponseEntity
@@ -83,13 +87,33 @@ public class InstanceController {
         }
     }
     
+    @RequestMapping(path = Routes.INSTANCE + "/{zone}" + "/{name}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteInstance(
+            @PathVariable(value = "zone") final String zone,
+            @PathVariable(value = "name") final String name,
+            @RequestBody CredentialModel<Void> credential) {       
+        try {
+            GoogleComputeEngineApi googleApi = 
+                    GoogleComputeEngineUtils.createApi(credential.getCredential());             
+            if(!deleteInstance(googleApi, zone, name)) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND); 
+            }           
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(e.getMessage());
+        }
+    }
+   
     @RequestMapping(path = Routes.INSTANCES, method = RequestMethod.POST)
     public ResponseEntity<?> listInstances(
             @RequestBody CredentialModel<Void> credential) {        
         try {
             GoogleComputeEngineApi googleApi = 
                     GoogleComputeEngineUtils.createApi(credential.getCredential()); 
-            List<ZoneModel> res = getZonesWithInstances(googleApi);         
+            List<InstanceModel> res = getInstances(googleApi);         
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(res);    
@@ -105,19 +129,18 @@ public class InstanceController {
      * Class Methods
      */
     
-    private List<ZoneModel> getZonesWithInstances(final GoogleComputeEngineApi googleApi){
+    private List<InstanceModel> getInstances(final GoogleComputeEngineApi googleApi){
         
-        List<ZoneModel> res = new ArrayList<>();        
+        List<InstanceModel> res = new ArrayList<>();        
         ZoneApi zoneApi = googleApi.zones();
         Iterator<ListPage<Zone>> listPages = zoneApi.list();
         while (listPages.hasNext()) {
             ListPage<Zone> zones = listPages.next();
-            for (Zone zone : zones) {
-                
+            for (Zone zone : zones) {                
                 List<InstanceModel> instances = 
                         getInstanceListForZone(googleApi, zone.name());    
                 if(!instances.isEmpty())
-                    res.add(new ZoneModel(zone.name(), instances));
+                    res.addAll(instances);
             }
         }        
         
@@ -134,8 +157,8 @@ public class InstanceController {
         while(listPages.hasNext()){
             ListPage<Instance> instances = listPages.next();
             for (Instance instance : instances) {
-                InstanceModel model = createInstanceModel(instance);
-                if(model != null) {
+                InstanceModel model = new InstanceModel();
+                if(updateInstanceModel(instance, model)) {
                     res.add(model);
                 }
             }            
@@ -144,66 +167,119 @@ public class InstanceController {
         return res;
     }
 
-    private InstanceModel createInstanceModel(final Instance instance) {
+    private boolean updateInstanceModel(final Instance instance, InstanceModel model) {
         
         if(!instance.name().startsWith(SystemConstants.BNZ_INSTANCE))
-            return null;;   
-        
-        InstanceModel instanceModel = new InstanceModel(
-                instance.id(),
-                instance.name(),
-                instance.machineType().toString(),
-                instance.creationTimestamp());
+            return false;
+       
+        String type = instance.machineType().toString();
+        type = type.substring(type.lastIndexOf('/') + 1);
+                
+        model.setId(instance.id());
+        model.setName(instance.name());
+        model.setMachineType(type);
+        model.setCreationDate(instance.creationTimestamp());
         
         List<NetworkInterface> interfaces = instance.networkInterfaces();
         if(interfaces.size() <= 0) 
-            return instanceModel;               
+            return true;               
             
         NetworkInterface netInterface = 
                 interfaces.get(0); 
-        instanceModel.setInternalIp(netInterface.networkIP());
+        model.setInternalIp(netInterface.networkIP());
         
         if(netInterface.accessConfigs().size() <= 0)
-            return instanceModel;        
+            return true;        
         
         AccessConfig accessConfig = 
                 netInterface.accessConfigs().get(0);
-        instanceModel.setExternalIp(accessConfig.natIP());
+        model.setExternalIp(accessConfig.natIP());
         
-        return instanceModel;        
+        return true;        
     }
 
-    private ArrayList<URI> createInstances(
+    protected void createInstances(
             GoogleComputeEngineApi googleApi,
-            List<InstanceCreationModel> instances)
-                    throws Exception {
-
-        ArrayList<Operation> operations = new ArrayList<Operation>();
-        List<ZoneModel> listZones = getZonesWithInstances(googleApi);
-        List<String> newNames = InstanceModel.generateUniqueNames(listZones, instances.size(), SystemConstants.BNZ_INSTANCE);        
+            List<InstanceModel> instances) throws Exception{
         
-        Iterator<InstanceCreationModel> itModel = instances.iterator();
-        Iterator<String> itNames = newNames.iterator();
+        try {
+            List<Pair<InstanceModel, Operation>> operations = new ArrayList<>();
+            for (InstanceModel instance : instances) {
+                operations.add(new Pair<>(instance, null));   
+            }                
+    
+            Iterator<Pair<InstanceModel, Operation>> itOperations = operations.iterator(); 
+            int instancesToCreate = instances.size();   
+            int attempts = CREATION_ATTEMPTS; // For concurrent users       
+            while((attempts-- > 0) && (instancesToCreate > 0)) { 
+                InstanceModel model;
+                Operation operation;                     
+                List<String> newNames = InstanceModel.generateUniqueNames(
+                        getInstances(googleApi), 
+                        instancesToCreate, 
+                        SystemConstants.BNZ_INSTANCE);          
+                Iterator<String> itNames = newNames.iterator();
+                
+                while(itOperations.hasNext() && itNames.hasNext()) {
+                    Pair<InstanceModel, Operation> modelOperation = itOperations.next();                
+                    model = modelOperation.getLeft();
+                    if(!model.getName().isEmpty())
+                        continue;                
+                    model.setName(itNames.next());
+                    modelOperation.setRight(
+                            createInstance(googleApi, model));
+                }
+                
+                instancesToCreate = 0;
+                for (Pair<InstanceModel, Operation> modelOperation : operations) {
+                    model = modelOperation.getLeft();
+                    operation = modelOperation.getRight();
+                    try {
+        	            GoogleComputeEngineUtils.waitOperation(googleApi, operation);    	            
+                    } catch(Exception e) {
+                        LOGGER.error(e.getMessage(), e);
+                        instancesToCreate++;
+                        model.setName("");
+                    }        
+                }
+            }
 
-        InstanceCreationModel model;
-        while(itModel.hasNext() && itNames.hasNext()) {
-            model = itModel.next();
-            model.setName(itNames.next());
-            Operation operation = createInstance(googleApi, model);
-            operations.add(operation);    
-        }
+            if(instancesToCreate > 0) {
+                throw new Exception("Reached the number of attempts to create instances. Operation aborted.");
+            }   
 
-        ArrayList<URI> createdInstances = new ArrayList<URI>();
-        for (Operation operation : operations) {
-            GoogleComputeEngineUtils.waitOperation(googleApi, operation);
-            createdInstances.add(operation.targetLink());
+            // Update instance informations (external and internal IP, etc.)
+            for (InstanceModel model : instances) {
+                InstanceApi instanceApi = googleApi.instancesInZone(model.getZone());               
+                Instance instance = instanceApi.get(model.getName());
+                if(instance == null) {   
+                    throw new Exception("Instance created does not exist anymore.");
+                }  
+                updateInstanceModel(instance, model);
+            }
         }
-        return createdInstances;
-    }    
+        catch(Exception e) {
+            // Delete instances already created
+            deleteInstances(googleApi, instances);
+            throw e;
+        }        
+    }      
+    
+    private void deleteInstances(
+            GoogleComputeEngineApi googleApi,
+            final List<InstanceModel> instances) {
+        
+        for (InstanceModel instance : instances) {
+            if(instance.getName().isEmpty()) {
+                continue;
+            }
+            deleteInstance(googleApi, instance);
+        }    
+    }
     
     private Operation createInstance(
             GoogleComputeEngineApi googleApi,
-            InstanceCreationModel instance)
+            InstanceModel instance)
                     throws Exception {
         
         URI machineTypeURL = googleApi
@@ -226,5 +302,26 @@ public class InstanceController {
                 instance.getStartupScript());
                         
         return instanceApi.create(newInstance);
+    }
+    
+    private boolean deleteInstance(
+            GoogleComputeEngineApi googleApi, 
+            final InstanceModel instance) {
+        return deleteInstance(googleApi, instance.getZone(), instance.getName());
+    }
+
+    private boolean deleteInstance(
+            GoogleComputeEngineApi googleApi, 
+            final String zone, 
+            final String name) {
+        
+        InstanceApi instanceApi = googleApi.instancesInZone(zone);                
+        Instance instance = instanceApi.get(name);
+        if(instance == null) {   
+            return false; 
+        }                  
+        Operation operation = instanceApi.delete(name);
+        GoogleComputeEngineUtils.waitOperation(googleApi, operation);        
+        return true;
     }
 }

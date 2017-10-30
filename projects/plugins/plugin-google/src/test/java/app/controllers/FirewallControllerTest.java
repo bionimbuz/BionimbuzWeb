@@ -66,13 +66,13 @@ public class FirewallControllerTest {
         assertThat(responseGet.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
-	private void deleteRuleTest(FirewallModel firewall) {
+	private void deleteRuleTest(FirewallModel model) {
 	    
         HttpEntity<CredentialModel<Void>> entity = TestUtils.createEntity();
         
 		ResponseEntity<Object> response = this.restTemplate
                 .exchange(
-                        Routes.FIREWALL+"/"+firewall.getName(), 
+                        Routes.FIREWALL+"/"+model.getName(), 
                         HttpMethod.DELETE, 
                         entity,
                         new ParameterizedTypeReference< Object >() {}

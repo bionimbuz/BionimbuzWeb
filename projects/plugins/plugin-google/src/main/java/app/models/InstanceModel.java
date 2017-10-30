@@ -1,5 +1,6 @@
 package app.models;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -8,12 +9,17 @@ import java.util.TreeSet;
 
 public class InstanceModel {
 
-    private String id;
-    private String name;
-    private String machineType;
+    private String id = "";
+    private String name = "";
+    private String machineType = "";
     private Date creationDate;  
-    private String internalIp;
-    private String externalIp;
+    private String internalIp = "";
+    private String externalIp = "";
+    private String startupScript = "";
+    private String region = "";
+    private String zone = "";
+    private String imageUrl = "";
+    private String type = "";
     
     public InstanceModel() {        
     }
@@ -30,7 +36,7 @@ public class InstanceModel {
     }
     
     public static List<String> generateUniqueNames(
-            List<ZoneModel> currentZones, int size, final String prefix) { 
+            List<InstanceModel> currentZones, int size, final String prefix) { 
         
         List<String> res = new ArrayList<>();        
         Set<Integer> setOfNameIds = getSetOfCurrentIds(currentZones, prefix);
@@ -54,14 +60,12 @@ public class InstanceModel {
         return Integer.parseInt(nameSpplited[1].replaceAll("-", ""));     
     }
     
-    protected static Set<Integer> getSetOfCurrentIds(final List<ZoneModel> currentZones, final String prefix) {        
+    protected static Set<Integer> getSetOfCurrentIds(final List<InstanceModel> currentInstances, final String prefix) {        
         Set<Integer> ids = new TreeSet<>();   
-        for (ZoneModel zoneModel : currentZones) {
-            for (InstanceModel instanceModel : zoneModel.getLstInstances()) {                
-                Integer id = extractIdFromName(instanceModel.getName(), prefix);  
-                if(id >= 0) {
-                    ids.add(id);
-                }
+        for (InstanceModel instanceModel : currentInstances) {                
+            Integer id = extractIdFromName(instanceModel.getName(), prefix);  
+            if(id >= 0) {
+                ids.add(id);
             }
         }
         return ids;
@@ -102,5 +106,38 @@ public class InstanceModel {
     }
     public void setExternalIp(String externalIp) {
         this.externalIp = externalIp;
+    }
+    public String getStartupScript() {
+        return startupScript;
+    }
+    public void setStartupScript(String startupScript) {
+        this.startupScript = startupScript;
+    }
+    public String getZone() {
+        return zone;
+    }
+    public void setZone(String zone) {
+        this.zone = zone;
+    }    
+    public URI getImageUri() {
+        return URI.create(imageUrl);
+    }
+    public String getImageUrl() {
+        return imageUrl;
+    }
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+    public String getType() {
+        return type;
+    }
+    public void setType(String type) {
+        this.type = type;
+    }
+    public String getRegion() {
+        return region;
+    }
+    public void setRegion(String region) {
+        this.region = region;
     }
 }

@@ -25,8 +25,8 @@ public class InstanceModelTest extends InstanceModel {
         int instancesLen = 10;        
         final String PREFIX = "bnz-inst";
         
-        List<ZoneModel> lstZones = 
-                generateRandomListZone("bnz-zone", zonesLen, PREFIX, instancesLen);  
+        List<InstanceModel> lstZones = 
+                generateRandomListZone(PREFIX, instancesLen);  
         Set<Integer> currentIds = 
                 getSetOfCurrentIds(lstZones, PREFIX); 
         assertThat(currentIds.size()).isEqualTo(zonesLen * instancesLen); 
@@ -67,35 +67,26 @@ public class InstanceModelTest extends InstanceModel {
         return true;        
     }
     
-    private List<ZoneModel> generateRandomListZone(
-            String zonePrefix, int zoneSize, String instancePrefix, int instSize) {
+    private List<InstanceModel> generateRandomListZone(String instancePrefix, int instSize) {
 
         Set<Integer> currentIds = new HashSet<>();
         Random rand = new Random();
 
-        List<ZoneModel> lstZones = new ArrayList<>();
+        List<InstanceModel> lstInstances = new ArrayList<>();
         String instanceType = "type";
-        
-        for(int i = 0; i < zoneSize; i++) {
-            List<InstanceModel> lstInstances = new ArrayList<>();
+
+        for(int j = 0; j < instSize; j++) {
+            Integer id = generateUniqueId(currentIds, rand);
+            currentIds.add(id);
+            InstanceModel instance = 
+                    new InstanceModel(
+                            String.valueOf(j), InstanceModel.generateNameForId(id, instancePrefix), 
+                            instanceType, 
+                            null);
             
-            for(int j = 0; j < instSize; j++) {
-                Integer id = generateUniqueId(currentIds, rand);
-                currentIds.add(id);
-                InstanceModel instance = 
-                        new InstanceModel(
-                                String.valueOf(j), InstanceModel.generateNameForId(id, instancePrefix), 
-                                instanceType, 
-                                null);
-                
-                lstInstances.add(instance);
-            }
-            
-            ZoneModel zone = 
-                    new ZoneModel(zonePrefix + "-" + i, lstInstances);
-            lstZones.add(zone);
+            lstInstances.add(instance);
         }
         
-        return lstZones;
+        return lstInstances;
     }        
 }
