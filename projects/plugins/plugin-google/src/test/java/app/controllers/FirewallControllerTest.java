@@ -53,24 +53,24 @@ public class FirewallControllerTest {
         responseGet = getRuleTest(firewall);        
         assertThat(responseGet.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 
-        createRuleTest(firewall); 
+        createRuleTest(firewall, this.restTemplate); 
                
         responseGet = getRuleTest(firewall);        
         assertThat(responseGet.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(firewall.getName())
         		.isEqualTo(responseGet.getBody().getName());   
 
-        deleteRuleTest(firewall);             
+        deleteRuleTest(firewall, this.restTemplate);             
         
         responseGet = getRuleTest(firewall);        
         assertThat(responseGet.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
-	private void deleteRuleTest(FirewallModel model) {
+	public static void deleteRuleTest(FirewallModel model, TestRestTemplate restTemplate) {
 	    
         HttpEntity<CredentialModel<Void>> entity = TestUtils.createEntity();
         
-		ResponseEntity<Object> response = this.restTemplate
+		ResponseEntity<Object> response = restTemplate
                 .exchange(
                         Routes.FIREWALL+"/"+model.getName(), 
                         HttpMethod.DELETE, 
@@ -81,11 +81,11 @@ public class FirewallControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
     
-	private void createRuleTest(FirewallModel firewall) {
+	public static void createRuleTest(FirewallModel firewall, TestRestTemplate restTemplate) {
 
         HttpEntity<CredentialModel<FirewallModel>> entity = TestUtils.createEntity(firewall);
         
-        ResponseEntity<Object> response = this.restTemplate
+        ResponseEntity<Object> response = restTemplate
                 .exchange(
                         Routes.FIREWALL, 
                         HttpMethod.POST, 
