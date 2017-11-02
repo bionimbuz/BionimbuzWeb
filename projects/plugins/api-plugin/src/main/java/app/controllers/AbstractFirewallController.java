@@ -7,13 +7,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 
 import app.common.Routes;
 import app.models.CredentialModel;
 import app.models.FirewallModel;
 
-@RestController
 public abstract class AbstractFirewallController {  
     protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractFirewallController.class);  
 
@@ -21,18 +19,18 @@ public abstract class AbstractFirewallController {
      * Action Methods
      */
 	
-    @RequestMapping(path = Routes.FIREWALLS, method = RequestMethod.POST)
+    @RequestMapping(path = Routes.FIREWALL, method = RequestMethod.POST)
     private ResponseEntity<?> replaceRuleAction(
             @RequestBody CredentialModel<FirewallModel> credential) { 
         return replaceRule(credential);
     }    
-	@RequestMapping(path = Routes.FIREWALLS_NAME, method = RequestMethod.POST)
+	@RequestMapping(path = Routes.FIREWALL_NAME, method = RequestMethod.POST)
 	private ResponseEntity<?> getRuleAction(
     		@PathVariable(value="name") final String name,
             @RequestBody CredentialModel<Void> credential) {   
 	    return getRule(name, credential);
     }    
-    @RequestMapping(path = Routes.FIREWALLS_NAME, method = RequestMethod.DELETE)
+    @RequestMapping(path = Routes.FIREWALL_NAME, method = RequestMethod.DELETE)
     private ResponseEntity<?> deleteRuleAction(
     		@PathVariable(value="name") final String name,
             @RequestBody CredentialModel<Void> credential) {

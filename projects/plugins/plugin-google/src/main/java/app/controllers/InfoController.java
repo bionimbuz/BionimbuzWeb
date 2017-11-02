@@ -1,7 +1,10 @@
 package app.controllers;
 
+import org.springframework.web.bind.annotation.RestController;
+
 import app.common.SystemConstants;
 
+@RestController
 public class InfoController extends AbstractInfoController {	
 
     /*

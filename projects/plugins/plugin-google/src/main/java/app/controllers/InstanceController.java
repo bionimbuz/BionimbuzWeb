@@ -17,7 +17,7 @@ import org.jclouds.googlecomputeengine.features.InstanceApi;
 import org.jclouds.googlecomputeengine.features.ZoneApi;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import app.common.GlobalConstants;
 import app.common.GoogleComputeEngineUtils;
@@ -25,6 +25,7 @@ import app.common.Pair;
 import app.models.CredentialModel;
 import app.models.InstanceModel;
 
+@RestController
 public class InstanceController extends AbstractInstanceController{ 
     private static final int CREATION_ATTEMPTS = 3;
 
@@ -100,7 +101,7 @@ public class InstanceController extends AbstractInstanceController{
 
     @Override
     protected ResponseEntity<?> listInstances(
-            @RequestBody CredentialModel<Void> credential) {        
+            CredentialModel<Void> credential) {        
         try {
             GoogleComputeEngineApi googleApi = 
                     GoogleComputeEngineUtils.createApi(credential.getCredential()); 

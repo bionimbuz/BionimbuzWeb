@@ -72,7 +72,7 @@ public class FirewallControllerTest {
         
 		ResponseEntity<Object> response = restTemplate
                 .exchange(
-                        Routes.FIREWALLS+"/"+model.getName(), 
+                        Routes.FIREWALL+"/"+model.getName(), 
                         HttpMethod.DELETE, 
                         entity,
                         new ParameterizedTypeReference< Object >() {}
@@ -87,7 +87,7 @@ public class FirewallControllerTest {
         
         ResponseEntity<Object> response = restTemplate
                 .exchange(
-                        Routes.FIREWALLS, 
+                        Routes.FIREWALL, 
                         HttpMethod.POST, 
                         entity,
                         new ParameterizedTypeReference< Object >() {});                     
@@ -102,7 +102,7 @@ public class FirewallControllerTest {
 		ResponseEntity<FirewallModel> response = 
 				this.restTemplate
 	                .exchange(
-	                        Routes.FIREWALLS+"/"+firewall.getName(), 
+	                        Routes.FIREWALL+"/"+firewall.getName(), 
 	                        HttpMethod.POST, 
 	                        entity,
 	                        FirewallModel.class

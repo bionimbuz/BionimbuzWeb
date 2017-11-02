@@ -6,13 +6,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 
 import app.common.GlobalConstants;
 import app.common.Routes;
 import app.models.InfoModel;
 
-@RestController
 public abstract class AbstractInfoController {	    
     protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractInfoController.class);  
     

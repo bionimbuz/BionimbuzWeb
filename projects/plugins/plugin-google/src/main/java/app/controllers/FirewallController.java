@@ -13,16 +13,16 @@ import org.jclouds.googlecomputeengine.features.FirewallApi;
 import org.jclouds.googlecomputeengine.options.FirewallOptions;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.google.common.collect.ImmutableList;
 
-import app.common.GoogleComputeEngineUtils;
 import app.common.GlobalConstants;
+import app.common.GoogleComputeEngineUtils;
 import app.models.CredentialModel;
 import app.models.FirewallModel;
 
+@RestController
 public class FirewallController extends AbstractFirewallController{  
 
     /*
@@ -31,7 +31,7 @@ public class FirewallController extends AbstractFirewallController{
     
 	@Override
     protected ResponseEntity<?> replaceRule(
-            @RequestBody CredentialModel<FirewallModel> credential) {        
+            CredentialModel<FirewallModel> credential) {        
         try {
             GoogleComputeEngineApi googleApi = 
                     GoogleComputeEngineUtils.createApi(credential.getCredential());  
@@ -47,8 +47,8 @@ public class FirewallController extends AbstractFirewallController{
 
     @Override
     protected ResponseEntity<?> getRule(
-    		@PathVariable(value="name") final String name,
-            @RequestBody CredentialModel<Void> credential) {
+    		final String name,
+            CredentialModel<Void> credential) {
         try {
             GoogleComputeEngineApi googleApi = 
                     GoogleComputeEngineUtils.createApi(credential.getCredential());  
@@ -73,8 +73,8 @@ public class FirewallController extends AbstractFirewallController{
 
     @Override
     protected ResponseEntity<?> deleteRule(
-    		@PathVariable(value="name") final String name,
-            @RequestBody CredentialModel<Void> credential) {
+    		final String name,
+    		CredentialModel<Void> credential) {
         try {
             GoogleComputeEngineApi googleApi = 
                     GoogleComputeEngineUtils.createApi(credential.getCredential()); 
@@ -98,7 +98,7 @@ public class FirewallController extends AbstractFirewallController{
 
     @Override
     protected ResponseEntity<?> listRules(
-            @RequestBody CredentialModel<Void> credential) {
+            CredentialModel<Void> credential) {
         try {
             GoogleComputeEngineApi googleApi = 
                     GoogleComputeEngineUtils.createApi(credential.getCredential()); 

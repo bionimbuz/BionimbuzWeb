@@ -151,7 +151,7 @@ public class InstanceControllerTest {
         
         ResponseEntity<Object> response = this.restTemplate
                 .exchange(
-                        Routes.INSTANCES+"/"+model.getZone() + "/"+model.getName(), 
+                        Routes.INSTANCE+"/"+model.getZone() + "/"+model.getName(), 
                         HttpMethod.DELETE, 
                         entity,
                         new ParameterizedTypeReference< Object >() {}
@@ -166,7 +166,7 @@ public class InstanceControllerTest {
         
         ResponseEntity<List<InstanceModel>> response = this.restTemplate
                 .exchange(
-                        Routes.INSTANCES, 
+                        Routes.INSTANCE, 
                         HttpMethod.POST, 
                         entity,
                         new ParameterizedTypeReference< List<InstanceModel> >() {});                     
@@ -200,7 +200,7 @@ public class InstanceControllerTest {
         ResponseEntity<InstanceModel> response = 
                 this.restTemplate
                     .exchange(
-                            Routes.INSTANCES+"/"+model.getZone() + "/"+model.getName(), 
+                            Routes.INSTANCE+"/"+model.getZone() + "/"+model.getName(), 
                             HttpMethod.POST, 
                             entity,
                             InstanceModel.class
