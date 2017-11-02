@@ -11,34 +11,26 @@ import org.jclouds.googlecomputeengine.domain.Firewall;
 import org.jclouds.googlecomputeengine.domain.Operation;
 import org.jclouds.googlecomputeengine.features.FirewallApi;
 import org.jclouds.googlecomputeengine.options.FirewallOptions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.google.common.collect.ImmutableList;
 
 import app.common.GoogleComputeEngineUtils;
-import app.common.Routes;
-import app.common.SystemConstants;
+import app.common.GlobalConstants;
 import app.models.CredentialModel;
 import app.models.FirewallModel;
 
-@RestController
-public class FirewallController {  
-    private static final Logger LOGGER = LoggerFactory.getLogger(FirewallController.class);  
+public class FirewallController extends AbstractFirewallController{  
 
     /*
-     * Controller Methods
+     * Overwritten Methods
      */
-	
-    @RequestMapping(path = Routes.FIREWALL, method = RequestMethod.POST)
-    public ResponseEntity<?> replaceRule(
+    
+	@Override
+    protected ResponseEntity<?> replaceRule(
             @RequestBody CredentialModel<FirewallModel> credential) {        
         try {
             GoogleComputeEngineApi googleApi = 
@@ -52,9 +44,9 @@ public class FirewallController {
 		            .body(e.getMessage());
         }
     }
-    
-	@RequestMapping(path = Routes.FIREWALL+"/{name}", method = RequestMethod.POST)
-    public ResponseEntity<?> getRule(
+
+    @Override
+    protected ResponseEntity<?> getRule(
     		@PathVariable(value="name") final String name,
             @RequestBody CredentialModel<Void> credential) {
         try {
@@ -78,9 +70,9 @@ public class FirewallController {
 		            .body(e.getMessage());
         }
     }
-    
-    @RequestMapping(path = Routes.FIREWALL+"/{name}", method = RequestMethod.DELETE)
-    public ResponseEntity<?> deleteRule(
+
+    @Override
+    protected ResponseEntity<?> deleteRule(
     		@PathVariable(value="name") final String name,
             @RequestBody CredentialModel<Void> credential) {
         try {
@@ -103,9 +95,9 @@ public class FirewallController {
 		            .body(e.getMessage());
         }
     }
-    
-    @RequestMapping(path = Routes.FIREWALLS, method = RequestMethod.POST)
-    public ResponseEntity<?> listRules(
+
+    @Override
+    protected ResponseEntity<?> listRules(
             @RequestBody CredentialModel<Void> credential) {
         try {
             GoogleComputeEngineApi googleApi = 
@@ -137,11 +129,12 @@ public class FirewallController {
     }
     
     /*
-     * Class Methods
+     * Specific Class Methods
      */
+    
     private FirewallModel createFirewallModel(final Firewall firewall) {
         
-        if(!firewall.name().startsWith(SystemConstants.BNZ_FIREWALL))
+        if(!firewall.name().startsWith(GlobalConstants.BNZ_FIREWALL))
             return null;                                        
         List<Firewall.Rule> rules = firewall.allowed();
         if(rules.size() <= 0)

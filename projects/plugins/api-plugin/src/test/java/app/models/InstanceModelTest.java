@@ -9,30 +9,24 @@ import java.util.Random;
 import java.util.Set;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
 public class InstanceModelTest extends InstanceModel {
     
     @Test
     public void uniqueIdGeneration() throws Exception {  
         
         int generatedIdLen = 10;
-        int zonesLen = 3;
         int instancesLen = 10;        
         final String PREFIX = "bnz-inst";
         
-        List<InstanceModel> lstZones = 
+        List<InstanceModel> lstInstancesZones = 
                 generateRandomListZone(PREFIX, instancesLen);  
         Set<Integer> currentIds = 
-                getSetOfCurrentIds(lstZones, PREFIX); 
-        assertThat(currentIds.size()).isEqualTo(zonesLen * instancesLen); 
+                getSetOfCurrentIds(lstInstancesZones, PREFIX); 
+        assertThat(currentIds.size()).isEqualTo(instancesLen); 
         
         List<String> namesList = 
-                generateUniqueNames(lstZones, generatedIdLen, PREFIX);        
+                generateUniqueNames(lstInstancesZones, generatedIdLen, PREFIX);        
         
         Set<String> withoutRepeated = new HashSet<>();
         withoutRepeated.addAll(namesList);        

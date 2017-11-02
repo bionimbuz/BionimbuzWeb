@@ -3,7 +3,7 @@ package app.models;
 import java.util.Date;
 import java.util.List;
 
-import app.common.SystemConstants;
+import app.common.GlobalConstants;
 
 public class FirewallModel {
     
@@ -33,7 +33,7 @@ public class FirewallModel {
     }
     
     public static String generateName(PROTOCOL protocol, Integer port) {
-        return SystemConstants.BNZ_FIREWALL + "-" + protocol + "-" + String.valueOf(port); 
+        return GlobalConstants.BNZ_FIREWALL + "-" + protocol + "-" + String.valueOf(port); 
     }    
     
     public String getName() {

@@ -24,10 +24,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import app.common.Routes;
-import app.common.TestUtils;
 import app.models.CredentialModel;
 import app.models.FirewallModel;
 import app.models.InstanceModel;
+import utils.TestUtils;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -151,7 +151,7 @@ public class InstanceControllerTest {
         
         ResponseEntity<Object> response = this.restTemplate
                 .exchange(
-                        Routes.INSTANCE+"/"+model.getZone() + "/"+model.getName(), 
+                        Routes.INSTANCES+"/"+model.getZone() + "/"+model.getName(), 
                         HttpMethod.DELETE, 
                         entity,
                         new ParameterizedTypeReference< Object >() {}
@@ -166,7 +166,7 @@ public class InstanceControllerTest {
         
         ResponseEntity<List<InstanceModel>> response = this.restTemplate
                 .exchange(
-                        Routes.INSTANCE, 
+                        Routes.INSTANCES, 
                         HttpMethod.POST, 
                         entity,
                         new ParameterizedTypeReference< List<InstanceModel> >() {});                     
@@ -200,7 +200,7 @@ public class InstanceControllerTest {
         ResponseEntity<InstanceModel> response = 
                 this.restTemplate
                     .exchange(
-                            Routes.INSTANCE+"/"+model.getZone() + "/"+model.getName(), 
+                            Routes.INSTANCES+"/"+model.getZone() + "/"+model.getName(), 
                             HttpMethod.POST, 
                             entity,
                             InstanceModel.class

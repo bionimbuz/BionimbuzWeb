@@ -1,4 +1,4 @@
-package app.common;
+package utils;
 
 public class CmdLineArgs {
     

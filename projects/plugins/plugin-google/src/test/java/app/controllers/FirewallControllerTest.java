@@ -22,9 +22,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import app.common.Routes;
-import app.common.TestUtils;
 import app.models.CredentialModel;
 import app.models.FirewallModel;
+import utils.TestUtils;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -72,7 +72,7 @@ public class FirewallControllerTest {
         
 		ResponseEntity<Object> response = restTemplate
                 .exchange(
-                        Routes.FIREWALL+"/"+model.getName(), 
+                        Routes.FIREWALLS+"/"+model.getName(), 
                         HttpMethod.DELETE, 
                         entity,
                         new ParameterizedTypeReference< Object >() {}
@@ -87,7 +87,7 @@ public class FirewallControllerTest {
         
         ResponseEntity<Object> response = restTemplate
                 .exchange(
-                        Routes.FIREWALL, 
+                        Routes.FIREWALLS, 
                         HttpMethod.POST, 
                         entity,
                         new ParameterizedTypeReference< Object >() {});                     
@@ -102,7 +102,7 @@ public class FirewallControllerTest {
 		ResponseEntity<FirewallModel> response = 
 				this.restTemplate
 	                .exchange(
-	                        Routes.FIREWALL+"/"+firewall.getName(), 
+	                        Routes.FIREWALLS+"/"+firewall.getName(), 
 	                        HttpMethod.POST, 
 	                        entity,
 	                        FirewallModel.class

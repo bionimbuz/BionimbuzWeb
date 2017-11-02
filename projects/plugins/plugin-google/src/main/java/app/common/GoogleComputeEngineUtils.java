@@ -46,7 +46,7 @@ public class GoogleComputeEngineUtils {
     public static URI assertDefaultNetwork(GoogleComputeEngineApi googleApi)
             throws Exception {
         NetworkApi networkApi = googleApi.networks();
-        URI networkURL = networkApi.get(SystemConstants.DEFAULT_NETWORK)
+        URI networkURL = networkApi.get(GlobalConstants.DEFAULT_NETWORK)
                 .selfLink();
         if (networkURL == null) {
             throw new Exception(

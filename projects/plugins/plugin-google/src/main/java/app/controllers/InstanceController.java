@@ -15,35 +15,26 @@ import org.jclouds.googlecomputeengine.domain.Operation;
 import org.jclouds.googlecomputeengine.domain.Zone;
 import org.jclouds.googlecomputeengine.features.InstanceApi;
 import org.jclouds.googlecomputeengine.features.ZoneApi;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 
+import app.common.GlobalConstants;
 import app.common.GoogleComputeEngineUtils;
 import app.common.Pair;
-import app.common.Routes;
-import app.common.SystemConstants;
 import app.models.CredentialModel;
 import app.models.InstanceModel;
 
-@RestController
-public class InstanceController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(InstanceController.class);  
+public class InstanceController extends AbstractInstanceController{ 
     private static final int CREATION_ATTEMPTS = 3;
 
     /*
-     * Controller Methods
+     * Overwritten Methods
      */
     
-    @RequestMapping(path = Routes.INSTANCE, method = RequestMethod.POST)
-    public ResponseEntity<?> createInstance(
-            @RequestBody CredentialModel<List<InstanceModel>> credential) {        
+    @Override
+    protected ResponseEntity<?> createInstance(
+            CredentialModel<List<InstanceModel>> credential) {        
         try {            
         	List<InstanceModel> res = credential.getModel();
             GoogleComputeEngineApi googleApi = 
@@ -59,12 +50,12 @@ public class InstanceController {
 		            .body(e.getMessage());
         }
     }
-    
-    @RequestMapping(path = Routes.INSTANCE + "/{zone}" + "/{name}", method = RequestMethod.POST)
-    public ResponseEntity<?> getInstance(
-            @PathVariable(value = "zone") final String zone,
-            @PathVariable(value = "name") final String name,
-            @RequestBody CredentialModel<Void> credential) {
+
+    @Override
+    protected ResponseEntity<?> getInstance(
+            final String zone,
+            final String name,
+            CredentialModel<Void> credential) {
         try {
             GoogleComputeEngineApi googleApi = 
                     GoogleComputeEngineUtils.createApi(credential.getCredential()); 
@@ -86,12 +77,12 @@ public class InstanceController {
                     .body(e.getMessage());
         }
     }
-    
-    @RequestMapping(path = Routes.INSTANCE + "/{zone}" + "/{name}", method = RequestMethod.DELETE)
-    public ResponseEntity<?> deleteInstance(
-            @PathVariable(value = "zone") final String zone,
-            @PathVariable(value = "name") final String name,
-            @RequestBody CredentialModel<Void> credential) {       
+
+    @Override
+    protected ResponseEntity<?> deleteInstance(
+            final String zone,
+            final String name,
+            CredentialModel<Void> credential) {       
         try {
             GoogleComputeEngineApi googleApi = 
                     GoogleComputeEngineUtils.createApi(credential.getCredential());             
@@ -106,9 +97,9 @@ public class InstanceController {
                     .body(e.getMessage());
         }
     }
-   
-    @RequestMapping(path = Routes.INSTANCES, method = RequestMethod.POST)
-    public ResponseEntity<?> listInstances(
+
+    @Override
+    protected ResponseEntity<?> listInstances(
             @RequestBody CredentialModel<Void> credential) {        
         try {
             GoogleComputeEngineApi googleApi = 
@@ -126,7 +117,7 @@ public class InstanceController {
     }
 
     /*
-     * Class Methods
+     * Specific Class Methods
      */
     
     private List<InstanceModel> getInstances(final GoogleComputeEngineApi googleApi){
@@ -169,7 +160,7 @@ public class InstanceController {
 
     private boolean updateInstanceModel(final Instance instance, InstanceModel model) {
         
-        if(!instance.name().startsWith(SystemConstants.BNZ_INSTANCE))
+        if(!instance.name().startsWith(GlobalConstants.BNZ_INSTANCE))
             return false;
        
         String type = instance.machineType().toString();
@@ -217,7 +208,7 @@ public class InstanceController {
                 List<String> newNames = InstanceModel.generateUniqueNames(
                         getInstances(googleApi), 
                         instancesToCreate, 
-                        SystemConstants.BNZ_INSTANCE);          
+                        GlobalConstants.BNZ_INSTANCE);          
                 Iterator<String> itNames = newNames.iterator();
                 
                 while(itOperations.hasNext() && itNames.hasNext()) {
@@ -298,7 +289,7 @@ public class InstanceController {
                     instance.getImageUri());
         
         newInstance.metadata().put(
-                SystemConstants.META_STARTUP_SCRIPT, 
+                GlobalConstants.META_STARTUP_SCRIPT, 
                 instance.getStartupScript());
                         
         return instanceApi.create(newInstance);

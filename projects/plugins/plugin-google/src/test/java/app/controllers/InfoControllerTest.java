@@ -46,8 +46,8 @@ public class InfoControllerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getVersion())
-                .isEqualTo(SystemConstants.SYSTEM_VERSION);
+        assertThat(response.getBody().getPluginVersion())
+                .isEqualTo(SystemConstants.PLUGIN_VERSION);
     }
 
 }
