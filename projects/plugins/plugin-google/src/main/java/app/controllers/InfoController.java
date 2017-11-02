@@ -2,8 +2,8 @@ package app.controllers;
 
 import app.common.SystemConstants;
 
-public class InfoController {	
-    
+public class InfoController extends AbstractInfoController {	
+
     /*
      * Overwritten Methods
      */
