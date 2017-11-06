@@ -107,7 +107,7 @@ echo "# ======================================="
 cd ${PLUGINS_FOLDER}
 
 cd api-plugin
-mvn -Dmaven.test.skip=true clean install package
+mvn clean install package -DskipTests
 cd ..
 
 for d in plugin-*/ ; do
@@ -117,7 +117,7 @@ for d in plugin-*/ ; do
     echo ""
     
     cd $d
-    mvn -Dmaven.test.skip=true clean package
+    mvn clean package -DskipTests
     cd ..
 done
 
