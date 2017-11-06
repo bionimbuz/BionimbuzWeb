@@ -1,6 +1,7 @@
 package app.common;
 
 import java.net.URI;
+import java.util.Properties;
 
 import org.jclouds.ContextBuilder;
 import org.jclouds.compute.ComputeServiceContext;
@@ -11,6 +12,8 @@ import org.jclouds.googlecomputeengine.GoogleComputeEngineProviderMetadata;
 import org.jclouds.googlecomputeengine.domain.Operation;
 import org.jclouds.googlecomputeengine.features.NetworkApi;
 import org.jclouds.googlecomputeengine.features.OperationApi;
+import org.jclouds.oauth.v2.config.CredentialType;
+import org.jclouds.oauth.v2.config.OAuthProperties;
 
 import com.google.common.base.Supplier;
 import com.google.inject.Injector;
@@ -42,6 +45,28 @@ public class GoogleComputeEngineUtils {
             return null;
         }
     }
+    
+    public static GoogleComputeEngineApi createApiFromToken(final String identity, final String token) {
+        try {            
+            Properties overrides = new Properties();            
+            overrides.put(OAuthProperties.CREDENTIAL_TYPE,
+                    CredentialType.BEARER_TOKEN_CREDENTIALS.toString());
+
+            ComputeServiceContext context = ContextBuilder
+                    .newBuilder(SystemConstants.CLOUD_TYPE).overrides(overrides)
+                    .credentials(identity, token)
+                    .buildView(ComputeServiceContext.class);
+
+            GoogleComputeEngineApi googleApi = context
+                    .unwrapApi(GoogleComputeEngineApi.class);
+            return googleApi;
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }    
     
     public static URI assertDefaultNetwork(GoogleComputeEngineApi googleApi)
             throws Exception {
