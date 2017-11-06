@@ -106,14 +106,18 @@ echo "# ======================================="
 
 cd ${PLUGINS_FOLDER}
 
-for d in */ ; do
+cd api-plugin
+mvn -Dmaven.test.skip=true clean install package
+cd ..
+
+for d in plugin-*/ ; do
 
     echo ""
     echo "# Project found: $d"
     echo ""
     
     cd $d
-    mvn clean package
+    mvn -Dmaven.test.skip=true clean package
     cd ..
 done
 
