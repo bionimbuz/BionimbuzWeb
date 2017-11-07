@@ -20,28 +20,28 @@ public abstract class AbstractFirewallController {
      * Action Methods
      */
 	
-    @RequestMapping(path = Routes.FIREWALL, method = RequestMethod.POST)
+    @RequestMapping(path = Routes.FIREWALLS, method = RequestMethod.POST)
     private ResponseEntity<?> replaceRuleAction(
             @RequestHeader(value=HttpHeaders.HEADER_AUTHORIZATION) final String token, 
             @RequestHeader(value=HttpHeaders.HEADER_AUTHORIZATION_ID) final String identity, 
             @RequestBody FirewallModel model) { 
         return replaceRule(token, identity, model);
     }    
-	@RequestMapping(path = Routes.FIREWALL_NAME, method = RequestMethod.POST)
+	@RequestMapping(path = Routes.FIREWALLS_NAME, method = RequestMethod.GET)
 	private ResponseEntity<?> getRuleAction(
             @RequestHeader(value=HttpHeaders.HEADER_AUTHORIZATION) final String token, 
             @RequestHeader(value=HttpHeaders.HEADER_AUTHORIZATION_ID) final String identity, 
     		@PathVariable(value="name") final String name) {   
 	    return getRule(token, identity, name);
     }    
-    @RequestMapping(path = Routes.FIREWALL_NAME, method = RequestMethod.DELETE)
+    @RequestMapping(path = Routes.FIREWALLS_NAME, method = RequestMethod.DELETE)
     private ResponseEntity<?> deleteRuleAction(
             @RequestHeader(value=HttpHeaders.HEADER_AUTHORIZATION) final String token, 
             @RequestHeader(value=HttpHeaders.HEADER_AUTHORIZATION_ID) final String identity, 
     		@PathVariable(value="name") final String name) {
         return deleteRule(token, identity, name);        
     }    
-    @RequestMapping(path = Routes.FIREWALLS, method = RequestMethod.POST)
+    @RequestMapping(path = Routes.FIREWALLS, method = RequestMethod.GET)
     private ResponseEntity<?> listRulesAction(
             @RequestHeader(value=HttpHeaders.HEADER_AUTHORIZATION) final String token, 
             @RequestHeader(value=HttpHeaders.HEADER_AUTHORIZATION_ID) final String identity) {

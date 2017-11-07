@@ -22,7 +22,7 @@ public abstract class AbstractInstanceController {
      * Action Methods
      */
     
-    @RequestMapping(path = Routes.INSTANCE, method = RequestMethod.POST)
+    @RequestMapping(path = Routes.INSTANCES, method = RequestMethod.POST)
     private ResponseEntity<?> createInstanceAction(
             @RequestHeader(value=HttpHeaders.HEADER_AUTHORIZATION) final String token, 
             @RequestHeader(value=HttpHeaders.HEADER_AUTHORIZATION_ID) final String identity, 
@@ -30,7 +30,7 @@ public abstract class AbstractInstanceController {
         return createInstance(token, identity, listModel);
     }
     
-    @RequestMapping(path = Routes.INSTANCE_ZONE_NAME, method = RequestMethod.POST)
+    @RequestMapping(path = Routes.INSTANCES_ZONE_NAME, method = RequestMethod.GET)
     private ResponseEntity<?> getInstanceAction(
             @RequestHeader(value=HttpHeaders.HEADER_AUTHORIZATION) final String token, 
             @RequestHeader(value=HttpHeaders.HEADER_AUTHORIZATION_ID) final String identity, 
@@ -39,7 +39,7 @@ public abstract class AbstractInstanceController {
         return getInstance(token, identity, zone, name);
     }
     
-    @RequestMapping(path = Routes.INSTANCE_ZONE_NAME, method = RequestMethod.DELETE)
+    @RequestMapping(path = Routes.INSTANCES_ZONE_NAME, method = RequestMethod.DELETE)
     private ResponseEntity<?> deleteInstanceAction(
             @RequestHeader(value=HttpHeaders.HEADER_AUTHORIZATION) final String token, 
             @RequestHeader(value=HttpHeaders.HEADER_AUTHORIZATION_ID) final String identity, 
@@ -48,7 +48,7 @@ public abstract class AbstractInstanceController {
         return deleteInstance(token, identity, zone, name);
     }
    
-    @RequestMapping(path = Routes.INSTANCES, method = RequestMethod.POST)
+    @RequestMapping(path = Routes.INSTANCES, method = RequestMethod.GET)
     private ResponseEntity<?> listInstancesAction(
             @RequestHeader(value=HttpHeaders.HEADER_AUTHORIZATION) final String token, 
             @RequestHeader(value=HttpHeaders.HEADER_AUTHORIZATION_ID) final String identity) {       

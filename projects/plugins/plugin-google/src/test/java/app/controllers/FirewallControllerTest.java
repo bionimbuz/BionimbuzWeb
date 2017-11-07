@@ -72,7 +72,7 @@ public class FirewallControllerTest {
 		ResponseEntity<Object> response = 
 		        restTemplate
                     .exchange(
-                            Routes.FIREWALL+"/"+model.getName(), 
+                            Routes.FIREWALLS+"/"+model.getName(), 
                             HttpMethod.DELETE, 
                             entity,
                             new ParameterizedTypeReference< Object >() {});          
@@ -87,7 +87,7 @@ public class FirewallControllerTest {
         ResponseEntity<Object> response = 
                 restTemplate
                     .exchange(
-                            Routes.FIREWALL, 
+                            Routes.FIREWALLS, 
                             HttpMethod.POST, 
                             entity,
                             new ParameterizedTypeReference< Object >() {});                     
@@ -102,8 +102,8 @@ public class FirewallControllerTest {
 		ResponseEntity<FirewallModel> response = 
 				this.restTemplate
 	                .exchange(
-	                        Routes.FIREWALL+"/"+firewall.getName(), 
-	                        HttpMethod.POST, 
+	                        Routes.FIREWALLS+"/"+firewall.getName(), 
+	                        HttpMethod.GET, 
 	                        entity,
 	                        FirewallModel.class);          
         assertThat(response).isNotNull();  
@@ -118,7 +118,7 @@ public class FirewallControllerTest {
 				this.restTemplate
 	                .exchange(
 	                        Routes.FIREWALLS, 
-	                        HttpMethod.POST, 
+	                        HttpMethod.GET, 
 	                        entity,
 	                        new ParameterizedTypeReference< List<FirewallModel> >() {});      
         assertThat(responseList.getStatusCode()).isEqualTo(HttpStatus.OK);
