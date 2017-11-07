@@ -32,9 +32,10 @@ public class FirewallController extends AbstractFirewallController{
 	@Override
     protected ResponseEntity<?> replaceRule(
             CredentialModel<FirewallModel> credential) {        
-        try {
-            GoogleComputeEngineApi googleApi = 
-                    GoogleComputeEngineUtils.createApi(credential.getCredential());  
+        try(GoogleComputeEngineApi googleApi = 
+                    GoogleComputeEngineUtils.createApi(
+                            credential.getIdentity(), 
+                            credential.getCredential())) {  
             replaceFirewallRule(googleApi, credential.getModel());
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
@@ -49,9 +50,10 @@ public class FirewallController extends AbstractFirewallController{
     protected ResponseEntity<?> getRule(
     		final String name,
             CredentialModel<Void> credential) {
-        try {
-            GoogleComputeEngineApi googleApi = 
-                    GoogleComputeEngineUtils.createApi(credential.getCredential());  
+        try(GoogleComputeEngineApi googleApi = 
+                    GoogleComputeEngineUtils.createApi(
+                            credential.getIdentity(), 
+                            credential.getCredential())) { 
             FirewallApi firewallApi = googleApi.firewalls();
                   
             Firewall firewall = firewallApi.get(name);
@@ -75,11 +77,12 @@ public class FirewallController extends AbstractFirewallController{
     protected ResponseEntity<?> deleteRule(
     		final String name,
     		CredentialModel<Void> credential) {
-        try {
-            GoogleComputeEngineApi googleApi = 
-                    GoogleComputeEngineUtils.createApi(credential.getCredential()); 
-            FirewallApi firewallApi = googleApi.firewalls();
-                    
+        try(GoogleComputeEngineApi googleApi = 
+                    GoogleComputeEngineUtils.createApi(
+                            credential.getIdentity(), 
+                            credential.getCredential())) {
+            
+            FirewallApi firewallApi = googleApi.firewalls();                    
             Firewall firewall = firewallApi.get(name);
             if(firewall == null) {   
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND); 
@@ -99,9 +102,10 @@ public class FirewallController extends AbstractFirewallController{
     @Override
     protected ResponseEntity<?> listRules(
             CredentialModel<Void> credential) {
-        try {
-            GoogleComputeEngineApi googleApi = 
-                    GoogleComputeEngineUtils.createApi(credential.getCredential()); 
+        try(GoogleComputeEngineApi googleApi = 
+                    GoogleComputeEngineUtils.createApi(
+                            credential.getIdentity(), 
+                            credential.getCredential())) { 
             URI networkURL = GoogleComputeEngineUtils.assertDefaultNetwork(googleApi);
             FirewallApi firewallApi = googleApi.firewalls();
                         

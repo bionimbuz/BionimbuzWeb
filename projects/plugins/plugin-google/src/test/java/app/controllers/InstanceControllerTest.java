@@ -40,7 +40,7 @@ public class InstanceControllerTest {
     private static final String INSTANCE_IMAGE_URL = "https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1604-xenial-v20170919";
     
     private static final Integer STARTUP_SCRIPT_APACHE_PORT = 80;
-    private static final Integer WAIT_MS_TO_START_INSTANCE = 20 * 1000;
+    private static final Integer WAIT_MS_TO_START_INSTANCE = 60 * 1000;
     private static final Integer LENGTH_CREATION = 2;
     
     @Autowired
@@ -147,7 +147,7 @@ public class InstanceControllerTest {
     
     private void deleteInstanceTest(InstanceModel model) {
         
-        HttpEntity<CredentialModel<Void>> entity = TestUtils.createEntity();
+        HttpEntity<CredentialModel<Void>> entity = TestUtils.createEntity(TestUtils.WRITE_SCOPE);
         
         ResponseEntity<Object> response = this.restTemplate
                 .exchange(
@@ -162,7 +162,7 @@ public class InstanceControllerTest {
     
     private List<InstanceModel> createInstancesTest(List<InstanceModel> instances){
         HttpEntity<CredentialModel<List<InstanceModel>>> entity = 
-                TestUtils.createEntity(instances);
+                TestUtils.createEntity(instances, TestUtils.WRITE_SCOPE);
         
         ResponseEntity<List<InstanceModel>> response = this.restTemplate
                 .exchange(
@@ -178,7 +178,7 @@ public class InstanceControllerTest {
     
     private List<InstanceModel> listAllTest() {         
 
-        HttpEntity<CredentialModel<Void>> entity = TestUtils.createEntity();
+        HttpEntity<CredentialModel<Void>> entity = TestUtils.createEntity(TestUtils.READ_SCOPE);
         
         ResponseEntity<List<InstanceModel>> responseList = 
                 this.restTemplate
@@ -195,7 +195,7 @@ public class InstanceControllerTest {
     
     private ResponseEntity<InstanceModel> getInstanceTest(InstanceModel model) {
         
-        HttpEntity<CredentialModel<Void>> entity = TestUtils.createEntity();
+        HttpEntity<CredentialModel<Void>> entity = TestUtils.createEntity(TestUtils.READ_SCOPE);
         
         ResponseEntity<InstanceModel> response = 
                 this.restTemplate

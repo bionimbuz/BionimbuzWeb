@@ -66,38 +66,39 @@ public class FirewallControllerTest {
         assertThat(responseGet.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
-	public static void deleteRuleTest(FirewallModel model, TestRestTemplate restTemplate) {
+	public static void deleteRuleTest(FirewallModel model, final TestRestTemplate restTemplate) {
 	    
-        HttpEntity<CredentialModel<Void>> entity = TestUtils.createEntity();
+        HttpEntity<CredentialModel<Void>> entity = TestUtils.createEntity(TestUtils.WRITE_SCOPE);
         
-		ResponseEntity<Object> response = restTemplate
-                .exchange(
-                        Routes.FIREWALL+"/"+model.getName(), 
-                        HttpMethod.DELETE, 
-                        entity,
-                        new ParameterizedTypeReference< Object >() {}
-                        );          
+		ResponseEntity<Object> response = 
+		        restTemplate
+                    .exchange(
+                            Routes.FIREWALL+"/"+model.getName(), 
+                            HttpMethod.DELETE, 
+                            entity,
+                            new ParameterizedTypeReference< Object >() {});          
         assertThat(response).isNotNull();    
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
     
-	public static void createRuleTest(FirewallModel firewall, TestRestTemplate restTemplate) {
+	public static void createRuleTest(FirewallModel firewall, final TestRestTemplate restTemplate) {
 
-        HttpEntity<CredentialModel<FirewallModel>> entity = TestUtils.createEntity(firewall);
+        HttpEntity<CredentialModel<FirewallModel>> entity = TestUtils.createEntity(firewall, TestUtils.WRITE_SCOPE);
         
-        ResponseEntity<Object> response = restTemplate
-                .exchange(
-                        Routes.FIREWALL, 
-                        HttpMethod.POST, 
-                        entity,
-                        new ParameterizedTypeReference< Object >() {});                     
+        ResponseEntity<Object> response = 
+                restTemplate
+                    .exchange(
+                            Routes.FIREWALL, 
+                            HttpMethod.POST, 
+                            entity,
+                            new ParameterizedTypeReference< Object >() {});                     
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	private ResponseEntity<FirewallModel> getRuleTest(FirewallModel firewall) {
 	    
-        HttpEntity<CredentialModel<Void>> entity = TestUtils.createEntity();
+        HttpEntity<CredentialModel<Void>> entity = TestUtils.createEntity(TestUtils.READ_SCOPE);
         
 		ResponseEntity<FirewallModel> response = 
 				this.restTemplate
@@ -105,15 +106,14 @@ public class FirewallControllerTest {
 	                        Routes.FIREWALL+"/"+firewall.getName(), 
 	                        HttpMethod.POST, 
 	                        entity,
-	                        FirewallModel.class
-                        );          
+	                        FirewallModel.class);          
         assertThat(response).isNotNull();  
         return response;
 	}
 
 	private List<FirewallModel> listAllTest() {			
 
-        HttpEntity<CredentialModel<Void>> entity = TestUtils.createEntity();
+        HttpEntity<CredentialModel<Void>> entity = TestUtils.createEntity(TestUtils.READ_SCOPE);
 	    
         ResponseEntity<List<FirewallModel>> responseList = 
 				this.restTemplate
@@ -121,8 +121,7 @@ public class FirewallControllerTest {
 	                        Routes.FIREWALLS, 
 	                        HttpMethod.POST, 
 	                        entity,
-	                        new ParameterizedTypeReference< List<FirewallModel> >() {});          
-        
+	                        new ParameterizedTypeReference< List<FirewallModel> >() {});      
         assertThat(responseList.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseList.getBody()).isNotNull();
 		return responseList.getBody();

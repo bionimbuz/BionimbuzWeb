@@ -5,7 +5,7 @@ import org.jclouds.googlecomputeengine.features.OperationApi;
 
 public class ThreadHelper {
 
-    public static int waitForOperation(OperationApi api, Operation operation){
+    public static int waitForOperation(final OperationApi api, Operation operation){
        int timeout = 60; // seconds
        int time = 0;
 
