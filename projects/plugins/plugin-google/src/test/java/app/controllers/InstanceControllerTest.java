@@ -24,7 +24,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import app.common.Routes;
-import app.models.CredentialModel;
 import app.models.FirewallModel;
 import app.models.InstanceModel;
 import utils.TestUtils;
@@ -147,7 +146,7 @@ public class InstanceControllerTest {
     
     private void deleteInstanceTest(InstanceModel model) {
         
-        HttpEntity<CredentialModel<Void>> entity = TestUtils.createEntity(TestUtils.WRITE_SCOPE);
+        HttpEntity<Void> entity = TestUtils.createEntity(TestUtils.WRITE_SCOPE);
         
         ResponseEntity<Object> response = this.restTemplate
                 .exchange(
@@ -161,7 +160,7 @@ public class InstanceControllerTest {
     }
     
     private List<InstanceModel> createInstancesTest(List<InstanceModel> instances){
-        HttpEntity<CredentialModel<List<InstanceModel>>> entity = 
+        HttpEntity<List<InstanceModel>> entity = 
                 TestUtils.createEntity(instances, TestUtils.WRITE_SCOPE);
         
         ResponseEntity<List<InstanceModel>> response = this.restTemplate
@@ -178,7 +177,7 @@ public class InstanceControllerTest {
     
     private List<InstanceModel> listAllTest() {         
 
-        HttpEntity<CredentialModel<Void>> entity = TestUtils.createEntity(TestUtils.READ_SCOPE);
+        HttpEntity<Void> entity = TestUtils.createEntity(TestUtils.READ_SCOPE);
         
         ResponseEntity<List<InstanceModel>> responseList = 
                 this.restTemplate
@@ -195,7 +194,7 @@ public class InstanceControllerTest {
     
     private ResponseEntity<InstanceModel> getInstanceTest(InstanceModel model) {
         
-        HttpEntity<CredentialModel<Void>> entity = TestUtils.createEntity(TestUtils.READ_SCOPE);
+        HttpEntity<Void> entity = TestUtils.createEntity(TestUtils.READ_SCOPE);
         
         ResponseEntity<InstanceModel> response = 
                 this.restTemplate

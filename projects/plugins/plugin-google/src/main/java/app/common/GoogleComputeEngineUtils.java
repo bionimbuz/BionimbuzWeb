@@ -14,7 +14,11 @@ import org.jclouds.oauth.v2.config.OAuthProperties;
 
 public class GoogleComputeEngineUtils {    
         
-    public static GoogleComputeEngineApi createApi(final String identity, final String token) throws Exception {   
+    public static GoogleComputeEngineApi createApi(final String identity, String token) throws Exception {   
+        
+        if(token.startsWith(HttpHeaders.HEADER_VALUE_AUTHORIZATION_BEARER)) {
+            token = token.replaceFirst(HttpHeaders.HEADER_VALUE_AUTHORIZATION_BEARER, "");
+        }
         
         Properties overrides = new Properties();
         overrides.put(OAuthProperties.CREDENTIAL_TYPE,

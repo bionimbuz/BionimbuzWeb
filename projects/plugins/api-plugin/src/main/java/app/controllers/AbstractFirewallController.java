@@ -5,11 +5,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import app.common.HttpHeaders;
 import app.common.Routes;
-import app.models.CredentialModel;
 import app.models.FirewallModel;
 
 public abstract class AbstractFirewallController {  
@@ -21,25 +22,30 @@ public abstract class AbstractFirewallController {
 	
     @RequestMapping(path = Routes.FIREWALL, method = RequestMethod.POST)
     private ResponseEntity<?> replaceRuleAction(
-            @RequestBody CredentialModel<FirewallModel> credential) { 
-        return replaceRule(credential);
+            @RequestHeader(value=HttpHeaders.HEADER_AUTHORIZATION) final String token, 
+            @RequestHeader(value=HttpHeaders.HEADER_AUTHORIZATION_ID) final String identity, 
+            @RequestBody FirewallModel model) { 
+        return replaceRule(token, identity, model);
     }    
 	@RequestMapping(path = Routes.FIREWALL_NAME, method = RequestMethod.POST)
 	private ResponseEntity<?> getRuleAction(
-    		@PathVariable(value="name") final String name,
-            @RequestBody CredentialModel<Void> credential) {   
-	    return getRule(name, credential);
+            @RequestHeader(value=HttpHeaders.HEADER_AUTHORIZATION) final String token, 
+            @RequestHeader(value=HttpHeaders.HEADER_AUTHORIZATION_ID) final String identity, 
+    		@PathVariable(value="name") final String name) {   
+	    return getRule(token, identity, name);
     }    
     @RequestMapping(path = Routes.FIREWALL_NAME, method = RequestMethod.DELETE)
     private ResponseEntity<?> deleteRuleAction(
-    		@PathVariable(value="name") final String name,
-            @RequestBody CredentialModel<Void> credential) {
-        return deleteRule(name, credential);        
+            @RequestHeader(value=HttpHeaders.HEADER_AUTHORIZATION) final String token, 
+            @RequestHeader(value=HttpHeaders.HEADER_AUTHORIZATION_ID) final String identity, 
+    		@PathVariable(value="name") final String name) {
+        return deleteRule(token, identity, name);        
     }    
     @RequestMapping(path = Routes.FIREWALLS, method = RequestMethod.POST)
     private ResponseEntity<?> listRulesAction(
-            @RequestBody CredentialModel<Void> credential) {
-        return listRules(credential);
+            @RequestHeader(value=HttpHeaders.HEADER_AUTHORIZATION) final String token, 
+            @RequestHeader(value=HttpHeaders.HEADER_AUTHORIZATION_ID) final String identity) {
+        return listRules(token, identity);
     }  
     
     /*
@@ -47,13 +53,18 @@ public abstract class AbstractFirewallController {
      */
     
     protected abstract ResponseEntity<?> replaceRule(
-            CredentialModel<FirewallModel> credential);    
+            final String token, 
+            final String identity,
+            FirewallModel model);    
     protected abstract ResponseEntity<?> getRule(
-            final String name,
-            CredentialModel<Void> credential);    
+            final String token, 
+            final String identity,
+            final String name);    
     protected abstract ResponseEntity<?> deleteRule(
-            final String name,
-            CredentialModel<Void> credential);    
+            final String token, 
+            final String identity,
+            final String name);    
     protected abstract ResponseEntity<?> listRules(
-            CredentialModel<Void> credential);  
+            final String token, 
+            final String identity);  
 }

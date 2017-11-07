@@ -22,7 +22,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import app.common.Routes;
-import app.models.CredentialModel;
 import app.models.FirewallModel;
 import utils.TestUtils;
 
@@ -68,7 +67,7 @@ public class FirewallControllerTest {
 
 	public static void deleteRuleTest(FirewallModel model, final TestRestTemplate restTemplate) {
 	    
-        HttpEntity<CredentialModel<Void>> entity = TestUtils.createEntity(TestUtils.WRITE_SCOPE);
+        HttpEntity<Void> entity = TestUtils.createEntity(TestUtils.WRITE_SCOPE);
         
 		ResponseEntity<Object> response = 
 		        restTemplate
@@ -83,7 +82,7 @@ public class FirewallControllerTest {
     
 	public static void createRuleTest(FirewallModel firewall, final TestRestTemplate restTemplate) {
 
-        HttpEntity<CredentialModel<FirewallModel>> entity = TestUtils.createEntity(firewall, TestUtils.WRITE_SCOPE);
+        HttpEntity<FirewallModel> entity = TestUtils.createEntity(firewall, TestUtils.WRITE_SCOPE);
         
         ResponseEntity<Object> response = 
                 restTemplate
@@ -98,7 +97,7 @@ public class FirewallControllerTest {
 
 	private ResponseEntity<FirewallModel> getRuleTest(FirewallModel firewall) {
 	    
-        HttpEntity<CredentialModel<Void>> entity = TestUtils.createEntity(TestUtils.READ_SCOPE);
+        HttpEntity<Void> entity = TestUtils.createEntity(TestUtils.READ_SCOPE);
         
 		ResponseEntity<FirewallModel> response = 
 				this.restTemplate
@@ -113,7 +112,7 @@ public class FirewallControllerTest {
 
 	private List<FirewallModel> listAllTest() {			
 
-        HttpEntity<CredentialModel<Void>> entity = TestUtils.createEntity(TestUtils.READ_SCOPE);
+        HttpEntity<Void> entity = TestUtils.createEntity(TestUtils.READ_SCOPE);
 	    
         ResponseEntity<List<FirewallModel>> responseList = 
 				this.restTemplate

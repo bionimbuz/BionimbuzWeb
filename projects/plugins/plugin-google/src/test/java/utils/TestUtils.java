@@ -27,7 +27,6 @@ import com.google.common.io.Files;
 
 import app.common.Authorization;
 import app.common.SystemConstants;
-import app.models.CredentialModel;
 
 public class TestUtils {
     protected static final Logger LOGGER = LoggerFactory.getLogger(TestUtils.class);  
@@ -57,11 +56,11 @@ public class TestUtils {
         return fileContents;
     }    
 
-    public static <T> HttpEntity<CredentialModel<T>> createEntity(String scope){
+    public static <T> HttpEntity<T> createEntity(String scope){
         return createEntity(null, scope);
     }
     
-    public static <T> HttpEntity<CredentialModel<T>> createEntity(T content, String scope){        
+    public static <T> HttpEntity<T> createEntity(T content, String scope){        
 
         try {
             Credentials credentials = credentialSupplier.get(); 
@@ -71,17 +70,15 @@ public class TestUtils {
             System.out.println("identity: "+credentials.identity);
             System.out.println("token: "+token.accessToken());
             System.out.println("scope: "+scope);
-            System.out.println("=============================");
-            
-            CredentialModel<T> credential = 
-                    new CredentialModel<>(credentials.identity, token.accessToken());        
-            credential.setModel(content);
+            System.out.println("=============================");    
             
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setContentType(MediaType.APPLICATION_JSON);            
+            headers.add("Authorization", "Bearer " + token.accessToken());
+            headers.add("AuthorizationId", credentials.identity);            
    
-            HttpEntity<CredentialModel<T>> entity = 
-                    new HttpEntity<>(credential, headers);    
+            HttpEntity<T> entity = 
+                    new HttpEntity<>(content, headers);    
             
             return entity;
         } catch (Exception e) {

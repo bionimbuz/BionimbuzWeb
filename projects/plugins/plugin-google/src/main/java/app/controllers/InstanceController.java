@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import app.common.GlobalConstants;
 import app.common.GoogleComputeEngineUtils;
 import app.common.Pair;
-import app.models.CredentialModel;
 import app.models.InstanceModel;
 
 @RestController
@@ -35,12 +34,14 @@ public class InstanceController extends AbstractInstanceController{
     
     @Override
     protected ResponseEntity<?> createInstance(
-            CredentialModel<List<InstanceModel>> credential) {        
+            final String token, 
+            final String identity,
+            List<InstanceModel> listModel) {          
         try(GoogleComputeEngineApi googleApi = 
-                    GoogleComputeEngineUtils.createApi(
-                            credential.getIdentity(), 
-                            credential.getCredential())) {
-            List<InstanceModel> res = credential.getModel();
+                GoogleComputeEngineUtils.createApi(
+                        identity, 
+                        token)) { 
+            List<InstanceModel> res = listModel;
             createInstances(googleApi, res);            
             return ResponseEntity
 		            .status(HttpStatus.OK)
@@ -55,13 +56,14 @@ public class InstanceController extends AbstractInstanceController{
 
     @Override
     protected ResponseEntity<?> getInstance(
+            final String token, 
+            final String identity,
             final String zone,
-            final String name,
-            CredentialModel<Void> credential) {
+            final String name) {  
         try(GoogleComputeEngineApi googleApi = 
-                    GoogleComputeEngineUtils.createApi(
-                            credential.getIdentity(), 
-                            credential.getCredential())) {
+                GoogleComputeEngineUtils.createApi(
+                        identity, 
+                        token)) { 
             InstanceApi instanceApi = googleApi.instancesInZone(zone);                
             Instance instance = instanceApi.get(name);
             if(instance == null) { 
@@ -83,13 +85,14 @@ public class InstanceController extends AbstractInstanceController{
 
     @Override
     protected ResponseEntity<?> deleteInstance(
+            final String token, 
+            final String identity,
             final String zone,
-            final String name,
-            CredentialModel<Void> credential) {       
+            final String name) {         
         try(GoogleComputeEngineApi googleApi = 
-                    GoogleComputeEngineUtils.createApi(
-                            credential.getIdentity(), 
-                            credential.getCredential())) {          
+                GoogleComputeEngineUtils.createApi(
+                        identity, 
+                        token)) {          
             if(!deleteInstance(googleApi, zone, name)) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND); 
             }           
@@ -104,11 +107,12 @@ public class InstanceController extends AbstractInstanceController{
 
     @Override
     protected ResponseEntity<?> listInstances(
-            CredentialModel<Void> credential) {        
+            final String token, 
+            final String identity) {          
         try(GoogleComputeEngineApi googleApi = 
-                    GoogleComputeEngineUtils.createApi(
-                            credential.getIdentity(), 
-                            credential.getCredential())) {
+                GoogleComputeEngineUtils.createApi(
+                        identity, 
+                        token)) { 
             List<InstanceModel> res = getInstances(googleApi);         
             return ResponseEntity
                     .status(HttpStatus.OK)
