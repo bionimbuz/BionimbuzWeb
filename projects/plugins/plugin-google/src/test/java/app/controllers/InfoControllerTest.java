@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import app.common.Routes;
 import app.common.SystemConstants;
+import app.models.Body;
 import app.models.InfoModel;
 
 @RunWith(SpringRunner.class)
@@ -37,16 +39,16 @@ public class InfoControllerTest {
     @Test
     public void infoTest() {
 
-    	ResponseEntity<InfoModel> response = this.restTemplate
+    	ResponseEntity<Body<InfoModel>> response = this.restTemplate
                 .exchange(
                         Routes.INFO, 
                         HttpMethod.GET, 
                         null,
-                        InfoModel.class);
+                        new ParameterizedTypeReference< Body<InfoModel> >() {});
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getPluginVersion())
+        assertThat(response.getBody().getContent().getPluginVersion())
                 .isEqualTo(SystemConstants.PLUGIN_VERSION);
     }
 

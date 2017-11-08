@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import app.common.Routes;
+import app.models.Body;
 import app.models.FirewallModel;
 import utils.TestUtils;
 
@@ -44,7 +45,7 @@ public class FirewallControllerTest {
     @Test
     public void CRUD_Test() {
 
-    	ResponseEntity<FirewallModel> responseGet = null;        
+    	ResponseEntity<Body<FirewallModel>> responseGet = null;        
         List<FirewallModel> responseList = listAllTest();
         
         FirewallModel firewall = searchAvailableFirewallPort(responseList);     
@@ -57,7 +58,7 @@ public class FirewallControllerTest {
         responseGet = getRuleTest(firewall);        
         assertThat(responseGet.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(firewall.getName())
-        		.isEqualTo(responseGet.getBody().getName());   
+        		.isEqualTo(responseGet.getBody().getContent().getName());   
 
         deleteRuleTest(firewall, this.restTemplate);             
         
@@ -69,13 +70,13 @@ public class FirewallControllerTest {
 	    
         HttpEntity<Void> entity = TestUtils.createEntity(TestUtils.WRITE_SCOPE);
         
-		ResponseEntity<Object> response = 
+		ResponseEntity<Body<Void>> response = 
 		        restTemplate
                     .exchange(
                             Routes.FIREWALLS+"/"+model.getName(), 
                             HttpMethod.DELETE, 
                             entity,
-                            new ParameterizedTypeReference< Object >() {});          
+                            new ParameterizedTypeReference< Body<Void> >() {});          
         assertThat(response).isNotNull();    
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
@@ -84,28 +85,28 @@ public class FirewallControllerTest {
 
         HttpEntity<FirewallModel> entity = TestUtils.createEntity(firewall, TestUtils.WRITE_SCOPE);
         
-        ResponseEntity<Object> response = 
+        ResponseEntity<Body<FirewallModel>> response = 
                 restTemplate
                     .exchange(
                             Routes.FIREWALLS, 
                             HttpMethod.POST, 
                             entity,
-                            new ParameterizedTypeReference< Object >() {});                     
+                            new ParameterizedTypeReference< Body<FirewallModel> >() {});                     
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
-	private ResponseEntity<FirewallModel> getRuleTest(FirewallModel firewall) {
+	private ResponseEntity<Body<FirewallModel>> getRuleTest(FirewallModel firewall) {
 	    
         HttpEntity<Void> entity = TestUtils.createEntity(TestUtils.READ_SCOPE);
         
-		ResponseEntity<FirewallModel> response = 
+		ResponseEntity<Body<FirewallModel>> response = 
 				this.restTemplate
 	                .exchange(
 	                        Routes.FIREWALLS+"/"+firewall.getName(), 
 	                        HttpMethod.GET, 
 	                        entity,
-	                        FirewallModel.class);          
+                            new ParameterizedTypeReference<Body<FirewallModel>>() {});          
         assertThat(response).isNotNull();  
         return response;
 	}
@@ -114,16 +115,16 @@ public class FirewallControllerTest {
 
         HttpEntity<Void> entity = TestUtils.createEntity(TestUtils.READ_SCOPE);
 	    
-        ResponseEntity<List<FirewallModel>> responseList = 
+        ResponseEntity< Body<List<FirewallModel>> > responseList = 
 				this.restTemplate
 	                .exchange(
 	                        Routes.FIREWALLS, 
 	                        HttpMethod.GET, 
 	                        entity,
-	                        new ParameterizedTypeReference< List<FirewallModel> >() {});      
+	                        new ParameterizedTypeReference< Body<List<FirewallModel>> >() {});      
         assertThat(responseList.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseList.getBody()).isNotNull();
-		return responseList.getBody();
+		return responseList.getBody().getContent();
 	}        
 
     private FirewallModel searchAvailableFirewallPort(List<FirewallModel> currentRules) {

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import app.common.GlobalConstants;
 import app.common.GoogleComputeEngineUtils;
 import app.common.Pair;
+import app.models.Body;
 import app.models.InstanceModel;
 
 @RestController
@@ -33,7 +34,7 @@ public class InstanceController extends AbstractInstanceController{
      */
     
     @Override
-    protected ResponseEntity<?> createInstance(
+    protected ResponseEntity<Body<List<InstanceModel>>> createInstance(
             final String token, 
             final String identity,
             List<InstanceModel> listModel) throws Exception {          
@@ -42,15 +43,14 @@ public class InstanceController extends AbstractInstanceController{
                         identity, 
                         token)) { 
             List<InstanceModel> res = listModel;
-            createInstances(googleApi, res);            
-            return ResponseEntity
-		            .status(HttpStatus.OK)
-		            .body(res); 
+            createInstances(googleApi, res);        
+            return ResponseEntity.ok(
+                    Body.create(res));
         }
     }
 
     @Override
-    protected ResponseEntity<?> getInstance(
+    protected ResponseEntity<Body<InstanceModel>> getInstance(
             final String token, 
             final String identity,
             final String zone,
@@ -66,15 +66,14 @@ public class InstanceController extends AbstractInstanceController{
             }
             
             InstanceModel model = new InstanceModel();
-            updateInstanceModel(instance, model);            
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(model); 
+            updateInstanceModel(instance, model);                  
+            return ResponseEntity.ok(
+                    Body.create(model));
         }
     }
 
     @Override
-    protected ResponseEntity<?> deleteInstance(
+    protected ResponseEntity<Body<Void>> deleteInstance(
             final String token, 
             final String identity,
             final String zone,
@@ -91,17 +90,16 @@ public class InstanceController extends AbstractInstanceController{
     }
 
     @Override
-    protected ResponseEntity<?> listInstances(
+    protected ResponseEntity<Body<List<InstanceModel>>> listInstances(
             final String token, 
             final String identity) throws Exception {          
         try(GoogleComputeEngineApi googleApi = 
                 GoogleComputeEngineUtils.createApi(
                         identity, 
                         token)) { 
-            List<InstanceModel> res = getInstances(googleApi);         
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(res);    
+            List<InstanceModel> res = getInstances(googleApi);     
+            return ResponseEntity.ok(
+                    Body.create(res));
         }
     }
 

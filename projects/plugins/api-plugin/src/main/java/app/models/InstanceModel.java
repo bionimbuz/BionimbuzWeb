@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class InstanceModel {
+public class InstanceModel extends Body {
 
     private String id = "";
     private String name = "";

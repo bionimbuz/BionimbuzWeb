@@ -19,6 +19,7 @@ import com.google.common.collect.ImmutableList;
 
 import app.common.GlobalConstants;
 import app.common.GoogleComputeEngineUtils;
+import app.models.Body;
 import app.models.FirewallModel;
 
 @RestController
@@ -28,8 +29,8 @@ public class FirewallController extends AbstractFirewallController{
      * Overwritten Methods
      */
     
-	@Override
-    protected ResponseEntity<?> replaceRule(
+    @Override
+    protected ResponseEntity<Body<FirewallModel>> replaceRule(
             final String token, 
             final String identity,
             FirewallModel model) throws Exception {        
@@ -38,12 +39,13 @@ public class FirewallController extends AbstractFirewallController{
                         identity, 
                         token)) { 
             replaceFirewallRule(googleApi, model);
-            return new ResponseEntity<>(HttpStatus.OK);
+            return ResponseEntity.ok(
+                    Body.create(model));
         }
     }
 
     @Override
-    protected ResponseEntity<?> getRule(
+    protected ResponseEntity<Body<FirewallModel>> getRule(
             final String token, 
             final String identity,
     		final String name) throws Exception {     
@@ -59,14 +61,13 @@ public class FirewallController extends AbstractFirewallController{
             }
             
             FirewallModel model = createFirewallModel(firewall);  
-            return ResponseEntity
-		            .status(HttpStatus.OK)
-		            .body(model); 
+            return ResponseEntity.ok(
+                    Body.create(model));
         }
     }
 
     @Override
-    protected ResponseEntity<?> deleteRule(
+    protected ResponseEntity<Body<Void>> deleteRule(
             final String token, 
             final String identity,
     		final String name) throws Exception  {     
@@ -88,7 +89,7 @@ public class FirewallController extends AbstractFirewallController{
     }
 
     @Override
-    protected ResponseEntity<?> listRules(
+    protected ResponseEntity<Body<List<FirewallModel>>> listRules(
             final String token, 
             final String identity) throws Exception  {     
         try(GoogleComputeEngineApi googleApi = 
@@ -110,9 +111,8 @@ public class FirewallController extends AbstractFirewallController{
                     }
                 }
             }             
-            return ResponseEntity
-		            .status(HttpStatus.OK)
-		            .body(res);    
+            return ResponseEntity.ok(
+                    Body.create(res)); 
         }
     }
     

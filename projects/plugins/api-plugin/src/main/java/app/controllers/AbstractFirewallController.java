@@ -1,5 +1,7 @@
 package app.controllers;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,7 @@ import com.google.common.net.HttpHeaders;
 import app.common.HttpHeadersCustom;
 import app.common.Routes;
 import app.common.exceptions.VersionException;
+import app.models.Body;
 import app.models.FirewallModel;
 
 public abstract class AbstractFirewallController extends BaseController{  
@@ -25,11 +28,11 @@ public abstract class AbstractFirewallController extends BaseController{
      */
 	
     @RequestMapping(path = Routes.FIREWALLS, method = RequestMethod.POST)
-    private ResponseEntity<?> replaceRuleAction(
+    private ResponseEntity< Body<FirewallModel> > replaceRuleAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
             @RequestHeader(value=HttpHeaders.AUTHORIZATION) final String token, 
             @RequestHeader(value=HttpHeadersCustom.AUTHORIZATION_ID) final String identity, 
-            @RequestBody FirewallModel model) { 
+            @RequestBody FirewallModel model) {         
         HttpStatus errorStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         String errorMessage = "";
         try {
@@ -43,14 +46,13 @@ public abstract class AbstractFirewallController extends BaseController{
         catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             errorMessage = e.getMessage();
-        }
+        }        
         return ResponseEntity
                 .status(errorStatus)
-                .body(errorMessage);
-    }
-    
+                .body(new Body<FirewallModel>(errorMessage));  
+    }    
 	@RequestMapping(path = Routes.FIREWALLS_NAME, method = RequestMethod.GET)
-	private ResponseEntity<?> getRuleAction(
+	private ResponseEntity< Body<FirewallModel> > getRuleAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
             @RequestHeader(value=HttpHeaders.AUTHORIZATION) final String token, 
             @RequestHeader(value=HttpHeadersCustom.AUTHORIZATION_ID) final String identity, 
@@ -68,13 +70,13 @@ public abstract class AbstractFirewallController extends BaseController{
         catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             errorMessage = e.getMessage();
-        }
+        }        
         return ResponseEntity
                 .status(errorStatus)
-                .body(errorMessage);
+                .body(new Body<FirewallModel>(errorMessage)); 
     }    
     @RequestMapping(path = Routes.FIREWALLS_NAME, method = RequestMethod.DELETE)
-    private ResponseEntity<?> deleteRuleAction(
+    private ResponseEntity< Body<Void> > deleteRuleAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
             @RequestHeader(value=HttpHeaders.AUTHORIZATION) final String token,  
             @RequestHeader(value=HttpHeadersCustom.AUTHORIZATION_ID) final String identity, 
@@ -95,10 +97,10 @@ public abstract class AbstractFirewallController extends BaseController{
         }
         return ResponseEntity
                 .status(errorStatus)
-                .body(errorMessage);
+                .body(new Body<Void>(errorMessage)); 
     }    
     @RequestMapping(path = Routes.FIREWALLS, method = RequestMethod.GET)
-    private ResponseEntity<?> listRulesAction(
+    private ResponseEntity< Body<List<FirewallModel> >> listRulesAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
             @RequestHeader(value=HttpHeaders.AUTHORIZATION) final String token, 
             @RequestHeader(value=HttpHeadersCustom.AUTHORIZATION_ID) final String identity) {        
@@ -118,26 +120,26 @@ public abstract class AbstractFirewallController extends BaseController{
         }
         return ResponseEntity
                 .status(errorStatus)
-                .body(errorMessage);
+                .body(new Body< List<FirewallModel> >(errorMessage)); 
     }  
     
     /*
      * Abstract Methods
      */
     
-    protected abstract ResponseEntity<?> replaceRule(
+    protected abstract ResponseEntity<Body<FirewallModel>> replaceRule(
             final String token, 
             final String identity,
             FirewallModel model) throws Exception;    
-    protected abstract ResponseEntity<?> getRule(
+    protected abstract ResponseEntity<Body<FirewallModel>> getRule(
             final String token, 
             final String identity,
             final String name) throws Exception;    
-    protected abstract ResponseEntity<?> deleteRule(
+    protected abstract ResponseEntity<Body<Void>> deleteRule(
             final String token, 
             final String identity,
             final String name) throws Exception;    
-    protected abstract ResponseEntity<?> listRules(
+    protected abstract ResponseEntity<Body<List<FirewallModel>>> listRules(
             final String token, 
             final String identity) throws Exception;  
 }

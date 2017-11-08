@@ -1,6 +1,6 @@
 package app.models;
 
-public class InfoModel {
+public class InfoModel extends Body {
 
     private String apiVersion;
     private String pluginVersion;

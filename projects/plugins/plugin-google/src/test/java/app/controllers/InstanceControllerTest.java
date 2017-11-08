@@ -24,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import app.common.Routes;
+import app.models.Body;
 import app.models.FirewallModel;
 import app.models.InstanceModel;
 import utils.TestUtils;
@@ -64,7 +65,7 @@ public class InstanceControllerTest {
 
     @Test
     public void CRUD_Test() {
-        ResponseEntity<InstanceModel> responseGet = null;        
+        ResponseEntity<Body<InstanceModel>> responseGet = null;        
         
         List<InstanceModel> responseList = listAllTest();        
         List<InstanceModel> newInstances = getInstancesToCreate(LENGTH_CREATION); 
@@ -95,7 +96,7 @@ public class InstanceControllerTest {
                 responseGet = getInstanceTest(model);            
                 assertThat(responseGet.getStatusCode()).isEqualTo(HttpStatus.OK);
                 assertThat(responseGet.getBody()).isNotNull();            
-                doHttGetInInstancesTest(responseGet.getBody());
+                doHttGetInInstancesTest(responseGet.getBody().getContent());
             }
         }         
         finally{
@@ -148,12 +149,12 @@ public class InstanceControllerTest {
         
         HttpEntity<Void> entity = TestUtils.createEntity(TestUtils.WRITE_SCOPE);
         
-        ResponseEntity<Object> response = this.restTemplate
+        ResponseEntity<Body<Void>> response = this.restTemplate
                 .exchange(
                         Routes.INSTANCES+"/"+model.getZone() + "/"+model.getName(), 
                         HttpMethod.DELETE, 
                         entity,
-                        new ParameterizedTypeReference< Object >() {}
+                        new ParameterizedTypeReference< Body<Void> >() {}
                         );          
         assertThat(response).isNotNull();    
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -163,46 +164,46 @@ public class InstanceControllerTest {
         HttpEntity<List<InstanceModel>> entity = 
                 TestUtils.createEntity(instances, TestUtils.WRITE_SCOPE);
         
-        ResponseEntity<List<InstanceModel>> response = this.restTemplate
+        ResponseEntity<Body<List<InstanceModel>>> response = this.restTemplate
                 .exchange(
                         Routes.INSTANCES, 
                         HttpMethod.POST, 
                         entity,
-                        new ParameterizedTypeReference< List<InstanceModel> >() {});                     
+                        new ParameterizedTypeReference<Body<List<InstanceModel>>>() {});                     
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         
-        return response.getBody();
+        return response.getBody().getContent();
     }
     
     private List<InstanceModel> listAllTest() {         
 
         HttpEntity<Void> entity = TestUtils.createEntity(TestUtils.READ_SCOPE);
         
-        ResponseEntity<List<InstanceModel>> responseList = 
+        ResponseEntity< Body<List<InstanceModel>> > responseList = 
                 this.restTemplate
                     .exchange(
                             Routes.INSTANCES, 
                             HttpMethod.GET, 
                             entity,
-                            new ParameterizedTypeReference< List<InstanceModel> >() {});          
+                            new ParameterizedTypeReference< Body<List<InstanceModel>> >() {});          
         
         assertThat(responseList.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseList.getBody()).isNotNull();
-        return responseList.getBody();
+        return responseList.getBody().getContent();
     }        
     
-    private ResponseEntity<InstanceModel> getInstanceTest(InstanceModel model) {
+    private ResponseEntity<Body<InstanceModel>> getInstanceTest(InstanceModel model) {
         
         HttpEntity<Void> entity = TestUtils.createEntity(TestUtils.READ_SCOPE);
         
-        ResponseEntity<InstanceModel> response = 
+        ResponseEntity<Body<InstanceModel>> response = 
                 this.restTemplate
                     .exchange(
                             Routes.INSTANCES+"/"+model.getZone() + "/"+model.getName(), 
                             HttpMethod.GET, 
                             entity,
-                            InstanceModel.class
+                            new ParameterizedTypeReference< Body<InstanceModel> >() {}
                         );          
         assertThat(response).isNotNull();  
         return response;

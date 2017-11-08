@@ -22,6 +22,8 @@ import app.common.GlobalConstants;
 import app.common.HttpHeadersCustom;
 import app.common.Routes;
 import app.controllers.mocks.FirewallControllerMock;
+import app.models.Body;
+import app.models.FirewallModel;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -40,23 +42,66 @@ public class BaseControllerTest {
     }
 
     @Test
+    public void returningContentTest() throws Exception {
+        try { // Returning with Error and Body defining a Model
+            ResponseEntity< Body<FirewallModel> > res = this.restTemplate
+                    .exchange(
+                            FirewallControllerMock.RETURN_GET + "/"
+                                    + HttpStatus.MOVED_PERMANENTLY,
+                            HttpMethod.GET, null,
+                            new ParameterizedTypeReference< Body<FirewallModel> >() {
+                            });
+            assertThat(res.getStatusCode()).isEqualTo(HttpStatus.MOVED_PERMANENTLY);
+            assertThat(res.getBody()).isNotNull();
+            
+            Body<FirewallModel> body = res.getBody();            
+            assertThat(body.getMessage()).isNotEmpty();
+            assertThat(body.getContent()).isNull();        
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            assertThat(e).isNull();
+        }  
+        
+        try { // Returning Ok and Body defining a Model
+            ResponseEntity< Body<FirewallModel> > res = this.restTemplate
+                    .exchange(
+                            FirewallControllerMock.RETURN_GET + "/"
+                                    + HttpStatus.OK,
+                            HttpMethod.GET, null,
+                            new ParameterizedTypeReference< Body<FirewallModel> >() {
+                            });
+            assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
+            assertThat(res.getBody()).isNotNull();
+            
+            Body<FirewallModel> body = res.getBody();            
+            assertThat(body.getMessage()).isEqualTo(Body.OK);
+            assertThat(body.getContent()).isNotNull();        
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            assertThat(e).isNull();
+        } 
+    }
+          
+    @Test
     public void versionErrorTest() throws Exception {
                 
         // Wrong API Version
-        HttpHeaders headers = createHeaders(GlobalConstants.API_VERSION + ".1");   
+        HttpHeaders headers = createFullHeaders(GlobalConstants.API_VERSION + ".1");   
         HttpEntity<Void> entity = 
-                new HttpEntity<>(null, headers);  
-        ResponseEntity<Object> responseList = 
+                new HttpEntity<>(null, headers);        
+        ResponseEntity<?> responseList = 
                 this.restTemplate
                     .exchange(
                             Routes.FIREWALLS, 
                             HttpMethod.GET, 
                             entity,
-                            new ParameterizedTypeReference< Object >() {});      
+                            new ParameterizedTypeReference<Object>() {});      
         assertThat(responseList.getStatusCode()).isEqualTo(HttpStatus.MOVED_PERMANENTLY);        
         
         // Right API Version
-        headers = createHeaders(GlobalConstants.API_VERSION);   
+        headers = createFullHeaders(GlobalConstants.API_VERSION);   
         entity =new HttpEntity<>(null, headers);  
         responseList = 
                 this.restTemplate
@@ -64,11 +109,11 @@ public class BaseControllerTest {
                             Routes.FIREWALLS, 
                             HttpMethod.GET, 
                             entity,
-                            new ParameterizedTypeReference< Object >() {});          
+                            new ParameterizedTypeReference< String >() {});          
         assertThat(responseList.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    
-    private static HttpHeaders createHeaders(final String version) {
+   
+    private static HttpHeaders createFullHeaders(final String version) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);            
         headers.add(HttpHeaders.AUTHORIZATION, "authorization");

@@ -5,7 +5,7 @@ import java.util.List;
 
 import app.common.GlobalConstants;
 
-public class FirewallModel {
+public class FirewallModel extends Body {
     
     public static enum PROTOCOL {
         tcp,

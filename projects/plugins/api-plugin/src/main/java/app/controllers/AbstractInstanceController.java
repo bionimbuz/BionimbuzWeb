@@ -17,6 +17,7 @@ import com.google.common.net.HttpHeaders;
 import app.common.HttpHeadersCustom;
 import app.common.Routes;
 import app.common.exceptions.VersionException;
+import app.models.Body;
 import app.models.InstanceModel;
 
 public abstract class AbstractInstanceController extends BaseController {
@@ -27,7 +28,7 @@ public abstract class AbstractInstanceController extends BaseController {
      */
     
     @RequestMapping(path = Routes.INSTANCES, method = RequestMethod.POST)
-    private ResponseEntity<?> createInstanceAction(
+    private ResponseEntity<Body<List<InstanceModel>>> createInstanceAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
             @RequestHeader(value=HttpHeaders.AUTHORIZATION) final String token, 
             @RequestHeader(value=HttpHeadersCustom.AUTHORIZATION_ID) final String identity, 
@@ -48,11 +49,11 @@ public abstract class AbstractInstanceController extends BaseController {
         }
         return ResponseEntity
                 .status(errorStatus)
-                .body(errorMessage);
+                .body(new Body<List<InstanceModel>>(errorMessage)); 
     }
     
     @RequestMapping(path = Routes.INSTANCES_ZONE_NAME, method = RequestMethod.GET)
-    private ResponseEntity<?> getInstanceAction(
+    private ResponseEntity<Body<InstanceModel>> getInstanceAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
             @RequestHeader(value=HttpHeaders.AUTHORIZATION) final String token, 
             @RequestHeader(value=HttpHeadersCustom.AUTHORIZATION_ID) final String identity, 
@@ -74,11 +75,11 @@ public abstract class AbstractInstanceController extends BaseController {
         }
         return ResponseEntity
                 .status(errorStatus)
-                .body(errorMessage);
+                .body(new Body<InstanceModel>(errorMessage)); 
     }
     
     @RequestMapping(path = Routes.INSTANCES_ZONE_NAME, method = RequestMethod.DELETE)
-    private ResponseEntity<?> deleteInstanceAction(
+    private ResponseEntity<Body<Void>> deleteInstanceAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
             @RequestHeader(value=HttpHeaders.AUTHORIZATION) final String token, 
             @RequestHeader(value=HttpHeadersCustom.AUTHORIZATION_ID) final String identity, 
@@ -100,11 +101,11 @@ public abstract class AbstractInstanceController extends BaseController {
         }
         return ResponseEntity
                 .status(errorStatus)
-                .body(errorMessage);
+                .body(new Body<Void>(errorMessage)); 
     }
    
     @RequestMapping(path = Routes.INSTANCES, method = RequestMethod.GET)
-    private ResponseEntity<?> listInstancesAction(
+    private ResponseEntity<Body<List<InstanceModel>>> listInstancesAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
             @RequestHeader(value=HttpHeaders.AUTHORIZATION) final String token, 
             @RequestHeader(value=HttpHeadersCustom.AUTHORIZATION_ID) final String identity) {
@@ -124,28 +125,28 @@ public abstract class AbstractInstanceController extends BaseController {
         }
         return ResponseEntity
                 .status(errorStatus)
-                .body(errorMessage);
+                .body(new Body<List<InstanceModel>>(errorMessage)); 
     }
 
     /*
      * Abstract Methods
      */
     
-    protected abstract ResponseEntity<?> createInstance(
+    protected abstract ResponseEntity<Body<List<InstanceModel>>> createInstance(
             final String token, 
             final String identity,
             List<InstanceModel> listModel) throws Exception;    
-    protected abstract ResponseEntity<?> getInstance(
+    protected abstract ResponseEntity<Body<InstanceModel>> getInstance(
             final String token, 
             final String identity,
             final String zone,
             final String name) throws Exception;    
-    protected abstract ResponseEntity<?> deleteInstance(
+    protected abstract ResponseEntity<Body<Void>> deleteInstance(
             final String token, 
             final String identity,
             final String zone,
             final String name) throws Exception;   
-    protected abstract ResponseEntity<?> listInstances(
+    protected abstract ResponseEntity<Body<List<InstanceModel>>> listInstances(
             final String token, 
             final String identity) throws Exception;
 
