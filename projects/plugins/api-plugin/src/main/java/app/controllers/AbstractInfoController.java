@@ -11,7 +11,7 @@ import app.common.GlobalConstants;
 import app.common.Routes;
 import app.models.InfoModel;
 
-public abstract class AbstractInfoController {	    
+public abstract class AbstractInfoController extends BaseController {	    
     protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractInfoController.class);  
     
     /*

@@ -36,7 +36,7 @@ public class InstanceController extends AbstractInstanceController{
     protected ResponseEntity<?> createInstance(
             final String token, 
             final String identity,
-            List<InstanceModel> listModel) {          
+            List<InstanceModel> listModel) throws Exception {          
         try(GoogleComputeEngineApi googleApi = 
                 GoogleComputeEngineUtils.createApi(
                         identity, 
@@ -46,11 +46,6 @@ public class InstanceController extends AbstractInstanceController{
             return ResponseEntity
 		            .status(HttpStatus.OK)
 		            .body(res); 
-        } catch (Exception e) {
-            e.printStackTrace(); 
-            return ResponseEntity
-		            .status(HttpStatus.INTERNAL_SERVER_ERROR)
-		            .body(e.getMessage());
         }
     }
 
@@ -59,7 +54,7 @@ public class InstanceController extends AbstractInstanceController{
             final String token, 
             final String identity,
             final String zone,
-            final String name) {  
+            final String name) throws Exception {  
         try(GoogleComputeEngineApi googleApi = 
                 GoogleComputeEngineUtils.createApi(
                         identity, 
@@ -75,11 +70,6 @@ public class InstanceController extends AbstractInstanceController{
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(model); 
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(e.getMessage());
         }
     }
 
@@ -88,7 +78,7 @@ public class InstanceController extends AbstractInstanceController{
             final String token, 
             final String identity,
             final String zone,
-            final String name) {         
+            final String name) throws Exception {         
         try(GoogleComputeEngineApi googleApi = 
                 GoogleComputeEngineUtils.createApi(
                         identity, 
@@ -97,18 +87,13 @@ public class InstanceController extends AbstractInstanceController{
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND); 
             }           
             return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(e.getMessage());
         }
     }
 
     @Override
     protected ResponseEntity<?> listInstances(
             final String token, 
-            final String identity) {          
+            final String identity) throws Exception {          
         try(GoogleComputeEngineApi googleApi = 
                 GoogleComputeEngineUtils.createApi(
                         identity, 
@@ -117,11 +102,6 @@ public class InstanceController extends AbstractInstanceController{
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(res);    
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(e.getMessage());
         }
     }
 

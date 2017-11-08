@@ -27,6 +27,7 @@ import com.google.common.io.Files;
 
 import app.common.Authorization;
 import app.common.GlobalConstants;
+import app.common.HttpHeadersCustom;
 import app.common.SystemConstants;
 
 public class TestUtils {
@@ -60,8 +61,11 @@ public class TestUtils {
     public static <T> HttpEntity<T> createEntity(String scope){
         return createEntity(null, scope);
     }
+    public static <T> HttpEntity<T> createEntity(T content, String scope){    
+        return createEntity(content, scope, GlobalConstants.API_VERSION); 
+    }
     
-    public static <T> HttpEntity<T> createEntity(T content, String scope){        
+    public static <T> HttpEntity<T> createEntity(T content, String scope, String apiVersion){        
 
         try {
             Credentials credentials = credentialSupplier.get(); 
@@ -71,12 +75,13 @@ public class TestUtils {
             System.out.println("identity: "+credentials.identity);
             System.out.println("token: "+token.accessToken());
             System.out.println("scope: "+scope);
-            System.out.println("=============================");    
+            System.out.println("=============================");
             
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);            
-            headers.add("Authorization", "Bearer " + token.accessToken());
-            headers.add("AuthorizationId", credentials.identity);            
+            headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + token.accessToken());
+            headers.add(HttpHeadersCustom.AUTHORIZATION_ID, credentials.identity);
+            headers.add(HttpHeadersCustom.API_VERSION, apiVersion);            
    
             HttpEntity<T> entity = 
                     new HttpEntity<>(content, headers);    

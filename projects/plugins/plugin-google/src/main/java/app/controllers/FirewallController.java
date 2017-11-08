@@ -32,18 +32,13 @@ public class FirewallController extends AbstractFirewallController{
     protected ResponseEntity<?> replaceRule(
             final String token, 
             final String identity,
-            FirewallModel model) {        
+            FirewallModel model) throws Exception {        
         try(GoogleComputeEngineApi googleApi = 
                 GoogleComputeEngineUtils.createApi(
                         identity, 
                         token)) { 
             replaceFirewallRule(googleApi, model);
             return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-            return ResponseEntity
-		            .status(HttpStatus.INTERNAL_SERVER_ERROR)
-		            .body(e.getMessage());
         }
     }
 
@@ -51,7 +46,7 @@ public class FirewallController extends AbstractFirewallController{
     protected ResponseEntity<?> getRule(
             final String token, 
             final String identity,
-    		final String name) {     
+    		final String name) throws Exception {     
         try(GoogleComputeEngineApi googleApi = 
                 GoogleComputeEngineUtils.createApi(
                         identity, 
@@ -67,11 +62,6 @@ public class FirewallController extends AbstractFirewallController{
             return ResponseEntity
 		            .status(HttpStatus.OK)
 		            .body(model); 
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-            return ResponseEntity
-		            .status(HttpStatus.INTERNAL_SERVER_ERROR)
-		            .body(e.getMessage());
         }
     }
 
@@ -79,7 +69,7 @@ public class FirewallController extends AbstractFirewallController{
     protected ResponseEntity<?> deleteRule(
             final String token, 
             final String identity,
-    		final String name) {     
+    		final String name) throws Exception  {     
         try(GoogleComputeEngineApi googleApi = 
                 GoogleComputeEngineUtils.createApi(
                         identity, 
@@ -94,18 +84,13 @@ public class FirewallController extends AbstractFirewallController{
             Operation operation = firewallApi.delete(name);
             GoogleComputeEngineUtils.waitOperation(googleApi, operation);            
             return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-            return ResponseEntity
-		            .status(HttpStatus.INTERNAL_SERVER_ERROR)
-		            .body(e.getMessage());
         }
     }
 
     @Override
     protected ResponseEntity<?> listRules(
             final String token, 
-            final String identity) {     
+            final String identity) throws Exception  {     
         try(GoogleComputeEngineApi googleApi = 
                 GoogleComputeEngineUtils.createApi(
                         identity, 
@@ -128,11 +113,6 @@ public class FirewallController extends AbstractFirewallController{
             return ResponseEntity
 		            .status(HttpStatus.OK)
 		            .body(res);    
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-            return ResponseEntity
-		            .status(HttpStatus.INTERNAL_SERVER_ERROR)
-		            .body(e.getMessage());
         }
     }
     
