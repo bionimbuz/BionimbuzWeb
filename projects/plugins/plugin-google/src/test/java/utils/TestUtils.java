@@ -26,6 +26,7 @@ import com.google.common.base.Supplier;
 import com.google.common.io.Files;
 
 import app.common.Authorization;
+import app.common.GlobalConstants;
 import app.common.SystemConstants;
 
 public class TestUtils {
@@ -95,10 +96,10 @@ public class TestUtils {
         int now = (int)ZonedDateTime.now(ZoneOffset.UTC).toEpochSecond();        
 
         Claims claims = Claims.create( //
-                credential.get().identity, // iss
+                credential.get().identity, // iss 
                 scope, // scope
                 aud, // aud
-                now + 60*60, // placeholder exp for the cache
+                now + GlobalConstants.TOKEN_LIFETIME_SECONDS, // placeholder exp for the cache
                 now // placeholder iat for the cache
             );
         
