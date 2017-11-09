@@ -38,7 +38,7 @@ public class InfoApiTest {
         Body<InfoModel> model = call.execute().body();
         
         String content = model.getMessage();        
-        assertThat(content).isEqualTo("OK");
+        assertThat(content).isEqualTo(Body.OK);
     }
     
     private String getUrl() {
