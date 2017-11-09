@@ -4,9 +4,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>br.unb.cic.bionimbuz</groupId>
-    <artifactId>plugin-google</artifactId>
+    <artifactId>plugin-gcp</artifactId>
+    <name>plugin-gcp</name>
     <version>0.1</version>
-    <name>plugin-google</name>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -45,7 +45,7 @@
         </dependency>
         <dependency>
             <groupId>br.unb.cic.bionimbuz</groupId>
-            <artifactId>api-plugin</artifactId>
+            <artifactId>api-rest-plugin</artifactId>
             <version>0.1</version>
         </dependency>
         <dependency>

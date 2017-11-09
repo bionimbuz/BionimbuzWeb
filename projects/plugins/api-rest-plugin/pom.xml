@@ -4,9 +4,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>br.unb.cic.bionimbuz</groupId>
-    <artifactId>api-plugin</artifactId>
+    <artifactId>api-rest-plugin</artifactId>
+    <name>api-rest-plugin</name>
     <version>0.1</version>
-    <name>api-plugin</name>
 
     <parent>
         <groupId>org.springframework.boot</groupId>

@@ -106,7 +106,7 @@ echo "# ======================================="
 
 cd ${PLUGINS_FOLDER}
 
-cd api-plugin
+cd api-*
 mvn clean install package -DskipTests
 cd ..
 
