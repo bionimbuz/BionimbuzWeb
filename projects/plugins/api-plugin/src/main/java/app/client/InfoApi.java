@@ -8,5 +8,5 @@ import retrofit2.http.GET;
 
 public interface InfoApi {
     @GET(Routes.INFO)
-    Call< Body<InfoModel> > getInfo();
+    public Call< Body<InfoModel> > getInfo();
 }

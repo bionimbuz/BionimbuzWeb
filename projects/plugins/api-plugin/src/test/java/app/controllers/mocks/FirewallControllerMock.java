@@ -22,19 +22,28 @@ public class FirewallControllerMock extends AbstractFirewallController {
     
     @Override
     protected ResponseEntity<Body<FirewallModel>> replaceRule(String token, String identity, FirewallModel model) throws Exception {
-        throw new Exception("Unninplemented.");
+        return ResponseEntity.ok().body(
+                Body.create(model));
     }
     @Override
     protected ResponseEntity<Body<FirewallModel>> getRule(String token, String identity, String name) throws Exception {
-        throw new Exception("Unninplemented.");
+        FirewallModel model = new FirewallModel();
+        model.setName(name);
+        return ResponseEntity.ok().body(
+                Body.create(model));
     }
     @Override
-    protected ResponseEntity<Body<Void>> deleteRule(String token, String identity, String name) throws Exception {
-        throw new Exception("Unninplemented.");
+    protected ResponseEntity<Body<Void>> deleteRule(String token, String identity, String name) throws Exception {        
+        return ResponseEntity.ok().body(
+                new Body<Void>(Body.OK)); 
     }
     @Override
-    protected ResponseEntity<Body<List<FirewallModel>>> listRules(String token, String identity) throws Exception {
-        throw new Exception("Unninplemented.");
+    protected ResponseEntity<Body<List<FirewallModel>>> listRules(String token, String identity) throws Exception {        
+        List<FirewallModel> listRes = new ArrayList<>();
+        listRes.add(new FirewallModel());
+        listRes.add(new FirewallModel());        
+        return ResponseEntity.ok().body(
+                Body.create(Body.OK, listRes));
     }        
     
     @RequestMapping(path = RETURN_GET+"/{status}", method = RequestMethod.GET)
