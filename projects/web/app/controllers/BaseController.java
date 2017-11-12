@@ -1,8 +1,6 @@
 package controllers;
 
-import play.mvc.Controller;
-
-public class BaseController extends Controller {
+public class BaseController extends CRUD {
 
     // Listeners priorities - @Before | @After | @Finally
     // -------

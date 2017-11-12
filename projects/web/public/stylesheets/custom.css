@@ -89,3 +89,11 @@
 .side-menu .navbar-nav li a {
     font-size: 16px;
 }
+
+.plugins-grid {
+    padding-right: 0 !important;
+}
+
+.title-style {    
+    margin-left: 15px;
+}
