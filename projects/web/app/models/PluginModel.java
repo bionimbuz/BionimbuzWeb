@@ -26,4 +26,36 @@ public class PluginModel extends GenericModel {
     private String pluginVersion;
     @MaxSize(100)
     private String cloudType;
+    
+    
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
+    public String getUrl() {
+        return url;
+    }
+    public void setUrl(String url) {
+        this.url = url;
+    }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public String getPluginVersion() {
+        return pluginVersion;
+    }
+    public void setPluginVersion(String pluginVersion) {
+        this.pluginVersion = pluginVersion;
+    }
+    public String getCloudType() {
+        return cloudType;
+    }
+    public void setCloudType(String cloudType) {
+        this.cloudType = cloudType;
+    }    
 }
