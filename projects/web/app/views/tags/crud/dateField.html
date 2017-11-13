@@ -1,9 +1,16 @@
-#{field 'object.' + _name}
-    <label for="${field.id}">
-        &{_name}
-    </label>
-    <input id="${field.id}" class="${field.errorClass}" type="text" name="${field.name}" value="${_value?.format()}" size="10" />
-    #{ifError field.name}
-        <span class="error">${field.error.raw()}</span>
-    #{/ifError}
+#{field 'object.' + _name}  
+    <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+        <div class="row">
+            <label for="${field.id}">&{field.name}</label>
+        </div>
+        <div class="datetimepicker-date input-group date col-xs-12 col-sm-6 pull-left">
+            <input id="${field.id}" type="text" class="form-control" name="${field.name}" value="${_value?.format()}">
+            <span class="input-group-addon add-on">
+                <b class="entypo-calendar"></b>
+            </span>
+        </div>
+        #{ifError field.name}
+            <span class="help-block col-xs-12 help-blockDate" style="padding-left: 0 !important;">${field.error.raw()}</span>
+        #{/ifError}
+    </div>
 #{/field}

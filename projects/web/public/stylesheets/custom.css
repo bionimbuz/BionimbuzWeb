@@ -94,7 +94,10 @@
     padding-right: 0 !important;
 }
 
-.margin-bottom 
-{
+.margin-bottom {
     margin-bottom: 5px !important;
+}
+
+.select-pane {
+    display:none;
 }

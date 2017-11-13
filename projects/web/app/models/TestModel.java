@@ -64,7 +64,7 @@ public class TestModel extends GenericModel {
     private String hiddenField;
     @Required
     @MinSize(1)
-    @MaxSize(100)
+    @MaxSize(500)
     private String longTextField;
     @Required
     @Min(1)
@@ -78,7 +78,7 @@ public class TestModel extends GenericModel {
     private String passwordField;
     @Required
     @MinSize(1)
-    @MaxSize(500)
+    @MaxSize(100)
     private String textField;
     @Required
     @Email
