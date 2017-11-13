@@ -1,10 +1,12 @@
 
 #{field 'object.' + _name}
-    <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
-        <label for="${field.id}">
-            <input type="checkbox" id="${field.id}" name="${field.name}" class="icheck" value="true" ${(params[field.name] ? params.getAll(field.name)[0] == 'true' : _value) ? 'checked="true" '.raw() : ''} /> &{field.name}
-            <input type="hidden" name="${field.name}" value="false" />
-        </label>
+    <div class="form-group row ${field.errorClass ? 'has-error' : ''}">    
+        
+        <input type="checkbox" id="${field.id}" name="${field.name}" class="icheck" value="true" ${(params[field.name] ? params.getAll(field.name)[0] == 'true' : _value) ? 'checked="true" '.raw() : ''} /> 
+        <input type="hidden" name="${field.name}" value="false" />
+        
+        <label for="${field.id}" style="margin-left: 10px;">&{field.name}</label>
+        
         #{ifError field.name}
             <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
         #{/ifError} 
