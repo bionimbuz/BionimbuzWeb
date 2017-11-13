@@ -15,18 +15,6 @@
 
 <br>
 
-<div class=row>
-    <div class="col-lg-12">  
-        <div id="crudListTable">
-            #{crud.table fields: ['id', 'url', 'name'] /}
-        </div>    
-    </div>
-</div>
+#{crud.table fields: ['id', 'url', 'name'] /}
 
-<div id="crudListPagination">
-    #{crud.pagination /}
-</div>
-
-<p id="crudListAdd">
-    <a href="@{blank()}">&{'crud.add', type.modelName}</a>
-</p>
+#{crud.pagination /}
