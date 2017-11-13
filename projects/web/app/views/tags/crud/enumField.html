@@ -1,23 +1,29 @@
 #{field 'object.' + _name}
-<label for="${field.id}">
-    &{_name}
-</label>
-
-<select id="${field.id}" name="${field.name}">
-        %{ _property.choices.each() { }%
-        %{
-                selected = false;
-                if(field.error?.message != 'validation.required') {
-                    selected = it == _value;
-                }
-                label = it.toString()
-
-        }%
-        <option name="${it.name()}" ord="${it.ordinal()}" value="${it.name()}" ${selected ? 'selected="true"'.raw() : ''}>${label}</option>
-        %{ } }%
-</select>
-
-#{ifError field.name}
-    <span class="error">${field.error.raw()}</span>
-#{/ifError}
+    <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+        <label for="${field.id}">
+            &{field.name}
+        </label>
+        <select id="${field.id}" name="${field.name}" class="selectit selectblock">
+            #{ifnot _property.required}
+                <option value="">&{'crud.none'}</option>
+            #{/ifnot}
+            #{else}
+                <option value="">&{'crud.selectValue'}</option>
+            #{/else}
+            
+            %{ _property.choices.each() { }%
+            %{
+                    selected = false;
+                    if(field.error?.message != 'validation.required') {
+                        selected = it == _value;
+                    }
+                    label = _property.typeName + "." + it.toString()
+            }%               
+            <option name="${it.name()}" ord="${it.ordinal()}" value="${it.name()}" ${selected ? 'selected="true"'.raw() : ''}>&{label}</option>
+            %{ } }%
+        </select>
+        #{ifError field.name}
+            <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+        #{/ifError}
+    </div>
 #{/field}

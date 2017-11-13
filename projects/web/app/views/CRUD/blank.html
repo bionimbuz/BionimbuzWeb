@@ -1,19 +1,27 @@
+
 #{extends 'CRUD/layout.html' /}
-#{set title:messages.get('crud.blank.title', type.modelName) /}
+#{set title:messages.get('crud.list.title', type.name) /}
 
-<div id="crudBlank" class="${type.name}">
 
-    <h2 id="crudBlankTitle">&{'crud.blank.title', type.modelName}</h2>
-
-    <div class="objectForm">
-    #{form action:@create(), enctype:'multipart/form-data'}
-        #{crud.form /}
-        <p class="crudButtons">
-            <input type="submit" name="_save" value="&{'crud.save', type.modelName}" />
-            <input type="submit" name="_saveAndContinue" value="&{'crud.saveAndContinue', type.modelName}" />
-            <input type="submit" name="_saveAndAddAnother" value="&{'crud.saveAndAddAnother', type.modelName}" />
-        </p>
-    #{/form}
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12">  
+        <h1> &{'crud.blank.title', type.modelName} </h1>
+        <pre> &{'crud.blank.title.desc', type.name+'.desc'} </pre>
     </div>
-
 </div>
+
+<br>
+
+<div class="row col-lg-12" >
+#{form action:@create(), enctype:'multipart/form-data'}
+    #{crud.form /}
+    
+    <div class="text-center">
+        <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_save">&{'crud.save'}</button>
+        <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_saveAndContinue">&{'crud.saveAndContinue'}</button>
+        <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_saveAndAddAnother">&{'crud.saveAndAddAnother'}</button>
+        <a href="@{list()}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>
+    </div>
+#{/form}
+</div>
+
