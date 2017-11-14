@@ -5,3 +5,4 @@
 /tmp/
 /modules/crud
 /modules/secure
+*.DS_Store
