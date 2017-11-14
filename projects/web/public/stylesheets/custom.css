@@ -37,8 +37,13 @@
     }
 }
 
+.side-menu {
+    position: absolute;
+}
+
 .side-body {
     margin-top: 70px;
+    margin-bottom: 70px;
 }
 
 .user-profile-menu-div {
@@ -100,4 +105,12 @@
 
 .select-pane {
     display:none;
+}
+
+.btn-row {
+    margin-top: 3em;
+}
+
+[class*="entypo-"]:before {
+    font-family: 'entypo', sans-serif;
 }

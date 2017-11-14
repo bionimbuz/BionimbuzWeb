@@ -75,3 +75,20 @@ application.description=Cloud Federation Platform
 PluginController=Plugins
 PluginController.desc=Cloud plugins registered
 
+
+# Datetimepicker labels
+# ~~~~~~
+datetimepicker.tooltip.today=Hoje
+datetimepicker.tooltip.clear=Apagar seleção
+datetimepicker.tooltip.close=Fechar
+datetimepicker.tooltip.select.month=Selecione o mês
+datetimepicker.tooltip.previous.month=Mês anterior
+datetimepicker.tooltip.next.month=Próximo mês
+datetimepicker.tooltip.select.year=Selecione o ano
+datetimepicker.tooltip.previous.year=Ano anterior
+datetimepicker.tooltip.next.year=Próximo ano
+datetimepicker.tooltip.select.decade=Selecione a década
+datetimepicker.tooltip.previous.decade=Década anterior
+datetimepicker.tooltip.next.decade=Próxima década
+datetimepicker.tooltip.previous.century=Século anterior
+datetimepicker.tooltip.next.century=Próximo Século
