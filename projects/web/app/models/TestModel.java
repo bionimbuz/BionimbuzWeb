@@ -60,7 +60,6 @@ public class TestModel extends GenericModel {
     private Date datePastField;
     @Required
     private TestEnum enumField;
-    @Required
     @Hidden
     private String hiddenField;
     @Required

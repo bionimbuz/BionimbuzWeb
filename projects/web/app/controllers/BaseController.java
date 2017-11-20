@@ -1,6 +1,7 @@
 package controllers;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,7 +74,9 @@ public class BaseController extends CRUD {
         notFoundIfNull(type);
         Model object = type.findById(id);
         notFoundIfNull(object);
-        Object att = object.getClass().getField(field).get(object);
+        Field reflectField = object.getClass().getDeclaredField(field);
+        reflectField.setAccessible(true);
+        Object att = reflectField.get(object);
         if(att instanceof Model.BinaryField) {
             Model.BinaryField attachment = (Model.BinaryField)att;
             if (attachment == null || !attachment.exists()) {
