@@ -22,8 +22,8 @@ public class DevelopmentStartupJob extends Job {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @Override
     public void doJob() {
-        insertTestModels(30);
-        insertTempPlugins(50);
+        insertTestModels(3);
+        insertTempPlugins(3);
         insertTempUser();
     }
 
@@ -47,7 +47,7 @@ public class DevelopmentStartupJob extends Job {
                 model.setIntField(i);
                 model.setLongTextField(getLoremIpsum().substring(0, 254));
                 model.setPasswordField("333333333");
-                model.setTextField(getLoremIpsum().substring(0, 254));          
+                model.setTextField(getLoremIpsum().substring(0, 50));          
                 model.setRelationField(relation);
                 
                 model.save();

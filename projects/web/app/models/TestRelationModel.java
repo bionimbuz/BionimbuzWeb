@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -18,12 +19,11 @@ public class TestRelationModel extends GenericModel {
     @Id
     @GeneratedValue
     private Long id;
-    private String name;  
-    
-
+    private String name; 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "relationField")
     private List<TestModel> listFields;
-    
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "multiSelectField")
+    private List<TestModel> listMultiFields;    
     
     public TestRelationModel(String name) {
         super();
@@ -51,5 +51,11 @@ public class TestRelationModel extends GenericModel {
     }
     public void setListFields(List<TestModel> listFields) {
         this.listFields = listFields;
+    }
+    public List<TestModel> getListMultiFields() {
+        return listMultiFields;
+    }
+    public void setListMultiFields(List<TestModel> listMultiFields) {
+        this.listMultiFields = listMultiFields;
     }
 }

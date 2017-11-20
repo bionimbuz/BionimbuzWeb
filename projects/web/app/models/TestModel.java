@@ -1,7 +1,7 @@
 package models;
 
-import java.io.File;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,6 +9,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -27,6 +29,7 @@ import play.data.validation.Phone;
 import play.data.validation.Range;
 import play.data.validation.Required;
 import play.data.validation.URL;
+import play.db.jpa.Blob;
 import play.db.jpa.GenericModel;
 
 @Entity
@@ -57,8 +60,6 @@ public class TestModel extends GenericModel {
     private Date datePastField;
     @Required
     private TestEnum enumField;
-    @Required
-    private File fileField;
     @Required
     @Hidden
     private String hiddenField;
@@ -93,11 +94,17 @@ public class TestModel extends GenericModel {
     @IPv4Address
     private String ipv4Field;
     @Required
+    private Blob fileField;
+    @Required
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_relation")
     private TestRelationModel relationField;
-    
-    
+    @ManyToMany
+    @JoinTable(
+        name="tb_test_relation_nxn",
+        joinColumns=@JoinColumn(name="id_test", referencedColumnName="id"),
+        inverseJoinColumns=@JoinColumn(name="id_test_relation", referencedColumnName="id"))
+    private List<TestRelationModel> multiSelectField;   
     
     public TestModel() {
         super();
@@ -121,10 +128,10 @@ public class TestModel extends GenericModel {
     public void setEnumField(TestEnum enumField) {
         this.enumField = enumField;
     }
-    public File getFileField() {
+    public Blob getFileField() {
         return fileField;
     }
-    public void setFileField(File fileField) {
+    public void setFileField(Blob fileField) {
         this.fileField = fileField;
     }
     public String getHiddenField() {
@@ -204,5 +211,16 @@ public class TestModel extends GenericModel {
     }
     public void setIpv4Field(String ipv4Field) {
         this.ipv4Field = ipv4Field;
+    }
+    public List<TestRelationModel> getMultiSelectField() {
+        return multiSelectField;
+    }
+    public void setMultiSelectField(List<TestRelationModel> multiSelectField) {
+        this.multiSelectField = multiSelectField;
+    }
+    
+    @Override
+    public String toString() {
+        return this.textField;
     }
 }

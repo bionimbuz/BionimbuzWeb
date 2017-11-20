@@ -39,7 +39,7 @@
         #{else}
             <label for="${field.id}">&{field.name}</label>
             <div class="nav-container">
-                <select class="form-control nav" id="${field.id}" name="${field.name}">
+                <select class="form-control nav" id="${field.id}" name="${pName}">
                     #{ifnot _field.required}
                         <option value="">&{'crud.none'}</option>
                     #{/ifnot}

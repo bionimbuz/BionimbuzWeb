@@ -2,6 +2,7 @@
 /.project
 /.settings/
 /eclipse/
+/data/
 /tmp/
 /modules/crud
 /modules/secure

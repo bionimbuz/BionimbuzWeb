@@ -1,13 +1,25 @@
-#{field 'object.' + _name}
-    <label for="${field.id}">
-        &{_name}
-    </label>
-    <input id="${field.id}" class="${field.errorClass}" type="file" name="${field.name}" />
-    #{ifError field.name}
-        <span class="error">${field.error.raw()}</span>
-    #{/ifError}
-    #{if _value && _value.exists() && _id}
-        <a class="currentAttachment" href="@{attachment(_id, _name)}">Download current file (${_value.length().formatSize()})</a>
-        <span class="removeAttachment"><input type="checkbox" name="${field.name}_delete_" value="true" /> (delete)</span>
-    #{/if}
+#{field 'object.' + _name}    
+    <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+        <label for="${field.id}">&{field.name}</label>         
+        <div class="input-group file-input">
+            <input id="${field.id}_fileName" type="text" class="form-control" disabled="disabled">            
+            <span class="input-group-btn ">
+                <div class="btn btn-default">
+                    <span class="glyphicon glyphicon-folder-open"></span>
+                    <span>Browse</span>
+                    <input id="${field.id}" type="file" name="${field.name}" 
+                        onchange="javascript: setFileName(this, document.getElementById('${field.id}_fileName'));"/> 
+                </div>
+            </span>
+        </div>        
+        
+        #{if _value && _value.exists() && _id}
+            <a class="currentAttachment" href="@{attachment(_id, _name)}">Download current file (${_value.length().formatSize()})</a>
+            <span class="removeAttachment"><input type="checkbox" name="${field.name}_delete_" value="true" /> (delete)</span>
+        #{/if}
+        
+        #{ifError field.name}
+            <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+        #{/ifError} 
+    </div>
 #{/field}
