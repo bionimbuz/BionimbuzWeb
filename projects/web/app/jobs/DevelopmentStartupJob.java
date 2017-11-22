@@ -2,7 +2,9 @@ package jobs;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import controllers.security.SecurityController;
 import models.PluginModel;
@@ -30,6 +32,7 @@ public class DevelopmentStartupJob extends Job {
         this.insertTempUser();
     }
 
+    @SuppressWarnings("deprecation")
     private void insertTestModels(int lenght) {
         try {
             TestRelationModel relation = null;
@@ -38,23 +41,39 @@ public class DevelopmentStartupJob extends Job {
                 relation = new TestRelationModel("Relation " + i);
                 relation.save();
             }
-
+            
+            Date date = null;
             for (int i = 1; i <= lenght; i++) {
                 final TestModel model = new TestModel();
                 model.setBooleanField(i % 2 == 0);
-                model.setDateFutureField(new Date());
+                date=new Date();
+                date.setYear(date.getYear() + 1);
+                model.setDateFutureField(date);
+                date=new Date();
+                date.setYear(date.getYear() - 1);
+                model.setDatePastField(date);
                 model.setDecimalField(i + 2.4);
                 model.setEnumField(TestEnum.values()[i % 4]);
                 model.setFileField(null);
-                model.setHiddenField("hiddenValue");
+                model.setHiddenField(i + "hiddenValue");
                 model.setIntField(i);
-                model.setLongTextField(this.getLoremIpsum().substring(0, 254));
-                model.setPasswordField("333333333");
-                model.setTextField(this.getLoremIpsum().substring(0, 50));
+                model.setLongTextField(i + this.getLoremIpsum().substring(0, 253));
+                model.setPasswordField(i + "#############");
+                model.setTextField(i + this.getLoremIpsum().substring(0, 50));
                 model.setRelationField(relation);
+                model.setEmailField(i+"test@test.com");
+                model.setUrlField("http://localhost.com/" + i);
+                model.setPhoneField("+55 61 99999999"+i);
+                model.setIpv4Field("1.1.1.1");
+                List<TestRelationModel> options = new ArrayList<>();
+                options.add(relation);
+                model.setMultiSelectField(options);
 
                 model.save();
             }
+            
+
+            date=new Date();
         } catch (final Exception e) {
             Logger.error(e.getMessage(), e);
         }
