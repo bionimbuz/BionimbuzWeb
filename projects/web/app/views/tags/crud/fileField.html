@@ -1,53 +1,62 @@
-#{field 'object.' + _name}    
-    <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
-        <label for="${field.id}">&{field.name}</label>   
-        <div class="input-group file-input">
-            <input id="${field.id}_fileName" type="text" class="form-control" disabled="disabled">            
-                #{if _value && _value.exists() && _id}
-                    <span class="input-group-btn" id="download_attachment">
-                        <div class="btn btn-default" style="border-radius: 0px;">
-                            <span class="glyphicon glyphicon-download-alt">
-                                
-                            </span>
-                        </div>
+#{field 'object.' + _name}
+
+#{set 'fileName'}
+#{if _value && _value.exists() && _id}
+&{'crud.field.file.size', _value.length().formatSize()}
+#{/if}        
+#{/set}
+
+<script type="text/javascript">
+
+    #{set clearFunction: "clearFile" + field.id /}
+    function ${clearFunction}(){
+    	console.log("teste");
+    	document.getElementById('${field.id}_delete_').checked = true;
+    	document.getElementById('${field.id}_download_button').style.display = "none";
+    	document.getElementById('${field.id}_delete_button').style.display = "none";
+    	document.getElementById('${field.id}_fileName').value = "";
+    }    
+    
+</script>
+
+<div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+    <label for="${field.id}">&{field.name}</label>   
+    <div class="input-group file-input">
+        <input id="${field.id}_fileName" type="text" class="form-control" disabled="disabled" value="${fileName}">            
+            #{if _value && _value.exists() && _id}
+            <span class="input-group-btn" id="${field.id}_download_button" onclick="javascript: document.getElementById('${field.id}_download_').click();">
+                <div class="btn btn-default" style="border-radius: 0px;border-left: 0px;">
+                    <span class="glyphicon glyphicon-download-alt">     
+                        <a id="${field.id}_download_" href="@{attachment(_id, _name)}" download hidden>...</a>                           
                     </span>
-                    <span class="input-group-btn " id="delete_attachment">
-                        <div class="btn btn-default" style="border-radius: 0px;">
-                            <span class="glyphicon glyphicon-remove"></span>
-                            <span class="removeAttachment"></span>
-                        </div>
-                    </span>
-                #{/if}
-            <span class="input-group-btn ">
-                <div class="btn btn-default">
-                    <span class="glyphicon glyphicon-folder-open"></span>
-                    <span class="input-file-text">&{'browse'}</span>
-                    <input id="${field.id}" type="file" name="${field.name}" style="width: 100px;" onchange="javascript: setFileName(this, document.getElementById('${field.id}_fileName'));"/> 
                 </div>
             </span>
-        </div>        
+            <span class="input-group-btn " id="${field.id}_delete_button" onclick="javascript: ${clearFunction}();">
+                <div class="btn btn-default" style="border-radius: 0px;border-left: 0px;">
+                    <span class="glyphicon glyphicon-remove">                        
+                        <input id="${field.id}_delete_" type="checkbox" name="${field.name}_delete_" value="true" style="display: none;visibility: hidden;" />
+                    </span>
+                </div>
+            </span>
+            #{/if}
+        <span class="input-group-btn ">
+            <div class="btn btn-default">
+                <span class="glyphicon glyphicon-folder-open"></span>
+                <span class="input-file-text">&{'crud.field.file.browse'}</span>
+                <input id="${field.id}" type="file" name="${field.name}" style="width: 100px;" onchange="javascript: setFileName(this, document.getElementById('${field.id}_fileName'));"/> 
+            </div>
+        </span>
+    </div>        
+    
+    #{ifError field.name}
+        <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+    #{/ifError} 
+</div>
         
-        #{ifError field.name}
-            <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
-        #{/ifError} 
-    </div>
+    
+#{set 'moreInnerScripts' }
+
+#{/set}
+
 #{/field}
 
-
-<input id="${field.id}_delete_" type="hidden" name="${field.name}_delete_" value="true" />
-<a id="attachment_link" class="currentAttachment" href="@{attachment(_id, _name)}">...</a>
-
-#{set 'moreInnerScripts' }
-<script type="text/javascript">
-    $(function () {
-        	$('#download_attachment').on('click',function(){
-        	    console.log('download_attachment');
-        	    //window.location.href = '@{attachment(_id, _name)}';
-        });
-        	
-        $('#delete_attachment').on('click',function(){
-            console.log('delete_attachment');
-        });
-    });
-</script>
-#{/set}

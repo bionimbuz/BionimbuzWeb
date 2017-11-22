@@ -59,7 +59,7 @@
                 });
                 
                 // Custom checkboxes
-                $('input').iCheck({
+                $('.icheck').iCheck({
                 checkboxClass: 'icheckbox_square-blue',
                 radioClass: 'iradio_square-blue',
                 increaseArea: '20%' // optional
@@ -104,8 +104,8 @@
                 }
                 
                 // Configure the check and uncheck for checkboxes
-                labelCheckAll = "&{'check.all'}";
-                labelUncheckAll = "&{'uncheck.all'}";
+                labelCheckAll = "&{'crud.field.check.all'}";
+                labelUncheckAll = "&{'crud.field.check.none'}";
                 checkAllElement = $('#check_all');
                 checkOneElement = $('.icheckbox_table_list');
                 uncheckAll = function() {

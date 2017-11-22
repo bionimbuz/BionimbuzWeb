@@ -104,7 +104,14 @@ public class TestModel extends GenericModel {
         name="tb_test_relation_nxn",
         joinColumns=@JoinColumn(name="id_test", referencedColumnName="id"),
         inverseJoinColumns=@JoinColumn(name="id_test_relation", referencedColumnName="id"))
-    private List<TestRelationModel> multiSelectField;   
+    private List<TestRelationModel> multiSelectField; 
+    @Required
+    @ManyToMany
+    @JoinTable(
+        name="tb_test_relation_nxn_2",
+        joinColumns=@JoinColumn(name="id_test2", referencedColumnName="id"),
+        inverseJoinColumns=@JoinColumn(name="id_test_relation2", referencedColumnName="id"))
+    private List<TestRelationModel> multiSelectField2;   
     
     public TestModel() {
         super();
@@ -217,8 +224,14 @@ public class TestModel extends GenericModel {
     }
     public void setMultiSelectField(List<TestRelationModel> multiSelectField) {
         this.multiSelectField = multiSelectField;
+    }    
+    public List<TestRelationModel> getMultiSelectField2() {
+        return multiSelectField2;
     }
-    
+    public void setMultiSelectField2(List<TestRelationModel> multiSelectField2) {
+        this.multiSelectField2 = multiSelectField2;
+    }
+
     @Override
     public String toString() {
         return this.textField;

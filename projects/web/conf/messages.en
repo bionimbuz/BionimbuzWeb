@@ -2,7 +2,6 @@
 # For example, for French create a messages.fr file
 #
 
-
 # Secure Messages
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 secure.title=
@@ -14,10 +13,8 @@ secure.signout=Logout
 secure.error=Oops, unknown username or password.
 secure.logout=You have been logged out.
 
-
 # Default CRUD messages
-# ~~~~~~
-
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 crud.title=Administration
 crud.home=Home
 crud.blank=New
@@ -51,6 +48,10 @@ crud.delete.error=Cannot delete this object
 crud.search=Search
 crud.none=(None)
 crud.selectValue=(Please select a value)
+crud.field.file.browse=Browse
+crud.field.file.size=Current file size (%s)
+crud.field.check.all=Check all
+crud.field.check.none=Uncheck all
 
 crud.help.required=Required.
 crud.help.minlength=Min length is %d.
@@ -65,32 +66,29 @@ crud.help.after=After %s.
 crud.help.before=Before %s.
 crud.help.range=Between %d and %d
 
+# Datetimepicker labels
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+datetimepicker.tooltip.today=Today
+datetimepicker.tooltip.clear=Clear selection
+datetimepicker.tooltip.close=Close
+datetimepicker.tooltip.select.month=Select month
+datetimepicker.tooltip.previous.month=Previous month
+datetimepicker.tooltip.next.month=Next month
+datetimepicker.tooltip.select.year=Select year
+datetimepicker.tooltip.previous.year=Previous year
+datetimepicker.tooltip.next.year=Next year
+datetimepicker.tooltip.select.decade=Select decade
+datetimepicker.tooltip.previous.decade=Previous decade
+datetimepicker.tooltip.next.decade=Next decade
+datetimepicker.tooltip.previous.century=Previous century
+datetimepicker.tooltip.next.century=Next century
 
 # Application Messages
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 application.title=BioNimbuZ
 application.description=Cloud Federation Platform
 
-
 # Controllers
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 PluginController=Plugins
 PluginController.desc=Cloud plugins registered
-
-
-# Datetimepicker labels
-# ~~~~~~
-datetimepicker.tooltip.today=Hoje
-datetimepicker.tooltip.clear=Apagar seleção
-datetimepicker.tooltip.close=Fechar
-datetimepicker.tooltip.select.month=Selecione o mês
-datetimepicker.tooltip.previous.month=Mês anterior
-datetimepicker.tooltip.next.month=Próximo mês
-datetimepicker.tooltip.select.year=Selecione o ano
-datetimepicker.tooltip.previous.year=Ano anterior
-datetimepicker.tooltip.next.year=Próximo ano
-datetimepicker.tooltip.select.decade=Selecione a década
-datetimepicker.tooltip.previous.decade=Década anterior
-datetimepicker.tooltip.next.decade=Próxima década
-datetimepicker.tooltip.previous.century=Século anterior
-datetimepicker.tooltip.next.century=Próximo Século

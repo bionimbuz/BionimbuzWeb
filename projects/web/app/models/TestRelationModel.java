@@ -24,6 +24,8 @@ public class TestRelationModel extends GenericModel {
     private List<TestModel> listFields;
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "multiSelectField")
     private List<TestModel> listMultiFields;    
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "multiSelectField2")
+    private List<TestModel> listMultiFields2;    
     
     public TestRelationModel(String name) {
         super();
@@ -57,5 +59,11 @@ public class TestRelationModel extends GenericModel {
     }
     public void setListMultiFields(List<TestModel> listMultiFields) {
         this.listMultiFields = listMultiFields;
+    }
+    public List<TestModel> getListMultiFields2() {
+        return listMultiFields2;
+    }
+    public void setListMultiFields2(List<TestModel> listMultiFields2) {
+        this.listMultiFields2 = listMultiFields2;
     }
 }
