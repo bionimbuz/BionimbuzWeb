@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<html lang="pt-br">
 
     <head>
         <meta charset="utf-8">
@@ -31,32 +31,8 @@
         <script type="text/javascript" src="@{'/public/javascripts/shared-library.js'}"></script>
         <script type="text/javascript" src="@{'/public/javascripts/main.js'}"></script>
         
-        // Custom checkboxes
         <script type="text/javascript">
-            $(function () {
-                $('input').iCheck({
-                checkboxClass: 'icheckbox_square-blue',
-                radioClass: 'iradio_square-blue',
-                increaseArea: '20%' // optional
-                });
-    
-                $(document).on('change','select.nav',function(){
-                    var $this = this;
-                    var target = $this.value;
-                    $('div.select-pane').hide();
-                    $('div[id="'+target+'"]').show();
-                });
-                
-                $(document).on('click','.series-select',function(){
-                    var $this = this;
-                    var txt = $this.text+'<span class="caret"></span>';
-                    $($this).closest('li.dropdown').find('a.dropdown-toggle').html(txt);            
-                });
-            });
-        </script>
-        
-        // Date picker
-        <script type="text/javascript">
+            // Date picker
             SharedLibrary.setLang("${lang}");
             var datetimepickerTooltipsMap = {
                     'today':        "&{'datetimepicker.tooltip.today'}",
@@ -76,9 +52,28 @@
             };
             
             $(function () {
+                	// navbar control
                 $('.navbar-toggle').click(function () {
                     $('.navbar-nav').toggleClass('slide-in');
                     $('.side-body').toggleClass('body-slide-in');
+                });
+                
+                // Custom checkboxes
+                $('input').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' // optional
+                });
+                $(document).on('change','select.nav',function(){
+                    var $this = this;
+                    var target = $this.value;
+                    $('div.select-pane').hide();
+                    $('div[id="'+target+'"]').show();
+                });
+                $(document).on('click','.series-select',function(){
+                    var $this = this;
+                    var txt = $this.text+'<span class="caret"></span>';
+                    $($this).closest('li.dropdown').find('a.dropdown-toggle').html(txt);            
                 });
 
                 // Bind all datetimepicker elements if they exist.
@@ -107,12 +102,44 @@
                         }
                     });
                 }
+                
+                // Configure the check and uncheck for checkboxes
+                labelCheckAll = "&{'check.all'}";
+                labelUncheckAll = "&{'uncheck.all'}";
+                checkAllElement = $('#check_all');
+                checkOneElement = $('.icheckbox_table_list');
+                uncheckAll = function() {
+                    checkOneElement.each(function(){
+                        it = $(this);
+                        if(!it[0].disabled) {      
+                            it.iCheck('uncheck');
+                        }
+                    }); 
+                    checkAllElement.val(labelCheckAll);
+                    checkAllElement.off().on('click', checkAll);
+                };
+                checkAll = function() {             
+                    checkOneElement.each(function(){
+                        it = $(this);
+                        if(!it[0].disabled) {      
+                            it.iCheck('check');
+                        }
+                    });             
+                    checkAllElement.text(labelUncheckAll);
+                    checkAllElement.off().on('click', uncheckAll);
+                };
+                checkAllElement.on('click', checkAll);
+                checkAllElement.val(labelCheckAll);
+                checkOneElement.on('ifChanged', function() {
+                    checkAllElement.text(labelCheckAll);
+                    checkAllElement.off().on('click', checkAll);
+                });
             });
-            
             
         </script>
         
         #{get 'moreScripts' /}
+        #{get 'moreInnerScripts' /}
         
     </body>
 </html>

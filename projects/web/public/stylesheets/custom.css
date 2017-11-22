@@ -126,3 +126,26 @@
     opacity: 0;
     filter: alpha(opacity=0);
 }
+
+.custom-muilt-check-box {
+    width: 100%;
+    overflow: auto;
+    height: 170px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px 0px 5px 10px;
+}
+
+.has-error .custom-muilt-check-box {
+    border: 1px solid #a94442;
+}
+
+.check-all {
+    float: right;
+    cursor: pointer;
+    font-style: normal;
+}
+
+.input-file-text {
+    padding-left: 0.7em;
+}

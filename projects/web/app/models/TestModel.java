@@ -98,6 +98,7 @@ public class TestModel extends GenericModel {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_relation")
     private TestRelationModel relationField;
+    @Required
     @ManyToMany
     @JoinTable(
         name="tb_test_relation_nxn",

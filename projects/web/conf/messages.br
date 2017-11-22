@@ -1,0 +1,98 @@
+# You can specialize this file for each language.
+# For example, for French create a messages.fr file
+#
+
+
+# Secure Messages
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+secure.title=
+secure.username=Username
+secure.password=Password
+secure.remember=Remember me
+secure.signin=Login
+secure.signout=Logout
+secure.error=Oops, unknown username or password.
+secure.logout=You have been logged out.
+
+
+# Default CRUD messages
+# ~~~~~~
+
+crud.title=Administration
+crud.home=Home
+crud.blank=New
+crud.index.title=Choose the object to edit
+crud.index.objectType=Object type
+crud.index.action=
+crud.index.add=Add
+crud.add=Add &{%s}
+crud.list.title=&{%s}
+crud.list.title.desc=&{%s}
+crud.list.size=%d Register(s) found
+crud.list.totalSize=%d total
+crud.pagination.previous=« Previous
+crud.pagination.next=Next »
+crud.pagination.last=Last »»
+crud.pagination.first=«« First
+crud.show.title=Edit &{%s}
+crud.show.title.desc=Edit &{%s} description
+crud.save=Save
+crud.saveAndContinue=Save and continue editing
+crud.cancel=Cancel
+crud.hasErrors=Please correct errors
+crud.blank.title=Add &{%s}
+crud.blank.title.desc=Add &{%s} description
+crud.saveAndAddAnother=Save and create another
+crud.delete=Delete &{%s}
+crud.created=The &{%s} has been created
+crud.saved=The &{%s} has been saved
+crud.deleted=The &{%s} has been deleted
+crud.delete.error=Cannot delete this object
+crud.search=Search
+crud.none=(None)
+crud.selectValue=(Please select a value)
+
+
+# Validation Messages
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+validation.invalid=Valor inválido.
+validation.required=Campo Obrigatório.
+validation.unique=Esta informação deve ser única. O valor informado já existe na base de dados.
+validation.min=O valor do campo &{%1s} deve ser maior ou igual a %2d.
+validation.minSize=O campo &{%2s} deve ter no mínimo %1s caracteres.
+validation.maxSize=O campo &{%2s} deve ter no máximo %1s caracteres.
+validation.sameValue=Os valores de &{%1s} e &{%2s} devem ser iguais.
+validation.max=O valor do campo &{%1s} deve ser menor ou igual a %2d.
+validation.ipv4=Este valor não é um endereço de IP válido.
+validation.isTrue=Você deve concordar com os termos de apresentados.
+validation.email=Email inválido.
+
+
+# Application Messages
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+application.title=BioNimbuZ
+application.description=Cloud Federation Platform
+
+
+# Controllers
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+PluginController=Plugins
+PluginController.desc=Cloud plugins registered
+
+
+# Datetimepicker labels
+# ~~~~~~
+datetimepicker.tooltip.today=Hoje
+datetimepicker.tooltip.clear=Apagar seleção
+datetimepicker.tooltip.close=Fechar
+datetimepicker.tooltip.select.month=Selecione o mês
+datetimepicker.tooltip.previous.month=Mês anterior
+datetimepicker.tooltip.next.month=Próximo mês
+datetimepicker.tooltip.select.year=Selecione o ano
+datetimepicker.tooltip.previous.year=Ano anterior
+datetimepicker.tooltip.next.year=Próximo ano
+datetimepicker.tooltip.select.decade=Selecione a década
+datetimepicker.tooltip.previous.decade=Década anterior
+datetimepicker.tooltip.next.decade=Próxima década
+datetimepicker.tooltip.previous.century=Século anterior
+datetimepicker.tooltip.next.century=Próximo Século

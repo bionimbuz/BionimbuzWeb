@@ -7,10 +7,10 @@
                 <label for="${field.id}">
                     &{field.name}
                 </label>
+                <a class="check-all" id="check_all">
+                    &{'check.all'}
+                </a>
             </div>
-            <div class="text-right">
-                <input type="button" id="check-all" class="btn btn-info"/>
-            </div>             
             <div class="custom-muilt-check-box">
                 %{ 
                 listAll = params?.getAll(pName.toString());
