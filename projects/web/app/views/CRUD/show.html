@@ -10,11 +10,8 @@
             </div>
             
             <div class="row">
-                <pre class="col-xs-12 col-sm-12 col-md-8"> &{'crud.show.title.desc', type.modelName} </pre>   
-            
-                #{form @delete(object._key())}
-                    <input class="col-xs-12 col-sm-12 col-md-3 btn btn-secondary pull-right" type="submit" value="&{'crud.delete', type.modelName}" />
-                #{/form}
+                <pre class="col-xs-12 col-sm-12 col-md-8"> &{'crud.show.title.desc', type.modelName} </pre>            
+                <input data-toggle="modal" data-target="#deleteModal" class="col-xs-12 col-sm-12 col-md-3 btn btn-secondary pull-right" type="button" value="&{'crud.delete', type.modelName}" />
             </div>
         </div>
     </div>
@@ -33,4 +30,25 @@
         <a href="@{list()}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>     
     </div>
 #{/form}
+</div>
+
+<div id="deleteModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Confirmation</h4>
+            </div>
+            <div class="modal-body">
+                <p>Do you want to save changes you made to document before closing?</p>
+                <p class="text-warning"><small>If you don't save, your changes will be lost.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>                
+                #{form @delete(object._key()), style: 'display:inline;'}
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                #{/form}
+            </div>
+        </div>
+    </div>
 </div>
