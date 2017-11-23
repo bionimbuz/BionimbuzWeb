@@ -149,3 +149,7 @@
 .input-file-text {
     padding-left: 0.7em;
 }
+
+pre {
+     padding: 7px;
+}

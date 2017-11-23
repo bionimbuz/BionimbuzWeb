@@ -2,11 +2,21 @@
 #{extends 'CRUD/layout.html' /}
 #{set title:messages.get('crud.show.title', type.modelName) /}
 
-
 <div class="row">
-    <div class="col-xs-12 col-sm-12 col-md-12">  
-        <h1> &{'crud.show.title', type.modelName} </h1>
-        <pre> &{'crud.show.title.desc', type.modelName} </pre>
+    <div class="">  
+        <div class="col-xs-12 col-sm-12 col-md-12">
+            <div class="row">
+                <h1> &{'crud.show.title', type.modelName} </h1>
+            </div>
+            
+            <div class="row">
+                <pre class="col-xs-12 col-sm-12 col-md-8"> &{'crud.show.title.desc', type.modelName} </pre>   
+            
+                #{form @delete(object._key())}
+                    <input class="col-xs-12 col-sm-12 col-md-3 btn btn-secondary pull-right" type="submit" value="&{'crud.delete', type.modelName}" />
+                #{/form}
+            </div>
+        </div>
     </div>
 </div>
 
