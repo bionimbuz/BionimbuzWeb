@@ -1,23 +1,30 @@
 #{field 'object.' + _name}
 
-#{set 'fileName'}
 #{if _value && _value.exists() && _id}
-&{'crud.field.file.size', _value.length().formatSize()}
-#{/if}        
-#{/set}
-
-<script type="text/javascript">
 
     #{set clearFunction: "clearFile" + field.id /}
+    #{set 'tempInnerScript' }
+    <script type="text/javascript">
     function ${clearFunction}(){
-    	console.log("teste");
-    	document.getElementById('${field.id}_delete_').checked = true;
-    	document.getElementById('${field.id}_download_button').style.display = "none";
-    	document.getElementById('${field.id}_delete_button').style.display = "none";
-    	document.getElementById('${field.id}_fileName').value = "";
+        console.log("teste");
+        document.getElementById('${field.id}_delete_').checked = true;
+        document.getElementById('${field.id}_download_button').style.display = "none";
+        document.getElementById('${field.id}_delete_button').style.display = "none";
+        document.getElementById('${field.id}_fileName').value = "";
     }    
+    </script>        
+    #{/set}
     
-</script>
+    #{set 'moreInnerScripts'}
+        #{get 'moreInnerScripts' /}
+        #{get 'tempInnerScript' /}
+    #{/set}   
+
+    #{set 'fileName'}
+    &{'crud.field.file.size', _value.length().formatSize()}
+    #{/set}
+    
+#{/if}     
 
 <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
     <label for="${field.id}">&{field.name}</label>   
@@ -51,12 +58,7 @@
     #{ifError field.name}
         <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
     #{/ifError} 
-</div>
-        
-    
-#{set 'moreInnerScripts' }
-
-#{/set}
+</div>    
 
 #{/field}
 

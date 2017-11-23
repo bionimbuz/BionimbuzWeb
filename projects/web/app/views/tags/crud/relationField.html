@@ -36,19 +36,18 @@
             %{ } }%
         </div>            
          
-#{set 'tempInnerScript' }
-    <script type="text/javascript">
-        configureCheckAll(
-                $('.${field.id}_class_all_'), 
-                $('.${field.id}_class_one_'));
-    </script>
-
-#{/set}
-
-#{set 'moreInnerScripts'}
-    #{get 'moreInnerScripts' /}
-    #{get 'tempInnerScript' /}
-#{/set} 
+        #{set 'tempInnerScript' }
+        <script type="text/javascript">
+            configureCheckAll(
+                    $('.${field.id}_class_all_'), 
+                    $('.${field.id}_class_one_'));
+        </script>        
+        #{/set}
+        
+        #{set 'moreInnerScripts'}
+            #{get 'moreInnerScripts' /}
+            #{get 'tempInnerScript' /}
+        #{/set} 
         
     #{/if}
     #{else}
