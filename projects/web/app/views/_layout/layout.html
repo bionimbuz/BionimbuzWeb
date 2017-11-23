@@ -101,40 +101,17 @@
                             nextCentury: datetimepickerTooltipsMap['nextCentury']
                         }
                     });
-                }
+                }               
                 
-                // Configure the check and uncheck for checkboxes
-                labelCheckAll = "&{'crud.field.check.all'}";
-                labelUncheckAll = "&{'crud.field.check.none'}";
-                checkAllElement = $('#check_all');
-                checkOneElement = $('.icheckbox_table_list');
-                uncheckAll = function() {
-                    checkOneElement.each(function(){
-                        it = $(this);
-                        if(!it[0].disabled) {      
-                            it.iCheck('uncheck');
-                        }
-                    }); 
-                    checkAllElement.val(labelCheckAll);
-                    checkAllElement.off().on('click', checkAll);
-                };
-                checkAll = function() {             
-                    checkOneElement.each(function(){
-                        it = $(this);
-                        if(!it[0].disabled) {      
-                            it.iCheck('check');
-                        }
-                    });             
-                    checkAllElement.text(labelUncheckAll);
-                    checkAllElement.off().on('click', uncheckAll);
-                };
-                checkAllElement.on('click', checkAll);
-                checkAllElement.val(labelCheckAll);
-                checkOneElement.on('ifChanged', function() {
-                    checkAllElement.text(labelCheckAll);
-                    checkAllElement.off().on('click', checkAll);
-                });
             });
+            
+            //Configure the check and uncheck for checkboxes
+            function configureCheckAll(checkAllElement, checkOneElement) {
+                labelCheckAll = "&{'crud.field.check.all'}";
+                labelUncheckAll = "&{'crud.field.check.none'}";                  
+                configureCheckAllForLabels(checkAllElement, checkOneElement, labelCheckAll, labelUncheckAll);
+            }
+
             
         </script>
         

@@ -1,70 +1,87 @@
 %{ pName = 'object.' + _name + '.' + play.db.Model.Manager.factoryFor(_field.property.relationType).keyName() }%
 
 #{field 'object.' + _name}
-    <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
-        #{if _field.multiple}
-            <div class="div-label">
-                <label for="${field.id}">
-                    &{field.name}
-                </label>
-                <a class="check-all" id="check_all">
-                    &{'crud.field.check.all'}
-                </a>
-            </div>
-            <div class="custom-muilt-check-box">
-                %{ 
-                listAll = params?.getAll(pName.toString());
-                _field.choices.each() { 
-                    selected = false;
-                    if(field.error?.message != 'validation.required') {
-                        if(params[pName]) {
-                            selected = listAll.contains(it._key().toString());
-                        } else {
-                            if (_value != null) {
-                                for (it2 in _value) {
-                                    if(it2._key() == it._key()) {
-                                        selected = true;
-                                    }
+
+<div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+    #{if _field.multiple}
+        <div class="div-label">
+            <label for="${field.id}">
+                &{field.name}
+            </label>
+            <a class="check-all ${field.id}_class_all_"></a>
+        </div>
+        <div class="custom-muilt-check-box">
+            %{ 
+            listAll = params?.getAll(pName.toString());
+            _field.choices.each() { 
+                selected = false;
+                if(field.error?.message != 'validation.required') {
+                    if(params[pName]) {
+                        selected = listAll.contains(it._key().toString());
+                    } else {
+                        if (_value != null) {
+                            for (it2 in _value) {
+                                if(it2._key() == it._key()) {
+                                    selected = true;
                                 }
                             }
                         }
                     }
-                }%
-                <div style="padding-top: 5px;padding-bottom: 5px;">
-                    <input type="checkbox" name="${pName}" value="${it._key()}" ${selected ? 'checked'.raw() : ''} class="icheck icheckbox_table_list"/>&nbsp;${it}<br/>
-                </div>
-                %{ } }%
+                }
+            }%
+            <div style="padding-top: 5px;padding-bottom: 5px;">
+                <input type="checkbox" name="${pName}" value="${it._key()}" ${selected ? 'checked'.raw() : ''} 
+                    class="icheck icheckbox_table_list ${field.id}_class_one_"/>&nbsp;${it}<br/>
             </div>
-        #{/if}
-        #{else}
-            <label for="${field.id}">&{field.name}</label>
-            <div class="nav-container">
-                <select class="form-control nav" id="${field.id}" name="${pName}">
-                    #{ifnot _field.required}
-                        <option value="">&{'crud.none'}</option>
-                    #{/ifnot}
-                    #{else}
-                        <option value="">&{'crud.selectValue'}</option>
-                    #{/else}
-                    %{ _field.choices.each() { }%
-                    %{
-                        selected = false
-                        if(field.error?.message != 'validation.required') {
-                            if(params[pName]) {
-                                selected = (it._key().toString() == params[pName])
-                            } else {
-                                selected = it._key() == _value?._key()
-                            }
+            %{ } }%
+        </div>            
+         
+#{set 'tempInnerScript' }
+    <script type="text/javascript">
+        configureCheckAll(
+                $('.${field.id}_class_all_'), 
+                $('.${field.id}_class_one_'));
+    </script>
+
+#{/set}
+
+#{set 'moreInnerScripts'}
+    #{get 'moreInnerScripts' /}
+    #{get 'tempInnerScript' /}
+#{/set} 
+        
+    #{/if}
+    #{else}
+        <label for="${field.id}">&{field.name}</label>
+        <div class="nav-container">
+            <select class="form-control nav" id="${field.id}" name="${pName}">
+                #{ifnot _field.required}
+                    <option value="">&{'crud.none'}</option>
+                #{/ifnot}
+                #{else}
+                    <option value="">&{'crud.selectValue'}</option>
+                #{/else}
+                %{ _field.choices.each() { }%
+                %{
+                    selected = false
+                    if(field.error?.message != 'validation.required') {
+                        if(params[pName]) {
+                            selected = (it._key().toString() == params[pName])
+                        } else {
+                            selected = it._key() == _value?._key()
                         }
-                    }%
-                    <option value="${it._key()}" ${selected ? 'selected="true"'.raw() : ''}>${it}</option>
-                    %{ } }%
-                </select>
-            </div>
-        #{/else}
-        #{ifError field.name}
-            <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
-        #{/ifError}
-    </div>
+                    }
+                }%
+                <option value="${it._key()}" ${selected ? 'selected="true"'.raw() : ''}>${it}</option>
+                %{ } }%
+            </select>
+        </div>
+    #{/else}
+    #{ifError field.name}
+        <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+    #{/ifError}
+</div>       
+
 #{/field}
+        
 
