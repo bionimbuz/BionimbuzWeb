@@ -28,6 +28,7 @@
         <script type="text/javascript" src="@{'/public/assets/icheck-1.0.2/icheck.js'}"></script>
         <script type="text/javascript" src="@{'/public/assets/moment/moment-with-locales.js'}"></script>
         <script type="text/javascript" src="@{'/public/assets/datetimepicker/bootstrap-datetimepicker.min.js'}"></script>
+        <script type="text/javascript" src="@{'/public/assets/notify/notify.min.js'}"></script>
         <script type="text/javascript" src="@{'/public/javascripts/shared-library.js'}"></script>
         <script type="text/javascript" src="@{'/public/javascripts/main.js'}"></script>
         
@@ -103,6 +104,28 @@
                     });
                 }               
                 
+                
+                #{if flash.success || success}
+                    $(".crud-title").notify(
+                    		  "${success ?: flash.success}"
+                    		  ,"success"
+                    		  ,{ position:"middle" }
+                    );
+                #{/if} 
+                #{if flash.error || error}
+                $(".crud-title").notify(
+                            "${error ?: flash.error}"
+                            ,"error"
+                            ,{ position:"middle" }
+                    );
+                #{/if}
+                #{if flash.warning}
+                    $(".crud-title").notify(
+                            "${flash.warning}"
+                            ,"warning"
+                            ,{ position:"middle" }
+                    );
+                #{/if}
             });
             
             //Configure the check and uncheck for checkboxes
