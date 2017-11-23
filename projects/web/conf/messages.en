@@ -92,3 +92,12 @@ application.description=Cloud Federation Platform
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 PluginController=Plugins
 PluginController.desc=Cloud plugins registered
+
+# Modals
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+modal.confirm=Confirmation
+modal.confirm.delete=Are you sure you want to delete?
+modal.confirm.delete.desc=The register will be permanently deleted.
+modal.button.ok=Ok
+modal.button.cancel=Cancel
+modal.button.confirm=Confirm
