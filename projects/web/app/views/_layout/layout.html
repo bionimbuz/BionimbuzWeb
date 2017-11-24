@@ -9,14 +9,14 @@
         <link href="@{'/public/images/favicon.png'}" rel="icon" type="image/png">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         
-        <link rel="stylesheet" type="text/css" href="@{'/public/stylesheets/bootstrap.min.css'}">
-        <link rel="stylesheet" type="text/css" href="@{'/public/stylesheets/main.css'}">
-        <link rel="stylesheet" type="text/css" href="@{'/public/stylesheets/custom.css'}">        
         <link rel="stylesheet" type="text/css" href="@{'/public/assets/icheck-1.0.2/skins/square/blue.css'}" >
         <link rel="stylesheet" type="text/css" href="@{'/public/assets/datetimepicker/bootstrap-datetimepicker.min.css'}">
         <link rel="stylesheet" type="text/css" href="@{'/public/assets/entypo/entypo-icon.css'}"/>
+        <link rel="stylesheet" type="text/css" href="@{'/public/assets/animate/animate.css'}"/>
+        <link rel="stylesheet" type="text/css" href="@{'/public/stylesheets/bootstrap.min.css'}">
+        <link rel="stylesheet" type="text/css" href="@{'/public/stylesheets/main.css'}">
+        <link rel="stylesheet" type="text/css" href="@{'/public/stylesheets/custom.css'}">
         #{get 'moreStyles' /}
-        
     </head>
     
     <body>    
@@ -28,7 +28,7 @@
         <script type="text/javascript" src="@{'/public/assets/icheck-1.0.2/icheck.js'}"></script>
         <script type="text/javascript" src="@{'/public/assets/moment/moment-with-locales.js'}"></script>
         <script type="text/javascript" src="@{'/public/assets/datetimepicker/bootstrap-datetimepicker.min.js'}"></script>
-        <script type="text/javascript" src="@{'/public/assets/notify/notify.min.js'}"></script>
+        <script type="text/javascript" src="@{'/public/assets/bootstrap-notify-master/bootstrap-notify.min.js'}"></script>
         <script type="text/javascript" src="@{'/public/javascripts/shared-library.js'}"></script>
         <script type="text/javascript" src="@{'/public/javascripts/main.js'}"></script>
         
@@ -104,28 +104,46 @@
                     });
                 }               
                 
-                
+                // Bind notify messages
+                notify = false;
                 #{if flash.success || success}
-                    $(".crud-title").notify(
-                    		  "${success ?: flash.success}"
-                    		  ,"success"
-                    		  ,{ position:"middle" }
-                    );
+                    notify = true;
+                    message = '${success ?: flash.success}';
+                    icon = 'glyphicon glyphicon glyphicon-ok';
+                    type = 'success';
                 #{/if} 
                 #{if flash.error || error}
-                $(".crud-title").notify(
-                            "${error ?: flash.error}"
-                            ,"error"
-                            ,{ position:"middle" }
-                    );
+                    notify = true;
+                    message = '${error ?: flash.error}';
+                    icon = 'glyphicon glyphicon-remove';
+                    type = 'danger';
                 #{/if}
                 #{if flash.warning}
-                    $(".crud-title").notify(
-                            "${flash.warning}"
-                            ,"warning"
-                            ,{ position:"middle" }
-                    );
+                    notify = true;
+                    message = '${flash.warning}';
+                    icon = 'glyphicon glyphicon-warning-sign';
+                    type = 'warning';
                 #{/if}
+                if (notify) {
+                  	$.notify({
+                        // options
+                        icon: icon,
+                        message: message
+                    },{
+                        // settings
+                        type: type,
+                        delay: 3000,
+                        timer: 500,
+                        placement: {
+                            from: "top",
+                            align: "center"
+                        },
+                        animate: {
+                            enter: 'animated fadeInDown',
+                            exit: 'animated fadeOutUp'
+                        }
+                    });
+                }
             });
             
             //Configure the check and uncheck for checkboxes
@@ -134,8 +152,6 @@
                 labelUncheckAll = "&{'crud.field.check.none'}";                  
                 configureCheckAllForLabels(checkAllElement, checkOneElement, labelCheckAll, labelUncheckAll);
             }
-
-            
         </script>
         
         #{get 'moreScripts' /}
