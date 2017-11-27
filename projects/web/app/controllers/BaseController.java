@@ -5,6 +5,9 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import common.binders.FileFieldName;
+import common.binders.FileFieldType;
+import common.fields.FileField;
 import play.data.binding.Binder;
 import play.db.Model;
 import play.db.Model.Property;
@@ -95,6 +98,33 @@ public class BaseController extends CRUD {
         }
         notFound();
     }
+    
+    private static void bindFileFieldsMetadata(Model object) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+        Class<?> c = object.getClass();
+        for (Field field : c.getDeclaredFields()) {
+            if (!field.getType().isAssignableFrom(FileField.class)) {
+                continue;
+            }
+            field.setAccessible(true);
+            FileField fileField = (FileField)field.get(object);
+            FileFieldName fieldName = field.getAnnotation(FileFieldName.class);            
+            if(fieldName != null && fileField.getFileName() != null) {
+                Field reflectField = object.getClass().getDeclaredField(fieldName.value());
+                if(reflectField != null) {
+                    reflectField.setAccessible(true);
+                    reflectField.set(object, fileField.getFileName());
+                }
+            }
+            FileFieldType fieldType = field.getAnnotation(FileFieldType.class);
+            if(fieldType != null && fileField.getType() != null) {
+                Field reflectField = object.getClass().getDeclaredField(fieldType.value());
+                if(reflectField != null) {
+                    reflectField.setAccessible(true);
+                    reflectField.set(object, fileField.getType());
+                }
+            }
+        }
+    }
 
     public static void save(String id) throws Exception {
         CustomObjectType type = CustomObjectType.get(getControllerClass());
@@ -111,6 +141,7 @@ public class BaseController extends CRUD {
                 render("CRUD/show.html", type, object);
             }
         }
+        bindFileFieldsMetadata(object);
         object._save();
         flash.success(play.i18n.Messages.get("crud.saved", type.modelName));
         if (params.get("_save") != null) {
@@ -148,6 +179,7 @@ public class BaseController extends CRUD {
                 render("CRUD/blank.html", type, object);
             }
         }
+        bindFileFieldsMetadata(object);
         object._save();
         flash.success(play.i18n.Messages.get("crud.created", type.modelName));
         if (params.get("_save") != null) {

@@ -20,9 +20,9 @@
         #{get 'tempInnerScript' /}
     #{/set}   
 
-    #{set 'fileName'}
-    &{'crud.field.file.size', _value.length().formatSize()}
-    #{/set}
+#{set 'fileName'}
+&{'crud.field.file.size', _value.length().formatSize()}
+#{/set}
     
 #{/if}     
 

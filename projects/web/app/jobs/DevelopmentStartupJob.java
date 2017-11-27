@@ -25,7 +25,6 @@ public class DevelopmentStartupJob extends Job {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @Override
     public void doJob() {
-
         Lang.change("br");
         this.insertTestModels(10);
         this.insertTempPlugins(10);
@@ -68,6 +67,9 @@ public class DevelopmentStartupJob extends Job {
                 List<TestRelationModel> options = new ArrayList<>();
                 options.add(relation);
                 model.setMultiSelectField(options);
+                List<TestRelationModel> options2 = new ArrayList<>();
+                options2.add(relation);
+                model.setMultiSelectField2(options2);
 
                 model.save();
             }
