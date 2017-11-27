@@ -4,6 +4,5 @@
 /eclipse/
 /data/
 /tmp/
-/modules/crud
-/modules/secure
+/modules
 *.DS_Store
