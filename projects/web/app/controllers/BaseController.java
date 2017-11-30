@@ -9,9 +9,11 @@ import common.binders.FileFieldName;
 import common.binders.FileFieldType;
 import common.fields.FileField;
 import play.data.binding.Binder;
+import play.data.validation.Validation;
 import play.db.Model;
 import play.db.Model.Property;
 import play.exceptions.TemplateNotFoundException;
+import play.i18n.Messages;
 import play.mvc.Before;
 import play.mvc.Controller;
 
@@ -29,10 +31,10 @@ public class BaseController extends CRUD {
     // Generic constants
     // -------
     public static final String CONNECTED_USER = "connectedUser";
-    
+
     @Before
     public static void addType() throws Exception {
-        CustomObjectType type = CustomObjectType.get(getControllerClass());
+        final CustomObjectType type = CustomObjectType.get(getControllerClass());
         renderArgs.put("type", type);
     }
 
@@ -44,44 +46,44 @@ public class BaseController extends CRUD {
     }
 
     public static void list(int page, String search, String searchFields, String orderBy, String order) {
-        CustomObjectType type = CustomObjectType.get(getControllerClass());
+        final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);
         if (page < 1) {
             page = 1;
         }
-        List<Model> objects = type.findPage(page, search, searchFields, orderBy, order, (String) request.args.get("where"));
-        Long count = type.count(search, searchFields, (String) request.args.get("where"));
-        Long totalCount = type.count(null, null, (String) request.args.get("where"));
+        final List<Model> objects = type.findPage(page, search, searchFields, orderBy, order, (String) request.args.get("where"));
+        final Long count = type.count(search, searchFields, (String) request.args.get("where"));
+        final Long totalCount = type.count(null, null, (String) request.args.get("where"));
         try {
             render(type, objects, count, totalCount, page, orderBy, order);
-        } catch (TemplateNotFoundException e) {
+        } catch (final TemplateNotFoundException e) {
             render("CRUD/list.html", type, objects, count, totalCount, page, orderBy, order);
         }
     }
 
     public static void show(String id) throws Exception {
-        CustomObjectType type = CustomObjectType.get(getControllerClass());
+        final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);
-        Model object = type.findById(id);
+        final Model object = type.findById(id);
         notFoundIfNull(object);
         try {
             render(type, object);
-        } catch (TemplateNotFoundException e) {
+        } catch (final TemplateNotFoundException e) {
             render("CRUD/show.html", type, object);
         }
     }
 
     @SuppressWarnings("deprecation")
     public static void attachment(String id, String field) throws Exception {
-        CustomObjectType type = CustomObjectType.get(getControllerClass());
+        final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);
-        Model object = type.findById(id);
+        final Model object = type.findById(id);
         notFoundIfNull(object);
-        Field reflectField = object.getClass().getDeclaredField(field);
+        final Field reflectField = object.getClass().getDeclaredField(field);
         reflectField.setAccessible(true);
-        Object att = reflectField.get(object);
-        if(att instanceof Model.BinaryField) {
-            Model.BinaryField attachment = (Model.BinaryField)att;
+        final Object att = reflectField.get(object);
+        if (att instanceof Model.BinaryField) {
+            final Model.BinaryField attachment = (Model.BinaryField) att;
             if (attachment == null || !attachment.exists()) {
                 notFound();
             }
@@ -89,8 +91,8 @@ public class BaseController extends CRUD {
             renderBinary(attachment.get(), attachment.length());
         }
         // DEPRECATED
-        if(att instanceof play.db.jpa.FileAttachment) {
-            play.db.jpa.FileAttachment attachment = (play.db.jpa.FileAttachment)att;
+        if (att instanceof play.db.jpa.FileAttachment) {
+            final play.db.jpa.FileAttachment attachment = (play.db.jpa.FileAttachment) att;
             if (attachment == null || !attachment.exists()) {
                 notFound();
             }
@@ -127,23 +129,23 @@ public class BaseController extends CRUD {
     }
 
     public static void save(String id) throws Exception {
-        CustomObjectType type = CustomObjectType.get(getControllerClass());
+        final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);
-        Model object = type.findById(id);
+        final Model object = type.findById(id);
         notFoundIfNull(object);
         Binder.bindBean(params.getRootParamNode(), "object", object);
         validation.valid(object);
-        if (validation.hasErrors()) {
-            renderArgs.put("error", play.i18n.Messages.get("crud.hasErrors"));
+        if (Validation.hasErrors()) {
+            renderArgs.put("error", Messages.get("crud.hasErrors"));
             try {
                 render(request.controller.replace(".", "/") + "/show.html", type, object);
-            } catch (TemplateNotFoundException e) {
+            } catch (final TemplateNotFoundException e) {
                 render("CRUD/show.html", type, object);
             }
         }
         bindFileFieldsMetadata(object);
         object._save();
-        flash.success(play.i18n.Messages.get("crud.saved", type.modelName));
+        flash.success(Messages.get("crud.saved", type.modelName));
         if (params.get("_save") != null) {
             redirect(request.controller + ".list");
         }
@@ -151,37 +153,37 @@ public class BaseController extends CRUD {
     }
 
     public static void blank() throws Exception {
-        CustomObjectType type = CustomObjectType.get(getControllerClass());
+        final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);
-        Constructor<?> constructor = type.entityClass.getDeclaredConstructor();
+        final Constructor<?> constructor = type.entityClass.getDeclaredConstructor();
         constructor.setAccessible(true);
-        Model object = (Model) constructor.newInstance();
+        final Model object = (Model) constructor.newInstance();
         try {
             render(type, object);
-        } catch (TemplateNotFoundException e) {
+        } catch (final TemplateNotFoundException e) {
             render("CRUD/blank.html", type, object);
         }
     }
 
     public static void create() throws Exception {
-        CustomObjectType type = CustomObjectType.get(getControllerClass());
+        final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);
-        Constructor<?> constructor = type.entityClass.getDeclaredConstructor();
+        final Constructor<?> constructor = type.entityClass.getDeclaredConstructor();
         constructor.setAccessible(true);
-        Model object = (Model) constructor.newInstance();
+        final Model object = (Model) constructor.newInstance();
         Binder.bindBean(params.getRootParamNode(), "object", object);
         validation.valid(object);
-        if (validation.hasErrors()) {
-            renderArgs.put("error", play.i18n.Messages.get("crud.hasErrors"));
+        if (Validation.hasErrors()) {
+            renderArgs.put("error", Messages.get("crud.hasErrors"));
             try {
                 render(request.controller.replace(".", "/") + "/blank.html", type, object);
-            } catch (TemplateNotFoundException e) {
+            } catch (final TemplateNotFoundException e) {
                 render("CRUD/blank.html", type, object);
             }
         }
         bindFileFieldsMetadata(object);
         object._save();
-        flash.success(play.i18n.Messages.get("crud.created", type.modelName));
+        flash.success(Messages.get("crud.created", type.modelName));
         if (params.get("_save") != null) {
             redirect(request.controller + ".list");
         }
@@ -192,41 +194,42 @@ public class BaseController extends CRUD {
     }
 
     public static void delete(String id) throws Exception {
-        CustomObjectType type = CustomObjectType.get(getControllerClass());
+        final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);
-        Model object = type.findById(id);
+        final Model object = type.findById(id);
         notFoundIfNull(object);
         try {
             object._delete();
-        } catch (Exception e) {
-            flash.error(play.i18n.Messages.get("crud.delete.error", type.modelName));
+        } catch (final Exception e) {
+            flash.error(Messages.get("crud.delete.error", type.modelName));
             redirect(request.controller + ".show", object._key());
         }
-        flash.success(play.i18n.Messages.get("crud.deleted", type.modelName));
+        flash.success(Messages.get("crud.deleted", type.modelName));
         redirect(request.controller + ".list");
     }
 
     protected static ObjectType createObjectType(Class<? extends Model> entityClass) {
         return new CustomObjectType(entityClass);
     }
-    
-    public static class CustomObjectType extends ObjectType {        
+
+    public static class CustomObjectType extends ObjectType {
+
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Constructors.
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         public CustomObjectType(final Class<? extends Model> modelClass) {
             super(modelClass);
         }
-        
+
         public static CustomObjectType get(Class<? extends Controller> controllerClass) {
-            
-            return (CustomObjectType)ObjectType.get(controllerClass);
+
+            return (CustomObjectType) ObjectType.get(controllerClass);
         }
-        
+
         @Override
         public List<ObjectField> getFields() {
-            final List<CustomObjectField> fields = new ArrayList<CustomObjectField>();
-            final List<ObjectField> hiddenFields = new ArrayList<ObjectField>();
+            final List<CustomObjectField> fields = new ArrayList<>();
+            final List<ObjectField> hiddenFields = new ArrayList<>();
             for (final Model.Property f : this.factory.listProperties()) {
                 final CustomObjectField of = new CustomObjectField(f);
                 if (of.type != null) {
@@ -239,13 +242,13 @@ public class BaseController extends CRUD {
             }
             hiddenFields.addAll(fields);
             return hiddenFields;
-        }        
-        
+        }
+
         public static class CustomObjectField extends ObjectType.ObjectField {
-    
+
             private String typeName = "unknown";
-            private Property property;
-    
+            private final Property property;
+
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             // Constructors.
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -254,11 +257,16 @@ public class BaseController extends CRUD {
                 this.property = property;
                 this.typeName = property.type.getSimpleName().toString();
             }
+
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             // Get
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             public String typeName() {
                 return this.typeName;
+            }
+
+            public Property getProperty() {
+                return this.property;
             }
         }
     }
