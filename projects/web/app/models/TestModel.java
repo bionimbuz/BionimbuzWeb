@@ -100,7 +100,6 @@ public class TestModel extends GenericModel {
     @Required
     @IPv4Address
     private String ipv4Field;
-    
     @Required
     @FileFieldName("fileFieldName")
     @FileFieldType("fileFieldType")

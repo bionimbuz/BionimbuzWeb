@@ -30,7 +30,7 @@
         #{get 'tempInnerScript' /}
     #{/set}   
 
-    #{if !_fileName.isEmpty()}
+    #{if _fileName != null && !_fileName.isEmpty()}
         #{set 'fileName'}&{'crud.field.file.name', _fileName, _value.length().formatSize()}#{/set}    
     #{/if}
     #{else}
