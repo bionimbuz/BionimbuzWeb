@@ -1,18 +1,8 @@
 package models;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.AlgorithmParameterSpec;
 import java.util.Date;
 import java.util.List;
 
-import javax.crypto.Cipher;
-import javax.crypto.CipherInputStream;
-import javax.crypto.CipherOutputStream;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -26,6 +16,7 @@ import javax.persistence.Table;
 
 import common.binders.FileFieldName;
 import common.binders.FileFieldType;
+import common.fields.EncryptedFileField;
 import common.fields.FileField;
 import controllers.CRUD.Hidden;
 import play.data.binding.NoBinding;
@@ -110,7 +101,7 @@ public class TestModel extends GenericModel {
     private String fileFieldName;    
     @FileFieldName("fileFieldName2")
     @FileFieldType("fileFieldType2")
-    private FileField fileField2;       
+    private EncryptedFileField fileField2;       
     @NoBinding
     private String fileFieldType2;
     @NoBinding
@@ -150,49 +141,6 @@ public class TestModel extends GenericModel {
     public void setEnumField(TestEnum enumField) {
         this.enumField = enumField;
     }
-    
-    static SecretKey key = null;
-    
-    static {
-        try {
-            key = KeyGenerator.getInstance("DES").generateKey();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-    }
-    
-    
-//    
-//    public Blob getFileField() {
-//        try {
-//            DesEncrypter encrypter = new DesEncrypter(key);
-//            ByteArrayOutputStream output = new ByteArrayOutputStream();                
-//            encrypter.decrypt(fileField.get(), output);                
-//            ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());            
-//            fileField.set(input, fileField.type());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        
-//        
-//        return fileField;
-//    }
-//    public void setFileField(Blob fileField) {
-//        if (fileField != null) {
-//            try {
-//                DesEncrypter encrypter = new DesEncrypter(key);
-//                ByteArrayOutputStream output = new ByteArrayOutputStream();                
-//                encrypter.encrypt(fileField.get(), output);                
-//                ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
-//                fileField.set(input, fileField.type());
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        
-//        }
-//        this.fileField = fileField;
-//    }
-
     public FileField getFileField() {
         return fileField;
     }
@@ -290,48 +238,10 @@ public class TestModel extends GenericModel {
             List<TestRelationModel> multiSelectField2) {
         this.multiSelectField2 = multiSelectField2;
     }
-    public FileField getFileField2() {
+    public EncryptedFileField getFileField2() {
         return fileField2;
     }
-    public void setFileField2(FileField fileField2) {
+    public void setFileField2(EncryptedFileField fileField2) {
         this.fileField2 = fileField2;
-    }
-
-    static class DesEncrypter {
-        
-        private static String ENCRYPT_TYPE = "DES/CBC/PKCS5Padding";
-        
-        byte[] buf = new byte[1024];
-        Cipher ecipher;
-        Cipher dcipher;
-        DesEncrypter(SecretKey key) throws Exception {
-            byte[] iv = new byte[]{
-                    (byte) 0x8E, 0x12, 0x39, 
-                    (byte) 0x9C, 0x07, 0x72, 0x6F, 0x5A};
-            AlgorithmParameterSpec paramSpec = new IvParameterSpec(iv);
-            ecipher = Cipher.getInstance(ENCRYPT_TYPE);
-            dcipher = Cipher.getInstance(ENCRYPT_TYPE);
-
-            ecipher.init(Cipher.ENCRYPT_MODE, key, paramSpec);
-            dcipher.init(Cipher.DECRYPT_MODE, key, paramSpec);
-        }
-
-        public void encrypt(InputStream in, OutputStream out) throws Exception {
-            out = new CipherOutputStream(out, ecipher);
-            int numRead = 0;
-            while ((numRead = in.read(buf)) >= 0) {
-                out.write(buf, 0, numRead);
-            }
-            out.close();
-        }
-
-        public void decrypt(InputStream in, OutputStream out) throws Exception {
-            in = new CipherInputStream(in, dcipher);
-            int numRead = 0;
-            while ((numRead = in.read(buf)) >= 0) {
-                out.write(buf, 0, numRead);
-            }
-            out.close();
-        }
-    }
+    }    
 }

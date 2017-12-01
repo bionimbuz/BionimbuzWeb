@@ -24,10 +24,10 @@ public class FileField implements Model.BinaryField, UserType {
     private String fileName;
     private byte[] file;    
 
-    private FileField(byte[] file) {
+    protected FileField(byte[] file) {
         this.file = file;
     }    
-    private FileField(String UUID, String type) {
+    protected FileField(String UUID, String type) {
         this.type = type;
     }
     
@@ -80,6 +80,9 @@ public class FileField implements Model.BinaryField, UserType {
     }    
     public void setType(String type) {
         this.type = type;
+    }    
+    protected byte[] getFile() {
+        return file;
     }
     /*
      * Implementations of org.hibernate.usertype.UserType 
@@ -115,13 +118,10 @@ public class FileField implements Model.BinaryField, UserType {
     @Override
     public void nullSafeSet(PreparedStatement ps, Object o, int i, SessionImplementor sessionImplementor) throws HibernateException, SQLException {
         if(o != null) {
-            ps.setBytes(i, encode((FileField) o));
+            ps.setBytes(i, ((FileField) o).file);
         } else {
             ps.setNull(i, Types.LONGVARBINARY);
         }
-    }
-    private byte[] encode(FileField o) {
-        return o.file;
     }
     @Override
     public Object deepCopy(Object o) throws HibernateException {
@@ -137,7 +137,7 @@ public class FileField implements Model.BinaryField, UserType {
     @Override
     public Serializable disassemble(Object o) throws HibernateException {
         if (o == null) return null;
-        return encode((FileField) o);
+        return ((FileField) o).file;
     }
     @Override
     public Object assemble(Serializable cached, Object owner) throws HibernateException {
