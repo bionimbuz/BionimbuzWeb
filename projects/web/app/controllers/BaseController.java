@@ -67,66 +67,13 @@ public class BaseController extends CRUD {
         final Model object = type.findById(id);
         notFoundIfNull(object);
         try {
+            unbindFileFieldsMetadata(object);
             render(type, object);
         } catch (final TemplateNotFoundException e) {
             render("CRUD/show.html", type, object);
         }
     }
-
-    @SuppressWarnings("deprecation")
-    public static void attachment(String id, String field) throws Exception {
-        final CustomObjectType type = CustomObjectType.get(getControllerClass());
-        notFoundIfNull(type);
-        final Model object = type.findById(id);
-        notFoundIfNull(object);
-        final Field reflectField = object.getClass().getDeclaredField(field);
-        reflectField.setAccessible(true);
-        final Object att = reflectField.get(object);
-        if (att instanceof Model.BinaryField) {
-            final Model.BinaryField attachment = (Model.BinaryField) att;
-            if (attachment == null || !attachment.exists()) {
-                notFound();
-            }
-            response.contentType = attachment.type();
-            renderBinary(attachment.get(), attachment.length());
-        }
-        // DEPRECATED
-        if (att instanceof play.db.jpa.FileAttachment) {
-            final play.db.jpa.FileAttachment attachment = (play.db.jpa.FileAttachment) att;
-            if (attachment == null || !attachment.exists()) {
-                notFound();
-            }
-            renderBinary(attachment.get(), attachment.filename);
-        }
-        notFound();
-    }
     
-    private static void bindFileFieldsMetadata(Model object) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-        Class<?> c = object.getClass();
-        for (Field field : c.getDeclaredFields()) {
-            if (!field.getType().isAssignableFrom(FileField.class)) {
-                continue;
-            }
-            field.setAccessible(true);
-            FileField fileField = (FileField)field.get(object);
-            FileFieldName fieldName = field.getAnnotation(FileFieldName.class);            
-            if(fieldName != null && fileField.getFileName() != null) {
-                Field reflectField = object.getClass().getDeclaredField(fieldName.value());
-                if(reflectField != null) {
-                    reflectField.setAccessible(true);
-                    reflectField.set(object, fileField.getFileName());
-                }
-            }
-            FileFieldType fieldType = field.getAnnotation(FileFieldType.class);
-            if(fieldType != null && fileField.getType() != null) {
-                Field reflectField = object.getClass().getDeclaredField(fieldType.value());
-                if(reflectField != null) {
-                    reflectField.setAccessible(true);
-                    reflectField.set(object, fileField.getType());
-                }
-            }
-        }
-    }
 
     public static void save(String id) throws Exception {
         final CustomObjectType type = CustomObjectType.get(getControllerClass());
@@ -136,6 +83,7 @@ public class BaseController extends CRUD {
         Binder.bindBean(params.getRootParamNode(), "object", object);
         validation.valid(object);
         if (Validation.hasErrors()) {
+            unbindFileFieldsMetadata(object);
             renderArgs.put("error", Messages.get("crud.hasErrors"));
             try {
                 render(request.controller.replace(".", "/") + "/show.html", type, object);
@@ -174,6 +122,7 @@ public class BaseController extends CRUD {
         Binder.bindBean(params.getRootParamNode(), "object", object);
         validation.valid(object);
         if (Validation.hasErrors()) {
+            unbindFileFieldsMetadata(object);
             renderArgs.put("error", Messages.get("crud.hasErrors"));
             try {
                 render(request.controller.replace(".", "/") + "/blank.html", type, object);
@@ -208,6 +157,105 @@ public class BaseController extends CRUD {
         redirect(request.controller + ".list");
     }
 
+    @SuppressWarnings("deprecation")
+    public static void attachment(String id, String field) throws Exception {
+        final CustomObjectType type = CustomObjectType.get(getControllerClass());
+        notFoundIfNull(type);
+        final Model object = type.findById(id);
+        notFoundIfNull(object);
+        unbindFileFieldsMetadata(object);
+        final Field reflectField = object.getClass().getDeclaredField(field);
+        reflectField.setAccessible(true);
+        final Object att = reflectField.get(object);
+        if (att instanceof Model.BinaryField) {
+            final Model.BinaryField attachment = (Model.BinaryField) att;
+            if (attachment == null || !attachment.exists()) {
+                notFound();
+            }
+            if(att instanceof FileField) {
+                response.contentType = ((FileField)att).getType();
+                renderBinary(attachment.get(), ((FileField)att).getFileName(), attachment.length());
+            }
+            else {
+                response.contentType = attachment.type();
+                renderBinary(attachment.get(), attachment.length());
+            }
+        }
+        // DEPRECATED
+        if (att instanceof play.db.jpa.FileAttachment) {
+            final play.db.jpa.FileAttachment attachment = (play.db.jpa.FileAttachment) att;
+            if (attachment == null || !attachment.exists()) {
+                notFound();
+            }
+            renderBinary(attachment.get(), attachment.filename);
+        }
+        notFound();
+    }    
+
+    private static void bindFileFieldsMetadata(Model object) throws Exception {
+        Class<?> c = object.getClass();
+        for (Field field : c.getDeclaredFields()) {
+            if (!field.getType().isAssignableFrom(FileField.class)) {
+                continue;
+            }
+            
+            field.setAccessible(true);
+            FileField fileField = (FileField)field.get(object);
+            if(fileField == null) {
+                continue;
+            }
+            FileFieldName fieldName = field.getAnnotation(FileFieldName.class);            
+            if(fieldName != null && fileField.getFileName() != null) {
+                Field reflectField = object.getClass().getDeclaredField(fieldName.value());
+                if(reflectField != null) {
+                    reflectField.setAccessible(true);
+                    reflectField.set(object, fileField.getFileName());
+                }
+            }
+            FileFieldType fieldType = field.getAnnotation(FileFieldType.class);
+            if(fieldType != null && fileField.getType() != null) {
+                Field reflectField = object.getClass().getDeclaredField(fieldType.value());
+                if(reflectField != null) {
+                    reflectField.setAccessible(true);
+                    reflectField.set(object, fileField.getType());
+                }
+            }
+        }
+    }
+    
+    private static void unbindFileFieldsMetadata(Model object) throws Exception {
+        Class<?> c = object.getClass();
+        for (Field field : c.getDeclaredFields()) {
+            if (!field.getType().isAssignableFrom(FileField.class)) {
+                continue;
+            }            
+            field.setAccessible(true);
+            FileField fileField = (FileField)field.get(object);
+            if(fileField == null)
+                continue;
+            FileFieldName fieldName = field.getAnnotation(FileFieldName.class);            
+            if(fieldName != null) {
+                Field reflectField = object.getClass().getDeclaredField(fieldName.value());
+                if(reflectField != null) {
+                    reflectField.setAccessible(true);
+                    String value = (String)reflectField.get(object);
+                    if(value != null)
+                        fileField.setFileName(value);
+                }
+            }
+            FileFieldType fieldType = field.getAnnotation(FileFieldType.class);
+            if(fieldType != null) {
+                Field reflectField = object.getClass().getDeclaredField(fieldType.value());
+                if(reflectField != null) {
+                    reflectField.setAccessible(true);
+                    String value = (String)reflectField.get(object);
+                    if(value != null)
+                        fileField.setType(value);
+                }
+            }
+        }
+    }
+    
     protected static ObjectType createObjectType(Class<? extends Model> entityClass) {
         return new CustomObjectType(entityClass);
     }

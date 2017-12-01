@@ -1,17 +1,27 @@
 #{field 'object.' + _name}
+ 
+#{set hasContent: (_value && _value.exists() && _id) /}
+    
+#{set fileName: null /} 
 
-#{if _value && _value.exists() && _id}
+#{if hasContent}   
 
-    #{set clearFunction: "clearFile" + field.id /}
+    #{set clearFunction: "clearFile_" + field.id /}
     #{set 'tempInnerScript' }
     <script type="text/javascript">
-    function ${clearFunction}(){
-        console.log("teste");
-        document.getElementById('${field.id}_delete_').checked = true;
-        document.getElementById('${field.id}_download_button').style.display = "none";
-        document.getElementById('${field.id}_delete_button').style.display = "none";
-        document.getElementById('${field.id}_fileName').value = "";
-    }    
+     
+    $(function(){    
+        function ${clearFunction}(){
+            document.getElementById('${field.id}_delete_').checked = true;
+            document.getElementById('${field.id}_download_button').style.display = "none";
+            document.getElementById('${field.id}_delete_button').style.display = "none";
+            document.getElementById('${field.id}_fileName').value = "";
+        }     
+        $('#${field.id}_delete_button').click(function(){
+            ${clearFunction}();
+        });    
+    });
+    
     </script>        
     #{/set}
     
@@ -20,32 +30,32 @@
         #{get 'tempInnerScript' /}
     #{/set}   
 
-#{set 'fileName'}
-&{'crud.field.file.size', _value.length().formatSize()}
-#{/set}
-    
+    #{if !_fileName.isEmpty()}
+        #{set 'fileName'}&{'crud.field.file.name', _fileName, _value.length().formatSize()}#{/set}    
+    #{/if}
+    #{else}
+        #{set 'fileName'}&{'crud.field.file.size', _value.length().formatSize()}#{/set}
+    #{/else}    
 #{/if}     
 
 <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
     <label for="${field.id}">&{field.name}</label>   
     <div class="input-group file-input">
-        <input id="${field.id}_fileName" type="text" class="form-control" disabled="disabled" value="${fileName}">            
-            #{if _value && _value.exists() && _id}
-            <span class="input-group-btn" id="${field.id}_download_button" onclick="javascript: document.getElementById('${field.id}_download_').click();">
-                <div class="btn btn-default" style="border-radius: 0px;border-left: 0px;">
-                    <span class="glyphicon glyphicon-download-alt">     
-                        <a id="${field.id}_download_" href="@{attachment(_id, _name)}" download hidden>...</a>                           
-                    </span>
-                </div>
+        <input name="${field.name}_fileName" id="${field.id}_fileName" type="text" class="form-control" disabled="disabled" value="${fileName}">            
+        <span class="input-group-btn" id="${field.id}_download_button" style="${hasContent ? '' : 'display: none;'}" onclick="javascript: document.getElementById('${field.id}_download_').click();">
+        <div class="btn btn-default" style="border-radius: 0px;border-left: 0px;">
+            <span class="glyphicon glyphicon-download-alt">     
+	        <a id="${field.id}_download_" href="@{attachment(_id, _name)}" download hidden>...</a>                           
             </span>
-            <span class="input-group-btn " id="${field.id}_delete_button" onclick="javascript: ${clearFunction}();">
-                <div class="btn btn-default" style="border-radius: 0px;border-left: 0px;">
-                    <span class="glyphicon glyphicon-remove">                        
-                        <input id="${field.id}_delete_" type="checkbox" name="${field.name}_delete_" value="true" style="display: none;visibility: hidden;" />
-                    </span>
-                </div>
+        </div>
+        </span>
+        <span class="input-group-btn " id="${field.id}_delete_button" style="${hasContent ? '' : 'display: none;'}">
+        <div class="btn btn-default" style="border-radius: 0px;border-left: 0px;">
+            <span class="glyphicon glyphicon-remove">                        
+	        <input id="${field.id}_delete_" ${hasContent ? '' : 'checked'} type="checkbox" name="${field.name}_delete_" value="true" style="display: none;visibility: hidden;" />
             </span>
-            #{/if}
+        </div>
+        </span>
         <span class="input-group-btn ">
             <div class="btn btn-default">
                 <span class="glyphicon glyphicon-folder-open"></span>

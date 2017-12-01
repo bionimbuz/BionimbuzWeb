@@ -77,6 +77,9 @@ public class FileField implements Model.BinaryField, UserType {
     }
     public String getType() {
         return type;
+    }    
+    public void setType(String type) {
+        this.type = type;
     }
     /*
      * Implementations of org.hibernate.usertype.UserType 

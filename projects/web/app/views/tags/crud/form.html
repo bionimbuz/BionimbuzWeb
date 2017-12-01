@@ -53,7 +53,33 @@
         #{/if}
 
         #{if field.type == 'binary'}
-            #{crud.fileField name:field.name, value:(currentObject ? currentObject[field.name] : null), id:currentObject?.id /}
+        
+        %{
+            fileName = "";
+            fileType = "";
+            fieldReflect = currentObject.getClass().getDeclaredField(field.name);
+            fieldReflect.setAccessible(true);
+            fileFieldObject = fieldReflect.get(currentObject);            
+            if(fileFieldObject != null && fieldReflect.getType().isAssignableFrom(common.fields.FileField.class)){
+                fileMetaReflect = fieldReflect.getType().getDeclaredField('fileName');
+                if(fileMetaReflect != null) {
+                    fileMetaReflect.setAccessible(true);
+                    fileName = fileMetaReflect.get(fileFieldObject);
+                }                
+                fileMetaReflect = fieldReflect.getType().getDeclaredField('type');
+                if(fileMetaReflect != null) {
+                    fileMetaReflect.setAccessible(true);
+                    fileType = fileMetaReflect.get(fileFieldObject);        
+                }
+            }        
+        }%
+        
+            #{crud.fileField 
+                name:field.name, 
+                value:(currentObject ? currentObject[field.name] : null), 
+                id:currentObject?.id, 
+                fileName: fileName,
+                fileType: fileType /}
         #{/if}
 
         #{if field.type == 'longtext'}

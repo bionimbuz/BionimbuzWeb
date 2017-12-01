@@ -50,6 +50,7 @@ crud.none=(None)
 crud.selectValue=(Please select a value)
 crud.field.file.browse=Browse
 crud.field.file.size=Current file size (%s)
+crud.field.file.name=%s (%s)
 crud.field.check.all=Check all
 crud.field.check.none=Uncheck all
 

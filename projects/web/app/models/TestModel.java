@@ -4,8 +4,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.AlgorithmParameterSpec;
-import java.util.Date;
-import java.util.List;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -109,6 +107,13 @@ public class TestModel extends GenericModel {
     private String fileFieldType;
     @NoBinding
     private String fileFieldName;    
+    @FileFieldName("fileFieldName2")
+    @FileFieldType("fileFieldType2")
+    private FileField fileField2;       
+    @NoBinding
+    private String fileFieldType2;
+    @NoBinding
+    private String fileFieldName2;   
     @Required
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_relation")
@@ -190,11 +195,9 @@ public class TestModel extends GenericModel {
     public FileField getFileField() {
         return fileField;
     }
-
     public void setFileField(FileField fileField) {
         this.fileField = fileField;
     }
-
     public String getHiddenField() {
         return hiddenField;
     }
@@ -286,10 +289,11 @@ public class TestModel extends GenericModel {
             List<TestRelationModel> multiSelectField2) {
         this.multiSelectField2 = multiSelectField2;
     }
-
-    @Override
-    public String toString() {
-        return this.textField;
+    public FileField getFileField2() {
+        return fileField2;
+    }
+    public void setFileField2(FileField fileField2) {
+        this.fileField2 = fileField2;
     }
 
     static class DesEncrypter {
