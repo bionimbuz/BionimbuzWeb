@@ -99,13 +99,13 @@ public class TestModel extends GenericModel {
     private String fileFieldType;
     @NoBinding
     private String fileFieldName;    
-    @FileFieldName("fileFieldName2")
-    @FileFieldType("fileFieldType2")
-    private EncryptedFileField fileField2;       
+    @FileFieldName("encryptedFileFieldName2")
+    @FileFieldType("encryptedFileFieldType2")
+    private EncryptedFileField encryptedFileField2;       
     @NoBinding
-    private String fileFieldType2;
+    private String encryptedFileFieldType2;
     @NoBinding
-    private String fileFieldName2;   
+    private String encryptedFileFieldName2;   
     @Required
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_relation")
@@ -238,10 +238,10 @@ public class TestModel extends GenericModel {
             List<TestRelationModel> multiSelectField2) {
         this.multiSelectField2 = multiSelectField2;
     }
-    public EncryptedFileField getFileField2() {
-        return fileField2;
+    public EncryptedFileField getEncryptedFileField2() {
+        return encryptedFileField2;
     }
-    public void setFileField2(EncryptedFileField fileField2) {
-        this.fileField2 = fileField2;
+    public void setEncryptedFileField2(EncryptedFileField encryptedFileField2) {
+        this.encryptedFileField2 = encryptedFileField2;
     }    
 }

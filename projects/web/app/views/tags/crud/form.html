@@ -59,19 +59,22 @@
             fileType = "";
             fieldReflect = currentObject.getClass().getDeclaredField(field.name);
             fieldReflect.setAccessible(true);
-            fileFieldObject = fieldReflect.get(currentObject);            
-            if(fileFieldObject != null && fieldReflect.getType().isAssignableFrom(common.fields.FileField.class)){
-                fileMetaReflect = fieldReflect.getType().getDeclaredField('fileName');
-                if(fileMetaReflect != null) {
-                    fileMetaReflect.setAccessible(true);
-                    fileName = fileMetaReflect.get(fileFieldObject);
-                }                
-                fileMetaReflect = fieldReflect.getType().getDeclaredField('type');
-                if(fileMetaReflect != null) {
-                    fileMetaReflect.setAccessible(true);
-                    fileType = fileMetaReflect.get(fileFieldObject);        
-                }
-            }        
+            if(common.fields.FileField.class.isAssignableFrom(fieldReflect.getType())){
+                fileFieldObject = (common.fields.FileField)fieldReflect.get(currentObject); 
+                if(fileFieldObject != null){
+                    fileMetaReflect = common.fields.FileField.getDeclaredField('fileName');
+                    if(fileMetaReflect != null) {
+                        fileMetaReflect.setAccessible(true);
+                        fileName = fileMetaReflect.get(fileFieldObject);
+                    }                
+                    fileMetaReflect = common.fields.FileField.getDeclaredField('type');
+                    if(fileMetaReflect != null) {
+                        fileMetaReflect.setAccessible(true);
+                        fileType = fileMetaReflect.get(fileFieldObject);        
+                    }
+                }   
+            }
+                
         }%
         
             #{crud.fileField 
