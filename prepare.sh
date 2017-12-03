@@ -80,27 +80,6 @@ if [ ! -z "$PREPARE_ALL" ]; then
     
 fi
 
-echo "# Preparing web project"
-echo "# ======================================="
-
-cd ${WEB_FOLDER}
-
-echo "# Computing dependencies"    
-${PLAY_BIN} deps
-
-if [ ! -z "$PREPARE_ECLIPSE" ]; then 
-    echo "# Preparing Eclipse environment"    
-    ${PLAY_BIN} eclipsify
-fi    
-
-if [ ! -z "$PREPARE_NETBEANS" ]; then 
-    echo "# Preparing Netbeans environment"    
-    ${PLAY_BIN} netbeansify
-fi    
-
-cd ${ROOT_DIR}
-
-
 echo "# Preparing plugins projects"
 echo "# ======================================="
 
@@ -120,5 +99,26 @@ for d in plugin-*/ ; do
     mvn clean package -DskipTests
     cd ..
 done
+
+cd ${ROOT_DIR}
+
+
+echo "# Preparing web project"
+echo "# ======================================="
+
+cd ${WEB_FOLDER}
+
+echo "# Computing dependencies"    
+${PLAY_BIN} deps
+
+if [ ! -z "$PREPARE_ECLIPSE" ]; then 
+    echo "# Preparing Eclipse environment"    
+    ${PLAY_BIN} eclipsify
+fi    
+
+if [ ! -z "$PREPARE_NETBEANS" ]; then 
+    echo "# Preparing Netbeans environment"    
+    ${PLAY_BIN} netbeansify
+fi    
 
 cd ${ROOT_DIR}

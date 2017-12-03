@@ -10,6 +10,7 @@ import app.common.GlobalConstants;
 import app.common.Routes;
 import app.models.Body;
 import app.models.InfoModel;
+import app.models.InfoModel.AuthenticationType;
 
 public abstract class AbstractInfoController extends BaseController {	    
     protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractInfoController.class);  
@@ -35,4 +36,6 @@ public abstract class AbstractInfoController extends BaseController {
     
     protected abstract String getCloudType();
     protected abstract String getPluginVersion();
+    protected abstract AuthenticationType getAuthenticationType();
+    protected abstract String getName();
 }

@@ -4,3 +4,12 @@ require:
     - play 1.4.4
     - play -> crud
     - play -> secure
+    - br.unb.cic.bionimbuz -> api-rest-plugin 0.1
+
+repositories:
+- custom-modules:
+    type:       local
+    artifact:   ${application.path}/../plugins/api-rest-plugin/target/[module]-[revision].jar
+    contains:
+        - br.unb.cic.bionimbuz -> *
+        
