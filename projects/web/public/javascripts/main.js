@@ -1,4 +1,48 @@
 
+function flashMessage(message, icon, type) {
+    $.notify(
+        {
+            // options
+            icon: icon,
+            message: message
+        },
+        {
+            // settings
+            type: type,
+            delay: 3000,
+            timer: 500,
+            placement: {
+                from: "top",
+                align: "center"
+            },
+            animate: {
+                enter: 'animated fadeInDown',
+                exit: 'animated fadeOutUp'
+        }
+    });
+}     
+
+function flashSuccess(message) {
+    flashMessage(
+        message,
+        'glyphicon glyphicon glyphicon-ok',
+        'success');
+}    
+
+function flashError(message) {
+    flashMessage(
+        message,
+        'glyphicon glyphicon-remove',
+        'danger');
+}     
+
+function flashWarn(message) {
+    flashMessage(
+        message,
+        'glyphicon glyphicon-warning-sign',
+        'warning');
+}
+
 //Configure the name of file chosen in input
 function setFileName(fileInput, fileName) {
 	filePath = fileInput.value;

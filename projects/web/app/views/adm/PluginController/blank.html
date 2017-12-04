@@ -1,0 +1,106 @@
+
+#{extends 'CRUD/layout.html' /}
+#{set title:messages.get('crud.blank.title', type.modelName) /}
+
+<div class="row crud-title">
+    <div class="col-xs-12 col-sm-12 col-md-12">  
+        <h1> &{'crud.blank.title', type.modelName} </h1>
+        <pre> &{'crud.blank.title.desc', type.modelName} </pre>
+    </div>
+</div>
+
+<br>
+
+<div class="row col-lg-12" >
+#{form action:@create(), enctype:'multipart/form-data'}
+    #{crud.form}    
+        #{crud.custom 'url'}        
+            #{field 'object.url'} 
+                <div class="form-group row ${field.errorClass ? 'has-error' : ''}">                
+                    <label class="col-xs-12 no-bootstrap-padding" for="${field.id}">&{field.name}</label>
+                    <div class="row no-bootstrap-padding col-xs-12 col-sm-12 col-md-9">
+                        <input class="form-control margin-bottom no-bootstrap-padding col-xs-12" id="${field.id}" name="${field.name}" value="${field.value}"  type="text" />
+                        #{ifError field.name}
+                            <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                        #{/ifError} 
+                    </div>
+                    <button id="searchPluginButton" class="btn btn-primary pull-right margin-bottom no-bootstrap-padding col-xs-12 col-sm-12 col-md-2" 
+                                type="button">&{'crud.search'}</button>    
+                </div>                
+            #{/field}
+        #{/crud.custom}
+    #{/crud.form}
+    
+    <div class="btn-row text-center">
+        <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_save">&{'crud.save'}</button>
+        <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_saveAndContinue">&{'crud.saveAndContinue'}</button>
+        <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_saveAndAddAnother">&{'crud.saveAndAddAnother'}</button>
+        <a href="@{list()}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>
+    </div>
+#{/form}
+</div>
+
+<div  class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true" style="padding-top:15%; overflow-y:visible;">
+    <div class="modal-dialog modal-m">
+        <div class="modal-content">
+            <div class="modal-header"><h3 style="margin:0;"></h3></div>
+            <div class="modal-body">
+                <div class="progress progress-striped active" style="margin-bottom:0;"><div class="progress-bar" style="width: 100%"></div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div id="pleaseWaitDialog" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true" >
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">&{'crud.searching'}</h4>
+            </div>
+            <div class="modal-body">
+                <div class="progress progress-striped active" style="margin-bottom:0;"><div class="progress-bar" style="width: 100%"></div></div>            
+            </div>
+        </div>
+    </div>
+</div>
+
+#{set 'moreScripts' }
+<script type="text/javascript">
+$(function(){   
+    $('#object_name').attr("disabled", true); 
+    $('#object_authType').attr("disabled", true); 
+    $('#object_cloudType').prop('readonly', true);
+    $('#object_pluginVersion').prop('readonly', true);
+    
+    $('#searchPluginButton').click(function(){
+        
+        $('#pleaseWaitDialog').modal(); 
+        urlValue = $('#object_url').val();
+        var searchPlugin = #{jsRoute @searchPlugin() /};
+        
+        $.ajax({
+            url: searchPlugin.url(),
+            type: searchPlugin.method,
+            data:{ url: urlValue}
+           })
+        .done(function(data) {          
+            
+
+            flashSuccess('Success: ' + data);
+            
+            
+        })
+        .fail(function() {
+            flashError('Error!');
+        })
+        .always(function() {
+            $('#pleaseWaitDialog').modal('hide');     
+        });
+
+    });
+});
+</script>
+#{/set}
+

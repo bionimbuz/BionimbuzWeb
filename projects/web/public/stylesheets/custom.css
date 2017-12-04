@@ -153,3 +153,8 @@
 pre {
      padding: 7px;
 }
+
+.no-bootstrap-padding {
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+}

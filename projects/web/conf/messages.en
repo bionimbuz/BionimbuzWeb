@@ -46,6 +46,7 @@ crud.saved=The &{%s} has been saved
 crud.deleted=The &{%s} has been deleted
 crud.delete.error=Cannot delete this object
 crud.search=Search
+crud.searching=Searching...
 crud.none=(None)
 crud.selectValue=(Please select a value)
 crud.field.file.browse=Browse

@@ -105,45 +105,16 @@
                 }               
                 
                 // Bind notify messages
-                notify = false;
                 #{if flash.success || success}
-                    notify = true;
-                    message = '${success ?: flash.success}';
-                    icon = 'glyphicon glyphicon glyphicon-ok';
-                    type = 'success';
+                    flashSuccess('${success ?: flash.success}');
                 #{/if} 
                 #{if flash.error || error}
-                    notify = true;
-                    message = '${error ?: flash.error}';
-                    icon = 'glyphicon glyphicon-remove';
-                    type = 'danger';
+                    flashError('${error ?: flash.error}');
                 #{/if}
                 #{if flash.warning}
-                    notify = true;
-                    message = '${flash.warning}';
-                    icon = 'glyphicon glyphicon-warning-sign';
-                    type = 'warning';
+                    flashWarn('${flash.warning}');
                 #{/if}
-                if (notify) {
-                  	$.notify({
-                        // options
-                        icon: icon,
-                        message: message
-                    },{
-                        // settings
-                        type: type,
-                        delay: 3000,
-                        timer: 500,
-                        placement: {
-                            from: "top",
-                            align: "center"
-                        },
-                        animate: {
-                            enter: 'animated fadeInDown',
-                            exit: 'animated fadeOutUp'
-                        }
-                    });
-                }
+                
             });
             
             //Configure the check and uncheck for checkboxes

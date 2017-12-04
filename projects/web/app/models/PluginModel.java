@@ -8,7 +8,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import app.models.InfoModel.AuthenticationType;
-import play.data.binding.NoBinding;
 import play.data.validation.MaxSize;
 import play.data.validation.Required;
 import play.db.jpa.GenericModel;
@@ -22,11 +21,10 @@ public class PluginModel extends GenericModel {
     private Long id;
     private boolean enabled = true;
     @Required
-    @MaxSize(400)
+    @MaxSize(100)
     private String url;
     @Required
     @MaxSize(100)
-    @NoBinding
     private String name;
     @MaxSize(10)
     private String pluginVersion;

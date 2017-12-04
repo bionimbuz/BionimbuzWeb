@@ -24,7 +24,14 @@ GET     /public/                                staticDir:public
 
 # Controllers
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-GET     /adm/plugins                            adm.PluginController.list
+GET     /adm/search/plugins                     adm.PluginController.searchPlugin
+GET     /adm/list/plugins                       adm.PluginController.list
+GET     /adm/plugins/{id}                       adm.PluginController.show
+PUT     /adm/plugins/{id}                       adm.PluginController.save
+DELETE  /adm/plugins/{id}                       adm.PluginController.delete
+GET     /adm/plugins                            adm.PluginController.blank
+POST    /adm/plugins                            adm.PluginController.create
+
 
 
 # Catch all
