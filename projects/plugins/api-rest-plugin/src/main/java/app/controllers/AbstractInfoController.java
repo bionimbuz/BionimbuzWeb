@@ -25,6 +25,8 @@ public abstract class AbstractInfoController extends BaseController {
     	InfoModel model = new InfoModel(GlobalConstants.API_VERSION);
     	model.setCloudType(getCloudType());
     	model.setPluginVersion(getPluginVersion());
+    	model.setAuthType(getAuthenticationType());
+        model.setName(getName());
 
         return ResponseEntity.ok(
                 Body.create(model));

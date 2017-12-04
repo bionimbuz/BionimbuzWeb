@@ -1,18 +1,27 @@
 
 #{extends 'CRUD/layout.html' /}
-#{set title:messages.get('crud.blank.title', type.modelName) /}
+#{set title:messages.get('crud.show.title', type.modelName) /}
 
 <div class="row crud-title">
-    <div class="col-xs-12 col-sm-12 col-md-12">  
-        <h1> &{'crud.blank.title', type.modelName} </h1>
-        <pre> &{'crud.blank.title.desc', type.modelName} </pre>
+    <div class="">  
+        <div class="col-xs-12 col-sm-12 col-md-12">
+            <div class="row">
+                <h1> &{'crud.show.title', type.modelName} </h1>
+            </div>
+            
+            <div class="row">
+                <pre class="col-xs-12 col-sm-12 col-md-9"> &{'crud.show.title.desc', type.modelName} </pre>            
+                <input data-toggle="modal" data-target="#deleteModal" class="col-xs-12 col-sm-12 col-md-2 btn btn-danger pull-right" type="button" value="&{'crud.delete', type.modelName}" />
+            </div>
+        </div>
     </div>
 </div>
 
 <br>
 
 <div class="row col-lg-12" >
-#{form action:@create(), enctype:'multipart/form-data'}
+#{form action:@save(object._key()), enctype:'multipart/form-data'}
+
     #{crud.form}    
         #{crud.custom 'url'}        
             #{field 'object.url'} 
@@ -24,7 +33,6 @@
                         #{ifError field.name}
                             <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
                         #{/ifError} 
-                        
                     </div>
                     <button id="searchPluginButton" class="btn btn-primary pull-right margin-bottom no-bootstrap-padding col-xs-12 col-sm-12 col-md-2" 
                                 type="button">&{'crud.search'}</button>    
@@ -33,23 +41,30 @@
         #{/crud.custom}
     #{/crud.form}
     
-    <div class="btn-row text-center">
-        <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_save">&{'crud.save'}</button>
-        <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_saveAndContinue">&{'crud.saveAndContinue'}</button>
-        <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_saveAndAddAnother">&{'crud.saveAndAddAnother'}</button>
-        <a href="@{list()}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>
+    <div class="btn-row text-center">        
+        <input class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_save" value="&{'crud.save', type.modelName}" />
+        <input class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_saveAndContinue" value="&{'crud.saveAndContinue', type.modelName}" />
+        <a href="@{list()}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>     
     </div>
 #{/form}
 </div>
 
-<div id="pleaseWaitDialog" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true" >
+<div id="deleteModal" class="modal fade">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">&{'crud.searching'}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">&{'modal.confirm'}</h4>
             </div>
             <div class="modal-body">
-                <div class="progress progress-striped active" style="margin-bottom:0;"><div class="progress-bar" style="width: 100%"></div></div>            
+                <p>&{'modal.confirm.delete'}</p>
+                <p class="text-warning"><small>&{'modal.confirm.delete.desc'}</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">&{'modal.button.cancel'}</button>                
+                #{form @delete(object._key()), style: 'display:inline;'}
+                    <button type="submit" class="btn btn-primary">&{'modal.button.confirm'}</button>
+                #{/form}
             </div>
         </div>
     </div>
@@ -106,4 +121,3 @@ $(function(){
 });
 </script>
 #{/set}
-

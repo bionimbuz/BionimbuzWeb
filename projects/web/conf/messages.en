@@ -92,8 +92,24 @@ application.description=Cloud Federation Platform
 
 # Controllers
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 PluginController=Plugins
 PluginController.desc=Cloud plugins registered
+
+# PluginModel
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+PluginModel=Plugin
+plugin.not.found=The Plugin URL cannot be found.
+plugin.found=Plugin URL found.
+puglin.search.required=You must Search URL before saving
+object.url=URL
+object.name=Name
+object.pluginVersion=Plugin Version
+object.cloudType=Cloud Type
+object.authType=Authentication Type
+object.enabled=Enabled
+AuthenticationType.AUTH_BEARER_TOKEN=Bearer Token
+
 
 # Modals
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

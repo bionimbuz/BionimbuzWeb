@@ -26,12 +26,18 @@ public class PluginModel extends GenericModel {
     @Required
     @MaxSize(100)
     private String name;
+    @Required
     @MaxSize(10)
     private String pluginVersion;
+    @Required
     @MaxSize(100)
     private String cloudType;
+    @Required
     @Enumerated(EnumType.STRING)
     private AuthenticationType authType;    
+    
+    public PluginModel() {        
+    }
     
     public Long getId() {
         return id;
@@ -68,5 +74,11 @@ public class PluginModel extends GenericModel {
     }
     public void setAuthType(AuthenticationType authType) {
         this.authType = authType;
-    } 
+    }
+    public boolean isEnabled() {
+        return enabled;
+    }
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }     
 }

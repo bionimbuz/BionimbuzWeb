@@ -27,7 +27,7 @@ public class DevelopmentStartupJob extends Job {
     public void doJob() {
         Lang.change("br");
         this.insertTestModels(10);
-        this.insertTempPlugins(10);
+//        this.insertTempPlugins(2);
         this.insertTempUser();
     }
 

@@ -21,10 +21,10 @@
             	            <th>
             	                %{ if(!_sort || _sort.contains(it)) { }%
             	                <a class="${_caller.orderBy == it ? (_caller.order == 'DESC' ? 'crudSortedDesc' : 'crudSortedAsc') : ''}" href="@{list().remove('page').add('search', params.search).add('orderBy', it).add('order', (_caller.orderBy == it && _caller.order == 'ASC' ? 'DESC' : 'ASC'))}">
-            	                    &{it}
+            	                    &{'object.'+it}
             	                </a>
             	                %{ } else { }%
-            	                    &{it}
+            	                    &{'object.'+it}
             	                %{ } }%
             	            </th>
             	            %{ } }%
