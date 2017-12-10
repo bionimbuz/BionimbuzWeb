@@ -6,11 +6,13 @@ import app.models.Body;
 import app.models.InfoModel;
 import common.constants.I18N;
 import controllers.CRUD.For;
+import controllers.Check;
 import models.PluginModel;
 import play.i18n.Messages;
 import retrofit2.Call;
 
 @For(PluginModel.class)
+@Check("/adm/plugins")
 public class PluginController extends BaseAdminController {
 
     public static void searchPlugin(final String url) {

@@ -8,6 +8,7 @@ import javax.transaction.SystemException;
 
 import controllers.Secure;
 import controllers.adm.HomeController;
+import models.MenuModel;
 import models.UserModel;
 import play.Logger;
 
@@ -35,11 +36,16 @@ public class SecurityController extends Secure.Security {
             return false;  
         }        
     }
-    
-    public static void onAuthenticated() {
-        HomeController.index();
-    }
-    
+
+    @SuppressWarnings("unused")
+    private static boolean check(String path) throws Throwable {        
+        if (isConnected()) {
+            final UserModel user = UserModel.findByEmail(connected());        
+            return MenuModel.containsMenu(path, user.getRole().getId());
+        }
+        return false;
+    }    
+
     public static boolean isConnected() {
         return session.contains("username");
     }
@@ -47,6 +53,10 @@ public class SecurityController extends Secure.Security {
     public static String connected() {
         return session.get("username");
     }
+    
+    public static void onAuthenticated() {
+        HomeController.index();
+    }    
     
     public static String getSHA512(final String password) 
             throws NoSuchAlgorithmException, UnsupportedEncodingException {

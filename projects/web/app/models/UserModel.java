@@ -1,8 +1,10 @@
 package models;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import play.data.validation.Email;
@@ -22,16 +24,22 @@ public class UserModel extends GenericModel {
     private Long id;
     @Required
     @MaxSize(100)
+    @MinSize(3)
     private String name;
     @Required
     @Unique
     @Email
     @MaxSize(100)
+    @MinSize(5)
     private String email;
+    @Required
     @Password
     @MaxSize(256)
     @MinSize(6)
     private String pass;
+    @Required
+    @ManyToOne(fetch = FetchType.LAZY)
+    private RoleModel role;
     
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Data access
@@ -66,5 +74,11 @@ public class UserModel extends GenericModel {
     }
     public void setPass(final String pass) {
         this.pass = pass;
+    }
+    public RoleModel getRole() {
+        return role;
+    }
+    public void setRole(RoleModel role) {
+        this.role = role;
     }
 }

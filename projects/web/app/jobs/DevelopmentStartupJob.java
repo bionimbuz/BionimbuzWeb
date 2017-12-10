@@ -7,7 +7,10 @@ import java.util.Date;
 import java.util.List;
 
 import controllers.security.SecurityController;
+import models.MenuModel;
 import models.PluginModel;
+import models.RoleModel;
+import models.RoleModel.RoleType;
 import models.TestModel;
 import models.TestModel.TestEnum;
 import models.TestRelationModel;
@@ -26,9 +29,40 @@ public class DevelopmentStartupJob extends Job {
     @Override
     public void doJob() {
         Lang.change("br");
+        this.insertProfiles();
+        this.insertMenus();
         this.insertTestModels(10);
 //        this.insertTempPlugins(2);
-        this.insertTempUser();
+        this.insertTempUserAdmin();
+        this.insertTempUserNormal();
+    }
+    
+
+    private void insertProfiles() {
+        RoleModel role = null;
+        
+        role = new RoleModel();
+        role.setId(RoleType.ADMIN);
+        role.save();
+        
+        role = new RoleModel();
+        role.setId(RoleType.NORMAL);
+        role.save();
+    }
+    
+    private void insertMenus() {
+        MenuModel menu = new MenuModel();
+        menu.setEnabled(true);
+        menu.setName("Plugins");
+        menu.setPath("/adm/plugins");
+        menu.save();
+        
+        List<MenuModel> listMenus = new ArrayList<>();
+        listMenus.add(menu);
+                
+        RoleModel role = RoleModel.findById(RoleType.ADMIN);
+        role.setListMenus(listMenus);        
+        role.save();
     }
 
     @SuppressWarnings("deprecation")
@@ -103,17 +137,40 @@ public class DevelopmentStartupJob extends Job {
         }
     }
 
-    private void insertTempUser() {
+    private void insertTempUserAdmin() {
         try {
             UserModel user = UserModel.findByEmail("master@bionimbuz.org.br");
             if (user != null) {
                 return;
             }
-
+            
+            RoleModel role = RoleModel.findById(RoleType.ADMIN);
+            
             user = new UserModel();
+            user.setRole(role);
             user.setEmail("master@bionimbuz.org.br");
             user.setName("Administrador do Sistema");
             user.setPass(SecurityController.getSHA512("master"));
+            user.save();
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+            Logger.error(e.getMessage(), e);
+        }
+    }
+    
+    private void insertTempUserNormal() {
+        try {
+            UserModel user = UserModel.findByEmail("guest@bionimbuz.org.br");
+            if (user != null) {
+                return;
+            }
+
+            RoleModel role = RoleModel.findById(RoleType.NORMAL);
+            
+            user = new UserModel();
+            user.setRole(role);
+            user.setEmail("guest@bionimbuz.org.br");
+            user.setName("Usuário do Sistema");
+            user.setPass(SecurityController.getSHA512("guest"));
             user.save();
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
             Logger.error(e.getMessage(), e);

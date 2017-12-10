@@ -37,6 +37,7 @@ public class PluginModel extends GenericModel {
     private AuthenticationType authType;    
     
     public PluginModel() {        
+        super();
     }
     
     public Long getId() {
