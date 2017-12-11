@@ -28,15 +28,18 @@ public class DevelopmentStartupJob extends Job {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @Override
     public void doJob() {
+        if(RoleModel.findAll().size() > 0)
+            return;
         Lang.change("br");
         this.insertProfiles();
-        this.insertMenus();
+        this.insertMenu("Plugins", "/adm/plugins", RoleType.ADMIN);
+        this.insertMenu("Credential", "/credentials", RoleType.ADMIN);        
+        
         this.insertTestModels(10);
-//        this.insertTempPlugins(2);
+        this.insertTempPlugins(2);
         this.insertTempUserAdmin();
         this.insertTempUserNormal();
-    }
-    
+    }    
 
     private void insertProfiles() {
         RoleModel role = null;
@@ -50,18 +53,26 @@ public class DevelopmentStartupJob extends Job {
         role.save();
     }
     
-    private void insertMenus() {
-        MenuModel menu = new MenuModel();
-        menu.setEnabled(true);
-        menu.setName("Plugins");
-        menu.setPath("/adm/plugins");
-        menu.save();
+    private void insertMenu(String name, String path, RoleType roleType) {
+        if(MenuModel.containsMenuProfile(path, roleType))
+            return;       
         
-        List<MenuModel> listMenus = new ArrayList<>();
-        listMenus.add(menu);
-                
-        RoleModel role = RoleModel.findById(RoleType.ADMIN);
-        role.setListMenus(listMenus);        
+        MenuModel menu = MenuModel.find("path = ?1", path).first();
+        if(menu == null) {        
+            menu = new MenuModel();
+            menu.setEnabled(true);
+            menu.setName(name);
+            menu.setPath(path);
+            menu.save();
+        }
+
+        RoleModel role = RoleModel.findById(roleType);
+        List<MenuModel> listMenus = role.getListMenus();    
+        if(listMenus == null) {
+            listMenus = new ArrayList<>();
+        }
+        listMenus.add(menu); 
+        role.setListMenus(listMenus);
         role.save();
     }
 

@@ -9,6 +9,15 @@
     }
 }%
 
+#{set url: @list().add('searchFields', _caller.params.get('searchFields')) /}
+
+#{list items:_addFields, as :'item'}
+    #{set value: _caller.params.get(item) /}
+    #{if value}
+        #{set url: url.add(item, value)/}
+    #{/if}
+#{/list}
+
 <div class=row>
     <div class="col-lg-12">  
         <div id="crudListTable">
@@ -20,7 +29,7 @@
             	            %{ _fields.each() { }%
             	            <th>
             	                %{ if(!_sort || _sort.contains(it)) { }%
-            	                <a class="${_caller.orderBy == it ? (_caller.order == 'DESC' ? 'crudSortedDesc' : 'crudSortedAsc') : ''}" href="@{list().remove('page').add('search', params.search).add('orderBy', it).add('order', (_caller.orderBy == it && _caller.order == 'ASC' ? 'DESC' : 'ASC'))}">
+            	                <a class="${_caller.orderBy == it ? (_caller.order == 'DESC' ? 'crudSortedDesc' : 'crudSortedAsc') : ''}" href="${url.remove('page').add('search', params.search).add('orderBy', it).add('order', (_caller.orderBy == it && _caller.order == 'ASC' ? 'DESC' : 'ASC'))}">
             	                    &{'object.'+it}
             	                </a>
             	                %{ } else { }%
@@ -30,7 +39,7 @@
             	            %{ } }%
             	        %{ } else { }%
             	            <th>
-            	                <a class="${_caller.order == 'DESC' ? 'crudSortedDesc' : 'crudSortedAsc'}" href="@{list().remove('page').add('search', params.search).add('order', (_caller.order == 'DESC' ? 'ASC' : 'DESC'))}">
+            	                <a class="${_caller.order == 'DESC' ? 'crudSortedDesc' : 'crudSortedAsc'}" href="${url.remove('page').add('search', params.search).add('order', (_caller.order == 'DESC' ? 'ASC' : 'DESC'))}">
             	                    &{_caller.type.name}
             	                </a>
             	            </th>

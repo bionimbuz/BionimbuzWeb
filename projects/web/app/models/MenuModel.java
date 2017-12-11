@@ -29,7 +29,7 @@ public class MenuModel extends GenericModel {
         super();
     }
     
-    public static boolean containsMenu(final String path, final RoleType roleType) {
+    public static boolean containsMenuProfile(final String path, final RoleType roleType) {
         return find(
                 " SELECT menu "
                 + " FROM MenuModel menu "

@@ -41,7 +41,7 @@ public class SecurityController extends Secure.Security {
     private static boolean check(String path) throws Throwable {        
         if (isConnected()) {
             final UserModel user = UserModel.findByEmail(connected());        
-            return MenuModel.containsMenu(path, user.getRole().getId());
+            return MenuModel.containsMenuProfile(path, user.getRole().getId());
         }
         return false;
     }    

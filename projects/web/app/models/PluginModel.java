@@ -1,15 +1,20 @@
 package models;
 
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import app.models.InfoModel.AuthenticationType;
 import play.data.validation.MaxSize;
 import play.data.validation.Required;
+import play.data.validation.Unique;
 import play.db.jpa.GenericModel;
 
 @Entity
@@ -31,10 +36,13 @@ public class PluginModel extends GenericModel {
     private String pluginVersion;
     @Required
     @MaxSize(100)
+    @Unique
     private String cloudType;
     @Required
     @Enumerated(EnumType.STRING)
     private AuthenticationType authType;    
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "plugin")
+    private List<CredentialModel> listCredentials;
     
     public PluginModel() {        
         super();
@@ -81,5 +89,16 @@ public class PluginModel extends GenericModel {
     }
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+    public List<CredentialModel> getListCredentials() {
+        return listCredentials;
+    }
+    public void setListCredentials(List<CredentialModel> listCredentials) {
+        this.listCredentials = listCredentials;
     }     
+    
+    @Override
+    public String toString() {
+        return this.name;
+    }
 }

@@ -24,6 +24,8 @@ GET     /public/                                staticDir:public
 
 # Controllers
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# PluginController
 GET     /adm/search/plugins                     adm.PluginController.searchPlugin
 GET     /adm/list/plugins                       adm.PluginController.list
 GET     /adm/plugins/{id}                       adm.PluginController.show
@@ -32,7 +34,14 @@ DELETE  /adm/plugins/{id}                       adm.PluginController.delete
 GET     /adm/plugins                            adm.PluginController.blank
 POST    /adm/plugins                            adm.PluginController.create
 
+# CredentialController
+GET     /list/credentials                       guest.CredentialController.list
+GET     /credentials/{id}                       guest.CredentialController.show
+PUT     /credentials/{id}                       guest.CredentialController.save
+DELETE  /credentials/{id}                       guest.CredentialController.delete
+GET     /credentials                            guest.CredentialController.blank
+POST    /credentials                            guest.CredentialController.create
 
-
+# TODO: to remove below
 # Catch all
 *       /{controller}/{action}                  {controller}.{action}

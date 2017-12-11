@@ -32,13 +32,13 @@ crud.pagination.next=Next »
 crud.pagination.last=Last »»
 crud.pagination.first=«« First
 crud.show.title=Edit &{%s}
-crud.show.title.desc=Edit &{%s} description
+crud.show.title.desc=Editing existing &{%s}
 crud.save=Save
 crud.saveAndContinue=Save and continue editing
 crud.cancel=Cancel
 crud.hasErrors=Please correct errors
 crud.blank.title=Add &{%s}
-crud.blank.title.desc=Add &{%s} description
+crud.blank.title.desc=Adding a new &{%s}
 crud.saveAndAddAnother=Save and create another
 crud.delete=Delete &{%s}
 crud.created=The &{%s} has been created
@@ -49,11 +49,13 @@ crud.search=Search
 crud.searching=Searching...
 crud.none=(None)
 crud.selectValue=(Please select a value)
+crud.all=All &{%s}
 crud.field.file.browse=Browse
 crud.field.file.size=Current file size (%s)
 crud.field.file.name=%s (%s)
 crud.field.check.all=Check all
 crud.field.check.none=Uncheck all
+crud.wait=Please wait...
 
 crud.help.required=Required.
 crud.help.minlength=Min length is %d.
@@ -96,6 +98,9 @@ application.description=Cloud Federation Platform
 PluginController=Plugins
 PluginController.desc=Cloud plugins registered
 
+CredentialController=Credentials
+CredentialController.desc=Cloud credentials associated to the plugins
+
 # PluginModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 PluginModel=Plugin
@@ -110,6 +115,12 @@ object.authType=Authentication Type
 object.enabled=Enabled
 AuthenticationType.AUTH_BEARER_TOKEN=Bearer Token
 
+# CredentialModel
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+CredentialModel=Credential
+object.plugin=Plugin
+object.credentialData=Data
+object.priority=Priority
 
 # Modals
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

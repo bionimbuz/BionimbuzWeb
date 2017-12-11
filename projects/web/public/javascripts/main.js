@@ -80,3 +80,24 @@ function configureCheckAllForLabels(checkAllElement, checkOneElement, labelCheck
         checkAllElement.off().on('click', checkAll);
     });
 }
+
+function block(message) {
+    $.blockUI({  
+        message: "<h1 style='margin-top: 7px; margin-bottom: 10px;'>"+message+"</h1>",
+        css: {
+            border: 'none',
+            padding: '15px', 
+            backgroundColor: '#000', 
+            '-webkit-border-radius': '10px', 
+            '-moz-border-radius': '10px',
+            'border-radius': '10px',
+            opacity: .7, 
+            color: '#fff' 
+        } 
+    }); 
+}
+
+// Adding event to search buttons
+$('.btn-crud-search-form-submit').click(function() {
+    $('#searchForm').submit();
+});
