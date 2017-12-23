@@ -101,6 +101,8 @@ PluginController.desc=Cloud plugins registered
 CredentialController=Credentials
 CredentialController.desc=Cloud credentials associated to the plugins
 
+UserGroupController=Groups
+
 # PluginModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 PluginModel=Plugin

@@ -192,7 +192,7 @@ public class BaseController extends CRUD {
         notFound();
     }    
 
-    private static void bindFileFieldsMetadata(Model object) throws Exception {
+    protected static void bindFileFieldsMetadata(Model object) throws Exception {
         Class<?> c = object.getClass();
         for (Field field : c.getDeclaredFields()) {
             if (!FileField.class.isAssignableFrom(field.getType())) {
@@ -223,7 +223,7 @@ public class BaseController extends CRUD {
         }
     }
     
-    private static void unbindFileFieldsMetadata(Model object) throws Exception {
+    protected static void unbindFileFieldsMetadata(Model object) throws Exception {
         Class<?> c = object.getClass();
         for (Field field : c.getDeclaredFields()) {
             if (!FileField.class.isAssignableFrom(field.getType())) {

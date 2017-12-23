@@ -42,6 +42,22 @@ DELETE  /credentials/{id}                       guest.CredentialController.delet
 GET     /credentials                            guest.CredentialController.blank
 POST    /credentials                            guest.CredentialController.create
 
+# GroupController
+GET     /list/groups                            guest.GroupController.list
+GET     /groups/{id}                            guest.GroupController.show
+PUT     /groups/{id}                            guest.GroupController.save
+DELETE  /groups/{id}                            guest.GroupController.delete
+GET     /groups                                 guest.GroupController.blank
+POST    /groups                                 guest.GroupController.create
+
+# UserGroupController
+GET     /list/user/groups                       guest.UserGroupController.list
+GET     /user/groups/{id}                       guest.UserGroupController.show
+PUT     /user/groups/{id}                       guest.UserGroupController.save
+DELETE  /user/groups/{id}                       guest.UserGroupController.delete
+GET     /user/groups                            guest.UserGroupController.blank
+POST    /user/groups                            guest.UserGroupController.create
+
 # TODO: to remove below
 # Catch all
 *       /{controller}/{action}                  {controller}.{action}

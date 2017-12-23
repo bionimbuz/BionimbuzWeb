@@ -33,7 +33,9 @@ public class DevelopmentStartupJob extends Job {
         Lang.change("br");
         this.insertProfiles();
         this.insertMenu("Plugins", "/adm/plugins", RoleType.ADMIN);
-        this.insertMenu("Credential", "/credentials", RoleType.ADMIN);        
+        this.insertMenu("Credential", "/credentials", RoleType.ADMIN);  
+        this.insertMenu("UserGroup", "/user/groups", RoleType.ADMIN);  
+        this.insertMenu("Group", "/groups", RoleType.ADMIN);        
         
         this.insertTestModels(10);
         this.insertTempPlugins(2);
@@ -162,6 +164,7 @@ public class DevelopmentStartupJob extends Job {
             user.setEmail("master@bionimbuz.org.br");
             user.setName("Administrador do Sistema");
             user.setPass(SecurityController.getSHA512("master"));
+            user.setJoined(true);
             user.save();
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
             Logger.error(e.getMessage(), e);
@@ -182,6 +185,7 @@ public class DevelopmentStartupJob extends Job {
             user.setEmail("guest@bionimbuz.org.br");
             user.setName("Usuário do Sistema");
             user.setPass(SecurityController.getSHA512("guest"));
+            user.setJoined(true);
             user.save();
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
             Logger.error(e.getMessage(), e);
