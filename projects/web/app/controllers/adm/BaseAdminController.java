@@ -10,6 +10,8 @@ import play.mvc.With;
 @With(Secure.class)
 public class BaseAdminController extends BaseController {
 
+    protected static final String OBJECT = "object";
+    
     // --------------------------------------------------------------
     // Filters
     // --------------------------------------------------------------

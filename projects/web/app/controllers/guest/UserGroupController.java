@@ -28,8 +28,8 @@ public class UserGroupController extends BaseAdminController {
         where += " user.id = "  + getConnectedUser().getId();            
             
         final List<Model> objects = type.findPage(page, search, searchFields, orderBy, order, where);
-        final Long count = type.count(search, searchFields, (String) request.args.get("where"));
-        final Long totalCount = type.count(null, null, (String) request.args.get("where"));
+        final Long count = type.count(search, searchFields, where);
+        final Long totalCount = type.count(null, null, where);
         try {
             render(type, objects, count, totalCount, page, orderBy, order);
         } catch (final TemplateNotFoundException e) {

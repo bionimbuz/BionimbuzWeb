@@ -1,0 +1,151 @@
+
+#{extends 'CRUD/layout.html' /}
+#{set title:messages.get('crud.show.title', type.modelName) /}
+#{set isEmptyGroup: (object.listUserGroups.size() == 1) /}
+#{set isOwner: userGroup.owner /}
+#{set hasOtherOwners: false /}
+
+<div class="row crud-title">
+    <div class="">  
+        <div class="col-xs-12 col-sm-12 col-md-12">
+            <div class="row">
+                <h1> &{'crud.show.title', type.modelName} </h1>
+            </div>
+            
+            <div class="row">
+                <pre class="col-xs-12 col-sm-12 col-md-9"> &{'crud.show.title.desc', type.modelName} </pre>            
+                <input data-toggle="modal" data-target="#deleteModal" class="col-xs-12 col-sm-12 col-md-2 btn btn-danger pull-right" type="button" value="&{'crud.delete', type.modelName}" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<br>
+
+<div class="row col-lg-12" >
+#{form action:@save(object._key()), enctype:'multipart/form-data'}
+
+    #{crud.form} 
+        
+        #{crud.custom 'name'}      
+        
+            #{field 'object.name'}
+                <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                    <label for="${field.id}">&{field.name}</label>
+                    <input id="${field.id}" class="form-control"  type="text" name="${field.name}" value="${field.value}" />
+                    #{ifError field.name}
+                        <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                    #{/ifError} 
+                </div>
+            #{/field}                        
+            
+            #{field 'object.selectedUsers'}
+            <div class=row>
+                <div id="crudListTable">
+                    <div class="table-responsive"> 
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="checkbox-th" style="text-align: center;">
+                                    #{if !isEmptyGroup}
+                                        <input type="checkbox" id="selectAll" class="icheck" />
+                                    #{/if}     
+                                    </th>
+                                    <th class="checkbox-th">
+                                        &{'object.owner'}
+                                    </th>
+                                    <th class="checkbox-th">
+                                        &{'object.joined'}
+                                    </th>
+                                    <th class="checkbox-th">
+                                        &{'object.user.name'} / &{'object.user.email'}
+                                    </th>
+                                </tr>
+                            </thead>
+                            
+                            #{if !isEmptyGroup}
+                            %{ object.listUserGroups.eachWithIndex() { item, k -> }%                           
+                            
+                                #{if item.user.id != userGroup.user.id || item.group.id != userGroup.group.id}
+                                    #{if !hasOtherOwners && item.owner}
+                                        #{set hasOtherOwners: true /}
+                                    #{/if}
+                                <tr>
+                                    <td style="text-align: center;">                                             
+                                        <input type="checkbox" name="${field.name}" class="icheck unique-check" value="${item.user.id}" />     
+                                    </td>
+                                    <td style="text-align: center;">                                             
+                                        <input type="checkbox" class="icheck" ${item.owner ? 'checked="true" '.raw() : ''} disabled />     
+                                    </td>
+                                    <td style="text-align: center;">                                             
+                                        <input type="checkbox" class="icheck" ${item.joined ? 'checked="true" '.raw() : ''} disabled />     
+                                    </td>
+                                    <td>        
+                                    #{if item.user.name != null && !item.user.name.isEmpty()}
+                                        ${item.user.name} (${item.user.email})
+                                    #{/if}    
+                                    #{else}
+                                        ${item.user.email}     
+                                    #{/else}
+                                    </td>
+                                </tr>
+                                #{/if}
+                            %{ } }%
+                            #{/if}
+                            #{else}
+                                <tr>
+                                    <td colspan="4" style="text-align: center;">    
+                                        &{'list.no.results'}                                         
+                                    </td>                                    
+                                </tr>
+                            #{/else}
+                        </table>
+                    </div>
+                </div>   
+            </div>            
+            #{/field}
+            
+            
+        #{/crud.custom}           
+    
+    #{/crud.form}
+    
+    <div class="btn-row text-center">        
+        <input class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_save" value="&{'crud.save', type.modelName}" />
+        <a href="@{guest.UserGroupController.list()}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>
+    </div>
+    
+#{/form}
+</div>
+
+<div id="deleteModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">&{'modal.confirm'}</h4>
+            </div>
+            <div class="modal-body">
+                <p>&{'modal.confirm.delete'}</p>
+                <p class="text-warning"><small>&{'modal.confirm.delete.desc'}</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">&{'modal.button.cancel'}</button>                
+                #{form @delete(object._key()), style: 'display:inline;'}
+                    <button type="submit" class="btn btn-primary">&{'modal.button.confirm'}</button>
+                #{/form}
+            </div>
+        </div>
+    </div>
+</div>
+
+#{set 'moreScripts' }
+<script type="text/javascript">
+$(function(){   
+    
+    configureCheckAllWithoutLabels($('#selectAll'), $('.unique-check'));    
+    
+});
+</script>
+
+#{/set}

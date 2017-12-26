@@ -65,14 +65,18 @@
             	                    %{ if(i == 0) { }%
             	                        <a href="@{show(object._key())}">${object[field]?.toString()?.escape()?.raw() ?: '(no value)'}</a>
             	                    %{ } else { }%
-                                    %{ if(_caller?.type?.getField(field)?.type == 'file') { }%
+                                        %{ if(_caller?.type?.getField(field)?.type == 'file') { }%
             	                            %{ if(object[field]) { }%
             	                                <a class="currentAttachment" href="@{attachment(object.id, field)}">${object[field].filename} (${object[field].get().size().formatSize()})</a>
             	                             %{ } else { }%
             	                                
             	                             %{ } }%
             	                        %{ } else { }%
-                                        ${object[field]?.escape()?.raw()}
+                                            %{ if(object[field] != null && object[field].class == Boolean.class) { }%                                                
+                                                <input type="checkbox" class="icheck" ${object[field] ? 'checked="true" '.raw() : ''} disabled />         
+                                            %{ } else { }%
+                                                ${object[field]?.escape()?.raw()}
+                                            %{ } }%
             	                        %{ } }%
             	                    %{ } }%
             	                %{ } }%

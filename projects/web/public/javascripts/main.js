@@ -81,6 +81,28 @@ function configureCheckAllForLabels(checkAllElement, checkOneElement, labelCheck
     });
 }
 
+//Configure the check and uncheck for checkboxes
+function configureCheckAllWithoutLabels(checkAllElement, checkOneElement) {    
+    var checkAll = function() {        
+        checkOneElement.off('ifChanged');
+        checkOneElement.iCheck('check');   
+        checkOneElement.on('ifChanged', oneChanged);
+    };    
+    var uncheckAll = function() {
+        checkOneElement.off('ifChanged');
+        checkOneElement.iCheck('uncheck');
+        checkOneElement.on('ifChanged', oneChanged);
+    };    
+    var oneChanged = function() {
+        checkAllElement.off('ifUnchecked');       
+        checkAllElement.iCheck('uncheck');
+        checkAllElement.on('ifUnchecked', uncheckAll);
+    };    
+    checkAllElement.on('ifChecked', checkAll);    
+    checkAllElement.on('ifUnchecked', uncheckAll);
+    checkOneElement.on('ifChanged', oneChanged);
+}
+
 function block(message) {
     $.blockUI({  
         message: "<h1 style='margin-top: 7px; margin-bottom: 10px;'>"+message+"</h1>",

@@ -164,3 +164,15 @@ select[readonly] {
   pointer-events: none;
   touch-action: none;
 }
+
+.checkbox-th {
+    max-width: 15px;
+}
+
+td {
+  word-wrap: break-word;  
+}
+th {
+  white-space: normal !important; 
+  word-wrap: break-word;  
+}

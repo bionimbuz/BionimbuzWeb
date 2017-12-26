@@ -20,7 +20,7 @@
                     <label class="col-xs-12 no-bootstrap-padding" for="${field.id}">&{field.name}</label>
                     <div class="row no-bootstrap-padding col-xs-12 col-sm-12 col-md-9">
                         <input class="form-control margin-bottom no-bootstrap-padding col-xs-12" id="${field.id}" name="${field.name}" value="${field.value}"  type="text" />
-                        <span class="help-block">*&{'puglin.search.required'}</span>
+                        <span class="help-block">*&{'plugin.search.required'}</span>
                         #{ifError field.name}
                             <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
                         #{/ifError} 

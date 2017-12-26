@@ -37,6 +37,8 @@ public class DevelopmentStartupJob extends Job {
         this.insertMenu("Credential", "/credentials", RoleType.ADMIN);
         this.insertMenu("UserGroup", "/user/groups", RoleType.ADMIN);
         this.insertMenu("Group", "/groups", RoleType.ADMIN);
+        this.insertMenu("UserGroup", "/user/groups", RoleType.NORMAL);
+        this.insertMenu("Group", "/groups", RoleType.NORMAL);
 
         this.insertTestModels(10);
         this.insertTempPlugins(2);

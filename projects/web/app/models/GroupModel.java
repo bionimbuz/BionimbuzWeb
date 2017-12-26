@@ -30,6 +30,8 @@ public class GroupModel extends GenericModel {
     private List<UserGroupModel> listUserGroups;
     @Transient
     private String strUsers;
+    @Transient
+    private List<Long> selectedUsers;
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Getters and Setters
@@ -57,6 +59,12 @@ public class GroupModel extends GenericModel {
     }
     public void setStrUsers(String strUsers) {
         this.strUsers = strUsers;
+    }        
+    public List<Long> getSelectedUsers() {
+        return selectedUsers;
+    }
+    public void setSelectedUsers(List<Long> selectedUsers) {
+        this.selectedUsers = selectedUsers;
     }
     
     @Override

@@ -32,7 +32,7 @@ crud.pagination.next=Next »
 crud.pagination.last=Last »»
 crud.pagination.first=«« First
 crud.show.title=Edit &{%s}
-crud.show.title.desc=Editing existing &{%s}
+crud.show.title.desc=Editing existent &{%s}
 crud.save=Save
 crud.saveAndContinue=Save and continue editing
 crud.cancel=Cancel
@@ -108,7 +108,7 @@ UserGroupController=Groups
 PluginModel=Plugin
 plugin.not.found=The Plugin URL cannot be found.
 plugin.found=Plugin URL found.
-puglin.search.required=You must Search URL before saving
+plugin.search.required=You must Search URL before saving
 object.url=URL
 object.name=Name
 object.pluginVersion=Plugin Version
@@ -116,6 +116,21 @@ object.cloudType=Cloud Type
 object.authType=Authentication Type
 object.enabled=Enabled
 AuthenticationType.AUTH_BEARER_TOKEN=Bearer Token
+
+# GroupModel
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+GroupModel=Group
+object.strUsers=Invite Users
+group.separate.users.email=Separate users' emails with commas (,) or semicolons (;)
+
+# UserGroupModel
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+UserGroupModel=&{GroupModel}
+object.owner=Owner
+object.joined=Joined
+object.user.name=User
+object.user.email=Email
+object.group.name=&{GroupModel}
 
 # CredentialModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

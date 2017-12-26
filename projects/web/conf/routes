@@ -43,7 +43,7 @@ GET     /credentials                            guest.CredentialController.blank
 POST    /credentials                            guest.CredentialController.create
 
 # GroupController
-GET     /list/groups                            guest.GroupController.list
+# GET     /list/groups                            guest.GroupController.list
 GET     /groups/{id}                            guest.GroupController.show
 PUT     /groups/{id}                            guest.GroupController.save
 DELETE  /groups/{id}                            guest.GroupController.delete
