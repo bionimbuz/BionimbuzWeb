@@ -35,6 +35,10 @@
 
 <br>
 
-#{crud.table fields: ['group', 'owner', 'joined'] /}
+#{crud.table fields: ['group.name', 'owner', 'joined']}
+    #{crud.custom 'group.name'}
+        ${object.group.name}
+    #{/crud.custom}
+#{/crud.table}
 
 #{crud.pagination /}

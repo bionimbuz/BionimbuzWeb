@@ -65,14 +65,14 @@
             	                    %{ if(i == 0) { }%
             	                        <a href="@{show(object._key())}">${object[field]?.toString()?.escape()?.raw() ?: '(no value)'}</a>
             	                    %{ } else { }%
-            	                        %{ if(_caller.type.getField(field).type == 'file') { }%
+                                    %{ if(_caller?.type?.getField(field)?.type == 'file') { }%
             	                            %{ if(object[field]) { }%
             	                                <a class="currentAttachment" href="@{attachment(object.id, field)}">${object[field].filename} (${object[field].get().size().formatSize()})</a>
             	                             %{ } else { }%
             	                                
             	                             %{ } }%
             	                        %{ } else { }%
-            	                            ${object[field]?.escape()?.raw()}
+                                        ${object[field]?.escape()?.raw()}
             	                        %{ } }%
             	                    %{ } }%
             	                %{ } }%
