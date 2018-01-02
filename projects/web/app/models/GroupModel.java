@@ -1,6 +1,7 @@
 package models;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -31,7 +32,9 @@ public class GroupModel extends GenericModel {
     @Transient
     private String strUsers;
     @Transient
-    private List<Long> selectedUsers;
+    private Set<Long> usersMarkedForExclusion;
+    @Transient
+    private Set<Long> usersMarkedForOwner;
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Getters and Setters
@@ -60,11 +63,17 @@ public class GroupModel extends GenericModel {
     public void setStrUsers(String strUsers) {
         this.strUsers = strUsers;
     }        
-    public List<Long> getSelectedUsers() {
-        return selectedUsers;
+    public Set<Long> getUsersMarkedForExclusion() {
+        return usersMarkedForExclusion;
     }
-    public void setSelectedUsers(List<Long> selectedUsers) {
-        this.selectedUsers = selectedUsers;
+    public void setUsersMarkedForExclusion(Set<Long> usersMarkedForExclusion) {
+        this.usersMarkedForExclusion = usersMarkedForExclusion;
+    }
+    public Set<Long> getUsersMarkedForOwner() {
+        return usersMarkedForOwner;
+    }
+    public void setUsersMarkedForOwner(Set<Long> usersMarkedForOwner) {
+        this.usersMarkedForOwner = usersMarkedForOwner;
     }
     
     @Override

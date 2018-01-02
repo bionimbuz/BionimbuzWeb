@@ -122,6 +122,8 @@ AuthenticationType.AUTH_BEARER_TOKEN=Bearer Token
 GroupModel=Group
 object.strUsers=Invite Users
 group.separate.users.email=Separate users' emails with commas (,) or semicolons (;)
+group.mark.removal=Mark for Removal
+group.mark.owner=Make Owner
 
 # UserGroupModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -147,3 +149,7 @@ modal.confirm.delete.desc=The register will be permanently deleted.
 modal.button.ok=Ok
 modal.button.cancel=Cancel
 modal.button.confirm=Confirm
+
+# Other labels
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+list.no.results=No results to show

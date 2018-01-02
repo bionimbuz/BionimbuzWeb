@@ -5,6 +5,9 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
+import models.GroupModel;
+import models.UserModel;
+
 @Embeddable
 public class UserGroupKey implements Serializable {
     
@@ -21,6 +24,9 @@ public class UserGroupKey implements Serializable {
     public UserGroupKey(Long userId, Long groupId) {
         this.userId = userId;
         this.groupId = groupId;
+    }
+    public UserGroupKey(UserModel user, GroupModel group) {
+        this(user.getId(), group.getId());
     }
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

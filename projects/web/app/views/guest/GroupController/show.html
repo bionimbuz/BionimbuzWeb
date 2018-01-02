@@ -37,22 +37,39 @@
                         <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
                     #{/ifError} 
                 </div>
-            #{/field}                        
+            #{/field}      
             
-            #{field 'object.selectedUsers'}
+            #{if isOwner}
+                #{field 'object.strUsers'}
+                    <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                        <label for="${field.id}">&{field.name}</label>
+                        <input id="${field.id}" class="form-control"  type="text" name="${field.name}" value="${field.value}" />
+                        <span class="help-block">*&{'group.separate.users.email'}</span>                        
+                        #{ifError field.name}
+                            <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                        #{/ifError} 
+                    </div>
+                #{/field}     
+            #{/if}             
+            
             <div class=row>
                 <div id="crudListTable">
                     <div class="table-responsive"> 
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
-                                    <th class="checkbox-th" style="text-align: center;">
-                                    #{if !isEmptyGroup}
-                                        <input type="checkbox" id="selectAll" class="icheck" />
-                                    #{/if}     
-                                    </th>
+                                #{if isOwner}
                                     <th class="checkbox-th">
-                                        &{'object.owner'}
+                                        &{'group.mark.removal'}     
+                                    </th>
+                                #{/if}
+                                    <th class="checkbox-th">                                        
+                                    #{if isOwner}                                        
+                                        &{'group.mark.owner'}
+                                    #{/if}
+                                    #{else}
+                                        &{'object.owner'}                                        
+                                    #{/else}
                                     </th>
                                     <th class="checkbox-th">
                                         &{'object.joined'}
@@ -71,11 +88,15 @@
                                         #{set hasOtherOwners: true /}
                                     #{/if}
                                 <tr>
+                                
+                                #{if isOwner}
                                     <td style="text-align: center;">                                             
-                                        <input type="checkbox" name="${field.name}" class="icheck unique-check" value="${item.user.id}" />     
+                                        <input type="checkbox" name="object.usersMarkedForExclusion" class="icheck" value="${item.user.id}" />     
                                     </td>
+                                #{/if}
                                     <td style="text-align: center;">                                             
-                                        <input type="checkbox" class="icheck" ${item.owner ? 'checked="true" '.raw() : ''} disabled />     
+                                        <input type="checkbox" name="object.usersMarkedForOwner" class="icheck" value="${item.user.id}" ${item.owner ? 'checked="true" '.raw() : ''} 
+                                            ${isOwner ? '' : 'disabled'.raw()} />     
                                     </td>
                                     <td style="text-align: center;">                                             
                                         <input type="checkbox" class="icheck" ${item.joined ? 'checked="true" '.raw() : ''} disabled />     
@@ -102,9 +123,7 @@
                         </table>
                     </div>
                 </div>   
-            </div>            
-            #{/field}
-            
+            </div>                        
             
         #{/crud.custom}           
     
@@ -112,6 +131,7 @@
     
     <div class="btn-row text-center">        
         <input class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_save" value="&{'crud.save', type.modelName}" />
+        <input class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_saveAndContinue" value="&{'crud.saveAndContinue', type.modelName}" />
         <a href="@{guest.UserGroupController.list()}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>
     </div>
     
@@ -140,12 +160,5 @@
 </div>
 
 #{set 'moreScripts' }
-<script type="text/javascript">
-$(function(){   
-    
-    configureCheckAllWithoutLabels($('#selectAll'), $('.unique-check'));    
-    
-});
-</script>
 
 #{/set}
