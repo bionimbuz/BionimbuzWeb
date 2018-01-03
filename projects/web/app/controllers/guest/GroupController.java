@@ -48,7 +48,7 @@ public class GroupController extends BaseAdminController {
         
         flash.success(Messages.get(I18N.crud_created, type.modelName));
         if (params.get("_save") != null) {
-            redirect("guest.UserGroupController.list");
+            redirect(UserGroupController.ACTION_LIST);
         }
         if (params.get("_saveAndAddAnother") != null) {
             redirect(request.controller + ".blank");
@@ -80,7 +80,7 @@ public class GroupController extends BaseAdminController {
         object._save();
         flash.success(Messages.get("crud.saved", type.modelName));
         if (params.get("_save") != null) {
-            redirect("guest.UserGroupController.list");
+            redirect(UserGroupController.ACTION_LIST);
         }
         redirect(request.controller + ".show", object._key());
     }
@@ -100,6 +100,48 @@ public class GroupController extends BaseAdminController {
         } catch (final TemplateNotFoundException e) {
             render("CRUD/show.html", type, object);
         }
+    }    
+    
+    public static void delete(final Long id) throws Exception {
+        final CustomObjectType type = CustomObjectType.get(getControllerClass());
+        notFoundIfNull(type);
+        final GroupModel object = GroupModel.findById(id);
+        notFoundIfNull(object);
+        try {
+            UserGroupModel.deleteAllUsersFromGroup(object);
+            object._delete();
+        } catch (final Exception e) {
+            flash.error(Messages.get("crud.delete.error", type.modelName));
+            redirect(request.controller + ".show", object._key());
+        }
+        flash.success(Messages.get("crud.deleted", type.modelName));
+        redirect(UserGroupController.ACTION_LIST);
+    }
+
+    public static void leave(final Long id) throws Exception {
+        final CustomObjectType type = CustomObjectType.get(getControllerClass());
+        notFoundIfNull(type);
+        final UserModel currentUser = getConnectedUser();
+        final GroupModel object = GroupModel.findById(id);
+        notFoundIfNull(object);
+        final UserGroupModel userGroup = UserGroupModel.findById(
+                new UserGroupKey(currentUser, object));
+        notFoundIfNull(userGroup);
+        try {
+            if(userGroup.isOwner() && 
+                    UserGroupModel.countGroupOwnersJoined(object) <= 1) {
+                flash.error(Messages.get("group.error.sole.owner", type.modelName));
+                redirect(request.controller + ".show", object._key());
+            }
+            else {
+                userGroup._delete();
+            }
+        } catch (final Exception e) {
+            flash.error(Messages.get("crud.delete.error", type.modelName));
+            redirect(request.controller + ".show", object._key());
+        }
+        flash.success(Messages.get("group.success.leave", type.modelName));
+        redirect(UserGroupController.ACTION_LIST);
     }
 
     private static String[] getUsersValidated(final GroupModel object) {
@@ -111,5 +153,32 @@ public class GroupController extends BaseAdminController {
             validation.email(OBJECT_STR_USERS, strUser);
         }
         return strUsers;
+    }
+
+    public static void join(final Long id) throws Exception {
+        final CustomObjectType type = CustomObjectType.get(getControllerClass());
+        notFoundIfNull(type);
+        final UserModel currentUser = getConnectedUser();
+        final GroupModel object = GroupModel.findById(id);
+        notFoundIfNull(object);
+        final UserGroupModel userGroup = UserGroupModel.findById(
+                new UserGroupKey(currentUser, object));
+        notFoundIfNull(userGroup);
+        
+        if (params.get("_join") != null) {
+            userGroup.setJoined(true);
+            userGroup.save();
+            redirect(request.controller + ".show", id);
+        }
+        if (params.get("_leave") != null) {
+            try {
+                userGroup._delete();
+            } catch (final Exception e) {
+                flash.error(Messages.get("crud.delete.error", type.modelName));
+                redirect(request.controller + ".show", object._key());
+            }
+        }
+        
+        redirect(UserGroupController.ACTION_LIST);
     }    
 }

@@ -47,6 +47,8 @@ POST    /credentials                            guest.CredentialController.creat
 GET     /groups/{id}                            guest.GroupController.show
 PUT     /groups/{id}                            guest.GroupController.save
 DELETE  /groups/{id}                            guest.GroupController.delete
+POST    /leave/groups/{id}                      guest.GroupController.leave
+POST    /join/groups/{id}                       guest.GroupController.join
 GET     /groups                                 guest.GroupController.blank
 POST    /groups                                 guest.GroupController.create
 

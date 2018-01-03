@@ -47,6 +47,12 @@ public class UserGroupModel extends GenericModel {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Data access
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    public static long countGroupOwnersJoined(
+            final GroupModel group) {
+        long value = count("group.id = ?1 AND owner = ?2 AND joined = ?3",
+                group.getId(), true, true);
+        return value;
+    }
     public static void addUsersToGroup(
             final GroupModel group,
             String[] strUsers)
@@ -80,21 +86,23 @@ public class UserGroupModel extends GenericModel {
                 group.getId(), 
                 users);
     }
+    public static void deleteAllUsersFromGroup(final GroupModel group) {
+        UserGroupModel.delete("group.id = ?1", 
+                group.getId());
+    }
     public static void updateGroupOwnersIgnoreCurrent(
             final GroupModel group, 
             final Set<Long> users, 
             final UserModel currentUser) {
-        if(users == null)
-            return;
         for(UserGroupModel userGroup : group.getListUserGroups()) {
             final Long userId = userGroup.getUser().getId();
             if(currentUser.getId() == userId)
                 continue;
-            if(users.contains(userId)){
-                userGroup.setOwner(true);
+            if(users == null || !users.contains(userId)){
+                userGroup.setOwner(false);
             }
             else {
-                userGroup.setOwner(false);
+                userGroup.setOwner(true);
             }
             userGroup.save();                
         }

@@ -13,6 +13,8 @@ import play.exceptions.TemplateNotFoundException;
 @Check("/user/groups")
 public class UserGroupController extends BaseAdminController {
     
+    public static String ACTION_LIST = "guest.UserGroupController.list"; 
+    
     public static void list(int page, String search, String searchFields, String orderBy, String order) {
         final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);

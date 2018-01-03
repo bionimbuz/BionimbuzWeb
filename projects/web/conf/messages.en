@@ -56,6 +56,8 @@ crud.field.file.name=%s (%s)
 crud.field.check.all=Check all
 crud.field.check.none=Uncheck all
 crud.wait=Please wait...
+crud.yes=Yes
+crud.no=No
 
 crud.help.required=Required.
 crud.help.minlength=Min length is %d.
@@ -124,6 +126,14 @@ object.strUsers=Invite Users
 group.separate.users.email=Separate users' emails with commas (,) or semicolons (;)
 group.mark.removal=Mark for Removal
 group.mark.owner=Make Owner
+group.leave=Leave
+group.join=Join
+group.error.sole.owner=You cannot leave this group because there are no other joined owners for it
+group.success.leave=You leaved the group with success
+group.modal.confirm.leave=Are you sure you want to leave this group?
+group.modal.confirm.leave.desc=Once you leave this group, you can no longer access it
+group.modal.confirm.delete.desc=The group will be deleted permanently and the participating users will be removed from it
+group.join.message=You will only be able to view other users if you agree to join the group. If do not agree, the group will be removed from your list. <br><br> Do you agree? 
 
 # UserGroupModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
