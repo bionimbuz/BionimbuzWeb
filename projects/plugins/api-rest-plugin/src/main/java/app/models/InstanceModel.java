@@ -21,7 +21,8 @@ public class InstanceModel extends Body {
     private String imageUrl = "";
     private String type = "";
     
-    public InstanceModel() {        
+    public InstanceModel() {    
+        super();    
     }
     
     public InstanceModel(
@@ -29,6 +30,7 @@ public class InstanceModel extends Body {
             String name, 
             String machineType,
             Date creationDate) {
+        super();
         this.id = id;
         this.name = name;
         this.machineType = machineType;

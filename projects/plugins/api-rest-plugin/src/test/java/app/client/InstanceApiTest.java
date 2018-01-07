@@ -34,8 +34,8 @@ public class InstanceApiTest {
         assertThat(controller).isNotNull();
     }
         
-//    @Test
-    public void createInstanceTest() throws Exception {
+    @Test
+    public void createTest() throws Exception {
 
         InstanceApi instanceApi = createApi();
         List<InstanceModel> listModel = createListModel();  
@@ -57,8 +57,8 @@ public class InstanceApiTest {
         }
     }
     
-//    @Test
-    public void getInstanceTest() throws Exception {
+    @Test
+    public void getTest() throws Exception {
 
         InstanceApi instanceApi = createApi();
         InstanceModel model = createModel();  
@@ -75,7 +75,7 @@ public class InstanceApiTest {
     }
     
     @Test
-    public void deleteInstanceTest() throws Exception {
+    public void deleteTest() throws Exception {
 
         InstanceApi instanceApi = createApi();
         InstanceModel model = createModel();  
@@ -90,8 +90,8 @@ public class InstanceApiTest {
         assertThat(body.getMessage()).isEqualTo(Body.OK);
     }      
 
-//    @Test
-    public void listRulesTest() throws Exception {
+    @Test
+    public void listTest() throws Exception {
         InstanceApi instanceApi = createApi();
         Call<Body<List<InstanceModel>>> call = 
                 instanceApi.listInstances(

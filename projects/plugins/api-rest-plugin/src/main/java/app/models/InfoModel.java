@@ -13,10 +13,12 @@ public class InfoModel extends Body {
     private AuthenticationType authType;
         
     @SuppressWarnings("unused") //Reflection purposes
-    private InfoModel() {    	
+    private InfoModel() {    
+        super();	
     }
     
-    public InfoModel(final String apiVersion) {        
+    public InfoModel(final String apiVersion) {     
+        super();   
         this.apiVersion = apiVersion;
     }
     

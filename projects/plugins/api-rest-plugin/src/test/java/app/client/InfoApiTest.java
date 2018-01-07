@@ -30,7 +30,7 @@ public class InfoApiTest {
     }
     
     @Test
-    public void getInfoTest() throws Exception {
+    public void getTest() throws Exception {
         
         PluginApi pluginApi = new PluginApi(getUrl());
         InfoApi infoApi = pluginApi.createApi(InfoApi.class);  

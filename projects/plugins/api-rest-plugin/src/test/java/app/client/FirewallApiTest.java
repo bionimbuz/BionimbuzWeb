@@ -35,7 +35,7 @@ public class FirewallApiTest {
     }
         
     @Test
-    public void replaceRuleTest() throws Exception {
+    public void replaceTest() throws Exception {
 
         FirewallApi firewallApi = createApi();
         FirewallModel model = createModel();  
@@ -51,7 +51,7 @@ public class FirewallApiTest {
     }
     
     @Test
-    public void getRuleTest() throws Exception {
+    public void getTest() throws Exception {
 
         FirewallApi firewallApi = createApi();
         FirewallModel model = createModel();  
@@ -67,7 +67,7 @@ public class FirewallApiTest {
     }
     
     @Test
-    public void deleteRule() throws Exception {
+    public void deleteTest() throws Exception {
 
         FirewallApi firewallApi = createApi();
         FirewallModel model = createModel();  
@@ -83,7 +83,7 @@ public class FirewallApiTest {
     }    
 
     @Test
-    public void listRulesTest() throws Exception {
+    public void listTest() throws Exception {
         FirewallApi firewallApi = createApi();
         Call<Body<List<FirewallModel>>> call = 
                 firewallApi.listRules(

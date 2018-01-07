@@ -18,13 +18,16 @@ public class FirewallModel extends Body {
     private List<String> lstRanges;   
     private Date creationDate;     
 
-    public FirewallModel() {}
+    public FirewallModel() {
+        super();
+    }
     
     public FirewallModel(PROTOCOL protocol, Integer port, List<String> lstRanges) {
         this(generateName(protocol, port), protocol, port, lstRanges, null);
     }
     
     public FirewallModel(String name, PROTOCOL protocol, Integer port, List<String> lstRanges, Date creationDate) {
+        super();
         this.name = name;
         this.port = port;
         this.protocol = protocol;

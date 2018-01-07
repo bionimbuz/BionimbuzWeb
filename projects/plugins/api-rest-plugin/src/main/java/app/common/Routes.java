@@ -1,20 +1,26 @@
 package app.common;
 
 public class Routes {
+    
     /*
-     * InfoController
+     * AbstractInfoController
      */
     public static final String INFO = "/info";
     
     /*
-     * NetworkController
+     * AbstractNetworkController
      */
     public static final String FIREWALLS = "/firewalls";
     public static final String FIREWALLS_NAME = Routes.FIREWALLS+"/{name}";
     
     /*
-     * InstanceController
+     * AbstractInstanceController
      */
     public static final String INSTANCES = "/instances";
     public static final String INSTANCES_ZONE_NAME = Routes.INSTANCES + "/{zone}" + "/{name}";
+    
+    /*
+     * AbstractImageController
+     */
+    public static final String IMAGES = "/images";
 }
