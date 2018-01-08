@@ -12,6 +12,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import app.models.InfoModel.AuthenticationType;
+import controllers.CRUD.Hidden;
 import play.data.validation.MaxSize;
 import play.data.validation.Required;
 import play.data.validation.Unique;
@@ -39,10 +40,20 @@ public class PluginModel extends GenericModel {
     @Unique
     private String cloudType;
     @Required
+    @MaxSize(100)
+    @Hidden
+    private String writeScope;
+    @Required
+    @MaxSize(100)
+    @Hidden
+    private String readScope;
+    @Required
     @Enumerated(EnumType.STRING)
     private AuthenticationType authType;    
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "plugin")
     private List<CredentialModel> listCredentials;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "plugin")
+    private List<ImageModel> listImages;
     
     public PluginModel() {        
         super();
@@ -95,8 +106,26 @@ public class PluginModel extends GenericModel {
     }
     public void setListCredentials(List<CredentialModel> listCredentials) {
         this.listCredentials = listCredentials;
-    }     
-    
+    }         
+    public List<ImageModel> getListImages() {
+        return listImages;
+    }
+    public void setListImages(List<ImageModel> listImages) {
+        this.listImages = listImages;
+    }
+    public String getWriteScope() {
+        return writeScope;
+    }
+    public void setWriteScope(String writeScope) {
+        this.writeScope = writeScope;
+    }
+    public String getReadScope() {
+        return readScope;
+    }
+    public void setReadScope(String readScope) {
+        this.readScope = readScope;
+    }
+
     @Override
     public String toString() {
         return this.name;

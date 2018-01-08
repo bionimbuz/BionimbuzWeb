@@ -1,0 +1,111 @@
+
+#{extends 'CRUD/layout.html' /}
+#{set title:messages.get('crud.blank.title', type.modelName) /}
+
+<div class="row crud-title">
+    <div class="col-xs-12 col-sm-12 col-md-12">  
+        <h1> &{'crud.blank.title', type.modelName} </h1>
+        <pre> &{'crud.blank.title.desc', type.modelName} </pre>
+    </div>
+</div>
+
+<br>
+
+<div class="row col-lg-12" >
+#{form action:@create(), enctype:'multipart/form-data'}
+
+    #{crud.form}        
+
+        #{crud.custom 'url'}   
+            #{field 'object.url'}    
+            <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                <label for="${field.id}">&{'object.name'}</label>
+                <div class="nav-container">
+                    <select class="form-control nav" id="${field.id}" name="${field.name}">
+                        <option value="">&{'crud.none'}</option>
+                    </select>
+                </div>
+                <span class="help-block">*&{'image.search.obs'}</span>
+                #{ifError field.name}
+                    <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                #{/ifError}
+            </div>
+            #{/field}
+            
+        #{/crud.custom}
+        
+    #{/crud.form}
+    
+    <div class="btn-row text-center">
+        <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_save">&{'crud.save'}</button>
+        <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_saveAndContinue">&{'crud.saveAndContinue'}</button>
+        <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_saveAndAddAnother">&{'crud.saveAndAddAnother'}</button>
+        <a href="@{list()}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>
+    </div>
+#{/form}
+</div>
+
+
+#{set 'moreScripts' }
+<script type="text/javascript">
+$(function(){      
+
+    function addItem(content, value) {
+        if(value == null)
+            value = "";
+        $("#object_url").append(
+                '<option value="'+value+'">'+content+'</option>');
+    }
+    
+    function clearOptions() {
+        $("#object_url").empty();
+        addItem("&{'crud.none'}");
+        $("object_name").val('');
+    }
+
+    $('#object_url').change(function(){
+        content = this.options[this.selectedIndex].innerText;
+        urlValue = $('#object_plugin').val();
+        if(urlValue == ""){
+            content = "";
+        }
+        $("#object_name").val(content);    
+    });
+    
+    $('#object_plugin').change(function(){
+        
+        clearOptions();
+        
+        showPleaseWait();
+        
+        urlValue = $('#object_plugin').val();
+        var search = #{jsRoute @searchImages() /};
+        if(urlValue == ""){
+            hidePleaseWait(); 
+            return;
+        }
+        
+        $.ajax({
+            url: search.url(),
+            type: search.method,
+            data:{ pluginId: urlValue}
+           })
+        .done(function(data) { 
+            for(var i in data) {                
+                addItem(
+                    data[i]['name'],
+                    data[i]['url']);
+            }
+        })
+        .fail(function(data) {
+            flashError(data.responseText);
+        })
+        .always(function() {
+            hidePleaseWait(); 
+        });
+
+    });
+});
+</script>
+#{/set}
+

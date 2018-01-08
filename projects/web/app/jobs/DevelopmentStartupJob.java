@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import app.models.InfoModel.AuthenticationType;
 import controllers.security.SecurityController;
+import models.CredentialModel;
 import models.MenuModel;
 import models.PluginModel;
 import models.RoleModel;
@@ -34,18 +36,45 @@ public class DevelopmentStartupJob extends Job {
         Lang.change("br");
         this.insertProfiles();
         this.insertMenu("Plugins", "/adm/plugins", RoleType.ADMIN);
+        this.insertMenu("Images", "/adm/images", RoleType.ADMIN);
         this.insertMenu("Credential", "/credentials", RoleType.ADMIN);
         this.insertMenu("UserGroup", "/user/groups", RoleType.ADMIN);
         this.insertMenu("Group", "/groups", RoleType.ADMIN);
         this.insertMenu("UserGroup", "/user/groups", RoleType.NORMAL);
         this.insertMenu("Group", "/groups", RoleType.NORMAL);
 
+        PluginModel plugin = this.insertPlugin();
+        this.insertCredential(plugin);
         this.insertTestModels(10);
         this.insertTempPlugins(2);
         this.insertTempUserAdmin();
         this.insertTempUserNormal();
     }
 
+    private void insertCredential(PluginModel plugin) {
+        CredentialModel model = new CredentialModel();
+        model.setCredentialDataType("application/json");
+        model.setEnabled(true);
+        model.setName("Credential Google");
+        model.setPriority(0);
+        model.setPlugin(plugin);
+        model.save();
+    }
+
+    private PluginModel insertPlugin() {
+        PluginModel model = new PluginModel();
+        model.setAuthType(AuthenticationType.AUTH_BEARER_TOKEN);
+        model.setCloudType("google-compute-engine");
+        model.setEnabled(true);
+        model.setName("Google Cloud Platform");
+        model.setPluginVersion("0.1");
+        model.setUrl("http://localhost:8080");
+        model.setReadScope("https://www.googleapis.com/auth/compute.readonly");
+        model.setWriteScope("https://www.googleapis.com/auth/compute");
+        model.save();
+        return model;
+    }
+    
     private void insertProfiles() {
         RoleModel role = null;
 

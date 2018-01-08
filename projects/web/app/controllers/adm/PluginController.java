@@ -29,6 +29,8 @@ public class PluginController extends BaseAdminController {
             model.setCloudType(info.getCloudType());
             model.setName(info.getName());
             model.setPluginVersion(info.getPluginVersion());    
+            model.setReadScope(info.getReadScope());
+            model.setWriteScope(info.getWriteScope());
             renderJSON(model);            
         } catch (Exception e) {
             e.printStackTrace();

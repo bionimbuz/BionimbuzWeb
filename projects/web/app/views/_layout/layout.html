@@ -124,6 +124,14 @@
                 labelUncheckAll = "&{'crud.field.check.none'}";                  
                 configureCheckAllForLabels(checkAllElement, checkOneElement, labelCheckAll, labelUncheckAll);
             }
+            
+            function showPleaseWait() {
+                $('#pleaseWaitDialog').modal(); 
+            }
+            function hidePleaseWait() {
+                $('#pleaseWaitDialog').modal('hide'); 
+            }
+            
         </script>
         
         #{get 'moreScripts' /}

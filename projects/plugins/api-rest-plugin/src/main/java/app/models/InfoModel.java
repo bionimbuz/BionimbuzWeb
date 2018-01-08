@@ -11,6 +11,8 @@ public class InfoModel extends Body {
     private String pluginVersion;
     private String cloudType;
     private AuthenticationType authType;
+    private String writeScope;
+    private String readScope;
         
     @SuppressWarnings("unused") //Reflection purposes
     private InfoModel() {    
@@ -51,5 +53,17 @@ public class InfoModel extends Body {
     }
     public void setAuthType(final AuthenticationType authType) {
         this.authType = authType;
+    }
+    public String getWriteScope() {
+        return writeScope;
+    }
+    public void setWriteScope(String writeScope) {
+        this.writeScope = writeScope;
+    }
+    public String getReadScope() {
+        return readScope;
+    }
+    public void setReadScope(String readScope) {
+        this.readScope = readScope;
     }
 }

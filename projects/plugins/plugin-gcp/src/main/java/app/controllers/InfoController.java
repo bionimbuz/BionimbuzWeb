@@ -25,6 +25,14 @@ public class InfoController extends AbstractInfoController {
     }
     @Override
     protected String getName() {
-        return "Google Cloud Platform";
+        return SystemConstants.PLUGIN_NAME;
+    }
+    @Override
+    protected String getWriteScope() {
+        return SystemConstants.PLUGIN_WRITE_SCOPE;
+    }
+    @Override
+    protected String getReadScope() {
+        return SystemConstants.PLUGIN_READ_SCOPE;
     }
 }

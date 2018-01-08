@@ -105,6 +105,9 @@ CredentialController.desc=Cloud credentials associated to the plugins
 
 UserGroupController=Groups
 
+ImageController=Images
+ImageController.desc=Images for cloud instances creation
+
 # PluginModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 PluginModel=Plugin
@@ -150,6 +153,12 @@ CredentialModel=Credential
 object.plugin=Plugin
 object.credentialData=Data
 object.priority=Priority
+
+# ImageModel
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ImageModel=Image
+object.plugin.name=&{PluginModel}
+image.search.obs=You must select a cloud plugin to find available images
 
 # Modals
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -99,6 +99,7 @@
                     </li>                     
                     <li><a href="#"><span class="glyphicon glyphicon-signal"></span> Statistics</a></li>    
                     <li><a href="@{adm.PluginController.list}"><span class="glyphicon glyphicon-cloud-upload"></span> &{'PluginController'}</a></li>
+                    <li><a href="@{adm.ImageController.list}"><span class="glyphicon glyphicon-play-circle"></span> &{'ImageController'}</a></li>
                     <li><a href="@{guest.CredentialController.list}"><span class="glyphicon glyphicon-lock"></span> &{'CredentialController'}</a></li>
                     <li><a href="@{guest.UserGroupController.list}"><span class="glyphicon glyphicon-th"></span> &{'UserGroupController'}</a></li>
                     <li><a href="#"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
@@ -155,4 +156,17 @@
             #{doLayout /}    
         </div>
     </section>  
+</div>
+
+<div id="pleaseWaitDialog" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true" >
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">&{'crud.searching'}</h4>
+            </div>
+            <div class="modal-body">
+                <div class="progress progress-striped active" style="margin-bottom:0;"><div class="progress-bar" style="width: 100%"></div></div>            
+            </div>
+        </div>
+    </div>
 </div>

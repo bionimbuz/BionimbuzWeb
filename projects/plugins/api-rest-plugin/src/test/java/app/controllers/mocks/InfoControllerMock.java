@@ -23,4 +23,12 @@ public class InfoControllerMock extends AbstractInfoController {
     protected String getName() {
         return "GCP";
     }
+    @Override
+    protected String getWriteScope() {
+        return "Write Scope";
+    }
+    @Override
+    protected String getReadScope() {
+        return "Read Scope";
+    }
 }

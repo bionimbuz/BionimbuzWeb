@@ -60,6 +60,15 @@ DELETE  /user/groups/{id}                       guest.UserGroupController.delete
 GET     /user/groups                            guest.UserGroupController.blank
 POST    /user/groups                            guest.UserGroupController.create
 
+# ImageController
+GET     /adm/search/images                      adm.ImageController.searchImages
+GET     /adm/list/images                        adm.ImageController.list
+GET     /adm/images/{id}                        adm.ImageController.show
+PUT     /adm/images/{id}                        adm.ImageController.save
+DELETE  /adm/images/{id}                        adm.ImageController.delete
+GET     /adm/images                             adm.ImageController.blank
+POST    /adm/images                             adm.ImageController.create
+
 # TODO: to remove below
 # Catch all
 *       /{controller}/{action}                  {controller}.{action}

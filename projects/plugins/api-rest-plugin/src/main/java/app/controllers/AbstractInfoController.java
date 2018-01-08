@@ -27,6 +27,8 @@ public abstract class AbstractInfoController extends BaseController {
     	model.setPluginVersion(getPluginVersion());
     	model.setAuthType(getAuthenticationType());
         model.setName(getName());
+        model.setReadScope(getReadScope());
+        model.setWriteScope(getWriteScope());
 
         return ResponseEntity.ok(
                 Body.create(model));
@@ -40,4 +42,6 @@ public abstract class AbstractInfoController extends BaseController {
     protected abstract String getPluginVersion();
     protected abstract AuthenticationType getAuthenticationType();
     protected abstract String getName();
+    protected abstract String getWriteScope();
+    protected abstract String getReadScope();
 }
