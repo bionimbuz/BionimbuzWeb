@@ -14,14 +14,13 @@ import org.jclouds.oauth.v2.domain.Claims;
 import org.jclouds.oauth.v2.domain.Token;
 
 import com.google.common.base.Supplier;
-import com.google.gson.GsonBuilder;
 
 import app.common.Authorization;
 import app.common.GlobalConstants;
 import app.models.security.TokenModel;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.jackson.JacksonConverterFactory;
 
 public class PluginApi {
     
@@ -43,8 +42,7 @@ public class PluginApi {
                 .readTimeout(READ_TIMEOUT_SECS,TimeUnit.SECONDS).build();
         this.retrofit = new Retrofit.Builder()
                 .baseUrl(url)
-                .addConverterFactory(GsonConverterFactory.create(
-                        new GsonBuilder().create()))
+                .addConverterFactory(JacksonConverterFactory.create())
                 .client(client)
                 .build();
     }    
