@@ -1,7 +1,6 @@
 package controllers.adm;
 
 import java.io.StringWriter;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,10 +16,6 @@ import controllers.Check;
 import models.CredentialModel;
 import models.ImageModel;
 import models.PluginModel;
-import play.data.binding.Binder;
-import play.data.validation.Validation;
-import play.db.Model;
-import play.exceptions.TemplateNotFoundException;
 import play.i18n.Messages;
 
 @For(ImageModel.class)
@@ -66,36 +61,5 @@ public class ImageController extends BaseAdminController {
             e.printStackTrace();
             notFound(Messages.get(I18N.plugin_not_found));
         }
-    }
-    
-
-    public static void create() throws Exception {
-        final CustomObjectType type = CustomObjectType.get(getControllerClass());
-        notFoundIfNull(type);
-        final Constructor<?> constructor = type.entityClass.getDeclaredConstructor();
-        constructor.setAccessible(true);
-        final Model object = (Model) constructor.newInstance();
-        Binder.bindBean(params.getRootParamNode(), "object", object);
-        validation.valid(object);
-        if (Validation.hasErrors()) {
-            unbindFileFieldsMetadata(object);
-            renderArgs.put("error", Messages.get("crud.hasErrors"));
-            try {
-                render(request.controller.replace(".", "/") + "/blank.html", type, object);
-            } catch (final TemplateNotFoundException e) {
-                render("CRUD/blank.html", type, object);
-            }
-        }
-        bindFileFieldsMetadata(object);
-        object._save();
-        flash.success(Messages.get("crud.created", type.modelName));
-        if (params.get("_save") != null) {
-            redirect(request.controller + ".list");
-        }
-        if (params.get("_saveAndAddAnother") != null) {
-            redirect(request.controller + ".blank");
-        }
-        redirect(request.controller + ".show", object._key());
-    }
-    
+    }    
 }
