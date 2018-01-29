@@ -21,6 +21,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.web.client.RestTemplate;
 
 import com.google.common.base.Supplier;
 import com.google.common.io.Files;
@@ -115,4 +117,12 @@ public class TestUtils {
             return token;
         }
     }    
+    
+    public static void setTimeout(RestTemplate restTemplate, int timeout) {
+        restTemplate.setRequestFactory(new SimpleClientHttpRequestFactory());
+        SimpleClientHttpRequestFactory rf = 
+                (SimpleClientHttpRequestFactory) restTemplate.getRequestFactory();
+        rf.setReadTimeout(timeout);
+        rf.setConnectTimeout(timeout);
+    }
 }

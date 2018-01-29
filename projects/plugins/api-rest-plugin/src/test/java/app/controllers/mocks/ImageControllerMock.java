@@ -22,5 +22,14 @@ public class ImageControllerMock extends AbstractImageController {
         return ResponseEntity.ok().body(
                 Body.create(Body.OK, listRes));
     }
+
+    @Override
+    protected ResponseEntity<Body<ImageModel>> getImage(
+            String token, String identity, String name) throws Exception {        
+        ImageModel res = new ImageModel();
+        res.setName(name);
+        return ResponseEntity.ok().body(
+                Body.create(Body.OK, res));
+    }
  
 }

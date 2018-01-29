@@ -15,7 +15,6 @@
 #{form action:@create(), enctype:'multipart/form-data'}
 
     #{crud.form}        
-
         #{crud.custom 'url'}   
             #{field 'object.url'}    
             <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
@@ -65,15 +64,15 @@ $(function(){
 
     $('#object_url').change(function(){
         content = this.options[this.selectedIndex].innerText;
-        urlValue = $('#object_plugin').val();
+        urlValue = $('#object_url option:selected').text().trim();
         if(urlValue == ""){
             content = "";
         }
         $("#object_name").val(content);    
     });
     
-    $('#object_plugin').change(function(){
-        
+    function fillImages() {
+
         clearOptions();
         
         showPleaseWait();
@@ -103,8 +102,13 @@ $(function(){
         .always(function() {
             hidePleaseWait(); 
         });
-
-    });
+    }
+    
+    #{if object.plugin != null}
+        fillImages();
+    #{/if}
+    
+    $('#object_plugin').change(fillImages);
 });
 </script>
 #{/set}

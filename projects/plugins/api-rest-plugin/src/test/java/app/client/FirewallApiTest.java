@@ -13,12 +13,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import app.common.GlobalConstants;
 import app.controllers.mocks.FirewallControllerMock;
 import app.models.Body;
 import app.models.FirewallModel;
 import app.models.FirewallModel.PROTOCOL;
-import retrofit2.Call;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -36,60 +34,49 @@ public class FirewallApiTest {
         
     @Test
     public void replaceTest() throws Exception {
-
-        FirewallApi firewallApi = createApi();
+        FirewallApi firewallApi = new FirewallApi(getUrl());
         FirewallModel model = createModel();  
         String nameCreated = model.getName();
         assertThat(nameCreated).isNotEmpty();
         
-        Call<Body<FirewallModel>> call = 
+        Body<FirewallModel> body = 
                 firewallApi.replaceRule(
-                        GlobalConstants.API_VERSION, 
                         "fake-token", "fake-identity", model);
-        Body<FirewallModel> body = call.execute().body();
         assertThat(body.getContent().getName()).isEqualTo(nameCreated);
     }
     
     @Test
     public void getTest() throws Exception {
-
-        FirewallApi firewallApi = createApi();
+        FirewallApi firewallApi = new FirewallApi(getUrl());
         FirewallModel model = createModel();  
         String nameCreated = model.getName();
         assertThat(nameCreated).isNotEmpty();
         
-        Call<Body<FirewallModel>> call = 
+        Body<FirewallModel> body = 
                 firewallApi.getRule(
-                        GlobalConstants.API_VERSION, 
                         "fake-token", "fake-identity", nameCreated);
-        Body<FirewallModel> body = call.execute().body();
         assertThat(body.getContent().getName()).isEqualTo(nameCreated);
     }
     
     @Test
     public void deleteTest() throws Exception {
-
-        FirewallApi firewallApi = createApi();
+        FirewallApi firewallApi = new FirewallApi(getUrl());
         FirewallModel model = createModel();  
         String nameCreated = model.getName();
         assertThat(nameCreated).isNotEmpty();
         
-        Call<Body<Void>> call = 
+        Body<Void> body = 
                 firewallApi.deleteRule(
-                        GlobalConstants.API_VERSION, 
                         "fake-token", "fake-identity", nameCreated);
-        Body<Void> body = call.execute().body();
         assertThat(body.getMessage()).isEqualTo(Body.OK);
     }    
 
     @Test
     public void listTest() throws Exception {
-        FirewallApi firewallApi = createApi();
-        Call<Body<List<FirewallModel>>> call = 
+        FirewallApi firewallApi = new FirewallApi(getUrl());
+        Body<List<FirewallModel>> body = 
                 firewallApi.listRules(
-                        GlobalConstants.API_VERSION, 
                         "fake-token", "fake-identity");
-        Body<List<FirewallModel>> body = call.execute().body();
         assertThat(body.getMessage()).isEqualTo(Body.OK);
         assertThat(body.getContent()).isNotNull();
         assertThat(body.getContent()).isNotEmpty();
@@ -97,11 +84,6 @@ public class FirewallApiTest {
     
     private String getUrl() {
         return "http://localhost:"+PORT;
-    }
-    
-    private FirewallApi createApi() {
-        PluginApi pluginApi = new PluginApi(getUrl());
-        return pluginApi.createApi(FirewallApi.class); 
     }
     
     private static FirewallModel createModel() {

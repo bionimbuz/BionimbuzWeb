@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class InstanceModel extends Body {
 
     private String id = "";
@@ -121,6 +123,7 @@ public class InstanceModel extends Body {
     public void setZone(String zone) {
         this.zone = zone;
     }    
+    @JsonIgnore
     public URI getImageUri() {
         return URI.create(imageUrl);
     }

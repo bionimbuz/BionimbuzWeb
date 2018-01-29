@@ -1,27 +1,14 @@
 package controllers.adm;
 
 import java.io.StringWriter;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
-import org.jclouds.domain.Credentials;
-import org.jclouds.googlecloud.GoogleCredentialsFromJson;
-import org.jclouds.googlecomputeengine.GoogleComputeEngineApiMetadata;
-import org.jclouds.oauth.v2.AuthorizationApi;
-import org.jclouds.oauth.v2.config.OAuthProperties;
-import org.jclouds.oauth.v2.domain.Claims;
-import org.jclouds.oauth.v2.domain.Token;
-
-import com.google.common.base.Supplier;
 
 import app.client.ImageApi;
-import app.client.PluginApi;
 import app.common.Authorization;
-import app.common.GlobalConstants;
 import app.models.Body;
 import app.models.security.TokenModel;
 import common.constants.I18N;
@@ -30,8 +17,11 @@ import controllers.Check;
 import models.CredentialModel;
 import models.ImageModel;
 import models.PluginModel;
+import play.data.binding.Binder;
+import play.data.validation.Validation;
+import play.db.Model;
+import play.exceptions.TemplateNotFoundException;
 import play.i18n.Messages;
-import retrofit2.Call;
 
 @For(ImageModel.class)
 @Check("/adm/images")
@@ -43,25 +33,22 @@ public class ImageController extends BaseAdminController {
             if(plugin == null)
                 notFound(Messages.get(I18N.plugin_not_found));
 
-            List<ImageModel> listModels = new ArrayList<ImageModel>();            
-            PluginApi pluginApi = new PluginApi(plugin.getUrl());
-            ImageApi imageApi = pluginApi.createApi(ImageApi.class);  
+            List<ImageModel> listModels = new ArrayList<ImageModel>();
+            ImageApi imageApi = new ImageApi(plugin.getUrl());  
             
             for(CredentialModel credential : plugin.getListCredentials()) {
                 try {
                     StringWriter writer = new StringWriter();
                     IOUtils.copy(credential.getCredentialData().get(), writer, "UTF-8");
                     
-                    TokenModel token = getToken(
+                    TokenModel token = Authorization.getToken(
                             plugin.getCloudType(),
                             plugin.getReadScope(),
                             writer.toString());
-                    Call<Body<List<app.models.ImageModel>>> call = 
+                    Body<List<app.models.ImageModel>> body = 
                             imageApi.listImages(
-                                    GlobalConstants.API_VERSION,
                                     token.getToken(), 
                                     token.getIdentity());       
-                    Body<List<app.models.ImageModel>> body = call.execute().body();   
                     if(body.getContent() == null || body.getContent().isEmpty())
                         continue;                    
                     for(app.models.ImageModel image : body.getContent()) {
@@ -81,51 +68,34 @@ public class ImageController extends BaseAdminController {
         }
     }
     
-    private static Supplier<Credentials> getCredentialSuplier( 
-            final String cloudType,
-            final String credentialContent) {
-        if(cloudType == "google-compute-engine") {     
-            return new GoogleCredentialsFromJson(credentialContent);            
-        }        
-        return null;
-    }
-    
-    private static Properties getProperties(
-            final String cloudType) {
-        if(cloudType == "google-compute-engine") {     
-            return GoogleComputeEngineApiMetadata.defaultProperties();            
-        }        
-        return null;
-    }
-    
-    public static TokenModel getToken(
-            final String cloudType,
-            final String scope,
-            final String credentialContent
-            ) throws Exception {
-        
-        Properties properties = getProperties(cloudType);
-        Supplier<Credentials> credentialSuplier = 
-                getCredentialSuplier(cloudType, credentialContent);
-        
-        final String aud = properties.getProperty(OAuthProperties.AUDIENCE);
-        int now = (int)ZonedDateTime.now(ZoneOffset.UTC).toEpochSecond();        
 
-        Claims claims = Claims.create( //
-                credentialSuplier.get().identity, // iss 
-                scope, // scope
-                aud, // aud
-                now + GlobalConstants.TOKEN_LIFETIME_SECONDS, // placeholder exp for the cache
-                now // placeholder iat for the cache
-            );
-        
-        try(AuthorizationApi api = 
-                Authorization.createApi(
-                        credentialSuplier, cloudType)) {        
-            Token token = api.authorize(claims);            
-            return new TokenModel(
-                    token.accessToken(), 
-                    credentialSuplier.get().identity);
+    public static void create() throws Exception {
+        final CustomObjectType type = CustomObjectType.get(getControllerClass());
+        notFoundIfNull(type);
+        final Constructor<?> constructor = type.entityClass.getDeclaredConstructor();
+        constructor.setAccessible(true);
+        final Model object = (Model) constructor.newInstance();
+        Binder.bindBean(params.getRootParamNode(), "object", object);
+        validation.valid(object);
+        if (Validation.hasErrors()) {
+            unbindFileFieldsMetadata(object);
+            renderArgs.put("error", Messages.get("crud.hasErrors"));
+            try {
+                render(request.controller.replace(".", "/") + "/blank.html", type, object);
+            } catch (final TemplateNotFoundException e) {
+                render("CRUD/blank.html", type, object);
+            }
         }
-    }    
+        bindFileFieldsMetadata(object);
+        object._save();
+        flash.success(Messages.get("crud.created", type.modelName));
+        if (params.get("_save") != null) {
+            redirect(request.controller + ".list");
+        }
+        if (params.get("_saveAndAddAnother") != null) {
+            redirect(request.controller + ".blank");
+        }
+        redirect(request.controller + ".show", object._key());
+    }
+    
 }

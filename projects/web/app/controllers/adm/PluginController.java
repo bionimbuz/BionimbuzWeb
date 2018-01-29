@@ -1,7 +1,6 @@
 package controllers.adm;
 
 import app.client.InfoApi;
-import app.client.PluginApi;
 import app.models.Body;
 import app.models.InfoModel;
 import common.constants.I18N;
@@ -9,7 +8,6 @@ import controllers.CRUD.For;
 import controllers.Check;
 import models.PluginModel;
 import play.i18n.Messages;
-import retrofit2.Call;
 
 @For(PluginModel.class)
 @Check("/adm/plugins")
@@ -17,10 +15,8 @@ public class PluginController extends BaseAdminController {
 
     public static void searchPlugin(final String url) {
         try {
-            PluginApi pluginApi = new PluginApi(url);
-            InfoApi infoApi = pluginApi.createApi(InfoApi.class);  
-            Call<Body<InfoModel>> call = infoApi.getInfo();        
-            Body<InfoModel> body = call.execute().body();
+            InfoApi infoApi = new InfoApi(url);    
+            Body<InfoModel> body = infoApi.getInfo();        
             InfoModel info = body.getContent();
             
             PluginModel model = new PluginModel();

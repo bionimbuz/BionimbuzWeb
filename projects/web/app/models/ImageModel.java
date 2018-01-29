@@ -29,7 +29,7 @@ public class ImageModel extends GenericModel {
     @Hidden
     private String name;        
     @Required
-    @MaxSize(100)
+    @MaxSize(500)
     private String url;
     
     public ImageModel() {        

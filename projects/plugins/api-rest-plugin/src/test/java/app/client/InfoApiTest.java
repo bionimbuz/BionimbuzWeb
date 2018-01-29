@@ -13,7 +13,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import app.controllers.mocks.InfoControllerMock;
 import app.models.Body;
 import app.models.InfoModel;
-import retrofit2.Call;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -32,10 +31,8 @@ public class InfoApiTest {
     @Test
     public void getTest() throws Exception {
         
-        PluginApi pluginApi = new PluginApi(getUrl());
-        InfoApi infoApi = pluginApi.createApi(InfoApi.class);  
-        Call<Body<InfoModel>> call = infoApi.getInfo();        
-        Body<InfoModel> model = call.execute().body();
+        InfoApi infoApi = new InfoApi(getUrl());  
+        Body<InfoModel> model = infoApi.getInfo();       
         
         String content = model.getMessage();        
         assertThat(content).isEqualTo(Body.OK);

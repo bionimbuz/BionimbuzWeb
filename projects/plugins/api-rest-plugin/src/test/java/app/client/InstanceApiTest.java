@@ -14,11 +14,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import app.common.GlobalConstants;
 import app.controllers.mocks.InstanceControllerMock;
 import app.models.Body;
 import app.models.InstanceModel;
-import retrofit2.Call;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -36,15 +34,12 @@ public class InstanceApiTest {
         
     @Test
     public void createTest() throws Exception {
-
-        InstanceApi instanceApi = createApi();
+        InstanceApi instanceApi = new InstanceApi(getUrl());
         List<InstanceModel> listModel = createListModel();  
         
-        Call<Body<List<InstanceModel>>> call = 
+        Body<List<InstanceModel>> body = 
                 instanceApi.createInstance(
-                        GlobalConstants.API_VERSION, 
                         "fake-token", "fake-identity", listModel);
-        Body<List<InstanceModel>> body = call.execute().body();
         List<InstanceModel> listModelCreated = body.getContent();
         
         Iterator<InstanceModel> 
@@ -59,45 +54,37 @@ public class InstanceApiTest {
     
     @Test
     public void getTest() throws Exception {
-
-        InstanceApi instanceApi = createApi();
+        InstanceApi instanceApi = new InstanceApi(getUrl());
         InstanceModel model = createModel();  
         String nameCreated = model.getName();
         String zoneCreated = model.getZone();
         
-        Call<Body<InstanceModel>> call = 
+        Body<InstanceModel> body = 
                 instanceApi.getInstance(
-                        GlobalConstants.API_VERSION, 
                         "fake-token", "fake-identity", zoneCreated, nameCreated);
-        Body<InstanceModel> body = call.execute().body();
         assertThat(body.getContent().getName()).isEqualTo(nameCreated);
         assertThat(body.getContent().getZone()).isEqualTo(zoneCreated);
     }
     
     @Test
     public void deleteTest() throws Exception {
-
-        InstanceApi instanceApi = createApi();
+        InstanceApi instanceApi = new InstanceApi(getUrl());
         InstanceModel model = createModel();  
         String nameCreated = model.getName();
         String zoneCreated = model.getZone();
         
-        Call<Body<Void>> call = 
+        Body<Void> body = 
                 instanceApi.deleteInstance(
-                        GlobalConstants.API_VERSION, 
                         "fake-token", "fake-identity", zoneCreated, nameCreated);
-        Body<Void> body = call.execute().body();
         assertThat(body.getMessage()).isEqualTo(Body.OK);
     }      
 
     @Test
     public void listTest() throws Exception {
-        InstanceApi instanceApi = createApi();
-        Call<Body<List<InstanceModel>>> call = 
+        InstanceApi instanceApi = new InstanceApi(getUrl());
+        Body<List<InstanceModel>> body = 
                 instanceApi.listInstances(
-                        GlobalConstants.API_VERSION, 
                         "fake-token", "fake-identity");
-        Body<List<InstanceModel>> body = call.execute().body();
         assertThat(body.getMessage()).isEqualTo(Body.OK);
         assertThat(body.getContent()).isNotNull();
         assertThat(body.getContent()).isNotEmpty();
@@ -105,11 +92,6 @@ public class InstanceApiTest {
     
     private String getUrl() {
         return "http://localhost:"+PORT;
-    }
-    
-    private InstanceApi createApi() {
-        PluginApi pluginApi = new PluginApi(getUrl());
-        return pluginApi.createApi(InstanceApi.class); 
     }
     
     private static List<InstanceModel> createListModel(){

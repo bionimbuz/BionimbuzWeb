@@ -82,11 +82,11 @@
                     
                     <!-- Dropdown-->
                     <li class="panel panel-default" id="dropdown">
-                        <a data-toggle="collapse" href="#dropdown-storage-lvl1">
+                        <a data-toggle="collapse" href="#dropdown-storage-lvl2">
                         <span class="glyphicon glyphicon-hdd"></span> Storage<span class="caret"></span>
                         </a>
                         <!-- Dropdown level 1 -->
-                        <div id="dropdown-storage-lvl1" class="panel-collapse collapse">
+                        <div id="dropdown-storage-lvl2" class="panel-collapse collapse">
                             <div class="panel-body">
                                 <ul class="nav navbar-nav">
                                     <li><a href="#">My Storage</a></li>
@@ -103,7 +103,21 @@
                     <li><a href="@{guest.CredentialController.list}"><span class="glyphicon glyphicon-lock"></span> &{'CredentialController'}</a></li>
                     <li><a href="@{guest.UserGroupController.list}"><span class="glyphicon glyphicon-th"></span> &{'UserGroupController'}</a></li>
                     <li><a href="#"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
-                    
+                    <!-- Dropdown-->
+                    <li class="panel panel-default" id="dropdown">
+                        <a data-toggle="collapse" href="#dropdown-workflow-lvl3">
+                        <span class="glyphicon glyphicon-play"></span> Applications<span class="caret"></span>
+                        </a>
+                        <!-- Dropdown level 1 -->
+                        <div id="dropdown-workflow-lvl3" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <ul class="nav navbar-nav">
+                                    <li><a href="#">Coordinators</a></li>
+                                    <li><a href="#">Executors</a></li>                        
+                                </ul>
+                            </div>
+                        </div>
+                    </li>  
                     <!-- ################################### -->
                     <!-- ### Template Menu for 1 and 2 level menus -->
                     *{

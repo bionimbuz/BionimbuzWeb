@@ -23,4 +23,5 @@ public class Routes {
      * AbstractImageController
      */
     public static final String IMAGES = "/images";
+    public static final String IMAGES_NAME = Routes.IMAGES+"/{name}";
 }
