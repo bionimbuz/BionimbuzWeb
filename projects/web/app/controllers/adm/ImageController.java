@@ -19,7 +19,7 @@ import models.PluginModel;
 import play.i18n.Messages;
 
 @For(ImageModel.class)
-@Check("/adm/images")
+@Check("/adm/list/images")
 public class ImageController extends BaseAdminController {
     
     public static void searchImages(final Long pluginId) {

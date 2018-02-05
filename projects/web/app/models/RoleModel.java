@@ -16,7 +16,7 @@ import play.data.validation.Required;
 import play.db.jpa.GenericModel;
 
 @Entity
-@Table(name = "tb_profile")
+@Table(name = "tb_role")
 public class RoleModel extends GenericModel {
      
     public static enum RoleType {
@@ -31,7 +31,7 @@ public class RoleModel extends GenericModel {
     private List<UserModel> listUsers; 
     @Required
     @ManyToMany
-    @JoinTable(name = "tb_profile_menu", 
+    @JoinTable(name = "tb_role_menu", 
         joinColumns = @JoinColumn(name = "id_role", referencedColumnName = "id"), 
         inverseJoinColumns = @JoinColumn(name = "id_menu", referencedColumnName = "id"))
     private List<MenuModel> listMenus;

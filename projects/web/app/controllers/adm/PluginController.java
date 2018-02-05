@@ -10,7 +10,7 @@ import models.PluginModel;
 import play.i18n.Messages;
 
 @For(PluginModel.class)
-@Check("/adm/plugins")
+@Check("/adm/list/plugins")
 public class PluginController extends BaseAdminController {
 
     public static void searchPlugin(final String url) {

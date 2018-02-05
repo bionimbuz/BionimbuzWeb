@@ -21,6 +21,7 @@ import play.Logger;
 import play.i18n.Lang;
 import play.jobs.Job;
 import play.jobs.OnApplicationStart;
+import play.mvc.Router;
 
 @OnApplicationStart
 public class DevelopmentStartupJob extends Job {
@@ -33,15 +34,9 @@ public class DevelopmentStartupJob extends Job {
         if (RoleModel.findAll().size() > 0) {
             return;
         }
-        Lang.change("br");
+        Lang.change("en");
         this.insertProfiles();
-        this.insertMenu("Plugins", "/adm/plugins", RoleType.ADMIN);
-        this.insertMenu("Images", "/adm/images", RoleType.ADMIN);
-        this.insertMenu("Credential", "/credentials", RoleType.ADMIN);
-        this.insertMenu("UserGroup", "/user/groups", RoleType.ADMIN);
-        this.insertMenu("Group", "/groups", RoleType.ADMIN);
-        this.insertMenu("UserGroup", "/user/groups", RoleType.NORMAL);
-        this.insertMenu("Group", "/groups", RoleType.NORMAL);
+        this.insertMenus();
 
         PluginModel plugin = this.insertPlugin();
         this.insertCredential(plugin);
@@ -49,6 +44,99 @@ public class DevelopmentStartupJob extends Job {
         this.insertTempPlugins(2);
         this.insertTempUserAdmin();
         this.insertTempUserNormal();
+    }
+    
+    private void insertMenus() {
+        
+        MenuModel menu = null;
+        
+        menu = insertMenu(
+                "menu.plugins", 
+                "glyphicon glyphicon-cloud-upload",
+                Router.reverse("adm.PluginController.list").url, 
+                (short)1,
+                null,
+                RoleType.ADMIN);
+        
+        menu = insertMenu(
+                "menu.images", 
+                "glyphicon glyphicon-play-circle",
+                Router.reverse("adm.ImageController.list").url, 
+                (short)2,
+                null,
+                RoleType.ADMIN);
+        
+        menu = insertMenu(
+                "menu.credentials", 
+                "glyphicon glyphicon-lock",
+                Router.reverse("guest.CredentialController.list").url, 
+                (short)3,
+                null,
+                RoleType.ADMIN,
+                RoleType.NORMAL);
+
+        menu = insertMenu(
+                "menu.groups", 
+                "glyphicon glyphicon-th",
+                Router.reverse("guest.UserGroupController.list").url, 
+                (short)4,
+                null,
+                RoleType.ADMIN,
+                RoleType.NORMAL);
+        
+        menu = insertMenu(
+                "menu.applications", 
+                "glyphicon glyphicon-play",
+                "#", 
+                (short)5,
+                null,
+                RoleType.ADMIN);
+        
+        insertMenu(
+                "menu.applications.coordinators", 
+                null,
+                "#", 
+                (short)1,
+                menu,
+                RoleType.ADMIN);  
+        
+        insertMenu(
+                "menu.applications.executors", 
+                null,
+                "#", 
+                (short)2,
+                menu,
+                RoleType.ADMIN);
+    }
+
+    private MenuModel insertMenu(
+            String name, 
+            String iconClass, 
+            String path, 
+            short order, 
+            MenuModel parentMenu, 
+            RoleType... roleTypes) {
+        
+        MenuModel menu = new MenuModel();  
+        menu.setName(name);
+        menu.setMenuOrder(order);
+        menu.setIconClass(iconClass);
+        menu.setPath(path);        
+        menu.setParentMenu(parentMenu);
+        menu.save();
+        
+
+
+        for(RoleType roleType : roleTypes) {
+            final RoleModel role = RoleModel.findById(roleType);
+            List<MenuModel> menus = role.getListMenus();
+            if(menus == null)
+                menus = new ArrayList<>();
+            menus.add(menu);
+            role.setListMenus(menus);   
+        }    
+        
+        return menu;
     }
 
     private void insertCredential(PluginModel plugin) {
@@ -84,30 +172,6 @@ public class DevelopmentStartupJob extends Job {
 
         role = new RoleModel();
         role.setId(RoleType.NORMAL);
-        role.save();
-    }
-
-    private void insertMenu(String name, String path, RoleType roleType) {
-        if (MenuModel.containsMenuProfile(path, roleType)) {
-            return;
-        }
-
-        MenuModel menu = MenuModel.find("path = ?1", path).first();
-        if (menu == null) {
-            menu = new MenuModel();
-            menu.setEnabled(true);
-            menu.setName(name);
-            menu.setPath(path);
-            menu.save();
-        }
-
-        final RoleModel role = RoleModel.findById(roleType);
-        List<MenuModel> listMenus = role.getListMenus();
-        if (listMenus == null) {
-            listMenus = new ArrayList<>();
-        }
-        listMenus.add(menu);
-        role.setListMenus(listMenus);
         role.save();
     }
 

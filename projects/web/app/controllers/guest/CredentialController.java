@@ -10,7 +10,7 @@ import play.db.Model;
 import play.exceptions.TemplateNotFoundException;
 
 @For(CredentialModel.class)
-@Check("/credentials")
+@Check("/list/credentials")
 public class CredentialController extends BaseAdminController {
     
     public static void list(final Integer pluginSelected, int page, String search, String searchFields, String orderBy, String order) {

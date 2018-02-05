@@ -10,7 +10,7 @@ import play.db.Model;
 import play.exceptions.TemplateNotFoundException;
 
 @For(UserGroupModel.class)
-@Check("/user/groups")
+@Check("/list/user/groups")
 public class UserGroupController extends BaseAdminController {
     
     public static String ACTION_LIST = "guest.UserGroupController.list"; 

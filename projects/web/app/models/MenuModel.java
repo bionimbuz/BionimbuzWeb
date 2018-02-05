@@ -7,8 +7,12 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
+import controllers.adm.BaseAdminController;
 import models.RoleModel.RoleType;
 import play.db.jpa.GenericModel;
 
@@ -19,9 +23,15 @@ public class MenuModel extends GenericModel {
     @Id
     @GeneratedValue
     private Long id;
-    private boolean enabled = true;
     private String path;    
     private String name;
+    private String iconClass;
+    private Short menuOrder;
+    @ManyToOne
+    private MenuModel parentMenu;
+    @OneToMany(mappedBy="parentMenu")
+    @OrderBy("menuOrder ASC")
+    private List<MenuModel> listChildrenMenus;
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "listMenus")
     private List<RoleModel> listRoles;
     
@@ -40,17 +50,42 @@ public class MenuModel extends GenericModel {
                     path).first() != null;
     }
     
+    public static List<MenuModel> searchMenus() {     
+        UserModel user = BaseAdminController.getConnectedUser();
+        return find(
+                " SELECT DISTINCT menu "
+                + " FROM MenuModel menu "
+                + " LEFT JOIN FETCH menu.listChildrenMenus children"
+                + " JOIN menu.listRoles roles"
+                + " LEFT JOIN children.listRoles rolesChildren"
+                + " WHERE menu.parentMenu IS NULL AND ?1 = roles.id AND"
+                + "     ( rolesChildren IS NULL ) OR ( rolesChildren IS NOT NULL AND ?1 = rolesChildren.id )"
+                + " ORDER BY menu.menuOrder", user.getRole().getId()).fetch();
+    }
+
+    public String getIconClass() {
+        return iconClass;
+    }
+    public void setIconClass(String iconClass) {
+        this.iconClass = iconClass;
+    }
+    public List<MenuModel> getListChildrenMenus() {
+        return listChildrenMenus;
+    }
+    public void setListChildrenMenus(List<MenuModel> listChildrenMenus) {
+        this.listChildrenMenus = listChildrenMenus;
+    }
+    public MenuModel getParentMenu() {
+        return parentMenu;
+    }
+    public void setParentMenu(MenuModel parentMenu) {
+        this.parentMenu = parentMenu;
+    }
     public Long getId() {
         return id;
     }
     public void setId(Long id) {
         this.id = id;
-    }
-    public boolean isEnabled() {
-        return enabled;
-    }
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
     public String getPath() {
         return path;
@@ -69,5 +104,11 @@ public class MenuModel extends GenericModel {
     }
     public void setListRoles(List<RoleModel> listRoles) {
         this.listRoles = listRoles;
+    }
+    public Short getMenuOrder() {
+        return menuOrder;
+    }
+    public void setMenuOrder(Short menuOrder) {
+        this.menuOrder = menuOrder;
     }
 }

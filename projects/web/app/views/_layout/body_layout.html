@@ -64,6 +64,58 @@
             <!-- Main Menu -->
             <div class="side-menu-container">
                 <ul class="nav navbar-nav">
+                
+                
+                
+                
+                
+                %{
+                    menus = models.MenuModel.searchMenus();
+                    menusParents = 0;
+                    
+                    for(menu in menus) { 
+                        
+                        if(menu.listChildrenMenus.size() > 0) {
+                            menusParents++;
+                    }%                        
+                            <!-- Dropdown-->
+                            <li class="panel panel-default dropdown">
+                                <a data-toggle="collapse" href="#dropdown${menusParents}">
+                                    <span class="${menu.iconClass}"></span> &{menu.name}<span class="caret"></span>
+                                </a>
+                                <!-- Dropdown level 1 -->
+                                <div id="dropdown${menusParents}" class="panel-collapse collapse">
+                                    <div class="panel-body">
+                                        <ul class="nav navbar-nav">
+                                        
+                                        %{
+                                            for(child in menu.listChildrenMenus) { 
+                                        }%                                        
+                                            <li><a href="${child.path}">&{child.name}</a></li>
+                                        %{ } }%
+                                                               
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>  
+                    %{                         
+                        } else { 
+                    }%
+                            <li><a href="${menu.path}"><span class="${menu.iconClass}"></span> &{menu.name}</a></li>  
+                    %{ 
+                        }
+                        
+                    } 
+                }%
+                
+                
+                
+                
+                
+                
+                
+                *{
+                
                     <!-- Dropdown-->
                     <li class="panel panel-default" id="dropdown">
                         <a data-toggle="collapse" href="#dropdown-workflow-lvl1">
@@ -120,7 +172,7 @@
                     </li>  
                     <!-- ################################### -->
                     <!-- ### Template Menu for 1 and 2 level menus -->
-                    *{
+                    
                     <!-- 
                     <li class="panel panel-default" id="dropdown">
                         <a data-toggle="collapse" href="#dropdown-lvl1">
@@ -151,11 +203,11 @@
                         </div>
                     </li>
                      -->
-                    }*
+                    
                     <!-- ################################### -->              
                     <li><a href="@{adm.TestController.list}"><span class="glyphicon glyphicon-screenshot"></span> Test</a></li>
                     
-                         
+             }*
                     
                 </ul>
             </div>

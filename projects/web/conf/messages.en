@@ -108,6 +108,22 @@ UserGroupController=Groups
 ImageController=Images
 ImageController.desc=Images for cloud instances creation
 
+ApplicationController=Applications
+
+CoordinatorController=Coordinators
+
+ExecutorController=Executors
+
+# Menus
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+menu.plugins=&{PluginController}
+menu.images=&{ImageController}
+menu.credentials=&{CredentialController}
+menu.groups=&{UserGroupController}
+menu.applications=&{ApplicationController}
+menu.applications.coordinators=&{CoordinatorController}
+menu.applications.executors=&{ExecutorController}
+
 # PluginModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 PluginModel=Plugin

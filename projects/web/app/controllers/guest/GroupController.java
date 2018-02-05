@@ -14,7 +14,7 @@ import play.exceptions.TemplateNotFoundException;
 import play.i18n.Messages;
 
 @For(GroupModel.class)
-@Check("/groups")
+@Check("/list/user/groups")
 public class GroupController extends BaseAdminController {
     
     private static final String SPLIT_EXP_COMMA = "(\\s*;\\s*)|(\\s*,\\s*)";
