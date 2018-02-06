@@ -95,7 +95,7 @@ public class DevelopmentStartupJob extends Job {
         insertMenu(
                 "menu.applications.coordinators", 
                 null,
-                "#", 
+                Router.reverse("adm.CoordinatorController.show").url, 
                 (short)1,
                 menu,
                 RoleType.ADMIN);  
@@ -103,7 +103,7 @@ public class DevelopmentStartupJob extends Job {
         insertMenu(
                 "menu.applications.executors", 
                 null,
-                "#", 
+                Router.reverse("adm.ExecutorController.list").url, 
                 (short)2,
                 menu,
                 RoleType.ADMIN);

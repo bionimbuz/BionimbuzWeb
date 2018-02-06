@@ -176,6 +176,14 @@ ImageModel=Image
 object.plugin.name=&{PluginModel}
 image.search.obs=You must select a cloud plugin to find available images
 
+# CoordinatorModel
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+CoordinatorModel=Coordinator
+object.startupScript=Startup Script
+
+# ExecutorModel
+ExecutorModel=Executor
+
 # Modals
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 modal.confirm=Confirmation

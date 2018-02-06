@@ -69,6 +69,18 @@ DELETE  /adm/images/{id}                        adm.ImageController.delete
 GET     /adm/images                             adm.ImageController.blank
 POST    /adm/images                             adm.ImageController.create
 
+# CoordinatorController
+GET     /adm/coordinator                        adm.CoordinatorController.show
+POST    /adm/coordinator                        adm.CoordinatorController.save
+
+# ExecutorController
+GET     /adm/list/executors                     adm.ExecutorController.list
+GET     /adm/executors/{id}                     adm.ExecutorController.show
+PUT     /adm/executors/{id}                     adm.ExecutorController.save
+DELETE  /adm/executors/{id}                     adm.ExecutorController.delete
+GET     /adm/executors                          adm.ExecutorController.blank
+POST    /adm/executors                          adm.ExecutorController.create
+
 # TODO: to remove below
 # Catch all
 *       /{controller}/{action}                  {controller}.{action}
