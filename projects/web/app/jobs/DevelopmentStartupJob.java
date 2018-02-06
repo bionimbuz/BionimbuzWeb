@@ -1,14 +1,21 @@
 package jobs;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.google.common.io.Files;
+
 import app.models.InfoModel.AuthenticationType;
+import common.fields.EncryptedFileField;
 import controllers.security.SecurityController;
 import models.CredentialModel;
+import models.ImageModel;
 import models.MenuModel;
 import models.PluginModel;
 import models.RoleModel;
@@ -40,10 +47,25 @@ public class DevelopmentStartupJob extends Job {
 
         PluginModel plugin = this.insertPlugin();
         this.insertCredential(plugin);
+        this.insertImages(plugin);
         this.insertTestModels(10);
         this.insertTempPlugins(2);
         this.insertTempUserAdmin();
         this.insertTempUserNormal();
+    }
+    
+    private void insertImages(PluginModel plugin) {
+        ImageModel image = new ImageModel();
+        image.setName("ubuntu-1710-artful-v20180126");
+        image.setUrl("https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1710-artful-v20180126");
+        image.setPlugin(plugin);
+        image.save();
+        
+        image = new ImageModel();
+        image.setName("ubuntu-1204-precise-v20141028");
+        image.setUrl("https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1204-precise-v20141028");
+        image.setPlugin(plugin);
+        image.save();        
     }
     
     private void insertMenus() {
@@ -140,8 +162,10 @@ public class DevelopmentStartupJob extends Job {
     }
 
     private void insertCredential(PluginModel plugin) {
-        CredentialModel model = new CredentialModel();
-        model.setCredentialDataType("application/json");
+        CredentialModel model = new CredentialModel();     
+        EncryptedFileField data = new EncryptedFileField(readCredential().getBytes());
+        model.setCredentialData(data);
+        model.setCredentialDataType("application/json");   
         model.setEnabled(true);
         model.setName("Credential Google");
         model.setPriority(0);
@@ -236,6 +260,7 @@ public class DevelopmentStartupJob extends Job {
                 model.setPluginVersion("v" + i);
                 model.setUrl("http://localhost:" + i);
                 model.save();
+                insertImages(model);
             }
         } catch (final Exception e) {
             Logger.error(e.getMessage(), e);
@@ -283,4 +308,17 @@ public class DevelopmentStartupJob extends Job {
             Logger.error(e.getMessage(), e);
         }
     }
+    
+    private static String readCredential() {
+        String fileContents = null;        
+        try {
+            fileContents = 
+                    Files.toString(
+                        new File(System.getProperty("credential.file")),
+                        Charset.defaultCharset());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return fileContents;
+    }    
 }

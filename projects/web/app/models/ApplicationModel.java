@@ -1,10 +1,15 @@
 package models;
 
+import java.util.List;
+
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import play.data.validation.MaxSize;
@@ -29,6 +34,12 @@ public class ApplicationModel extends GenericModel {
     @MaxSize(500)
     @MinSize(3)
     private String startupScript;
+    @Required
+    @ManyToMany
+    @JoinTable(name = "tb_application_image", 
+        joinColumns = @JoinColumn(name = "id_application", referencedColumnName = "id"), 
+        inverseJoinColumns = @JoinColumn(name = "id_image", referencedColumnName = "id"))
+    private List<ImageModel> listImages;
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Getters and Setters
@@ -50,5 +61,11 @@ public class ApplicationModel extends GenericModel {
     }
     public void setStartupScript(String startupScript) {
         this.startupScript = startupScript;
+    }
+    public List<ImageModel> getListImages() {
+        return listImages;
+    }
+    public void setListImages(List<ImageModel> listImages) {
+        this.listImages = listImages;
     }
 }

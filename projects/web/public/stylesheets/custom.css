@@ -172,7 +172,20 @@ select[readonly] {
 td {
   word-wrap: break-word;  
 }
+
 th {
   white-space: normal !important; 
   word-wrap: break-word;  
+}
+
+.ms-list {
+    border-radius: 4px !important;
+}
+
+.ms-container {
+    width: auto !important;    
+}
+
+.has-error .ms-list {
+    border-color: #a94442 !important;
 }

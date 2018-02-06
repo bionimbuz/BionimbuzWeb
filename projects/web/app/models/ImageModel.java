@@ -1,10 +1,13 @@
 package models;
 
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -31,6 +34,8 @@ public class ImageModel extends GenericModel {
     @Required
     @MaxSize(500)
     private String url;
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "listImages")
+    private List<ApplicationModel> listApplications;
     
     public ImageModel() {        
         super();
@@ -65,6 +70,12 @@ public class ImageModel extends GenericModel {
     }
     public void setPlugin(PluginModel plugin) {
         this.plugin = plugin;
+    }
+    public List<ApplicationModel> getListApplications() {
+        return listApplications;
+    }
+    public void setListApplications(List<ApplicationModel> listApplications) {
+        this.listApplications = listApplications;
     }
 
     @Override

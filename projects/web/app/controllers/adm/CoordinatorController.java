@@ -13,6 +13,8 @@ import play.i18n.Messages;
 @For(CoordinatorModel.class)
 @Check("/adm/coordinator")
 public class CoordinatorController extends BaseAdminController {
+    
+    private static final String OBJECT_LISTIMAGES = "object.listImages.id"; 
 
     public static void show() throws Exception {
         final CustomObjectType type = CustomObjectType.get(getControllerClass());
@@ -37,6 +39,11 @@ public class CoordinatorController extends BaseAdminController {
         } else {
             object = CoordinatorModel.findById(Long.parseLong(coordinatorId));
             notFoundIfNull(object);            
+        }
+        
+        // Treatment for multiselect empty
+        if(params.get(OBJECT_LISTIMAGES) == null) {
+            params.put(OBJECT_LISTIMAGES, "");
         }
         
         Binder.bindBean(params.getRootParamNode(), "object", object);

@@ -180,6 +180,7 @@ image.search.obs=You must select a cloud plugin to find available images
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 CoordinatorModel=Coordinator
 object.startupScript=Startup Script
+object.listImages=Images
 
 # ExecutorModel
 ExecutorModel=Executor

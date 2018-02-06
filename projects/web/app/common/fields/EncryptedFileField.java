@@ -15,7 +15,7 @@ import play.Play;
 
 public class EncryptedFileField extends FileField {    
  
-    protected EncryptedFileField(byte[] file) {
+    public EncryptedFileField(byte[] file) {
         super(file);
     }    
     protected EncryptedFileField(String UUID, String type) {
