@@ -39,13 +39,11 @@
                         for(plugin in models.PluginModel.findAll()) 
                         {                        
                 }%                        
-                            <optgroup label='${plugin.name}'>                        
+                            <optgroup class="items-group" label='${plugin.name}'>                        
                 %{                            
                             for(image in plugin.listImages) 
                             {                        
-                                selected = false;
                                 selected = object.listImages.contains(image);
-                                
                 }%
                                 <option value='${image.id}' ${selected ? 'selected' : ''} >${image.name}</option>                       
                 %{
@@ -57,13 +55,13 @@
                 }%
                 
                 *{
-                    <optgroup label='Google'>
+                    <optgroup class="items-group" label='Google'>
                         <option value='1'>Palpatine</option>
                         <option value='2'>Palpatine</option>
                         <option value='3' disabled>Ubuntu</option>
                         <option value='4' selected>Obiwan</option>
                     </optgroup>
-                    <optgroup label='Amazon'>
+                    <optgroup class="select-itens" label='Amazon'>
                         <option value='5'>Palpatine</option>
                         <option value='6'>Palpatine</option>
                         <option value='7'>Palpatine</option>
@@ -95,7 +93,45 @@
 
 <script type="text/javascript">
 
-    $('#object_listImages').multiSelect({ selectableOptgroup: false, cssClass:"test" });
+    function disableSelectItens(){
+        
+        optgroups = $('.items-group');        
+        $('.items-group').each(function() {
+            $optgroup = $(this);
+            hasSelected = false;   
+            $optgroup.children('option').each(function(){
+                hasSelected = this.selected;
+                if(hasSelected) {
+                    return false;
+                }
+            });         
+            
+            if(!hasSelected) {
+                $optgroup.children('option').each(function(){                
+                    this.disabled = false;
+                });  
+                return false;
+            }
+            
+            $optgroup.children('option').each(function(){                
+                if(!this.selected) {
+                    this.disabled = true;
+                }
+            });  
+        });     
+        
+        $('#object_listImages').multiSelect('refresh');
+    }
+    
+    $(function(){            
+        disableSelectItens();
+    });
+
+    $('#object_listImages').multiSelect({ 
+        selectableOptgroup: false,
+        afterSelect: disableSelectItens,
+        afterDeselect: disableSelectItens
+    });
 
 </script>
 
