@@ -93,27 +93,31 @@
 
 <script type="text/javascript">
 
-    function disableSelectItens(){
+    function disableItensFromSelectedGroup(){
         
         optgroups = $('.items-group');        
         $('.items-group').each(function() {
             $optgroup = $(this);
+            $options = $optgroup.children('option');
             hasSelected = false;   
-            $optgroup.children('option').each(function(){
+            // Check group selection
+            $options.each(function(){
                 hasSelected = this.selected;
                 if(hasSelected) {
                     return false;
                 }
-            });         
+            });                     
             
+            // Enable all if group have no selected item
             if(!hasSelected) {
-                $optgroup.children('option').each(function(){                
+                $options.each(function(){                
                     this.disabled = false;
                 });  
                 return false;
             }
             
-            $optgroup.children('option').each(function(){                
+            // Disable other itens if has group selection
+            $options.each(function(){                
                 if(!this.selected) {
                     this.disabled = true;
                 }
@@ -124,13 +128,13 @@
     }
     
     $(function(){            
-        disableSelectItens();
+        disableItensFromSelectedGroup();
     });
 
     $('#object_listImages').multiSelect({ 
         selectableOptgroup: false,
-        afterSelect: disableSelectItens,
-        afterDeselect: disableSelectItens
+        afterSelect: disableItensFromSelectedGroup,
+        afterDeselect: disableItensFromSelectedGroup
     });
 
 </script>
