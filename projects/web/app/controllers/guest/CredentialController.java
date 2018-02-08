@@ -6,8 +6,12 @@ import controllers.CRUD.For;
 import controllers.Check;
 import controllers.adm.BaseAdminController;
 import models.CredentialModel;
+import models.UserModel;
+import play.data.binding.Binder;
+import play.data.validation.Validation;
 import play.db.Model;
 import play.exceptions.TemplateNotFoundException;
+import play.i18n.Messages;
 
 @For(CredentialModel.class)
 @Check("/list/credentials")
@@ -38,5 +42,34 @@ public class CredentialController extends BaseAdminController {
         } catch (final TemplateNotFoundException e) {
             render("CRUD/list.html", type, objects, count, totalCount, page, orderBy, order);
         }
+    }
+
+    public static void create() throws Exception {
+        final CustomObjectType type = CustomObjectType.get(getControllerClass());
+        notFoundIfNull(type);
+        final CredentialModel object = new CredentialModel();        
+        UserModel currentUser = BaseAdminController.getConnectedUser();
+        object.setUser(currentUser);        
+        Binder.bindBean(params.getRootParamNode(), "object", object);
+        validation.valid(object);
+        if (Validation.hasErrors()) {
+            unbindFileFieldsMetadata(object);
+            renderArgs.put("error", Messages.get("crud.hasErrors"));
+            try {
+                render(request.controller.replace(".", "/") + "/blank.html", type, object);
+            } catch (final TemplateNotFoundException e) {
+                render("CRUD/blank.html", type, object);
+            }
+        }
+        bindFileFieldsMetadata(object);
+        object._save();
+        flash.success(Messages.get("crud.created", type.modelName));
+        if (params.get("_save") != null) {
+            redirect(request.controller + ".list");
+        }
+        if (params.get("_saveAndAddAnother") != null) {
+            redirect(request.controller + ".blank");
+        }
+        redirect(request.controller + ".show", object._key());
     }
 }

@@ -23,6 +23,7 @@ public class CredentialModel extends GenericModel  {
     @Id
     @GeneratedValue
     private Long id;
+    private boolean enabled = true;
     @MinSize(3)
     @MaxSize(50)
     @Required    
@@ -35,7 +36,10 @@ public class CredentialModel extends GenericModel  {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = true)
     private PluginModel plugin;
-    private boolean enabled = true;
+    @NoBinding
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
+    private UserModel user;
     
     public CredentialModel() {
         super();
@@ -76,5 +80,11 @@ public class CredentialModel extends GenericModel  {
     }
     public void setCredentialDataType(String credentialDataType) {
         this.credentialDataType = credentialDataType;
+    }
+    public UserModel getUser() {
+        return user;
+    }
+    public void setUser(UserModel user) {
+        this.user = user;
     }
 }

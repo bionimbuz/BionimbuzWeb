@@ -49,7 +49,6 @@ public class DevelopmentStartupJob extends Job {
         this.insertMenus();
 
         PluginModel plugin = this.insertPlugin();
-        this.insertCredential(plugin);
         this.insertImages(plugin);
         this.insertTestModels(10);
         this.insertTempPlugins(2);
@@ -66,6 +65,7 @@ public class DevelopmentStartupJob extends Job {
                 "Test Group 2",
                 userAdmin,
                 userNormal);
+        this.insertCredential(plugin, userAdmin);
         
         List<VwCredentialModel> creds = 
                 VwCredentialModel.findAll();
@@ -192,7 +192,7 @@ public class DevelopmentStartupJob extends Job {
         return menu;
     }
 
-    private void insertCredential(PluginModel plugin) {
+    private void insertCredential(PluginModel plugin, UserModel user) {
         CredentialModel model = new CredentialModel();     
         EncryptedFileField data = new EncryptedFileField(readCredential().getBytes());
         model.setCredentialData(data);
@@ -200,6 +200,7 @@ public class DevelopmentStartupJob extends Job {
         model.setEnabled(true);
         model.setName("Credential Google");
         model.setPlugin(plugin);
+        model.setUser(user);
         model.save();
     }
 

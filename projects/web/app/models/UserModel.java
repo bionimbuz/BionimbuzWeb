@@ -51,6 +51,8 @@ public class UserModel extends GenericModel {
     private RoleModel role;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<UserGroupModel> listUserGroups;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<CredentialModel> listCredentials;
     
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Data access
@@ -118,6 +120,12 @@ public class UserModel extends GenericModel {
     }
     public void setJoined(boolean joined) {
         this.joined = joined;
+    }    
+    public List<CredentialModel> getListCredentials() {
+        return listCredentials;
+    }
+    public void setListCredentials(List<CredentialModel> listCredentials) {
+        this.listCredentials = listCredentials;
     }
     
     @Override
