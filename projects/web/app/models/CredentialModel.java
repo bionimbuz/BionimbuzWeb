@@ -12,7 +12,6 @@ import common.binders.FileFieldType;
 import common.fields.EncryptedFileField;
 import play.data.binding.NoBinding;
 import play.data.validation.MaxSize;
-import play.data.validation.Min;
 import play.data.validation.MinSize;
 import play.data.validation.Required;
 import play.db.jpa.GenericModel;
@@ -36,8 +35,6 @@ public class CredentialModel extends GenericModel  {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = true)
     private PluginModel plugin;
-    @Min(0)
-    private int priority = 0;
     private boolean enabled = true;
     
     public CredentialModel() {
@@ -61,12 +58,6 @@ public class CredentialModel extends GenericModel  {
     }
     public void setPlugin(PluginModel plugin) {
         this.plugin = plugin;
-    }
-    public int getPriority() {
-        return priority;
-    }
-    public void setPriority(int priority) {
-        this.priority = priority;
     }
     public boolean isEnabled() {
         return enabled;

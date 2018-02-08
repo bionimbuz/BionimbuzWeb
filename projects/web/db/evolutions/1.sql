@@ -1,17 +1,5 @@
 
 # --- !Ups
 
-CREATE SEQUENCE sq_tb_user INCREMENT 1 MINVALUE 0 MAXVALUE 9223372036854775807 START 0 CACHE 1;
-
-CREATE TABLE tb_user (    
-    id BIGINT DEFAULT nextval('sq_tb_user')  NOT NULL,
-    email CHARACTER VARYING(150)  NOT NULL,
-    name CHARACTER VARYING(150)  NOT NULL,
-    pass CHARACTER VARYING(256)  NOT NULL
-);
-
 # --- !Downs
 
-DROP TABLE tb_user;
-
-DROP SEQUENCE sq_tb_user;

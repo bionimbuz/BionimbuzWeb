@@ -33,8 +33,7 @@
                     <a class="check-all ${field.id}_class_all_"></a>
                 </div>        
         
-                <select id="${field.id}" name="${field.name}.id" multiple='multiple'>
-                
+                <select id="${field.id}" name="${field.name}.id" multiple='multiple'>                
                 %{                        
                         for(plugin in models.PluginModel.findAll()) 
                         {                        
@@ -43,7 +42,7 @@
                 %{                            
                             for(image in plugin.listImages) 
                             {                        
-                                selected = object.listImages.contains(image);
+                                selected = (object.listImages != null && object.listImages.contains(image));
                 }%
                                 <option value='${image.id}' ${selected ? 'selected' : ''} >${image.name}</option>                       
                 %{
@@ -53,22 +52,6 @@
                 %{
                         }
                 }%
-                
-                *{
-                    <optgroup class="items-group" label='Google'>
-                        <option value='1'>Palpatine</option>
-                        <option value='2'>Palpatine</option>
-                        <option value='3' disabled>Ubuntu</option>
-                        <option value='4' selected>Obiwan</option>
-                    </optgroup>
-                    <optgroup class="select-itens" label='Amazon'>
-                        <option value='5'>Palpatine</option>
-                        <option value='6'>Palpatine</option>
-                        <option value='7'>Palpatine</option>
-                        <option value='8' disabled>Darth Vader</option>
-                    </optgroup>
-                    
-                }*
                 </select>     
                 
                 #{ifError field.name}

@@ -15,6 +15,7 @@ import app.models.InfoModel.AuthenticationType;
 import common.fields.EncryptedFileField;
 import controllers.security.SecurityController;
 import models.CredentialModel;
+import models.GroupModel;
 import models.ImageModel;
 import models.MenuModel;
 import models.PluginModel;
@@ -23,7 +24,9 @@ import models.RoleModel.RoleType;
 import models.TestModel;
 import models.TestModel.TestEnum;
 import models.TestRelationModel;
+import models.UserGroupModel;
 import models.UserModel;
+import models.VwCredentialModel;
 import play.Logger;
 import play.i18n.Lang;
 import play.jobs.Job;
@@ -50,8 +53,36 @@ public class DevelopmentStartupJob extends Job {
         this.insertImages(plugin);
         this.insertTestModels(10);
         this.insertTempPlugins(2);
-        this.insertTempUserAdmin();
-        this.insertTempUserNormal();
+
+        UserModel userAdmin = 
+                this.insertTempUserAdmin();
+        UserModel userNormal = 
+                this.insertTempUserNormal();
+        this.insertTempGroup(
+                "Test Group",
+                userAdmin,
+                userNormal);
+        this.insertTempGroup(
+                "Test Group 2",
+                userAdmin,
+                userNormal);
+        
+        List<VwCredentialModel> creds = 
+                VwCredentialModel.findAll();
+        System.out.println("");
+    }
+    
+    private void insertTempGroup(String name, UserModel... users) {
+        GroupModel group = new GroupModel();
+        group.setName(name);
+        group.save();
+            
+        for(UserModel user : users) {            
+            UserGroupModel userGroup = new UserGroupModel(user, group);
+            userGroup.setJoined(true);
+            userGroup.setOwner(true);  
+            userGroup.save();
+        }        
     }
     
     private void insertImages(PluginModel plugin) {
@@ -168,7 +199,6 @@ public class DevelopmentStartupJob extends Job {
         model.setCredentialDataType("application/json");   
         model.setEnabled(true);
         model.setName("Credential Google");
-        model.setPriority(0);
         model.setPlugin(plugin);
         model.save();
     }
@@ -267,11 +297,11 @@ public class DevelopmentStartupJob extends Job {
         }
     }
 
-    private void insertTempUserAdmin() {
+    private UserModel insertTempUserAdmin() {
         try {
             UserModel user = UserModel.findByEmail("master@bionimbuz.org.br");
             if (user != null) {
-                return;
+                return null;
             }
 
             final RoleModel role = RoleModel.findById(RoleType.ADMIN);
@@ -283,16 +313,18 @@ public class DevelopmentStartupJob extends Job {
             user.setPass(SecurityController.getSHA512("master"));
             user.setJoined(true);
             user.save();
+            return user;
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
             Logger.error(e.getMessage(), e);
+            return null;
         }
     }
 
-    private void insertTempUserNormal() {
+    private UserModel insertTempUserNormal() {
         try {
             UserModel user = UserModel.findByEmail("guest@bionimbuz.org.br");
             if (user != null) {
-                return;
+                return null;
             }
 
             final RoleModel role = RoleModel.findById(RoleType.NORMAL);
@@ -304,8 +336,10 @@ public class DevelopmentStartupJob extends Job {
             user.setPass(SecurityController.getSHA512("guest"));
             user.setJoined(true);
             user.save();
+            return user;
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
             Logger.error(e.getMessage(), e);
+            return null;
         }
     }
     
