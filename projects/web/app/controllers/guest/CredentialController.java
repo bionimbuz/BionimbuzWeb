@@ -19,6 +19,37 @@ import play.i18n.Messages;
 @Check("/list/credentials")
 public class CredentialController extends BaseAdminController {
     
+    private static final String OBJECT_LISTSHAREDGROUPS_ID = "object.listSharedGroups.id";
+
+    public static void save(String id) throws Exception {
+        final CustomObjectType type = CustomObjectType.get(getControllerClass());
+        notFoundIfNull(type);
+        final Model object = type.findById(id);
+        notFoundIfNull(object);
+        // Treatment for multiselect empty
+        if(params.get(OBJECT_LISTSHAREDGROUPS_ID) == null) {
+            params.put(OBJECT_LISTSHAREDGROUPS_ID, "");
+        }
+        Binder.bindBean(params.getRootParamNode(), "object", object);
+        validation.valid(object);
+        if (Validation.hasErrors()) {
+            unbindFileFieldsMetadata(object);
+            renderArgs.put("error", Messages.get("crud.hasErrors"));
+            try {
+                render(request.controller.replace(".", "/") + "/show.html", type, object);
+            } catch (final TemplateNotFoundException e) {
+                render("CRUD/show.html", type, object);
+            }
+        }
+        bindFileFieldsMetadata(object);
+        object._save();
+        flash.success(Messages.get("crud.saved", type.modelName));
+        if (params.get("_save") != null) {
+            redirect(request.controller + ".list");
+        }
+        redirect(request.controller + ".show", object._key());
+    }
+    
     public static void list(final Integer pluginSelected, int page, String search, String searchFields, String orderBy, String order) {
         final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);

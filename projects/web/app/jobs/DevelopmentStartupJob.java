@@ -65,6 +65,13 @@ public class DevelopmentStartupJob extends Job {
                 "Test Group 2",
                 userAdmin,
                 userNormal);
+
+        this.insertTempGroup(
+                "Admin Group",
+                userAdmin);
+        this.insertTempGroup(
+                "Normal Group",
+                userNormal);
         this.insertCredential(plugin, userAdmin);
         
         List<VwCredentialModel> creds = 

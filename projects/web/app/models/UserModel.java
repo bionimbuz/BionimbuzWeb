@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -53,6 +54,8 @@ public class UserModel extends GenericModel {
     private List<UserGroupModel> listUserGroups;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<CredentialModel> listCredentials;
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "listUsers")
+    private List<GroupModel> listGroups;
     
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Data access
@@ -126,6 +129,12 @@ public class UserModel extends GenericModel {
     }
     public void setListCredentials(List<CredentialModel> listCredentials) {
         this.listCredentials = listCredentials;
+    }    
+    public List<GroupModel> getListGroups() {
+        return listGroups;
+    }
+    public void setListGroups(List<GroupModel> listGroups) {
+        this.listGroups = listGroups;
     }
     
     @Override

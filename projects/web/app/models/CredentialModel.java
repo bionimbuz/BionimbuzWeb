@@ -1,10 +1,14 @@
 package models;
 
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -40,11 +44,22 @@ public class CredentialModel extends GenericModel  {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private UserModel user;
-    
+    @ManyToMany
+    @JoinTable(name = "tb_group_credential", 
+        joinColumns = @JoinColumn(name = "id_credential", referencedColumnName = "id"), 
+        inverseJoinColumns = @JoinColumn(name = "id_group", referencedColumnName = "id"))
+    private List<GroupModel> listSharedGroups;
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Constructors
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
     public CredentialModel() {
         super();
     }
-
+    
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Getters and Setters
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public EncryptedFileField getCredentialData() {
         return credentialData;
     }
@@ -86,5 +101,11 @@ public class CredentialModel extends GenericModel  {
     }
     public void setUser(UserModel user) {
         this.user = user;
+    }
+    public List<GroupModel> getListSharedGroups() {
+        return listSharedGroups;
+    }
+    public void setListSharedGroups(List<GroupModel> listSharedGroups) {
+        this.listSharedGroups = listSharedGroups;
     }
 }

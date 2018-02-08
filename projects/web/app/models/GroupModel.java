@@ -7,10 +7,15 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import controllers.adm.BaseAdminController;
+import play.data.binding.NoBinding;
 import play.data.validation.MaxSize;
 import play.data.validation.MinSize;
 import play.data.validation.Required;
@@ -29,6 +34,14 @@ public class GroupModel extends GenericModel {
     private String name;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "group")
     private List<UserGroupModel> listUserGroups;
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "listSharedGroups")
+    private List<CredentialModel> listCredentials;
+    @NoBinding
+    @ManyToMany
+    @JoinTable(name = "tb_user_group", 
+        joinColumns = @JoinColumn(name = "id_group", referencedColumnName = "id"), 
+        inverseJoinColumns = @JoinColumn(name = "id_user", referencedColumnName = "id"))
+    private List<UserModel> listUsers;
     @Transient
     private String strUsers;
     @Transient
@@ -36,6 +49,14 @@ public class GroupModel extends GenericModel {
     @Transient
     private Set<Long> usersMarkedForOwner;
 
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Data access
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    public static List<GroupModel> searchUserGroups() {
+        UserModel currentUser = BaseAdminController.getConnectedUser();
+        return currentUser.getListGroups();
+    }
+    
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Getters and Setters
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -75,7 +96,19 @@ public class GroupModel extends GenericModel {
     public void setUsersMarkedForOwner(Set<Long> usersMarkedForOwner) {
         this.usersMarkedForOwner = usersMarkedForOwner;
     }
-    
+    public List<CredentialModel> getListCredentials() {
+        return listCredentials;
+    }
+    public void setListCredentials(List<CredentialModel> listCredentials) {
+        this.listCredentials = listCredentials;
+    }    
+    public List<UserModel> getListUsers() {
+        return listUsers;
+    }
+    public void setListUsers(List<UserModel> listUsers) {
+        this.listUsers = listUsers;
+    }
+
     @Override
     public String toString() {
         return name;

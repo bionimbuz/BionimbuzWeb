@@ -169,6 +169,7 @@ CredentialModel=Credential
 object.plugin=Plugin
 object.credentialData=Data
 object.priority=Priority
+object.listSharedGroups=Group Sharing
 
 # ImageModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
