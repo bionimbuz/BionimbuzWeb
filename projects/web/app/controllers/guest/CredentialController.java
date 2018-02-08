@@ -2,6 +2,8 @@ package controllers.guest;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import controllers.CRUD.For;
 import controllers.Check;
 import controllers.adm.BaseAdminController;
@@ -24,14 +26,13 @@ public class CredentialController extends BaseAdminController {
             page = 1;
         }
         
-        String where = (String) request.args.get("where");
-        
+        String where = (String) request.args.getOrDefault("where", "");
+        if(!StringUtils.isEmpty(where))
+            where += " AND ";
+        UserModel currentUser = BaseAdminController.getConnectedUser();
+        where += " user.id = " + currentUser.getId();        
         if(pluginSelected != null) {
-            if(where != null && !where.isEmpty())
-                where += " AND ";
-            else
-                where = "";
-            where += " plugin.id = " + pluginSelected;
+            where += " AND plugin.id = " + pluginSelected;
         }   
         
         final List<Model> objects = type.findPage(page, search, searchFields, orderBy, order, where);
