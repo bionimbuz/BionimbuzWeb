@@ -2,6 +2,7 @@ package controllers.guest;
 
 import controllers.CRUD.For;
 import controllers.Check;
+import controllers.Secure.Security;
 import controllers.adm.BaseAdminController;
 import models.CredentialModel;
 import models.UserModel;
@@ -73,5 +74,24 @@ public class CredentialController extends BaseAdminController {
             redirect(request.controller + ".blank");
         }
         redirect(request.controller + ".show", object._key());
+    }    
+    
+    public static void show(Long id) throws Exception {
+        final CustomObjectType type = CustomObjectType.get(getControllerClass());
+        notFoundIfNull(type);
+        final CredentialModel object = CredentialModel.findById(id);
+        notFoundIfNull(object);
+        UserModel currentUser = BaseAdminController.getConnectedUser();
+        if(currentUser.getId() != object.getUser().getId()) {
+            Security.forbidden();
+        }            
+            
+        try {
+            unbindFileFieldsMetadata(object);
+            render(type, object);
+        } catch (final TemplateNotFoundException e) {
+            render("CRUD/show.html", type, object);
+        }
     }
+    
 }
