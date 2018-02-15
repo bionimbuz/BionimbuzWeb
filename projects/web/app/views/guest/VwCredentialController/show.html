@@ -21,6 +21,27 @@
 #{form action:@save(object._key()), enctype:'multipart/form-data'}
 
     #{crud.form}
+        #{crud.custom 'userShared'}
+            #{field 'object.listSharedGroups'}            
+            <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                    <div class="div-label">
+                        <label for="${field.id}">
+                            &{field.name}
+                        </label>
+                        <a class="check-all ${field.id}_class_all_"></a>
+                    </div>
+                    <div class="custom-muilt-check-box">
+                        %{ 
+                        field.value.each() { 
+                        }%
+                        <div style="padding-top: 5px;padding-bottom: 5px;">
+                            <input checked disabled type="checkbox" class="icheck"/>&nbsp;${it}<br/>
+                        </div>
+                        %{ } }%
+                    </div>          
+            </div>                  
+            #{/field}           
+        #{/crud.custom}
     #{/crud.form}
     
     <div class="btn-row text-center">        

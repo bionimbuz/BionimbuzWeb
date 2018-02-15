@@ -56,6 +56,16 @@ public class GroupModel extends GenericModel {
         UserModel currentUser = BaseAdminController.getConnectedUser();
         return currentUser.getListGroups();
     }
+    public static List<GroupModel> searchUserGroupsForCredential(final Long credentialId) {
+        UserModel currentUser = BaseAdminController.getConnectedUser();  
+        return find(
+                " \n SELECT groups \n"
+                + " FROM CredentialModel credentials \n"
+                + " JOIN credentials.listSharedGroups groups \n"
+                + " JOIN groups.listUsers users \n"   
+                + " WHERE users.id = ?1 AND credentials.id = ?2 \n", 
+                currentUser.getId(), credentialId).fetch();        
+    }
     
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Getters and Setters

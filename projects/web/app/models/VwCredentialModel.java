@@ -1,10 +1,13 @@
 package models;
 
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Subselect;
 
@@ -48,8 +51,9 @@ public class VwCredentialModel extends GenericModel {
     private UserModel user;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_user_shared", nullable = true)
-    @NoBinding
     private UserModel userShared;
+    @Transient
+    private List<GroupModel> listSharedGroups;
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Constructors
@@ -108,5 +112,11 @@ public class VwCredentialModel extends GenericModel {
     }
     public void setShared(boolean shared) {
         this.shared = shared;
+    }
+    public List<GroupModel> getListSharedGroups() {
+        return listSharedGroups;
+    }
+    public void setListSharedGroups(List<GroupModel> listSharedGroups) {
+        this.listSharedGroups = listSharedGroups;
     }
 }

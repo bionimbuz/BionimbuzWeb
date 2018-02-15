@@ -7,6 +7,7 @@ import org.apache.commons.lang.StringUtils;
 import controllers.CRUD.For;
 import controllers.Check;
 import controllers.adm.BaseAdminController;
+import models.GroupModel;
 import models.UserModel;
 import models.VwCredentialModel;
 import play.db.Model;
@@ -46,6 +47,7 @@ public class VwCredentialController extends BaseAdminController {
         final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);
         final VwCredentialModel object = VwCredentialModel.find("id = ?1", id).first();
+        object.setListSharedGroups(GroupModel.searchUserGroupsForCredential(id));
         notFoundIfNull(object);
         try {
             unbindFileFieldsMetadata(object);
