@@ -208,3 +208,5 @@ modal.button.confirm=Confirm
 # Other labels
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 list.no.results=No results to show
+personal.data=Personal Data
+change.password=Change Password
