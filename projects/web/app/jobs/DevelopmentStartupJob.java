@@ -73,6 +73,8 @@ public class DevelopmentStartupJob extends Job {
                 "Normal Group",
                 userNormal);
         this.insertCredential(plugin, userAdmin);
+        this.insertCredential(plugin, userNormal);
+        this.insertCredential(plugin, userNormal);
         
         List<VwCredentialModel> creds = 
                 VwCredentialModel.findAll();
@@ -129,7 +131,7 @@ public class DevelopmentStartupJob extends Job {
         menu = insertMenu(
                 "menu.credentials", 
                 "glyphicon glyphicon-lock",
-                Router.reverse("guest.CredentialController.list").url, 
+                Router.reverse("guest.VwCredentialController.list").url, 
                 (short)3,
                 null,
                 RoleType.ADMIN,

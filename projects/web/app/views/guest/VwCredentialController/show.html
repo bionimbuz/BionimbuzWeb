@@ -1,0 +1,62 @@
+
+#{extends 'CRUD/layout.html' /}
+#{set title:messages.get('crud.view.title', type.modelName) /}
+
+<div class="row crud-title">
+    <div class="">  
+        <div class="col-xs-12 col-sm-12 col-md-12">
+            <div class="row">
+                <h1> &{'crud.view.title', type.modelName} </h1>
+            </div>
+            
+            <pre class="col-xs-12"> &{'crud.view.title.desc', type.modelName} </pre>            
+                
+        </div>
+    </div>
+</div>
+
+<br>
+
+<div class="row col-lg-12" >
+#{form action:@save(object._key()), enctype:'multipart/form-data'}
+
+    #{crud.form}
+    #{/crud.form}
+    
+    <div class="btn-row text-center">        
+        <a href="@{list()}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>     
+    </div>
+#{/form}
+</div>
+
+<div id="deleteModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">&{'modal.confirm'}</h4>
+            </div>
+            <div class="modal-body">
+                <p>&{'modal.confirm.delete'}</p>
+                <p class="text-warning"><small>&{'modal.confirm.delete.desc'}</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">&{'modal.button.cancel'}</button>                
+                #{form @delete(object._key()), style: 'display:inline;'}
+                    <button type="submit" class="btn btn-primary">&{'modal.button.confirm'}</button>
+                #{/form}
+            </div>
+        </div>
+    </div>
+</div>
+
+#{set 'moreScripts'}
+<script type="text/javascript">
+$(function(){
+    $('#object_name').prop('readonly', true);
+    $('#object_plugin').prop('tabindex', -1);
+    $('#object_plugin').attr('readonly', 'readonly');
+    $('#object_enabled').iCheck('disable');    
+});
+</script>
+#{/set}

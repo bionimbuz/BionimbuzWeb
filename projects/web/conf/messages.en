@@ -33,6 +33,8 @@ crud.pagination.last=Last »»
 crud.pagination.first=«« First
 crud.show.title=Edit &{%s}
 crud.show.title.desc=Editing existent &{%s}
+crud.view.title=View &{%s}
+crud.view.title.desc=Viewing existent &{%s}
 crud.save=Save
 crud.saveAndContinue=Save and continue editing
 crud.cancel=Cancel
@@ -103,6 +105,9 @@ PluginController.desc=Cloud plugins registered
 CredentialController=Credentials
 CredentialController.desc=Cloud credentials associated to the plugins
 
+VwCredentialController=&{CredentialController}
+VwCredentialController.desc=&{CredentialController.desc}
+
 UserGroupController=Groups
 
 ImageController=Images
@@ -170,6 +175,11 @@ object.plugin=Plugin
 object.credentialData=Data
 object.priority=Priority
 object.listSharedGroups=Group Sharing
+
+# VwCredentialModel
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+VwCredentialModel=&{CredentialModel}
+object.shared=Shared
 
 # ImageModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

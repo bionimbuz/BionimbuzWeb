@@ -35,7 +35,8 @@ GET     /adm/plugins                            adm.PluginController.blank
 POST    /adm/plugins                            adm.PluginController.create
 
 # CredentialController
-GET     /list/credentials                       guest.CredentialController.list
+GET     /list/credentials                       guest.VwCredentialController.list
+GET     /view/credentials/{id}                  guest.VwCredentialController.show
 GET     /credentials/{id}                       guest.CredentialController.show
 PUT     /credentials/{id}                       guest.CredentialController.save
 DELETE  /credentials/{id}                       guest.CredentialController.delete

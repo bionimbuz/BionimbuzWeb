@@ -1,9 +1,5 @@
 package controllers.guest;
 
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-
 import controllers.CRUD.For;
 import controllers.Check;
 import controllers.adm.BaseAdminController;
@@ -45,35 +41,9 @@ public class CredentialController extends BaseAdminController {
         object._save();
         flash.success(Messages.get("crud.saved", type.modelName));
         if (params.get("_save") != null) {
-            redirect(request.controller + ".list");
+            redirect(VwCredentialController.ACTION_LIST);
         }
         redirect(request.controller + ".show", object._key());
-    }
-    
-    public static void list(final Integer pluginSelected, int page, String search, String searchFields, String orderBy, String order) {
-        final CustomObjectType type = CustomObjectType.get(getControllerClass());
-        notFoundIfNull(type);
-        if (page < 1) {
-            page = 1;
-        }
-        
-        String where = (String) request.args.getOrDefault("where", "");
-        if(!StringUtils.isEmpty(where))
-            where += " AND ";
-        UserModel currentUser = BaseAdminController.getConnectedUser();
-        where += " user.id = " + currentUser.getId();        
-        if(pluginSelected != null) {
-            where += " AND plugin.id = " + pluginSelected;
-        }   
-        
-        final List<Model> objects = type.findPage(page, search, searchFields, orderBy, order, where);
-        final Long count = type.count(search, searchFields, where);
-        final Long totalCount = type.count(null, null, where);
-        try {
-            render(pluginSelected, type, objects, count, totalCount, page, orderBy, order);
-        } catch (final TemplateNotFoundException e) {
-            render("CRUD/list.html", type, objects, count, totalCount, page, orderBy, order);
-        }
     }
 
     public static void create() throws Exception {
@@ -97,7 +67,7 @@ public class CredentialController extends BaseAdminController {
         object._save();
         flash.success(Messages.get("crud.created", type.modelName));
         if (params.get("_save") != null) {
-            redirect(request.controller + ".list");
+            redirect(VwCredentialController.ACTION_LIST);
         }
         if (params.get("_saveAndAddAnother") != null) {
             redirect(request.controller + ".blank");
