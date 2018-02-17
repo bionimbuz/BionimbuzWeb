@@ -1,21 +1,26 @@
-package app.common;
+package app.pricing;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
 import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
 import app.models.PricingModel;
 import app.models.pricing.InstancePricing;
+import app.models.pricing.StatusPricing;
+import app.models.pricing.StatusPricing.Status;
 import app.models.pricing.ZonePricing;
+import app.pricing.exceptions.PriceTableDateInvalidException;
+import app.pricing.exceptions.PriceTableVersionException;
 
 public class PriceTableParser {
 
@@ -25,39 +30,93 @@ public class PriceTableParser {
     private static final String TAG_CORES = "cores";
     private static final String TAG_GCP_PRICE_LIST = "gcp_price_list";
     private static final String TAG_UPDATED = "updated";
+    private static final String TAG_VERSION = "version";
     private static final String SUBSTR_VMIMAGE = "-VMIMAGE-";
     
     private String filePath;
+    private String expectedVersion;
 
-    public PriceTableParser(final String filePath) {
+    public PriceTableParser(
+            final String filePath, 
+            final String expectedVersion) {
         this.filePath = filePath;
+        this.expectedVersion = expectedVersion;
     }
 
     public String getFilePath() {
         return filePath;
     }
     
-    public PricingModel parse() throws JsonParseException, IOException, ParseException {
+    private boolean needUpdate(
+            final PricingModel lastPricing, 
+            final Date lastUpdateFromParse) {
+        if(lastPricing == null)
+            return true;
+        if(lastPricing.getStatus().getStatus() != Status.OK)
+            return true;
+        
+        Calendar lastUpdate = Calendar.getInstance();
+        lastUpdate.setTime(lastPricing.getLastUpdate());
+        Calendar lastUpdateFound = Calendar.getInstance();
+        lastUpdateFound.setTime(lastUpdateFromParse);        
+        if(lastUpdate.compareTo(lastUpdateFound) != 0)
+            return true;
+        return false;
+    }
     
+    public PricingModel parse(final Date now, final PricingModel lastPricing) {
+
+        HashMap<String, InstancePricing> instancePricing = new HashMap<>(); 
+        Date lastUpdate = null;
+        
         try(JsonParser jsonParser = 
                 new JsonFactory().createParser(new File(filePath))) {
         
-            PricingModel res = new PricingModel();
             while(jsonParser.nextToken() != JsonToken.END_OBJECT) {  
                 String name = jsonParser.getCurrentName();
-                if(TAG_UPDATED.equals(name)){
+                if(TAG_VERSION.equals(name)){
+                    jsonParser.nextToken();
+                    String value = jsonParser.getText();                    
+                    if(value.equals(expectedVersion)) {
+                        throw new PriceTableVersionException(value, expectedVersion);
+                    }
+                } else if(TAG_UPDATED.equals(name)){
                     jsonParser.nextToken();
                     DateFormat df = new SimpleDateFormat(
                             DD_MMMMM_YYYY, Locale.ENGLISH);
-                    String value = jsonParser.getText();
-                    res.setLastUpdate(df.parse(value));
+                    lastUpdate = df.parse(jsonParser.getText());
                 } else if(TAG_GCP_PRICE_LIST.equals(name)){
-                    jsonParser.nextToken();
-                    res.setListInstancePricing(
-                            parseInstancePricing(jsonParser));
+                    jsonParser.nextToken();    
+                    if(lastUpdate == null) {
+                        throw new PriceTableDateInvalidException();
+                    }
+                    if(needUpdate(lastPricing, lastUpdate)) {
+                        instancePricing = parseInstancePricing(jsonParser);
+                    }
+                    else {
+                        instancePricing = lastPricing.getListInstancePricing();
+                        lastUpdate  = lastPricing.getLastUpdate();
+                    }
                 }
             }
-            return res;
+            
+            if(lastUpdate == null) {
+                throw new PriceTableDateInvalidException();
+            }
+            
+            return new PricingModel(
+                    StatusPricing.createOkStatus(now),
+                    lastUpdate, 
+                    instancePricing);            
+        } catch (ParseException | PriceTableDateInvalidException e) {
+            return new PricingModel(
+                    StatusPricing.createDateErrorStatus(now));
+        } catch (PriceTableVersionException e) {
+            return new PricingModel(
+                    StatusPricing.createVersionErrorStatus(now, e.getMessage()));
+        } catch (IOException e) {
+            return new PricingModel(
+                    StatusPricing.createParseErrorStatus(now, e.getMessage()));
         }      
     }
     

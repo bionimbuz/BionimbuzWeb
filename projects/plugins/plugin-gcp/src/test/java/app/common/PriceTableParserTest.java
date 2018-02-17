@@ -1,12 +1,15 @@
 package app.common;
 
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertNotNull;
 
-import java.io.IOException;
-import java.text.ParseException;
+import java.util.Calendar;
 
 import org.junit.Test;
 
+import app.models.PricingModel;
+import app.models.pricing.StatusPricing.Status;
+import app.pricing.PriceTableParser;
 import utils.CmdLineArgs;
 
 public class PriceTableParserTest {
@@ -14,12 +17,15 @@ public class PriceTableParserTest {
     @Test
     public void parseTest() {
         PriceTableParser testParser = 
-                new PriceTableParser(CmdLineArgs.getPriceTableFile());
-        try {
-            testParser.parse();
-        } catch (IOException | ParseException e) {
-            e.printStackTrace();
-            assertNull(e);
-        }
+                new PriceTableParser(
+                        CmdLineArgs.getPriceTableFile(),
+                        SystemConstants.PRICE_TABLE_VERSION);
+        Calendar now = Calendar.getInstance();
+        PricingModel priceModel = 
+                testParser.parse(now.getTime(), null);
+        
+        assertNotNull(testParser);
+        assertThat(priceModel.getStatus().getStatus())
+                    .isEqualTo(Status.OK);
     }
 }
