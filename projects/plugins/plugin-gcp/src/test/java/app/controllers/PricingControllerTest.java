@@ -11,10 +11,13 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import app.common.GlobalConstants;
+import app.common.HttpHeadersCustom;
 import app.common.Routes;
 import app.models.Body;
 import app.models.PricingModel;
@@ -40,8 +43,10 @@ public class PricingControllerTest {
     public void getPricingTest() {
 
         TestUtils.setTimeout(restTemplate.getRestTemplate(), 0);
-        
-        HttpEntity<Void> entity = TestUtils.createEntity(TestUtils.READ_SCOPE);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeadersCustom.API_VERSION, GlobalConstants.API_VERSION);           
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
         
         ResponseEntity<Body<PricingModel>> response = 
                 this.restTemplate

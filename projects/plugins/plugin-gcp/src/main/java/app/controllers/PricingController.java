@@ -28,9 +28,7 @@ public class PricingController extends AbstractPricingController{
      */
     
     @Override
-    protected ResponseEntity<Body<PricingModel>> getPricing(
-            final String token, 
-            final String identity) throws Exception {   
+    protected ResponseEntity<Body<PricingModel>> getPricing() throws Exception {   
         
         if(priceMustBeUpdated()) {
             updatePricing();
