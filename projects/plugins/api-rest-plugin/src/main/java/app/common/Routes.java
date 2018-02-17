@@ -24,4 +24,10 @@ public class Routes {
      */
     public static final String IMAGES = "/images";
     public static final String IMAGES_NAME = Routes.IMAGES+"/{name}";
+    
+
+    /*
+     * AbstractPricingController
+     */
+    public static final String PRICING = "/pricing";
 }
