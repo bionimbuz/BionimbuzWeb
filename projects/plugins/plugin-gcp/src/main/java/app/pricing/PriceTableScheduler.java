@@ -16,23 +16,28 @@ import org.springframework.stereotype.Component;
 
 import app.common.SystemConstants;
 import app.models.PricingModel;
-import app.models.pricing.StatusPricing;
+import app.models.PricingStatusModel;
+import app.models.PricingStatusModel.Status;
 
 @Component
 public class PriceTableScheduler {
     
     private static Lock _lock_ = new ReentrantLock();
     private static PricingModel pricingModel = null;
+    private static PricingStatusModel pricingStatusModel = 
+            PricingStatusModel.createProcessingStatus();
     
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    // 24 hours main scheduler call
+    // 30 min main scheduler call
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    @Scheduled(fixedDelay = 24 * 60 * 60 * 1000) // 24 hours
+    @Scheduled(fixedDelay = 30 * 60 * 1000) // 24 hours
     public void updatePriceTable() {
         try {
             _lock_.lock();
             Calendar now = Calendar.getInstance();
-            updatePricing(now);
+            if(priceMustBeUpdated(now)) {
+                updatePricing(now);
+            }
         }
         finally {
             _lock_.unlock();
@@ -42,19 +47,47 @@ public class PriceTableScheduler {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Private methods synchronised with the main scheduler call
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    private boolean priceMustBeUpdated(final Calendar now) {
+        if(pricingStatusModel.getStatus() != Status.OK
+                || pricingStatusModel.getLastSearch() == null 
+                || pricingModel == null) {
+            return true;
+        }
+        
+        Calendar lastSearch = Calendar.getInstance();
+        lastSearch.setTime(pricingStatusModel.getLastSearch());
+        lastSearch.add(Calendar.DATE, 1);
+        
+        if(now.compareTo(lastSearch) > 0) {
+            return true;
+        }        
+        return false;
+    }
+    
     private void updatePricing(final Calendar now) {    
+        PricingModel newPricingModel = null;
         try {
             downloadPriceTableFile();
             PriceTableParser parser = new PriceTableParser(
                     SystemConstants.PRICE_TABLE_FILE,
                     SystemConstants.PRICE_TABLE_VERSION);
         
-            pricingModel = parser.parse(now.getTime(), pricingModel);
+            newPricingModel = parser.parse(now.getTime(), pricingModel);
         } catch (IOException e) {
-            pricingModel = new PricingModel(
-                    StatusPricing.createDownloadErrorStatus(
+            newPricingModel = new PricingModel(
+                    PricingStatusModel.createDownloadErrorStatus(
                             now.getTime(), e.getMessage()));
         }
+        
+        pricingStatusModel = newPricingModel.getStatus();        
+        // Get the latest prices available
+        if(pricingModel!=null && pricingStatusModel.getStatus() != Status.OK) {
+            newPricingModel.setLastUpdate(
+                    pricingModel.getLastUpdate());
+            newPricingModel.setListInstancePricing(
+                    pricingModel.getListInstancePricing());
+        }
+        pricingModel = newPricingModel;
     }
     
     private void downloadPriceTableFile() 
@@ -76,7 +109,7 @@ public class PriceTableScheduler {
     }
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    // Public non blocking public methods 
+    // Non blocking methods 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public static PricingModel getPricing() {
         if(_lock_.tryLock()) {
@@ -87,8 +120,32 @@ public class PriceTableScheduler {
                 _lock_.unlock();
             }
         }
-        else {
-            return new PricingModel(StatusPricing.createProcessingStatus());
+        else {                        
+            return new PricingModel(getLastSearchForProcessingStatus());
+        }
+    }       
+    
+    public static PricingStatusModel getPricingStatus() {
+        if(_lock_.tryLock()) {
+            try {
+                return pricingStatusModel;                
+            }
+            finally {
+                _lock_.unlock();
+            }
+        }
+        else {    
+            return getLastSearchForProcessingStatus();
         }
     }   
+    
+    private static PricingStatusModel getLastSearchForProcessingStatus() {
+        PricingStatusModel pricingStatus = 
+                PricingStatusModel.createProcessingStatus();
+        if(pricingStatusModel != null) {
+            pricingStatus.setLastSearch(pricingStatusModel.getLastSearch());
+        }
+        return pricingStatus;
+    }
+    
 }

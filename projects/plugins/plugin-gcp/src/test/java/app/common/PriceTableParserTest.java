@@ -8,7 +8,7 @@ import java.util.Calendar;
 import org.junit.Test;
 
 import app.models.PricingModel;
-import app.models.pricing.StatusPricing.Status;
+import app.models.PricingStatusModel.Status;
 import app.pricing.PriceTableParser;
 import utils.CmdLineArgs;
 

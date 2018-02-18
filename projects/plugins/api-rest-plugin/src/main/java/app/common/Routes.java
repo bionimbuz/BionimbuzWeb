@@ -30,4 +30,5 @@ public class Routes {
      * AbstractPricingController
      */
     public static final String PRICING = "/pricing";
+    public static final String PRICING_STATUS = "/pricing/status";
 }

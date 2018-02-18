@@ -15,9 +15,9 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
 import app.models.PricingModel;
+import app.models.PricingStatusModel;
+import app.models.PricingStatusModel.Status;
 import app.models.pricing.InstancePricing;
-import app.models.pricing.StatusPricing;
-import app.models.pricing.StatusPricing.Status;
 import app.models.pricing.ZonePricing;
 import app.pricing.exceptions.PriceTableDateInvalidException;
 import app.pricing.exceptions.PriceTableVersionException;
@@ -64,7 +64,9 @@ public class PriceTableParser {
         return false;
     }
     
-    public PricingModel parse(final Date now, final PricingModel lastPricing) {
+    public PricingModel parse(
+            final Date now, 
+            final PricingModel lastPricing) {
 
         HashMap<String, InstancePricing> instancePricing = new HashMap<>(); 
         Date lastUpdate = null;
@@ -105,18 +107,18 @@ public class PriceTableParser {
             }
             
             return new PricingModel(
-                    StatusPricing.createOkStatus(now),
+                    PricingStatusModel.createOkStatus(now),
                     lastUpdate, 
                     instancePricing);            
         } catch (ParseException | PriceTableDateInvalidException e) {
             return new PricingModel(
-                    StatusPricing.createDateErrorStatus(now));
+                    PricingStatusModel.createDateErrorStatus(now));
         } catch (PriceTableVersionException e) {
             return new PricingModel(
-                    StatusPricing.createVersionErrorStatus(now, e.getMessage()));
+                    PricingStatusModel.createVersionErrorStatus(now, e.getMessage()));
         } catch (IOException e) {
             return new PricingModel(
-                    StatusPricing.createParseErrorStatus(now, e.getMessage()));
+                    PricingStatusModel.createParseErrorStatus(now, e.getMessage()));
         }      
     }
     
