@@ -16,7 +16,7 @@ public class PriceTableVersionException extends Exception {
     @Override
     public String getMessage() {        
         return "The price table version found [" + versionFound + "]" 
-                + " is different from expected" + versionExpected 
+                + " is different from expected [" + versionExpected + "]"
                 + ", the plugin must be updated";
     }
 }

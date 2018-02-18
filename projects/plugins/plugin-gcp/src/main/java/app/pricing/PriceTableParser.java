@@ -79,7 +79,7 @@ public class PriceTableParser {
                 if(TAG_VERSION.equals(name)){
                     jsonParser.nextToken();
                     String value = jsonParser.getText();                    
-                    if(value.equals(expectedVersion)) {
+                    if(!value.equals(expectedVersion)) {
                         throw new PriceTableVersionException(value, expectedVersion);
                     }
                 } else if(TAG_UPDATED.equals(name)){
