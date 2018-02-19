@@ -1,9 +1,20 @@
-#{form action:@list().remove('page'), method:'GET'}
-    #{if _fields}
-        <input type="hidden" name="searchFields" value="${_fields.toString().substring(1, _fields.toString().length()-1).replace(',', '')}" />
-    #{/if}
-    <input type="text" name="search" value="${params.search?.escape()?.raw()}" /> <input type="submit" value="&{'crud.search'}" />
-    #{if _caller.params.search}
-        (<a href="@{list()}">&{'crud.list.totalSize', _caller.totalCount}</a>)
-    #{/if}
-#{/form}
+<div class=row>
+
+    <div class="col-xs-12 col-sm-12 col-md-10 margin-bottom">
+        #{form action:@list().remove('page'), method:'GET', id:'searchForm'}
+            #{if _fields}
+                <input type="hidden" name="searchFields" value="${_fields.toString().substring(1, _fields.toString().length()-1).replace(',', '')}" />
+            #{/if}
+            <input type="text" class="form-control btn-buscar" placeholder="&{'crud.search'}" name="search" value="${params.search?.escape()?.raw()}" /> 
+        #{/form}
+        #{if _caller.totalCount > 0 && _caller.params.search}
+            <div class="list-total-count">
+                (<a href="@{list()}">&{'crud.list.totalSize', _caller.totalCount}</a>)
+            </div>
+        #{/if} 
+    </div>
+    
+    <div class="row col-xs-12 col-sm-12 col-md-2">    
+        <button class="btn btn-primary margin-bottom pull-right col-xs-12 col-sm-12 col-md-12" type="button" onclick="javascript: block('&{'crud.wait'}');">&{'crud.search'}</button>    
+    </div>
+</div>

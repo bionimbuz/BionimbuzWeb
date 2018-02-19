@@ -1,0 +1,74 @@
+
+#{extends 'CRUD/layout.html' /}
+#{set title:messages.get('crud.list.title', type.name) /}
+
+<div class="row crud-title">
+    <div class="col-xs-12 col-sm-12 col-md-12">  
+        <h1> &{'crud.list.title', type.name} </h1>
+        <pre> &{'crud.list.title.desc', type.name+'.desc'} </pre>
+    </div>
+</div>
+
+<br>
+
+<div class=row>
+
+    <div class="col-xs-12 col-sm-12 col-md-8 margin-bottom">
+        #{form action:@list().remove('page'), method:'GET', id:'searchForm'}
+            #{if _fields}
+                <input type="hidden" name="searchFields" value="${_fields.toString().substring(1, _fields.toString().length()-1).replace(',', '')}" />
+            #{/if}
+            <input type="text" class="form-control btn-buscar" placeholder="&{'crud.search'}" name="search" value="${params.search?.escape()?.raw()}" /> 
+        #{/form}
+        #{if totalCount > 0 && params.search}
+            <div class="list-total-count">
+                (<a href="@{list()}">&{'crud.list.totalSize', totalCount}</a>)
+            </div>
+        #{/if} 
+    </div>
+    
+    <div class="row col-xs-12 col-sm-12 col-md-4">    
+        <button class="btn btn-primary margin-bottom col-xs-12 col-sm-12 col-md-4" type="button" onclick="javascript: block('&{'crud.wait'}');">&{'crud.search'}</button>    
+        <button id="btnForceSync" class="btn btn-primary margin-bottom col-xs-12 col-sm-12 col-md-7 pull-right" type="button">&{'price.table.force.sync'}</button>  
+    </div>
+    
+</div>
+
+<br>
+
+#{crud.table fields: ['plugin', 'priceTableDate', 'lastSearchDate', 'lastSyncDate']/}
+
+#{crud.pagination /}
+
+
+#{set 'moreScripts' }
+<script type="text/javascript">
+$(function(){   
+   
+    $('#btnForceSync').click(function(){
+        
+        $('#pleaseWaitDialog').modal(); 
+        var forceSync = #{jsRoute @forceSync() /};
+        
+        $.ajax({
+            url: forceSync.url(),
+            type: forceSync.method
+           })
+        .done(function(data) { 
+            flashSuccess("&{'price.table.force.success'}");    
+        })
+        .fail(function(data) {
+            flashError("&{'price.table.force.error'}");
+        })
+        .always(function() {
+            $('#pleaseWaitDialog').modal('hide');     
+        });
+
+    });
+});
+</script>
+#{/set}
+
+
+
+

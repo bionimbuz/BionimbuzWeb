@@ -9,6 +9,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import app.models.InfoModel.AuthenticationType;
@@ -54,11 +55,19 @@ public class PluginModel extends GenericModel {
     private List<CredentialModel> listCredentials;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "plugin")
     private List<ImageModel> listImages;
-    
+    @OneToOne
+    private PriceTableModel priceTable;
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Constructors
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public PluginModel() {        
         super();
     }
-    
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Getters and Setters
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public Long getId() {
         return id;
     }
@@ -124,6 +133,12 @@ public class PluginModel extends GenericModel {
     }
     public void setReadScope(String readScope) {
         this.readScope = readScope;
+    }
+    public PriceTableModel getPriceTable() {
+        return priceTable;
+    }
+    public void setPriceTable(PriceTableModel priceTable) {
+        this.priceTable = priceTable;
     }
 
     @Override

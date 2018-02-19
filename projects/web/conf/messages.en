@@ -102,6 +102,8 @@ application.description=Cloud Federation Platform
 PluginController=Plugins
 PluginController.desc=Cloud plugins registered
 
+PriceTableController=Price Tables
+
 CredentialController=Credentials
 CredentialController.desc=Cloud credentials associated to the plugins
 
@@ -119,15 +121,22 @@ CoordinatorController=Coordinators
 
 ExecutorController=Executors
 
+InstanceController=Instances
+
 # Menus
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 menu.plugins=&{PluginController}
+menu.plugins.prices=&{PriceTableController}
+menu.plugins.administration=Administration
 menu.images=&{ImageController}
 menu.credentials=&{CredentialController}
 menu.groups=&{UserGroupController}
 menu.applications=&{ApplicationController}
 menu.applications.coordinators=&{CoordinatorController}
 menu.applications.executors=&{ExecutorController}
+menu.instances=&{InstanceController}
+menu.execution=Executions
+menu.workflows=Workflows
 
 # PluginModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -196,6 +205,12 @@ object.listImages=Images
 # ExecutorModel
 ExecutorModel=Executor
 
+# PriceTableModel
+object.priceTableDate=Price Table Date
+object.lastSearchDate=Last Plugin Search
+object.lastSyncDate=Last Synchronization
+
+
 # Modals
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 modal.confirm=Confirmation
@@ -205,8 +220,13 @@ modal.button.ok=Ok
 modal.button.cancel=Cancel
 modal.button.confirm=Confirm
 
+
 # Other labels
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 list.no.results=No results to show
 personal.data=Personal Data
 change.password=Change Password
+price.table.force.sync=Force Synchronization
+price.table.force.success=A request was sent to server, please update price table list in a few minutes
+price.table.force.error=The request cannot be processed, server may be synchronizing now 
+

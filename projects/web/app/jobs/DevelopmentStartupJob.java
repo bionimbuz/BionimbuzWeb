@@ -112,27 +112,39 @@ public class DevelopmentStartupJob extends Job {
         
         MenuModel menu = null;
         
+        
+
+        
         menu = insertMenu(
                 "menu.plugins", 
                 "glyphicon glyphicon-cloud-upload",
-                Router.reverse("adm.PluginController.list").url, 
+                "#", 
                 (short)1,
                 null,
                 RoleType.ADMIN);
         
-        menu = insertMenu(
-                "menu.images", 
-                "glyphicon glyphicon-play-circle",
-                Router.reverse("adm.ImageController.list").url, 
-                (short)2,
+        insertMenu(
+                "menu.plugins.administration", 
                 null,
-                RoleType.ADMIN);
+                Router.reverse("adm.PluginController.list").url,
+                (short)1,
+                menu,
+                RoleType.ADMIN);  
+        
+        insertMenu(
+                "menu.plugins.prices", 
+                null,
+                Router.reverse("adm.PriceTableController.list").url,
+                (short)2,
+                menu,
+                RoleType.ADMIN);  
+
         
         menu = insertMenu(
                 "menu.credentials", 
                 "glyphicon glyphicon-lock",
                 Router.reverse("guest.VwCredentialController.list").url, 
-                (short)3,
+                (short)2,
                 null,
                 RoleType.ADMIN,
                 RoleType.NORMAL);
@@ -141,10 +153,18 @@ public class DevelopmentStartupJob extends Job {
                 "menu.groups", 
                 "glyphicon glyphicon-th",
                 Router.reverse("guest.UserGroupController.list").url, 
-                (short)4,
+                (short)3,
                 null,
                 RoleType.ADMIN,
                 RoleType.NORMAL);
+        
+        menu = insertMenu(
+                "menu.images", 
+                "glyphicon glyphicon-play-circle",
+                Router.reverse("adm.ImageController.list").url, 
+                (short)4,
+                null,
+                RoleType.ADMIN);
         
         menu = insertMenu(
                 "menu.applications", 
@@ -169,6 +189,34 @@ public class DevelopmentStartupJob extends Job {
                 (short)2,
                 menu,
                 RoleType.ADMIN);
+        
+
+        menu = insertMenu(
+                "menu.execution", 
+                "glyphicon glyphicon-screenshot",
+                "#", 
+                (short)6,
+                null,
+                RoleType.ADMIN,
+                RoleType.NORMAL);
+
+        insertMenu(
+                "menu.instances", 
+                null,
+                Router.reverse("adm.InstanceController.list").url, 
+                (short)1,
+                menu,
+                RoleType.ADMIN,
+                RoleType.NORMAL); 
+        
+        insertMenu(
+                "menu.workflows", 
+                null,
+                "#", 
+                (short)2,
+                menu,
+                RoleType.ADMIN,
+                RoleType.NORMAL); 
     }
 
     private MenuModel insertMenu(

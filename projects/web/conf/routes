@@ -82,6 +82,13 @@ DELETE  /adm/executors/{id}                     adm.ExecutorController.delete
 GET     /adm/executors                          adm.ExecutorController.blank
 POST    /adm/executors                          adm.ExecutorController.create
 
+# PriceTableController
+GET     /adm/list/prices                        adm.PriceTableController.list
+GET     /adm/force/prices                       adm.PriceTableController.forceSync
+
+# InstanceController
+GET     /adm/list/instances                     adm.InstanceController.list
+
 # TODO: to remove below
 # Catch all
 *       /{controller}/{action}                  {controller}.{action}
