@@ -28,10 +28,8 @@ import models.UserGroupModel;
 import models.UserModel;
 import models.VwCredentialModel;
 import play.Logger;
-import play.i18n.Lang;
 import play.jobs.Job;
 import play.jobs.OnApplicationStart;
-import play.mvc.Router;
 
 @OnApplicationStart
 public class DevelopmentStartupJob extends Job {
@@ -41,20 +39,18 @@ public class DevelopmentStartupJob extends Job {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @Override
     public void doJob() {
-        if (RoleModel.findAll().size() > 0) {
+        // Check if Job has already ran
+        if (UserModel.findByEmail("guest@bionimbuz.org.br") != null) {
             return;
         }
-        Lang.change("en");
-        this.insertProfiles();
-        this.insertMenus();
-
+        
         PluginModel plugin = this.insertPlugin();
         this.insertImages(plugin);
         this.insertTestModels(10);
         this.insertTempPlugins(2);
 
         UserModel userAdmin = 
-                this.insertTempUserAdmin();
+                UserModel.findByEmail("master@bionimbuz.org.br");
         UserModel userNormal = 
                 this.insertTempUserNormal();
         this.insertTempGroup(
@@ -108,117 +104,6 @@ public class DevelopmentStartupJob extends Job {
         image.save();        
     }
     
-    private void insertMenus() {
-        
-        MenuModel menu = null;
-        
-        
-
-        
-        menu = insertMenu(
-                "menu.plugins", 
-                "glyphicon glyphicon-cloud-upload",
-                "#", 
-                (short)1,
-                null,
-                RoleType.ADMIN);
-        
-        insertMenu(
-                "menu.plugins.administration", 
-                null,
-                Router.reverse("adm.PluginController.list").url,
-                (short)1,
-                menu,
-                RoleType.ADMIN);  
-        
-        insertMenu(
-                "menu.plugins.prices", 
-                null,
-                Router.reverse("adm.PriceTableController.list").url,
-                (short)2,
-                menu,
-                RoleType.ADMIN);  
-
-        
-        menu = insertMenu(
-                "menu.credentials", 
-                "glyphicon glyphicon-lock",
-                Router.reverse("guest.VwCredentialController.list").url, 
-                (short)2,
-                null,
-                RoleType.ADMIN,
-                RoleType.NORMAL);
-
-        menu = insertMenu(
-                "menu.groups", 
-                "glyphicon glyphicon-th",
-                Router.reverse("guest.UserGroupController.list").url, 
-                (short)3,
-                null,
-                RoleType.ADMIN,
-                RoleType.NORMAL);
-        
-        menu = insertMenu(
-                "menu.images", 
-                "glyphicon glyphicon-play-circle",
-                Router.reverse("adm.ImageController.list").url, 
-                (short)4,
-                null,
-                RoleType.ADMIN);
-        
-        menu = insertMenu(
-                "menu.applications", 
-                "glyphicon glyphicon-play",
-                "#", 
-                (short)5,
-                null,
-                RoleType.ADMIN);
-        
-        insertMenu(
-                "menu.applications.coordinators", 
-                null,
-                Router.reverse("adm.CoordinatorController.show").url, 
-                (short)1,
-                menu,
-                RoleType.ADMIN);  
-        
-        insertMenu(
-                "menu.applications.executors", 
-                null,
-                Router.reverse("adm.ExecutorController.list").url, 
-                (short)2,
-                menu,
-                RoleType.ADMIN);
-        
-
-        menu = insertMenu(
-                "menu.execution", 
-                "glyphicon glyphicon-screenshot",
-                "#", 
-                (short)6,
-                null,
-                RoleType.ADMIN,
-                RoleType.NORMAL);
-
-        insertMenu(
-                "menu.instances", 
-                null,
-                Router.reverse("adm.InstanceController.list").url, 
-                (short)1,
-                menu,
-                RoleType.ADMIN,
-                RoleType.NORMAL); 
-        
-        insertMenu(
-                "menu.workflows", 
-                null,
-                "#", 
-                (short)2,
-                menu,
-                RoleType.ADMIN,
-                RoleType.NORMAL); 
-    }
-
     private MenuModel insertMenu(
             String name, 
             String iconClass, 
@@ -273,18 +158,6 @@ public class DevelopmentStartupJob extends Job {
         model.setWriteScope("https://www.googleapis.com/auth/compute");
         model.save();
         return model;
-    }
-    
-    private void insertProfiles() {
-        RoleModel role = null;
-
-        role = new RoleModel();
-        role.setId(RoleType.ADMIN);
-        role.save();
-
-        role = new RoleModel();
-        role.setId(RoleType.NORMAL);
-        role.save();
     }
 
     @SuppressWarnings("deprecation")

@@ -123,6 +123,8 @@ ExecutorController=Executors
 
 InstanceController=Instances
 
+SettingController=Settings
+
 # Menus
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 menu.plugins=&{PluginController}
@@ -137,6 +139,21 @@ menu.applications.executors=&{ExecutorController}
 menu.instances=&{InstanceController}
 menu.execution=Executions
 menu.workflows=Workflows
+menu.settings=&{SettingController}
+
+# SettingModel
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SettingModel=Setting
+object.settingName=Setting
+object.settingValue=Value
+object.defaultValue=Default Value
+
+# These translations below tags will be the ones 
+# used to store settings in database as KEYs
+setting_number_temp=Number Field
+setting_decimal_temp=Decimal Field
+setting_string_temp=String Field
+setting_date_temp=Date Field
 
 # PluginModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

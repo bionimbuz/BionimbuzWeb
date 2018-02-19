@@ -89,6 +89,11 @@ GET     /adm/force/prices                       adm.PriceTableController.forceSy
 # InstanceController
 GET     /adm/list/instances                     adm.InstanceController.list
 
+# SettingController
+GET     /adm/list/settings                      adm.SettingController.list
+GET     /adm/settings/{id}                      adm.SettingController.show
+PUT     /adm/settings/{id}                      adm.SettingController.save
+
 # TODO: to remove below
 # Catch all
 *       /{controller}/{action}                  {controller}.{action}
