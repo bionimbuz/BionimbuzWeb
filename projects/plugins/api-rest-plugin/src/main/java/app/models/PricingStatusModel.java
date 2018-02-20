@@ -17,6 +17,8 @@ public class PricingStatusModel {
     private Status status;
     private String errorMessage;
     
+    public PricingStatusModel() {}
+    
     private PricingStatusModel(
             final Date lastSearch,
             final Status status, 

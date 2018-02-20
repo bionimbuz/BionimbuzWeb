@@ -7,8 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import play.db.jpa.GenericModel;
@@ -20,7 +20,7 @@ public class PriceTableModel extends GenericModel {
     @Id
     @GeneratedValue
     private Long id;
-    @OneToOne(fetch = FetchType.LAZY, mappedBy="priceTable", optional = true)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private PluginModel plugin;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "instanceType")
     private List<InstanceTypeZoneModel> listInstanceTypeZone;
@@ -34,6 +34,18 @@ public class PriceTableModel extends GenericModel {
     public PriceTableModel() {
         super();
     }
+    
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Data access
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    public static PriceTableModel getRecentPriceTable(final Long pluginId) {
+        return find(
+                  " SELECT priceTable "
+                + " FROM PriceTableModel priceTable"
+                + " WHERE plugin.id = ?1"
+                + " ORDER BY priceTableDate DESC", pluginId).first();        
+    }
+    
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Getters and Setters

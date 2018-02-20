@@ -36,7 +36,13 @@
 
 <br>
 
-#{crud.table fields: ['plugin', 'priceTableDate', 'lastSearchDate', 'lastSyncDate']/}
+#{crud.table fields: ['plugin', 'priceTableDate', 'lastSearchDate', 'lastSyncDate']}
+
+    #{crud.custom 'plugin'}
+        ${object.plugin}
+    #{/crud.custom}
+
+#{/crud.table}
 
 #{crud.pagination /}
 
