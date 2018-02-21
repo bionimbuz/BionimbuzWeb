@@ -4,29 +4,40 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import app.models.PricingStatusModel;
 import play.db.jpa.GenericModel;
 
 @Entity
 @Table(name = "tb_price_table")
 public class PriceTableModel extends GenericModel {
 
+    public static enum SyncStatus {
+        OK,
+        PROCESSING,
+        ERROR,
+    }
+    
     @Id
     @GeneratedValue
     private Long id;
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, mappedBy="priceTable", optional = true)
     private PluginModel plugin;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "instanceType")
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "instanceType")
     private List<InstanceTypeZoneModel> listInstanceTypeZone;
     private Date priceTableDate;
     private Date lastSearchDate;
     private Date lastSyncDate;
+    @Enumerated(EnumType.STRING)
+    private SyncStatus syncStatus;
+    private String syncMessage;
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Constructors
@@ -38,14 +49,20 @@ public class PriceTableModel extends GenericModel {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Data access
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    public static PriceTableModel getRecentPriceTable(final Long pluginId) {
-        return find(
-                  " SELECT priceTable "
-                + " FROM PriceTableModel priceTable"
-                + " WHERE plugin.id = ?1"
-                + " ORDER BY priceTableDate DESC", pluginId).first();        
+    public static SyncStatus getStatus(final PricingStatusModel status) {
+        switch(status.getStatus()) {
+            case OK:
+                return SyncStatus.OK;
+            case PROCESSING:
+                return SyncStatus.PROCESSING;
+            case DATE_ERROR:
+            case DOWNLOAD_ERROR:
+            case PARSE_ERROR:
+            case VERSION_ERROR:
+            default:
+                return SyncStatus.ERROR;
+        }
     }
-    
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Getters and Setters
@@ -86,5 +103,17 @@ public class PriceTableModel extends GenericModel {
     }
     public void setLastSearchDate(Date lastSearchDate) {
         this.lastSearchDate = lastSearchDate;
+    }
+    public SyncStatus getSyncStatus() {
+        return syncStatus;
+    }
+    public void setSyncStatus(SyncStatus syncStatus) {
+        this.syncStatus = syncStatus;
+    }
+    public String getSyncMessage() {
+        return syncMessage;
+    }
+    public void setSyncMessage(String syncMessage) {
+        this.syncMessage = syncMessage;
     }   
 }
