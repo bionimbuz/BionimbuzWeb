@@ -32,6 +32,19 @@ public class InstanceTypeModel extends GenericModel {
     }
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Data access
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+    public static void deleteForPriceTable(final Long idPriceTable) {
+        delete(
+                " DELETE FROM InstanceTypeModel instanceTypeModel "
+              + " WHERE instanceTypeModel IN "
+              + "     (SELECT instanceTypeModel "
+              + "         FROM InstanceTypeModel instanceTypeModel"
+              + "         JOIN instanceTypeModel.listInstanceTypeZone instanceTypeZone"
+              + "         WHERE instanceTypeZone.priceTable.id = ?1)", idPriceTable);
+    }
+    
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Getters and Setters
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public Long getId() {

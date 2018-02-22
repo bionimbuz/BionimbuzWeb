@@ -226,6 +226,7 @@ ExecutorModel=Executor
 object.priceTableDate=Price Table Date
 object.lastSearchDate=Last Plugin Search
 object.lastSyncDate=Last Synchronization
+object.syncMessage=Synchronization Message
 
 
 # Modals

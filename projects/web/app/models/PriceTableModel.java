@@ -9,6 +9,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -28,9 +29,9 @@ public class PriceTableModel extends GenericModel {
     @Id
     @GeneratedValue
     private Long id;
-    @OneToOne(fetch = FetchType.LAZY, mappedBy="priceTable", optional = true)
+    @OneToOne
     private PluginModel plugin;
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "instanceType")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "instanceType")
     private List<InstanceTypeZoneModel> listInstanceTypeZone;
     private Date priceTableDate;
     private Date lastSearchDate;
@@ -49,6 +50,13 @@ public class PriceTableModel extends GenericModel {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Data access
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    public static void deletePriceTable(final Long idPriceTable) {
+        InstanceTypeZoneModel.deleteForPriceTable(idPriceTable);
+        ZoneModel.deleteForPriceTable(idPriceTable);
+        InstanceTypeModel.deleteForPriceTable(idPriceTable);
+        delete("id = ?1", idPriceTable);
+    }
+    
     public static SyncStatus getStatus(final PricingStatusModel status) {
         switch(status.getStatus()) {
             case OK:

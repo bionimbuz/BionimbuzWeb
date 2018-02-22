@@ -22,10 +22,29 @@ public class ZoneModel extends GenericModel {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "zone")
     private List<InstanceTypeZoneModel> listInstanceTypeZone;
 
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Constructors
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public ZoneModel() {
         super();
     }
-
+    
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Data access
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+    public static void deleteForPriceTable(final Long idPriceTable) {
+        delete(
+              " DELETE FROM ZoneModel zone "
+            + " WHERE zone IN "
+            + "     (SELECT zone "
+            + "         FROM ZoneModel zone"
+            + "         JOIN zone.listInstanceTypeZone instanceTypeZone"
+            + "         WHERE instanceTypeZone.priceTable.id = ?1)", idPriceTable);
+    }
+    
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Getters and Setters
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public Long getId() {
         return id;
     }

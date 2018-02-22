@@ -94,7 +94,6 @@ public class PriceTableUpdaterJob extends Job {
         priceTable.setSyncMessage(messageError);
         
         if(princingRequested != null) {
-
             priceTable.setPriceTableDate(princingRequested.getLastUpdate());
             priceTable.setLastSearchDate(princingRequested.getStatus().getLastSearch());
         }
@@ -107,10 +106,16 @@ public class PriceTableUpdaterJob extends Job {
             final Date now,
             final PricingModel princingRequested,
             final PluginModel plugin) {
+        
+        // Clean current price table
+        PriceTableModel priceTable = plugin.getPriceTable();
+        if(priceTable != null) {
+            PriceTableModel.deletePriceTable(priceTable.getId());
+        }
 
         HashMap<String, ZoneModel> listZones = new HashMap<>();  
         PricingStatusModel status = princingRequested.getStatus();
-        PriceTableModel priceTable = 
+        priceTable = 
                 updateOrCreatePriceTableStatus(
                     plugin, null, now, 
                     PriceTableModel.getStatus(status), 

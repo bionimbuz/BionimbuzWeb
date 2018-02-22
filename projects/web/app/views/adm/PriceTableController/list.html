@@ -36,10 +36,16 @@
 
 <br>
 
-#{crud.table fields: ['plugin', 'priceTableDate', 'lastSearchDate', 'lastSyncDate']}
+#{crud.table fields: ['plugin', 'priceTableDate', 'lastSearchDate', 'lastSyncDate', 'syncMessage']}
 
     #{crud.custom 'plugin'}
         ${object.plugin}
+    #{/crud.custom}
+    
+    #{crud.custom 'syncMessage'}
+        #{if object.syncStatus.toString() != 'OK'}
+            ${object.syncMessage}
+        #{/if}
     #{/crud.custom}
 
 #{/crud.table}

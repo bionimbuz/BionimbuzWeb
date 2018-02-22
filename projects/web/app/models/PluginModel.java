@@ -55,7 +55,7 @@ public class PluginModel extends GenericModel {
     private List<CredentialModel> listCredentials;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "plugin")
     private List<ImageModel> listImages;
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY, mappedBy="plugin", optional = true)
     private PriceTableModel priceTable;
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
