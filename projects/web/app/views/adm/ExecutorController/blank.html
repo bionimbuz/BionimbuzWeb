@@ -1,0 +1,120 @@
+
+#{extends 'CRUD/layout.html' /}
+#{set title:messages.get('crud.show.title', type.modelName) /}
+
+<div class="row crud-title">
+    <div class="col-xs-12 col-sm-12 col-md-12">  
+        <h1> &{'crud.blank.title', type.modelName} </h1>
+        <pre> &{'crud.blank.title.desc', type.modelName} </pre>
+    </div>
+</div>
+
+<br>
+
+<div class="row col-lg-12" >
+#{form action:@create(), enctype:'multipart/form-data'}
+
+    #{crud.form}     
+        
+        #{crud.custom 'listImages'}
+            
+            #{field 'object.listImages'}
+                    
+            <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                <div class="div-label">
+                    <label for="${field.id}">
+                        &{field.name}
+                    </label>
+                    <a class="check-all ${field.id}_class_all_"></a>
+                </div>        
+        
+                <select id="${field.id}" name="${field.name}.id" multiple='multiple'>                
+                %{                        
+                        for(plugin in models.PluginModel.findAll()) 
+                        {                        
+                }%                        
+                            <optgroup class="items-group" label='${plugin.name}'>                        
+                %{                            
+                            for(image in plugin.listImages) 
+                            {                        
+                                selected = (object.listImages != null && object.listImages.contains(image));
+                }%
+                                <option value='${image.id}' ${selected ? 'selected' : ''} >${image.name}</option>                       
+                %{
+                            }
+                }%
+                            </optgroup>     
+                %{
+                        }
+                }%
+                </select>     
+                
+                #{ifError field.name}
+                    <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                #{/ifError}  
+            </div>  
+               
+            #{/field}
+            
+        #{/crud.custom}  
+        
+    #{/crud.form}
+    
+    <div class="btn-row text-center">        
+        <input class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_save" value="&{'crud.save', type.modelName}" />
+        <a href="@{list()}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>     
+    </div>
+#{/form}
+</div>
+
+#{set 'moreScripts'}
+
+<script type="text/javascript">
+
+    function disableItensFromSelectedGroup(){
+        
+        optgroups = $('.items-group');        
+        $('.items-group').each(function() {
+            $optgroup = $(this);
+            $options = $optgroup.children('option');
+            hasSelected = false;   
+            // Check group selection
+            $options.each(function(){
+                hasSelected = this.selected;
+                if(hasSelected) {
+                    return false;
+                }
+            });                     
+            
+            // Enable all if group have no selected item
+            if(!hasSelected) {
+                $options.each(function(){                
+                    this.disabled = false;
+                });  
+                return false;
+            }
+            
+            // Disable other itens if has group selection
+            $options.each(function(){                
+                if(!this.selected) {
+                    this.disabled = true;
+                }
+            });  
+        });     
+        
+        $('#object_listImages').multiSelect('refresh');
+    }
+    
+    $(function(){            
+        disableItensFromSelectedGroup();
+    });
+
+    $('#object_listImages').multiSelect({ 
+        selectableOptgroup: false,
+        afterSelect: disableItensFromSelectedGroup,
+        afterDeselect: disableItensFromSelectedGroup
+    });
+
+</script>
+
+#{/set}

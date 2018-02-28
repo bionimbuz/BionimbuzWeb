@@ -15,6 +15,7 @@ import app.models.InfoModel.AuthenticationType;
 import common.fields.EncryptedFileField;
 import controllers.security.SecurityController;
 import models.CredentialModel;
+import models.ExecutorModel;
 import models.GroupModel;
 import models.ImageModel;
 import models.MenuModel;
@@ -26,7 +27,6 @@ import models.TestModel.TestEnum;
 import models.TestRelationModel;
 import models.UserGroupModel;
 import models.UserModel;
-import models.VwCredentialModel;
 import play.Logger;
 import play.jobs.Job;
 import play.jobs.OnApplicationStart;
@@ -72,9 +72,19 @@ public class DevelopmentStartupJob extends Job {
         this.insertCredential(plugin, userNormal);
         this.insertCredential(plugin, userNormal);
         
-        List<VwCredentialModel> creds = 
-                VwCredentialModel.findAll();
-        System.out.println("");
+        insertExecutor(plugin);
+    }
+    
+    private void insertExecutor(PluginModel plugin) {
+        ExecutorModel executor = new ExecutorModel();
+        List<ImageModel> listImages = new ArrayList<>();
+        plugin.refresh();
+        listImages.add(
+                plugin.getListImages().get(0));
+        executor.setName("Apache");
+        executor.setStartupScript("apt-get update && apt-get install -y apache2 && hostname > /var/www/index.html");
+        executor.setListImages(listImages);
+        executor.save();        
     }
     
     private void insertTempGroup(String name, UserModel... users) {
