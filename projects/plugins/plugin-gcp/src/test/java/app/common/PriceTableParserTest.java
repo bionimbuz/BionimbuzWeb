@@ -3,13 +3,15 @@ package app.common;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.Calendar;
+import java.io.IOException;
+import java.text.ParseException;
 
 import org.junit.Test;
 
-import app.models.PricingModel;
-import app.models.PricingStatusModel.Status;
+import app.models.PriceModel;
 import app.pricing.PriceTableParser;
+import app.pricing.exceptions.PriceTableDateInvalidException;
+import app.pricing.exceptions.PriceTableVersionException;
 import utils.CmdLineArgs;
 
 public class PriceTableParserTest {
@@ -20,12 +22,15 @@ public class PriceTableParserTest {
                 new PriceTableParser(
                         CmdLineArgs.getPriceTableFile(),
                         SystemConstants.PRICE_TABLE_VERSION);
-        Calendar now = Calendar.getInstance();
-        PricingModel priceModel = 
-                testParser.parse(now.getTime(), null);
-        
         assertNotNull(testParser);
-        assertThat(priceModel.getStatus().getStatus())
-                    .isEqualTo(Status.OK);
+        PriceModel priceModel = null;
+        try {
+            priceModel = testParser.parse();
+            assertNotNull(priceModel);
+        } catch (IOException | PriceTableVersionException | ParseException
+                | PriceTableDateInvalidException e) {
+            assertThat(e).isNull();
+        }
+        
     }
 }

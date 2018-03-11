@@ -34,6 +34,8 @@
         <script type="text/javascript" src="@{'/public/javascripts/jquery.blockUI.js'}"></script>
         <script type="text/javascript" src="@{'/public/javascripts/main.js'}"></script>        
         <script type="text/javascript" src="@{'/public/lib/multi-select/js/jquery.multi-select.js'}"></script>
+        <script type="text/javascript" src="@{'/public/lib/datatables/jquery.dataTables.min.js'}"></script>
+        <script type="text/javascript" src="@{'/public/lib/datatables/dataTables.bootstrap4.min.js'}"></script>
         
         <script type="text/javascript">
             // Date picker
@@ -55,6 +57,14 @@
                     'nextCentury':  "&{'datetimepicker.tooltip.next.century'}"
             };
             
+            function update_iChecks(){
+                $('.icheck').iCheck({
+                    checkboxClass: 'icheckbox_square-blue',
+                    radioClass: 'iradio_square-blue',
+                    increaseArea: '20%' // optional
+                });
+            }
+            
             $(function () {
                 	// navbar control
                 $('.navbar-toggle').click(function () {
@@ -63,11 +73,8 @@
                 });
                 
                 // Custom checkboxes
-                $('.icheck').iCheck({
-                checkboxClass: 'icheckbox_square-blue',
-                radioClass: 'iradio_square-blue',
-                increaseArea: '20%' // optional
-                });
+                update_iChecks();                
+                
                 $(document).on('change','select.nav',function(){
                     var $this = this;
                     var target = $this.value;

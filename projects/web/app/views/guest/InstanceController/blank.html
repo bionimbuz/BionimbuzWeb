@@ -1,0 +1,271 @@
+
+#{extends 'CRUD/layout.html' /}
+#{set title:messages.get('crud.blank.title', type.modelName) /}
+
+<div class="row crud-title">
+    <div class="col-xs-12 col-sm-12 col-md-12">  
+        <h1> &{'crud.blank.title', type.modelName} </h1>
+        <pre> &{'crud.blank.title.desc', type.modelName} </pre>
+    </div>
+</div>
+
+<br>
+
+<div class="row col-lg-12" >
+#{form action:@create(), enctype:'multipart/form-data'}
+
+    #{crud.form}
+    
+        #{crud.custom 'credentialUsage'}
+        
+            #{field 'object.credentialUsage'}
+            
+            <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                <div class="div-label">
+                    <label for="${field.id}">
+                        &{field.name}
+                    </label>
+                </div>
+                    %{ 
+                    models.InstanceModel.CredentialUsagePolicy.each() {
+                        selected = false;
+                        if((field.value == null && it == models.InstanceModel.CredentialUsagePolicy.SHARED_FIRST)
+                            || field.value == it) {
+                            selected = true;
+                        }
+                    }%
+                    <div style="padding-top: 5px;padding-bottom: 5px;">
+                        <input type="radio" name="${field.name}" value="${it}" 
+                            ${selected ? 'checked'.raw() : ''} 
+                            class="icheck icheckbox_table_list"/>&nbsp;&{it}<br/>
+                    </div>
+                    %{ } }%  
+                
+            #{ifError field.name}
+                <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+            #{/ifError}
+            </div>                      
+                
+            #{/field}
+            
+            #{field 'pluginSelected'}    
+            <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                <label for="${field.id}">&{field.name}</label>
+                <div class="nav-container">
+                    <select class="form-control nav" id="${field.id}" name="${field.name}.id">
+                        <option value="">&{'crud.selectValue'}</option>
+                        %{
+                            plugins = models.PluginModel.searchPluginsForUser();
+                            plugins.each() {
+                                selected = false;
+                                if(field.value != null && field.value._key() == it._key()){                                    
+                                    selected = true;
+                                }
+                        }%
+                    
+                        <option value="${it._key()}" ${selected ? 'selected="true"'.raw() : ''}>${it}</option>
+                
+                        %{ } }%
+                        
+                    </select>
+                </div>
+                #{ifError field.name}
+                    <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                #{/ifError}
+            </div>
+            #{/field}
+            
+            #{field 'zoneSelected'}    
+            <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                <label for="${field.id}">&{field.name}</label>
+                <div class="nav-container">
+                    <select class="form-control nav" id="${field.id}" name="${field.name}.id">
+                        <option value="">&{'crud.selectValue'}</option>                        
+                    </select>
+                </div>
+                #{ifError field.name}
+                    <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                #{/ifError}
+            </div>
+            #{/field}
+
+        #{/crud.custom}
+        
+        #{crud.custom 'instanceTypeZone'}
+            #{field 'instanceTypeSelected'}
+            <div class="row">
+                <label for="${field.id}">&{field.name}</label>
+                <table id="tableInstanceTypes" class="table stripe table-bordered">
+                    <thead>
+                    
+                        <tr>
+                            <th style="width: 1px;">
+                            </th>
+                            <th style="cursor: pointer;">
+                                &{'object.instanceTypeName'}
+                            </th>
+                            <th style="cursor: pointer;">
+                                &{'object.cores'}
+                            </th>
+                            <th style="cursor: pointer;">
+                                &{'object.memory'}
+                            </th>
+                            <th style="cursor: pointer;">
+                                &{'object.price'}
+                            </th>
+                        </tr>
+                    </thead>
+                    *{
+                    <tbody>
+                        <tr>
+                            <td>
+                                <input name="${field.name}" type="radio" class="icheck"/>         
+                            </td>
+                            <td>
+                                aaa test
+                            </td>
+                            <td>
+                                999
+                            </td>
+                        </tr>
+                    </tbody>
+                    }*
+                </table>
+            </div>
+            #{/field}
+        #{/crud.custom}
+        
+        
+        
+        
+    #{/crud.form}
+    
+    
+    <div class="btn-row text-center">
+        <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_save">&{'crud.save'}</button>
+        <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_saveAndContinue">&{'crud.saveAndContinue'}</button>
+        <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_saveAndAddAnother">&{'crud.saveAndAddAnother'}</button>
+        <a href="@{list()}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>
+    </div>
+#{/form}
+</div>
+
+
+
+#{set 'moreScripts' }
+<script type="text/javascript">
+  
+$(function(){     
+
+    $('#tableInstanceTypes').DataTable( 
+    {
+        "paging":   false,
+        "searching":   false,
+        "info":   false,
+    });
+    
+    function addItem(field, content, value) {
+        if(value == null)
+            value = "";
+        field.append(
+                '<option value="'+value+'">'+content+'</option>');
+    }
+    
+    function clearOptions() {
+        $("#zoneSelected").empty();
+        addItem($("#zoneSelected"), "&{'crud.selectValue'}");
+    }
+    
+    function reloadZones() {
+        
+        clearOptions();
+
+        showPleaseWait();
+        
+        plugin = $('#pluginSelected').val();
+        var search = #{jsRoute @searchZones() /};
+        if(plugin == ""){
+            hidePleaseWait(); 
+            return;
+        }
+        
+        $.ajax({
+            url: search.url(),
+            type: search.method,
+            data:{ pluginId: plugin}
+           })
+        .done(function(data) {
+            for(var i in data) {                
+                addItem(
+                    $("#zoneSelected"),
+                    data[i]['name'],
+                    data[i]['id']);
+            }
+        })
+        .fail(function(data) {
+            flashError(data.responseText);
+        })
+        .always(function() {
+            hidePleaseWait(); 
+        });
+    }
+    
+    function reloadInstanceTypes() {
+        var table = $('#tableInstanceTypes').DataTable();
+
+        showPleaseWait();
+        table
+            .clear()
+            .draw();
+        
+        zone = $('#zoneSelected').val();
+        var search = #{jsRoute @searchInstanceTypes() /};
+        if(zone == ""){
+            hidePleaseWait(); 
+            return;
+        }
+        
+        $.ajax({
+            url: search.url(),
+            type: search.method,
+            data:{ zoneId: zone}
+           })
+        .done(function(data) {
+
+            for(var i in data) {   
+                row = data[i];
+                
+                inputColumn = "<input name='instanceTypeSelected' "+
+                              "type='radio' class='icheck' value='"+row["instanceTypeId"]+"'/>"
+                table.row.add( [ 
+                    inputColumn,
+                    row["instanceTypeName"],
+                    row["cores"],
+                    row["memory"],
+                    row["price"],
+                ] );
+            }
+            table.draw();
+            update_iChecks();
+        })
+        .fail(function(data) {
+            flashError(data.responseText);
+        })
+        .always(function() {
+            hidePleaseWait(); 
+        });
+    }
+    
+    #{if pluginSelected != null}
+        reloadZones();
+        reloadInstanceTypes();
+    #{/if}
+    
+    $('#pluginSelected').change(reloadZones);
+    
+    $('#zoneSelected').change(reloadInstanceTypes);
+});
+
+</script>
+#{/set}
+

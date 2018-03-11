@@ -87,7 +87,14 @@ GET     /adm/list/prices                        adm.PriceTableController.list
 GET     /adm/force/prices                       adm.PriceTableController.forceSync
 
 # InstanceController
-GET     /adm/list/instances                     adm.InstanceController.list
+GET     /search/instance/types                  guest.InstanceController.searchInstanceTypes
+GET     /search/instance/zones                  guest.InstanceController.searchZones
+GET     /list/instances                         guest.InstanceController.list
+GET     /instances/{id}                         guest.InstanceController.show
+PUT     /instances/{id}                         guest.InstanceController.save
+DELETE  /instances/{id}                         guest.InstanceController.delete
+GET     /instances                              guest.InstanceController.blank
+POST    /instances                              guest.InstanceController.create
 
 # SettingController
 GET     /adm/list/settings                      adm.SettingController.list

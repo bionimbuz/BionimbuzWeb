@@ -14,6 +14,7 @@ import javax.persistence.Table;
 
 import app.models.InfoModel.AuthenticationType;
 import controllers.CRUD.Hidden;
+import controllers.adm.BaseAdminController;
 import play.data.validation.MaxSize;
 import play.data.validation.Required;
 import play.data.validation.Unique;
@@ -57,6 +58,8 @@ public class PluginModel extends GenericModel {
     private List<ImageModel> listImages;
     @OneToOne(fetch = FetchType.LAZY, mappedBy="plugin", optional = true)
     private PriceTableModel priceTable;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "plugin")
+    private List<VwCredentialModel> listUsersCredentials;
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Constructors
@@ -64,7 +67,20 @@ public class PluginModel extends GenericModel {
     public PluginModel() {        
         super();
     }
-
+    
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Data access
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    public static List<PluginModel> searchPluginsForUser() {
+        UserModel currentUser = BaseAdminController.getConnectedUser();
+        return find(
+                " SELECT DISTINCT plugins "
+                + " FROM PluginModel plugins"
+                + " JOIN plugins.listUsersCredentials credentials"
+                + " JOIN credentials.userShared userShared"
+                + " WHERE userShared.id = ?1", currentUser.getId()).fetch();
+    }
+    
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Getters and Setters
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

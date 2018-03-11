@@ -7,8 +7,8 @@ import app.common.GlobalConstants;
 import app.common.HttpHeadersCustom;
 import app.common.Routes;
 import app.models.Body;
-import app.models.PricingModel;
-import app.models.PricingStatusModel;
+import app.models.PriceTableModel;
+import app.models.PriceTableStatusModel;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
@@ -19,13 +19,13 @@ public class PricingApi extends PluginApi<HttpMethods> {
         super(url, HttpMethods.class);
     }
     
-    public Body<PricingModel> getPricing() throws IOException
+    public Body<PriceTableModel> getPricing() throws IOException
     {
         return getHttpMethods()
                 .getPricing(GlobalConstants.API_VERSION)
                 .execute().body();
     }
-    public Body<PricingStatusModel> getPricingStatus() throws IOException
+    public Body<PriceTableStatusModel> getPricingStatus() throws IOException
     {
         return getHttpMethods()
                 .getPricingStatus(GlobalConstants.API_VERSION)
@@ -34,10 +34,10 @@ public class PricingApi extends PluginApi<HttpMethods> {
     
     protected interface HttpMethods {
         @GET(Routes.PRICING) 
-        public Call< Body<PricingModel> > getPricing(
+        public Call< Body<PriceTableModel> > getPricing(
                 @Header(HttpHeadersCustom.API_VERSION) final String version);
         @GET(Routes.PRICING_STATUS) 
-        public Call< Body<PricingStatusModel> > getPricingStatus(
+        public Call< Body<PriceTableStatusModel> > getPricingStatus(
                 @Header(HttpHeadersCustom.API_VERSION) final String version);
     }
 }

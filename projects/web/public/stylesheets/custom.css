@@ -189,3 +189,14 @@ th {
 .has-error .ms-list {
     border-color: #a94442 !important;
 }
+
+.dataTables_wrapper {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+.dataTables_wrapper div:nth-child(2) div:nth-child(1){
+    padding-right: 0;
+    padding-left: 0;
+
+}

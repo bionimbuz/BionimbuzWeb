@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import app.common.HttpHeadersCustom;
 import app.common.Routes;
 import app.models.Body;
-import app.models.PricingModel;
-import app.models.PricingStatusModel;
+import app.models.PriceTableModel;
+import app.models.PriceTableStatusModel;
 
 public abstract class AbstractPricingController extends BaseController{  
     protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractPricingController.class);  
@@ -20,12 +20,12 @@ public abstract class AbstractPricingController extends BaseController{
      * Action Methods
      */    
     @RequestMapping(path = Routes.PRICING, method = RequestMethod.GET)
-    private ResponseEntity< Body< PricingModel >> getPricingAction(
+    private ResponseEntity< Body< PriceTableModel >> getPricingAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version) { 
         return callImplementedMethod("getPricing", version);        
     }    
     @RequestMapping(path = Routes.PRICING_STATUS, method = RequestMethod.GET)
-    private ResponseEntity< Body< PricingStatusModel >> getPricingStatusAction(
+    private ResponseEntity< Body< PriceTableStatusModel >> getPricingStatusAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version) { 
         return callImplementedMethod("getPricingStatus", version);        
     }  
@@ -33,8 +33,8 @@ public abstract class AbstractPricingController extends BaseController{
     /*
      * Abstract Methods
      */
-    protected abstract ResponseEntity<Body<PricingModel>> 
+    protected abstract ResponseEntity<Body<PriceTableModel>> 
                                 getPricing() throws Exception;  
-    protected abstract ResponseEntity<Body<PricingStatusModel>> 
+    protected abstract ResponseEntity<Body<PriceTableStatusModel>> 
                                 getPricingStatus() throws Exception; 
 }

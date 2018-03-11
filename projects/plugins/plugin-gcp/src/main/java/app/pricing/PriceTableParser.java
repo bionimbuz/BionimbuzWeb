@@ -5,19 +5,17 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
 import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
-import app.models.PricingModel;
-import app.models.PricingStatusModel;
-import app.models.PricingStatusModel.Status;
-import app.models.pricing.InstancePricing;
+import app.models.PriceModel;
+import app.models.pricing.InstanceTypePricing;
 import app.models.pricing.ZonePricing;
 import app.pricing.exceptions.PriceTableDateInvalidException;
 import app.pricing.exceptions.PriceTableVersionException;
@@ -47,33 +45,16 @@ public class PriceTableParser {
         return filePath;
     }
     
-    private boolean needUpdate(
-            final PricingModel lastPricing, 
-            final Date lastUpdateFromParse) {
-        if(lastPricing == null)
-            return true;
-        if(lastPricing.getStatus().getStatus() != Status.OK)
-            return true;
-        
-        Calendar lastUpdate = Calendar.getInstance();
-        lastUpdate.setTime(lastPricing.getLastUpdate());
-        Calendar lastUpdateFound = Calendar.getInstance();
-        lastUpdateFound.setTime(lastUpdateFromParse);        
-        if(lastUpdate.compareTo(lastUpdateFound) != 0)
-            return true;
-        return false;
-    }
-    
-    public PricingModel parse(
-            final Date now, 
-            final PricingModel lastPricing) {
+    public PriceModel parse() 
+                    throws JsonParseException, IOException, 
+                    PriceTableVersionException, ParseException, 
+                    PriceTableDateInvalidException {
 
-        HashMap<String, InstancePricing> instancePricing = new HashMap<>(); 
+        HashMap<String, InstanceTypePricing> instancePricing = new HashMap<>(); 
         Date lastUpdate = null;
-        
         try(JsonParser jsonParser = 
                 new JsonFactory().createParser(new File(filePath))) {
-        
+           
             while(jsonParser.nextToken() != JsonToken.END_OBJECT) {  
                 String name = jsonParser.getCurrentName();
                 if(TAG_VERSION.equals(name)){
@@ -91,48 +72,30 @@ public class PriceTableParser {
                     jsonParser.nextToken();    
                     if(lastUpdate == null) {
                         throw new PriceTableDateInvalidException();
-                    }
-                    if(needUpdate(lastPricing, lastUpdate)) {
-                        instancePricing = parseInstancePricing(jsonParser);
-                    }
-                    else {
-                        instancePricing = lastPricing.getListInstancePricing();
-                        lastUpdate  = lastPricing.getLastUpdate();
-                    }
+                    }    
+                    instancePricing = parseInstancePricing(jsonParser);
                 }
-            }
-            
+            }            
             if(lastUpdate == null) {
                 throw new PriceTableDateInvalidException();
-            }
-            
-            return new PricingModel(
-                    PricingStatusModel.createOkStatus(now),
+            }            
+            return new PriceModel(
                     lastUpdate, 
                     instancePricing);            
-        } catch (ParseException | PriceTableDateInvalidException e) {
-            return new PricingModel(
-                    PricingStatusModel.createDateErrorStatus(now));
-        } catch (PriceTableVersionException e) {
-            return new PricingModel(
-                    PricingStatusModel.createVersionErrorStatus(now, e.getMessage()));
-        } catch (IOException e) {
-            return new PricingModel(
-                    PricingStatusModel.createParseErrorStatus(now, e.getMessage()));
-        }      
+        }    
     }
     
-    private HashMap<String, InstancePricing> parseInstancePricing(JsonParser jsonParser) 
+    private HashMap<String, InstanceTypePricing> parseInstancePricing(JsonParser jsonParser) 
             throws IOException {
         boolean zonesRead = false;
         Short cores = 0;
         Double memory = 0D;
         Double pricing = 0D;
         ZonePricing zone = null;
-        InstancePricing instancePricing = null;
-        HashMap<String, InstancePricing> res = new HashMap<>();  
-        HashMap<String, ZonePricing> zones = new HashMap<>();
-        while(jsonParser.nextToken() != JsonToken.END_OBJECT) {            
+        InstanceTypePricing instancePricing = null;
+        HashMap<String, InstanceTypePricing> res = new HashMap<>();  
+        while(jsonParser.nextToken() != JsonToken.END_OBJECT) {  
+            HashMap<String, ZonePricing> zones = new HashMap<>();          
             String instanceName = jsonParser.getCurrentName();
             // Reads only VM contents
             if(instanceName.contains(SUBSTR_VMIMAGE)) {
@@ -158,7 +121,7 @@ public class PriceTableParser {
                         jsonParser.nextToken();
                         // Skip array values
                         while (jsonParser.nextToken() != JsonToken.END_ARRAY) {}
-                        instancePricing = new InstancePricing(
+                        instancePricing = new InstanceTypePricing(
                                 instanceName, cores, memory, zones);
                         res.put(instanceName, instancePricing);
                     }

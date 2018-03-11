@@ -20,7 +20,7 @@ import app.common.GlobalConstants;
 import app.common.HttpHeadersCustom;
 import app.common.Routes;
 import app.models.Body;
-import app.models.PricingModel;
+import app.models.PriceModel;
 import utils.TestUtils;
 
 @RunWith(SpringRunner.class)
@@ -48,20 +48,20 @@ public class PricingControllerTest {
         headers.add(HttpHeadersCustom.API_VERSION, GlobalConstants.API_VERSION);           
         HttpEntity<Void> entity = new HttpEntity<>(headers);
         
-        ResponseEntity<Body<PricingModel>> response = 
+        ResponseEntity<Body<PriceModel>> response = 
                 this.restTemplate
                     .exchange(
                             Routes.PRICING, 
                             HttpMethod.GET, 
                             entity,
-                            new ParameterizedTypeReference<Body<PricingModel>>() {});     
+                            new ParameterizedTypeReference<Body<PriceModel>>() {});     
         response = 
                 this.restTemplate
                     .exchange(
                             Routes.PRICING, 
                             HttpMethod.GET, 
                             entity,
-                            new ParameterizedTypeReference<Body<PricingModel>>() {});   
+                            new ParameterizedTypeReference<Body<PriceModel>>() {});   
         assertThat(response).isNotNull();  
     }
 }

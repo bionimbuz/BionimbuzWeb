@@ -220,14 +220,37 @@ object.startupScript=Startup Script
 object.listImages=Images
 
 # ExecutorModel
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ExecutorModel=Executor
 
 # PriceTableModel
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+PriceTableModel=Price Table
 object.priceTableDate=Price Table Date
 object.lastSearchDate=Last Plugin Search
 object.lastSyncDate=Last Synchronization
 object.syncMessage=Synchronization Message
 
+# InstanceModel
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+InstanceModel=Instance
+object.credentialUsage=Credential Usage
+object.executor=Executor
+object.executionAfterCreation=Request Execution After Creation
+object.instanceTypeZone=Instance Types
+SHARED_FIRST=Shared First
+OWNER_FIRST=Owner First
+
+# InstanceTypeModel
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+InstanceTypeModel=Instance Type
+object.cores=Cores
+object.memory=Memory
+object.instanceTypeName=Type
+
+# InstanceTypeZoneModel
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+object.price=Price per Hour
 
 # Modals
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -247,4 +270,5 @@ change.password=Change Password
 price.table.force.sync=Force Synchronization
 price.table.force.success=A request was sent to server, please update price table list in a few minutes
 price.table.force.error=The request cannot be processed, server may be synchronizing now 
-
+pluginSelected=Available Plugins
+zoneSelected=Available Zones

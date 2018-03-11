@@ -24,6 +24,56 @@ public class InstanceTypeModel extends GenericModel {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "instanceType")
     private List<InstanceTypeZoneModel> listInstanceTypeZone;
 
+
+    public static class InstanceType {
+        
+        private Long instanceTypeId;
+        private String instanceTypeName;
+        private Double price;
+        private Short cores;
+        private Double memory;
+        
+
+        public InstanceType(final InstanceTypeZoneModel instanceTypeZone) {            
+            InstanceTypeModel instanceType = instanceTypeZone.getInstanceType();            
+            this.instanceTypeId = instanceType.getId();
+            this.instanceTypeName = instanceType.getName();
+            this.price = instanceTypeZone.getPrice();
+            this.cores = instanceType.getCores();
+            this.memory = instanceType.getMemory();
+        }
+        
+        public Long getInstanceTypeId() {
+            return instanceTypeId;
+        }
+        public void setInstanceTypeId(Long instanceTypeId) {
+            this.instanceTypeId = instanceTypeId;
+        }
+        public String getInstanceTypeName() {
+            return instanceTypeName;
+        }
+        public void setInstanceTypeName(String instanceTypeName) {
+            this.instanceTypeName = instanceTypeName;
+        }
+        public Double getPrice() {
+            return price;
+        }
+        public void setPrice(Double price) {
+            this.price = price;
+        }
+        public Short getCores() {
+            return cores;
+        }
+        public void setCores(Short cores) {
+            this.cores = cores;
+        }
+        public Double getMemory() {
+            return memory;
+        }
+        public void setMemory(Double memory) {
+            this.memory = memory;
+        }
+    }
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Constructors
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

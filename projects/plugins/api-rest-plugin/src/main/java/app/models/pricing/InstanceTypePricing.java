@@ -2,14 +2,14 @@ package app.models.pricing;
 
 import java.util.HashMap;
 
-public class InstancePricing {
+public class InstanceTypePricing {
     
     private String name;
     private Short cores;
     private Double memory;
     private HashMap<String, ZonePricing> listZonePricing;
     
-    public InstancePricing(
+    public InstanceTypePricing(
             final String name, 
             final Short cores, 
             final Double memory,
@@ -20,7 +20,7 @@ public class InstancePricing {
         this.listZonePricing = listZonePricing;
     }
 
-    public InstancePricing() {        
+    public InstanceTypePricing() {        
     }
     
     public String getName() {

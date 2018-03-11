@@ -13,7 +13,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import app.models.PricingStatusModel;
+import app.models.PriceTableStatusModel;
 import play.db.jpa.GenericModel;
 
 @Entity
@@ -57,7 +57,7 @@ public class PriceTableModel extends GenericModel {
         delete("id = ?1", idPriceTable);
     }
     
-    public static SyncStatus getStatus(final PricingStatusModel status) {
+    public static SyncStatus getStatus(final PriceTableStatusModel status) {
         switch(status.getStatus()) {
             case OK:
                 return SyncStatus.OK;

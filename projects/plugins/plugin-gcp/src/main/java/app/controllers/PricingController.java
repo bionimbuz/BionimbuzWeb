@@ -4,8 +4,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.models.Body;
-import app.models.PricingModel;
-import app.models.PricingStatusModel;
+import app.models.PriceTableModel;
+import app.models.PriceTableStatusModel;
 import app.pricing.PriceTableScheduler;
 
 @RestController
@@ -16,12 +16,12 @@ public class PricingController extends AbstractPricingController{
      */
     
     @Override
-    protected ResponseEntity<Body<PricingModel>> getPricing() throws Exception {           
+    protected ResponseEntity<Body<PriceTableModel>> getPricing() throws Exception {           
         return ResponseEntity.ok(
                 Body.create(PriceTableScheduler.getPricing()));
     }    
     @Override
-    protected ResponseEntity<Body<PricingStatusModel>> getPricingStatus() throws Exception {           
+    protected ResponseEntity<Body<PriceTableStatusModel>> getPricingStatus() throws Exception {           
         return ResponseEntity.ok(
                 Body.create(PriceTableScheduler.getPricingStatus()));
     }

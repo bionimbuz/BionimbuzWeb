@@ -33,8 +33,8 @@ INSERT INTO tb_menu (id, parentmenu_id, menuorder, path, name, iconclass) VALUES
    ,(8,     7,  1, '/adm/coordinator',      'menu.applications.coordinators',   NULL)
    ,(9,     7,  2, '/adm/list/executors',   'menu.applications.executors',      NULL)
    ,(10, NULL,  6, '#',                     'menu.execution',                   'glyphicon glyphicon-screenshot')
-   ,(11,   10, 10, '/adm/list/instances',   'menu.instances',                   NULL)
-   ,(12,   10, 10, '#',                     'menu.workflows',                   NULL)
+   ,(11,   10,  1, '/list/instances',       'menu.instances',                   NULL)
+   ,(12,   10,  2, '#',                     'menu.workflows',                   NULL)
    ,(13, NULL,  7, '/adm/list/settings',    'menu.settings',                   'glyphicon glyphicon-wrench')
 ;   
 

@@ -8,13 +8,13 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import app.client.PricingApi;
+import app.common.utils.DateCompareUtil;
 import app.models.Body;
-import app.models.PricingModel;
-import app.models.PricingStatusModel;
-import app.models.PricingStatusModel.Status;
-import app.models.pricing.InstancePricing;
+import app.models.PriceModel;
+import app.models.PriceTableStatusModel;
+import app.models.PriceTableStatusModel.Status;
+import app.models.pricing.InstanceTypePricing;
 import app.models.pricing.ZonePricing;
-import common.utils.DateUtil;
 import models.InstanceTypeModel;
 import models.InstanceTypeZoneModel;
 import models.PluginModel;
@@ -27,7 +27,7 @@ import play.jobs.OnApplicationStart;
 
 
 @OnApplicationStart
-@Every("1min")
+@Every("30min")
 public class PriceTableUpdaterJob extends Job {
     private static Lock _lock_ = new ReentrantLock();
     
@@ -58,22 +58,23 @@ public class PriceTableUpdaterJob extends Job {
         Date now = new Date(); 
         try {
             PricingApi api = new PricingApi(plugin.getUrl());   
-            Body<PricingModel> price = 
+            Body<app.models.PriceTableModel> price = 
                     api.getPricing();  
-            PricingModel princingRequested = price.getContent();
-            if(!priceTableMustBeSync(recentPriceTable, princingRequested)){
+            PriceModel princingRequested = price.getContent().getPrice();
+            PriceTableStatusModel statusRequested = price.getContent().getStatus();
+            if(!priceTableMustBeSync(recentPriceTable, princingRequested, statusRequested)){
                 updateOrCreatePriceTableStatus(
                         plugin, recentPriceTable, now, 
-                        SyncStatus.OK, "OK", null);
+                        SyncStatus.OK, "OK", null, null);
             }
             else {
-                processPriceTable(now, princingRequested, plugin);
+                processPriceTable(now, princingRequested, statusRequested, plugin);
             }
         } catch (Exception e) {
             e.printStackTrace();
             updateOrCreatePriceTableStatus(
                     plugin, recentPriceTable, now, 
-                    SyncStatus.ERROR, e.getMessage(), null);
+                    SyncStatus.ERROR, e.getMessage(), null, null);
         }
     }
 
@@ -83,7 +84,8 @@ public class PriceTableUpdaterJob extends Job {
             final Date now, 
             final SyncStatus status, 
             final String messageError,
-            final PricingModel princingRequested) {
+            final PriceModel princingRequested,
+            final PriceTableStatusModel princingStatusRequested) {
         
         if(priceTable == null) {
             priceTable = new PriceTableModel();
@@ -95,7 +97,7 @@ public class PriceTableUpdaterJob extends Job {
         
         if(princingRequested != null) {
             priceTable.setPriceTableDate(princingRequested.getLastUpdate());
-            priceTable.setLastSearchDate(princingRequested.getStatus().getLastSearch());
+            priceTable.setLastSearchDate(princingStatusRequested.getLastSearch());
         }
         
         priceTable.save();
@@ -104,7 +106,8 @@ public class PriceTableUpdaterJob extends Job {
     
     private static void processPriceTable(
             final Date now,
-            final PricingModel princingRequested,
+            final PriceModel princingRequested,
+            final PriceTableStatusModel princingStatusRequested,
             final PluginModel plugin) {
         
         // Clean current price table
@@ -114,18 +117,18 @@ public class PriceTableUpdaterJob extends Job {
         }
 
         HashMap<String, ZoneModel> listZones = new HashMap<>();  
-        PricingStatusModel status = princingRequested.getStatus();
         priceTable = 
                 updateOrCreatePriceTableStatus(
                     plugin, null, now, 
-                    PriceTableModel.getStatus(status), 
-                    status.getErrorMessage(), 
-                    princingRequested);
+                    PriceTableModel.getStatus(princingStatusRequested), 
+                    princingStatusRequested.getErrorMessage(), 
+                    princingRequested,
+                    princingStatusRequested);
 
-        for(Map.Entry<String, InstancePricing> entryInstance : 
+        for(Map.Entry<String, InstanceTypePricing> entryInstance : 
                 princingRequested.getListInstancePricing().entrySet()) {
             
-            InstancePricing instancePrice = entryInstance.getValue();
+            InstanceTypePricing instancePrice = entryInstance.getValue();
             
             InstanceTypeModel instanceType = new InstanceTypeModel();
             instanceType.setMemory(instancePrice.getMemory());
@@ -159,15 +162,16 @@ public class PriceTableUpdaterJob extends Job {
     
     private static boolean priceTableMustBeSync(
             final PriceTableModel recentPriceTable,
-            final PricingModel princingRequested) {
+            final PriceModel princingRequested,
+            final PriceTableStatusModel princingStatusRequested) {
         if(recentPriceTable == null) {
             return true;
         }        
-        if(DateUtil.is(princingRequested.getLastUpdate())
+        if(DateCompareUtil.is(princingRequested.getLastUpdate())
                 .greaterThan(recentPriceTable.getPriceTableDate())) {
             return true;
         }
-        if(princingRequested.getStatus().getStatus() != Status.OK) {
+        if(princingStatusRequested.getStatus() != Status.OK) {
             return true;
         }
         return false;        

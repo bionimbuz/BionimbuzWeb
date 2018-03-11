@@ -68,4 +68,9 @@ public class ApplicationModel extends GenericModel {
     public void setListImages(List<ImageModel> listImages) {
         this.listImages = listImages;
     }
+    
+    @Override
+    public String toString() {
+        return this.name;
+    }
 }

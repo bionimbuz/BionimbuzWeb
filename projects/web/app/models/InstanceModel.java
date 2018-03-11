@@ -3,6 +3,7 @@ package models;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -10,6 +11,8 @@ import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import play.data.binding.NoBinding;
+import play.data.validation.Required;
 import play.db.jpa.GenericModel;
 
 @Entity
@@ -24,8 +27,13 @@ public class InstanceModel extends GenericModel {
     @Id
     @GeneratedValue
     private Long id;
+    @Required
+    @ManyToOne(fetch = FetchType.LAZY)
+    private ExecutorModel executor;
+    @NoBinding
     private String cloudInstanceName;
     @Enumerated(EnumType.STRING)
+    @Required
     private CredentialUsagePolicy credentialUsage;
     @ManyToOne
     @JoinColumns({
@@ -38,7 +46,9 @@ public class InstanceModel extends GenericModel {
             name = "id_zone",
             referencedColumnName = "id_zone")
     })
+    @Required
     private InstanceTypeZoneModel instanceTypeZone;
+    private boolean executionAfterCreation;
     
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Constructors
@@ -73,5 +83,17 @@ public class InstanceModel extends GenericModel {
     }
     public void setInstanceTypeZone(InstanceTypeZoneModel instanceTypeZone) {
         this.instanceTypeZone = instanceTypeZone;
+    }
+    public ExecutorModel getExecutor() {
+        return executor;
+    }
+    public void setExecutor(ExecutorModel executor) {
+        this.executor = executor;
+    }
+    public boolean isExecutionAfterCreation() {
+        return executionAfterCreation;
+    }
+    public void setExecutionAfterCreation(boolean executionAfterCreation) {
+        this.executionAfterCreation = executionAfterCreation;
     }
 }
