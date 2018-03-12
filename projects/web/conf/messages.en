@@ -231,6 +231,12 @@ object.lastSearchDate=Last Plugin Search
 object.lastSyncDate=Last Synchronization
 object.syncMessage=Synchronization Message
 
+# InstanceTypeModel
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+InstanceTypeModel=Instance Type
+object.cores=Cores
+object.memory=Memory
+
 # InstanceModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 InstanceModel=Instance
@@ -240,13 +246,10 @@ object.executionAfterCreation=Request Execution After Creation
 object.instanceTypeZone=Instance Types
 SHARED_FIRST=Shared First
 OWNER_FIRST=Owner First
-
-# InstanceTypeModel
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-InstanceTypeModel=Instance Type
-object.cores=Cores
-object.memory=Memory
-object.instanceTypeName=Type
+object.typeName=Type
+object.zoneName=Zone
+object.cloudInstanceName=Instance Name
+object.executor.name=Executor
 
 # InstanceTypeZoneModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

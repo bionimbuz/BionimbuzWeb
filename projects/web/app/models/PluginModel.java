@@ -60,6 +60,8 @@ public class PluginModel extends GenericModel {
     private PriceTableModel priceTable;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "plugin")
     private List<VwCredentialModel> listUsersCredentials;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "plugin")
+    private List<InstanceModel> listInstances;
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Constructors
@@ -155,6 +157,19 @@ public class PluginModel extends GenericModel {
     }
     public void setPriceTable(PriceTableModel priceTable) {
         this.priceTable = priceTable;
+    }
+    public List<VwCredentialModel> getListUsersCredentials() {
+        return listUsersCredentials;
+    }
+    public void setListUsersCredentials(
+            List<VwCredentialModel> listUsersCredentials) {
+        this.listUsersCredentials = listUsersCredentials;
+    }
+    public List<InstanceModel> getListInstances() {
+        return listInstances;
+    }
+    public void setListInstances(List<InstanceModel> listInstances) {
+        this.listInstances = listInstances;
     }
 
     @Override

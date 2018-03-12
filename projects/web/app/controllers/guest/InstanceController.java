@@ -35,7 +35,6 @@ public class InstanceController extends BaseAdminController {
     }
     
     public static void create(
-            PluginModel pluginSelected, 
             ZoneModel zoneSelected, 
             InstanceTypeModel instanceTypeSelected) throws Exception {
         
@@ -44,11 +43,6 @@ public class InstanceController extends BaseAdminController {
         final InstanceModel object = new InstanceModel();
         Binder.bindBean(params.getRootParamNode(), "object", object);
         validation.valid(object);        
-        String pluginId = params.get("pluginSelected.id");
-        if(pluginId == null || pluginId.isEmpty()) {
-            pluginSelected = null;
-            validation.addError("pluginSelected", Messages.get("validation.required"));
-        }        
         String zoneId = params.get("zoneSelected.id");
         if(zoneId == null || zoneId.isEmpty()) {
             zoneSelected = null;
@@ -63,11 +57,22 @@ public class InstanceController extends BaseAdminController {
             renderArgs.put("error", Messages.get("crud.hasErrors"));
             try {
                 render(request.controller.replace(".", "/") + "/blank.html", 
-                        type, object, pluginSelected, zoneSelected, instanceTypeSelected);
+                        type, object, zoneSelected, instanceTypeSelected);
             } catch (final TemplateNotFoundException e) {
-                render("CRUD/blank.html", type, object, pluginSelected, zoneSelected, instanceTypeSelected);
+                render("CRUD/blank.html", type, object, zoneSelected, instanceTypeSelected);
             }
         }
+        InstanceTypeZoneModel instanceTypeZone = 
+                InstanceTypeZoneModel.findByInstanceTypeAndZone(instanceTypeSelected, zoneSelected);
+        notFoundIfNull(instanceTypeZone);
+        
+        object.setPrice(instanceTypeZone.getPrice());
+        object.setPriceTableDate(instanceTypeZone.getPriceTable().getPriceTableDate());
+        object.setZoneName(zoneSelected.getName());
+        object.setTypeName(instanceTypeSelected.getName());
+        object.setCores(instanceTypeSelected.getCores());
+        object.setMemory(instanceTypeSelected.getMemory());
+        
         object._save();
         flash.success(Messages.get("crud.created", type.modelName));
         if (params.get("_save") != null) {

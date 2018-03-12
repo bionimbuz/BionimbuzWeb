@@ -16,6 +16,7 @@
 
     #{crud.form}
     
+        
         #{crud.custom 'credentialUsage'}
         
             #{field 'object.credentialUsage'}
@@ -47,8 +48,10 @@
             </div>                      
                 
             #{/field}
+        #{/crud.custom}
             
-            #{field 'pluginSelected'}    
+        #{crud.custom 'plugin'}
+            #{field 'object.plugin'}    
             <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
                 <label for="${field.id}">&{field.name}</label>
                 <div class="nav-container">
@@ -100,10 +103,7 @@
                 #{/ifError}
             </div>
             #{/field}
-
-        #{/crud.custom}
-        
-        #{crud.custom 'instanceTypeZone'}
+            
             #{field 'instanceTypeSelected'}
             <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
                 <label for="${field.id}">&{field.name}</label>
@@ -175,8 +175,6 @@
 #{/form}
 </div>
 
-
-
 #{set 'moreScripts' }
 <script type="text/javascript">
   
@@ -214,7 +212,7 @@ $(function(){
         
         clearInstanceTypeOptions();
         
-        plugin = $('#pluginSelected').val();
+        plugin = $('#object_plugin').val();
         var search = #{jsRoute @searchZones() /};
         if(plugin == ""){
             hidePleaseWait(); 
@@ -287,7 +285,7 @@ $(function(){
         });
     }
     
-    $('#pluginSelected').change(reloadZones);
+    $('#object_plugin').change(reloadZones);
     
     $('#zoneSelected').change(reloadInstanceTypes);
 });

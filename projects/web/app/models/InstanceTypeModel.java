@@ -32,7 +32,6 @@ public class InstanceTypeModel extends GenericModel {
         private Double price;
         private Short cores;
         private Double memory;
-        
 
         public InstanceType(final InstanceTypeZoneModel instanceTypeZone) {            
             InstanceTypeModel instanceType = instanceTypeZone.getInstanceType();            

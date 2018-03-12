@@ -1,13 +1,13 @@
 package models;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -35,20 +35,27 @@ public class InstanceModel extends GenericModel {
     @Enumerated(EnumType.STRING)
     @Required
     private CredentialUsagePolicy credentialUsage;
-    @ManyToOne
-    @JoinColumns({
-        @JoinColumn(
-            nullable = false,
-            name = "id_instance_type",
-            referencedColumnName = "id_instance_type"),
-        @JoinColumn(
-            nullable = false,
-            name = "id_zone",
-            referencedColumnName = "id_zone")
-    })
+    @ManyToOne(fetch = FetchType.LAZY)
     @Required
-    private InstanceTypeZoneModel instanceTypeZone;
+    private PluginModel plugin;
+    @Required
     private boolean executionAfterCreation;
+
+    // ---- Redundant Data for price table exclusion/update  
+    @NoBinding
+    private Date priceTableDate;
+    @NoBinding
+    private Double price;
+    @NoBinding
+    private String zoneName;
+    @NoBinding
+    private String typeName;
+    @NoBinding
+    private Short cores;
+    @NoBinding
+    private Double memory;
+    // ---------------------------------------
+    
     
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Constructors
@@ -78,12 +85,6 @@ public class InstanceModel extends GenericModel {
     public void setCredentialUsage(CredentialUsagePolicy credentialUsage) {
         this.credentialUsage = credentialUsage;
     }
-    public InstanceTypeZoneModel getInstanceTypeZone() {
-        return instanceTypeZone;
-    }
-    public void setInstanceTypeZone(InstanceTypeZoneModel instanceTypeZone) {
-        this.instanceTypeZone = instanceTypeZone;
-    }
     public ExecutorModel getExecutor() {
         return executor;
     }
@@ -96,4 +97,46 @@ public class InstanceModel extends GenericModel {
     public void setExecutionAfterCreation(boolean executionAfterCreation) {
         this.executionAfterCreation = executionAfterCreation;
     }
+    public PluginModel getPlugin() {
+        return plugin;
+    }
+    public void setPlugin(PluginModel plugin) {
+        this.plugin = plugin;
+    }
+    public Date getPriceTableDate() {
+        return priceTableDate;
+    }
+    public void setPriceTableDate(Date priceTableDate) {
+        this.priceTableDate = priceTableDate;
+    }
+    public Double getPrice() {
+        return price;
+    }
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+    public String getTypeName() {
+        return typeName;
+    }
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
+    }
+    public String getZoneName() {
+        return zoneName;
+    }
+    public void setZoneName(String zoneName) {
+        this.zoneName = zoneName;
+    }
+    public Short getCores() {
+        return cores;
+    }
+    public void setCores(Short cores) {
+        this.cores = cores;
+    }
+    public Double getMemory() {
+        return memory;
+    }
+    public void setMemory(Double memory) {
+        this.memory = memory;
+    }    
 }

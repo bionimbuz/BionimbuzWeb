@@ -7,7 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import models.keys.InstanceTypeZoneKey;
@@ -29,8 +28,6 @@ public class InstanceTypeZoneModel extends GenericModel {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_zone", nullable = false, insertable=false, updatable=false)
     private ZoneModel zone;     
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "instanceTypeZone")
-    private List<InstanceModel> listInstances;
     
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Constructors
@@ -53,6 +50,10 @@ public class InstanceTypeZoneModel extends GenericModel {
                 + " FROM InstanceTypeZoneModel instanceTypeZones"
                 + " JOIN FETCH instanceTypeZones.instanceType instanceType"
                 + " WHERE instanceTypeZones.zone.id = ?1", zone.getId()).fetch();
+    }
+    public static InstanceTypeZoneModel findByInstanceTypeAndZone(
+            final InstanceTypeModel instanceType, final ZoneModel zone) {
+        return findById(new InstanceTypeZoneKey(instanceType, zone));        
     }
     
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -88,10 +89,4 @@ public class InstanceTypeZoneModel extends GenericModel {
     public void setPriceTable(PriceTableModel priceTable) {
         this.priceTable = priceTable;
     }
-    public List<InstanceModel> getListInstances() {
-        return listInstances;
-    }
-    public void setListInstances(List<InstanceModel> listInstances) {
-        this.listInstances = listInstances;
-    }    
 }
