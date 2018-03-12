@@ -8,6 +8,7 @@ import controllers.CRUD.For;
 import controllers.Check;
 import controllers.adm.BaseAdminController;
 import models.InstanceModel;
+import models.InstanceTypeModel;
 import models.InstanceTypeModel.InstanceType;
 import models.InstanceTypeZoneModel;
 import models.PluginModel;
@@ -33,30 +34,38 @@ public class InstanceController extends BaseAdminController {
         }
     }
     
-    public static void create(PluginModel pluginSelected, ZoneModel zoneSelected) throws Exception {
-        String pluginId = params.get("pluginSelected.id");
-        if(pluginId == null || pluginId.isEmpty()) {
-            pluginSelected = null;
-        }        
-        String zoneId = params.get("zoneSelected.id");
-        if(zoneId == null || zoneId.isEmpty()) {
-            zoneSelected = null;
-        }
+    public static void create(
+            PluginModel pluginSelected, 
+            ZoneModel zoneSelected, 
+            InstanceTypeModel instanceTypeSelected) throws Exception {
         
         final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);
         final InstanceModel object = new InstanceModel();
         Binder.bindBean(params.getRootParamNode(), "object", object);
-        validation.valid(object);
-        validation.required(pluginSelected);
-        validation.required(zoneSelected);
+        validation.valid(object);        
+        String pluginId = params.get("pluginSelected.id");
+        if(pluginId == null || pluginId.isEmpty()) {
+            pluginSelected = null;
+            validation.addError("pluginSelected", Messages.get("validation.required"));
+        }        
+        String zoneId = params.get("zoneSelected.id");
+        if(zoneId == null || zoneId.isEmpty()) {
+            zoneSelected = null;
+            validation.addError("zoneSelected", Messages.get("validation.required"));
+        }
+        String instanceTypeId = params.get("instanceTypeSelected.id");
+        if(instanceTypeId == null || instanceTypeId.isEmpty()) {
+            instanceTypeSelected = null;
+            validation.addError("instanceTypeSelected", Messages.get("validation.required"));
+        }        
         if (Validation.hasErrors()) {
             renderArgs.put("error", Messages.get("crud.hasErrors"));
             try {
                 render(request.controller.replace(".", "/") + "/blank.html", 
-                        type, object, pluginSelected, zoneSelected);
+                        type, object, pluginSelected, zoneSelected, instanceTypeSelected);
             } catch (final TemplateNotFoundException e) {
-                render("CRUD/blank.html", type, object, pluginSelected, zoneSelected);
+                render("CRUD/blank.html", type, object, pluginSelected, zoneSelected, instanceTypeSelected);
             }
         }
         object._save();
@@ -70,16 +79,22 @@ public class InstanceController extends BaseAdminController {
         redirect(request.controller + ".show", object._key());
     }
     
+    public static List<Zone> getZones(final Long pluginId) {
+        PluginModel plugin = PluginModel.findById(pluginId);
+        if(plugin == null)
+            return null;
+        List<Zone> listZones = new ArrayList<>();
+        for(ZoneModel zone : ZoneModel.searchZonesForPlugin(plugin)) {
+            listZones.add(new Zone(zone));
+        }        
+        return listZones;
+    }
+    
     public static void searchZones(final Long pluginId) {
         try {
-            PluginModel plugin = PluginModel.findById(pluginId);
-            if(plugin == null)
+            List<Zone> listZones = getZones(pluginId);
+            if(listZones == null)
                 notFound(Messages.get(I18N.plugin_not_found));
-
-            List<Zone> listZones = new ArrayList<>();
-            for(ZoneModel zone : ZoneModel.searchZonesForPlugin(plugin)) {
-                listZones.add(new Zone(zone));
-            }
             renderJSON(listZones);            
         } catch (Exception e) {
             e.printStackTrace();
@@ -87,19 +102,24 @@ public class InstanceController extends BaseAdminController {
         }
     } 
     
+    public static List<InstanceType> getInstanceTypes(final Long zoneId) {
+        ZoneModel zone = ZoneModel.findById(zoneId);
+        if(zone == null)
+            return null;
+        List<InstanceType> listInstanceTypeModel = new ArrayList<>();
+        for(InstanceTypeZoneModel instanceTypeZone : 
+                    InstanceTypeZoneModel.searchForZone(zone)) {
+            listInstanceTypeModel.add(
+                    new InstanceType(instanceTypeZone));
+        }
+        return listInstanceTypeModel;
+    }
+    
     public static void searchInstanceTypes(final Long zoneId) {
         try {
-            ZoneModel zone = ZoneModel.findById(zoneId);
-            if(zone == null)
-                notFound(Messages.get(I18N.plugin_not_found));
-
-            List<InstanceType> listInstanceTypeModel = new ArrayList<>();
-            for(InstanceTypeZoneModel instanceTypeZone : 
-                        InstanceTypeZoneModel.searchForZone(zone)) {
-                listInstanceTypeModel.add(
-                        new InstanceType(instanceTypeZone));
-            }
-            
+            List<InstanceType> listInstanceTypeModel = getInstanceTypes(zoneId);
+            if(listInstanceTypeModel == null)
+                notFound(Messages.get(I18N.plugin_not_found));            
             renderJSON(listInstanceTypeModel);            
         } catch (Exception e) {
             e.printStackTrace();

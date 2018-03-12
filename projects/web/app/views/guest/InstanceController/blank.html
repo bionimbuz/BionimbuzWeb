@@ -80,7 +80,19 @@
                 <label for="${field.id}">&{field.name}</label>
                 <div class="nav-container">
                     <select class="form-control nav" id="${field.id}" name="${field.name}.id">
-                        <option value="">&{'crud.selectValue'}</option>                        
+                        <option value="">&{'crud.selectValue'}</option>                
+                        %{                        
+                        if(pluginSelected != null) {
+                            zones = controllers.guest.InstanceController.getZones(pluginSelected.id);
+                            zones.each(){                                
+                                selected = false;
+                                if(field.value != null && field.value.id == it.id){                                    
+                                    selected = true;
+                                }                                
+                        }%                        
+                        <option value="${it.id}" ${selected ? 'selected="true"'.raw() : ''}>${it.name}</option>                
+                        %{ } } }%
+                                
                     </select>
                 </div>
                 #{ifError field.name}
@@ -93,11 +105,10 @@
         
         #{crud.custom 'instanceTypeZone'}
             #{field 'instanceTypeSelected'}
-            <div class="row">
+            <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
                 <label for="${field.id}">&{field.name}</label>
-                <table id="tableInstanceTypes" class="table stripe table-bordered">
-                    <thead>
-                    
+                <table id="tableInstanceTypes" class="table stripe table-bordered ${field.errorClass ? 'has-error' : ''}">
+                    <thead>                    
                         <tr>
                             <th style="width: 1px;">
                             </th>
@@ -114,29 +125,43 @@
                                 &{'object.price'}
                             </th>
                         </tr>
-                    </thead>
-                    *{
-                    <tbody>
-                        <tr>
-                            <td>
-                                <input name="${field.name}" type="radio" class="icheck"/>         
-                            </td>
-                            <td>
-                                aaa test
-                            </td>
-                            <td>
-                                999
-                            </td>
-                        </tr>
-                    </tbody>
-                    }*
+                    </thead>                    
+                %{                        
+                        if(zoneSelected != null) {
+                }%
+                        <tbody>                        
+                %{
+                            instanceTypes = controllers.guest.InstanceController.getInstanceTypes(zoneSelected.id);
+                            instanceTypes.each() {     
+                                selected = false;
+                                if(field.value != null && field.value.id == it.id){                                    
+                                    selected = true;
+                                }                                
+                }%                        
+                            <tr>        
+                                <td>
+                                    <input name='${field.name}.id' type='radio' 
+                                            class='icheck' value='${it.id}' ${selected ? 'checked'.raw() : ''} />
+                                </td>
+                                <td>${it.name}</td>
+                                <td>${it.cores}</td>
+                                <td>${it.memory}</td>
+                                <td>${it.price}</td>                                
+                            </tr>
+                %{                         
+                            } 
+                }%                
+                        </tbody>    
+                %{
+                        } 
+                }%                    
                 </table>
+            #{ifError field.name}
+                <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+            #{/ifError}
             </div>
             #{/field}
-        #{/crud.custom}
-        
-        
-        
+        #{/crud.custom}        
         
     #{/crud.form}
     
@@ -163,24 +188,31 @@ $(function(){
         "searching":   false,
         "info":   false,
     });
-    
-    function addItem(field, content, value) {
+        
+    function addSelectItem(field, content, value) {
         if(value == null)
             value = "";
         field.append(
                 '<option value="'+value+'">'+content+'</option>');
     }
     
-    function clearOptions() {
-        $("#zoneSelected").empty();
-        addItem($("#zoneSelected"), "&{'crud.selectValue'}");
+    function clearInstanceTypeOptions() {
+        var table = $('#tableInstanceTypes').DataTable();
+        table.clear().draw();
     }
     
-    function reloadZones() {
+    function clearZoneOptions() {
+        $("#zoneSelected").empty();
+        addSelectItem($("#zoneSelected"), "&{'crud.selectValue'}");
+    }
+    
+    function reloadZones() {      
         
-        clearOptions();
-
         showPleaseWait();
+        
+        clearZoneOptions();
+        
+        clearInstanceTypeOptions();
         
         plugin = $('#pluginSelected').val();
         var search = #{jsRoute @searchZones() /};
@@ -196,7 +228,7 @@ $(function(){
            })
         .done(function(data) {
             for(var i in data) {                
-                addItem(
+                addSelectItem(
                     $("#zoneSelected"),
                     data[i]['name'],
                     data[i]['id']);
@@ -214,9 +246,8 @@ $(function(){
         var table = $('#tableInstanceTypes').DataTable();
 
         showPleaseWait();
-        table
-            .clear()
-            .draw();
+        
+        clearInstanceTypeOptions();
         
         zone = $('#zoneSelected').val();
         var search = #{jsRoute @searchInstanceTypes() /};
@@ -235,11 +266,11 @@ $(function(){
             for(var i in data) {   
                 row = data[i];
                 
-                inputColumn = "<input name='instanceTypeSelected' "+
-                              "type='radio' class='icheck' value='"+row["instanceTypeId"]+"'/>"
+                inputColumn = "<input name='instanceTypeSelected.id' "+
+                              "type='radio' class='icheck' value='"+row["id"]+"'/>"
                 table.row.add( [ 
                     inputColumn,
-                    row["instanceTypeName"],
+                    row["name"],
                     row["cores"],
                     row["memory"],
                     row["price"],
@@ -255,11 +286,6 @@ $(function(){
             hidePleaseWait(); 
         });
     }
-    
-    #{if pluginSelected != null}
-        reloadZones();
-        reloadInstanceTypes();
-    #{/if}
     
     $('#pluginSelected').change(reloadZones);
     

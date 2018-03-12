@@ -27,8 +27,8 @@ public class InstanceTypeModel extends GenericModel {
 
     public static class InstanceType {
         
-        private Long instanceTypeId;
-        private String instanceTypeName;
+        private Long id;
+        private String name;
         private Double price;
         private Short cores;
         private Double memory;
@@ -36,24 +36,24 @@ public class InstanceTypeModel extends GenericModel {
 
         public InstanceType(final InstanceTypeZoneModel instanceTypeZone) {            
             InstanceTypeModel instanceType = instanceTypeZone.getInstanceType();            
-            this.instanceTypeId = instanceType.getId();
-            this.instanceTypeName = instanceType.getName();
+            this.id = instanceType.getId();
+            this.name = instanceType.getName();
             this.price = instanceTypeZone.getPrice();
             this.cores = instanceType.getCores();
             this.memory = instanceType.getMemory();
         }
-        
-        public Long getInstanceTypeId() {
-            return instanceTypeId;
+
+        public Long getId() {
+            return id;
         }
-        public void setInstanceTypeId(Long instanceTypeId) {
-            this.instanceTypeId = instanceTypeId;
+        public void setId(Long id) {
+            this.id = id;
         }
-        public String getInstanceTypeName() {
-            return instanceTypeName;
+        public String getName() {
+            return name;
         }
-        public void setInstanceTypeName(String instanceTypeName) {
-            this.instanceTypeName = instanceTypeName;
+        public void setName(String name) {
+            this.name = name;
         }
         public Double getPrice() {
             return price;

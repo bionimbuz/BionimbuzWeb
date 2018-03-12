@@ -272,3 +272,4 @@ price.table.force.success=A request was sent to server, please update price tabl
 price.table.force.error=The request cannot be processed, server may be synchronizing now 
 pluginSelected=Available Plugins
 zoneSelected=Available Zones
+instanceTypeSelected=Available Instance Types

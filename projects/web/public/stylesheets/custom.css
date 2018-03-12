@@ -140,6 +140,14 @@
     border: 1px solid #a94442;
 }
 
+table.has-error {
+    border: #a94442 solid 1px !important;
+}
+
+table.has-error th {
+    border: #a94442 solid 1px !important;
+}
+
 .check-all {
     float: right;
     cursor: pointer;
@@ -193,10 +201,15 @@ th {
 .dataTables_wrapper {
     padding-right: 0;
     padding-left: 0;
+    padding-bottom: 0;
 }
 
 .dataTables_wrapper div:nth-child(2) div:nth-child(1){
     padding-right: 0;
     padding-left: 0;
+    padding-bottom: 0;
+}
 
+.table {
+    margin-bottom: 0px;
 }
