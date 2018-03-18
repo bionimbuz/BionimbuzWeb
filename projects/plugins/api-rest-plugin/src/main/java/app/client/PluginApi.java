@@ -8,8 +8,8 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 
 class PluginApi <T> {
     
-    private static final int CONNECT_TIMEOUT_SECS = 10;
-    private static final int READ_TIMEOUT_SECS = 10;
+    private static final int CONNECT_TIMEOUT_SECS = 30;
+    private static final int READ_TIMEOUT_SECS = 30;
     
     private OkHttpClient client;    
     private Retrofit retrofit;  

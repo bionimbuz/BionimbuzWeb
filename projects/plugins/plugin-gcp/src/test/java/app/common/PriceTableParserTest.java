@@ -8,7 +8,7 @@ import java.text.ParseException;
 
 import org.junit.Test;
 
-import app.models.PriceModel;
+import app.models.PluginPriceModel;
 import app.pricing.PriceTableParser;
 import app.pricing.exceptions.PriceTableDateInvalidException;
 import app.pricing.exceptions.PriceTableVersionException;
@@ -23,7 +23,7 @@ public class PriceTableParserTest {
                         CmdLineArgs.getPriceTableFile(),
                         SystemConstants.PRICE_TABLE_VERSION);
         assertNotNull(testParser);
-        PriceModel priceModel = null;
+        PluginPriceModel priceModel = null;
         try {
             priceModel = testParser.parse();
             assertNotNull(priceModel);

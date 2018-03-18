@@ -32,6 +32,8 @@ public class InstanceModel extends GenericModel {
     private ExecutorModel executor;
     @NoBinding
     private String cloudInstanceName;
+    @NoBinding
+    private String cloudInstanceIp;
     @Enumerated(EnumType.STRING)
     @Required
     private CredentialUsagePolicy credentialUsage;
@@ -46,6 +48,8 @@ public class InstanceModel extends GenericModel {
     private Date priceTableDate;
     @NoBinding
     private Double price;
+    @NoBinding
+    private String regionName;
     @NoBinding
     private String zoneName;
     @NoBinding
@@ -72,6 +76,12 @@ public class InstanceModel extends GenericModel {
     }
     public void setId(Long id) {
         this.id = id;
+    }
+    public String getCloudInstanceIp() {
+        return cloudInstanceIp;
+    }
+    public void setCloudInstanceIp(String cloudInstanceIp) {
+        this.cloudInstanceIp = cloudInstanceIp;
     }
     public String getCloudInstanceName() {
         return cloudInstanceName;
@@ -120,6 +130,12 @@ public class InstanceModel extends GenericModel {
     }
     public void setTypeName(String typeName) {
         this.typeName = typeName;
+    }
+    public String getRegionName() {
+        return regionName;
+    }
+    public void setRegionName(String regionName) {
+        this.regionName = regionName;
     }
     public String getZoneName() {
         return zoneName;

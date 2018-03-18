@@ -25,10 +25,20 @@ public class Routes {
     public static final String IMAGES = "/images";
     public static final String IMAGES_NAME = Routes.IMAGES+"/{name}";
     
-
     /*
      * AbstractPricingController
      */
     public static final String PRICING = "/pricing";
     public static final String PRICING_STATUS = "/pricing/status";
+
+    /*
+     * AbstractZoneController
+     */    
+    public static final String ZONES = "/zones";
+    
+    /*
+     * AbstractRegionController
+     */    
+    public static final String REGIONS = "/regions";
+    public static final String REGIONS_ZONES = "/regions/{name}/zones";
 }

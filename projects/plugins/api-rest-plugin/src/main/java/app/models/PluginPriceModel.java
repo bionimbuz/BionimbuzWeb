@@ -5,19 +5,19 @@ import java.util.HashMap;
 
 import app.models.pricing.InstanceTypePricing;
 
-public class PriceModel extends Body {
+public class PluginPriceModel extends Body {
 
     private Date lastUpdate;
     private HashMap<String, InstanceTypePricing> listInstancePricing;
     
-    public PriceModel(
+    public PluginPriceModel(
             final Date lastUpdate,
             final HashMap<String, InstanceTypePricing> listInstancePricing) {
         super();
         this.lastUpdate = lastUpdate;
         this.listInstancePricing = listInstancePricing;
     }
-    public PriceModel() {
+    public PluginPriceModel() {
         this(null, null);
     }
 

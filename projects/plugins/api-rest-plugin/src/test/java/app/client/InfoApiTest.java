@@ -12,7 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import app.controllers.mocks.InfoControllerMock;
 import app.models.Body;
-import app.models.InfoModel;
+import app.models.PluginInfoModel;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -32,7 +32,7 @@ public class InfoApiTest {
     public void getTest() throws Exception {
         
         InfoApi infoApi = new InfoApi(getUrl());  
-        Body<InfoModel> model = infoApi.getInfo();       
+        Body<PluginInfoModel> model = infoApi.getInfo();       
         
         String content = model.getMessage();        
         assertThat(content).isEqualTo(Body.OK);

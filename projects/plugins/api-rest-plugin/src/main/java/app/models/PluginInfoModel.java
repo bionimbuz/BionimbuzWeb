@@ -1,6 +1,6 @@
 package app.models;
 
-public class InfoModel extends Body {
+public class PluginInfoModel extends Body {
     
     public static enum AuthenticationType {
         AUTH_BEARER_TOKEN
@@ -15,11 +15,11 @@ public class InfoModel extends Body {
     private String readScope;
         
     @SuppressWarnings("unused") //Reflection purposes
-    private InfoModel() {    
+    private PluginInfoModel() {    
         super();	
     }
     
-    public InfoModel(final String apiVersion) {     
+    public PluginInfoModel(final String apiVersion) {     
         super();   
         this.apiVersion = apiVersion;
     }

@@ -5,7 +5,7 @@ import java.util.List;
 
 import app.common.GlobalConstants;
 
-public class FirewallModel extends Body {
+public class PluginFirewallModel extends Body {
     
     public static enum PROTOCOL {
         tcp,
@@ -18,15 +18,15 @@ public class FirewallModel extends Body {
     private List<String> lstRanges;   
     private Date creationDate;     
 
-    public FirewallModel() {
+    public PluginFirewallModel() {
         super();
     }
     
-    public FirewallModel(PROTOCOL protocol, Integer port, List<String> lstRanges) {
+    public PluginFirewallModel(PROTOCOL protocol, Integer port, List<String> lstRanges) {
         this(generateName(protocol, port), protocol, port, lstRanges, null);
     }
     
-    public FirewallModel(String name, PROTOCOL protocol, Integer port, List<String> lstRanges, Date creationDate) {
+    public PluginFirewallModel(String name, PROTOCOL protocol, Integer port, List<String> lstRanges, Date creationDate) {
         super();
         this.name = name;
         this.port = port;

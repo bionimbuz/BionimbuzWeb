@@ -10,7 +10,7 @@ import app.common.GlobalConstants;
 import app.common.HttpHeadersCustom;
 import app.common.Routes;
 import app.models.Body;
-import app.models.FirewallModel;
+import app.models.PluginFirewallModel;
 import retrofit2.Call;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
@@ -24,10 +24,10 @@ public class FirewallApi extends PluginApi<HttpMethods> {
         super(url, HttpMethods.class);
     }
     
-    public Body<FirewallModel> replaceRule(
+    public Body<PluginFirewallModel> replaceRule(
             final String token, 
             final String identity, 
-            FirewallModel model) throws IOException
+            PluginFirewallModel model) throws IOException
     {
         return getHttpMethods()
                 .replaceRule(
@@ -36,7 +36,7 @@ public class FirewallApi extends PluginApi<HttpMethods> {
                 .execute().body();        
     }
     
-    public Body<FirewallModel> getRule(
+    public Body<PluginFirewallModel> getRule(
             final String token, 
             final String identity, 
             final String name) throws IOException
@@ -60,7 +60,7 @@ public class FirewallApi extends PluginApi<HttpMethods> {
                 .execute().body();
     }
     
-    public Body<List<FirewallModel>> listRules (
+    public Body<List<PluginFirewallModel>> listRules (
             final String token, 
             final String identity) throws IOException {
         return getHttpMethods()
@@ -72,13 +72,13 @@ public class FirewallApi extends PluginApi<HttpMethods> {
     
     protected interface HttpMethods {
         @POST(Routes.FIREWALLS)
-        public Call< Body<FirewallModel> > replaceRule(
+        public Call< Body<PluginFirewallModel> > replaceRule(
                 @Header(HttpHeadersCustom.API_VERSION) final String version,
                 @Header(HttpHeaders.AUTHORIZATION) final String token, 
                 @Header(HttpHeadersCustom.AUTHORIZATION_ID) final String identity, 
-                @retrofit2.http.Body FirewallModel model);
+                @retrofit2.http.Body PluginFirewallModel model);
         @GET(Routes.FIREWALLS_NAME) 
-        public Call< Body<FirewallModel> > getRule(
+        public Call< Body<PluginFirewallModel> > getRule(
                 @Header(HttpHeadersCustom.API_VERSION) final String version,
                 @Header(HttpHeaders.AUTHORIZATION) final String token, 
                 @Header(HttpHeadersCustom.AUTHORIZATION_ID) final String identity, 
@@ -90,7 +90,7 @@ public class FirewallApi extends PluginApi<HttpMethods> {
                 @Header(HttpHeadersCustom.AUTHORIZATION_ID) final String identity, 
                 @Path("name") final String name);
         @GET(Routes.FIREWALLS) 
-        public Call< Body<List<FirewallModel>> > listRules(
+        public Call< Body<List<PluginFirewallModel>> > listRules(
                 @Header(HttpHeadersCustom.API_VERSION) final String version,
                 @Header(HttpHeaders.AUTHORIZATION) final String token, 
                 @Header(HttpHeadersCustom.AUTHORIZATION_ID) final String identity);

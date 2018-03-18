@@ -15,8 +15,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import app.controllers.mocks.FirewallControllerMock;
 import app.models.Body;
-import app.models.FirewallModel;
-import app.models.FirewallModel.PROTOCOL;
+import app.models.PluginFirewallModel;
+import app.models.PluginFirewallModel.PROTOCOL;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -35,11 +35,11 @@ public class FirewallApiTest {
     @Test
     public void replaceTest() throws Exception {
         FirewallApi firewallApi = new FirewallApi(getUrl());
-        FirewallModel model = createModel();  
+        PluginFirewallModel model = createModel();  
         String nameCreated = model.getName();
         assertThat(nameCreated).isNotEmpty();
         
-        Body<FirewallModel> body = 
+        Body<PluginFirewallModel> body = 
                 firewallApi.replaceRule(
                         "fake-token", "fake-identity", model);
         assertThat(body.getContent().getName()).isEqualTo(nameCreated);
@@ -48,11 +48,11 @@ public class FirewallApiTest {
     @Test
     public void getTest() throws Exception {
         FirewallApi firewallApi = new FirewallApi(getUrl());
-        FirewallModel model = createModel();  
+        PluginFirewallModel model = createModel();  
         String nameCreated = model.getName();
         assertThat(nameCreated).isNotEmpty();
         
-        Body<FirewallModel> body = 
+        Body<PluginFirewallModel> body = 
                 firewallApi.getRule(
                         "fake-token", "fake-identity", nameCreated);
         assertThat(body.getContent().getName()).isEqualTo(nameCreated);
@@ -61,7 +61,7 @@ public class FirewallApiTest {
     @Test
     public void deleteTest() throws Exception {
         FirewallApi firewallApi = new FirewallApi(getUrl());
-        FirewallModel model = createModel();  
+        PluginFirewallModel model = createModel();  
         String nameCreated = model.getName();
         assertThat(nameCreated).isNotEmpty();
         
@@ -74,7 +74,7 @@ public class FirewallApiTest {
     @Test
     public void listTest() throws Exception {
         FirewallApi firewallApi = new FirewallApi(getUrl());
-        Body<List<FirewallModel>> body = 
+        Body<List<PluginFirewallModel>> body = 
                 firewallApi.listRules(
                         "fake-token", "fake-identity");
         assertThat(body.getMessage()).isEqualTo(Body.OK);
@@ -86,8 +86,8 @@ public class FirewallApiTest {
         return "http://localhost:"+PORT;
     }
     
-    private static FirewallModel createModel() {
-        return new FirewallModel(
+    private static PluginFirewallModel createModel() {
+        return new PluginFirewallModel(
                 PROTOCOL.tcp,
                 8080,
                 new ArrayList<String>());   

@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import app.controllers.AbstractFirewallController;
 import app.models.Body;
-import app.models.FirewallModel;
-import app.models.FirewallModel.PROTOCOL;
+import app.models.PluginFirewallModel;
+import app.models.PluginFirewallModel.PROTOCOL;
 
 @RestController
 public class FirewallControllerMock extends AbstractFirewallController {
@@ -21,13 +21,13 @@ public class FirewallControllerMock extends AbstractFirewallController {
     public static final String RETURN_GET = "/";
     
     @Override
-    protected ResponseEntity<Body<FirewallModel>> replaceRule(String token, String identity, FirewallModel model) throws Exception {
+    protected ResponseEntity<Body<PluginFirewallModel>> replaceRule(String token, String identity, PluginFirewallModel model) throws Exception {
         return ResponseEntity.ok().body(
                 Body.create(model));
     }
     @Override
-    protected ResponseEntity<Body<FirewallModel>> getRule(String token, String identity, String name) throws Exception {
-        FirewallModel model = new FirewallModel();
+    protected ResponseEntity<Body<PluginFirewallModel>> getRule(String token, String identity, String name) throws Exception {
+        PluginFirewallModel model = new PluginFirewallModel();
         model.setName(name);
         return ResponseEntity.ok().body(
                 Body.create(model));
@@ -38,20 +38,20 @@ public class FirewallControllerMock extends AbstractFirewallController {
                 new Body<Void>(Body.OK)); 
     }
     @Override
-    protected ResponseEntity<Body<List<FirewallModel>>> listRules(String token, String identity) throws Exception {        
-        List<FirewallModel> listRes = new ArrayList<>();
-        listRes.add(new FirewallModel());
-        listRes.add(new FirewallModel());        
+    protected ResponseEntity<Body<List<PluginFirewallModel>>> listRules(String token, String identity) throws Exception {        
+        List<PluginFirewallModel> listRes = new ArrayList<>();
+        listRes.add(new PluginFirewallModel());
+        listRes.add(new PluginFirewallModel());        
         return ResponseEntity.ok().body(
                 Body.create(Body.OK, listRes));
     }        
     
     @RequestMapping(path = RETURN_GET+"/{status}", method = RequestMethod.GET)
-    private ResponseEntity< Body<FirewallModel> > returnError(
+    private ResponseEntity< Body<PluginFirewallModel> > returnError(
             @PathVariable(value="status") final int statusInt) {   
         
         HttpStatus status = HttpStatus.valueOf(statusInt);        
-        FirewallModel model = new FirewallModel(
+        PluginFirewallModel model = new PluginFirewallModel(
                 PROTOCOL.tcp, 80, new ArrayList<String>());
         
         if(status == HttpStatus.OK) {            
@@ -61,6 +61,6 @@ public class FirewallControllerMock extends AbstractFirewallController {
         }
         return ResponseEntity
                 .status(status)
-                .body(new Body<FirewallModel>("Testing errors!"));        
+                .body(new Body<PluginFirewallModel>("Testing errors!"));        
     }    
 }

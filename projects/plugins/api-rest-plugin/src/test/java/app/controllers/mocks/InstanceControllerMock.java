@@ -8,22 +8,22 @@ import org.springframework.web.bind.annotation.RestController;
 
 import app.controllers.AbstractInstanceController;
 import app.models.Body;
-import app.models.InstanceModel;
+import app.models.PluginInstanceModel;
 
 @RestController
 public class InstanceControllerMock extends AbstractInstanceController {
 
     @Override
-    protected ResponseEntity<Body<List<InstanceModel>>> createInstance(
-            String token, String identity, List<InstanceModel> listModel)
+    protected ResponseEntity<Body<List<PluginInstanceModel>>> createInstance(
+            String token, String identity, List<PluginInstanceModel> listModel)
             throws Exception {
         return ResponseEntity.ok().body(
                 Body.create(Body.OK, listModel));
     }
     @Override
-    protected ResponseEntity<Body<InstanceModel>> getInstance(String token,
+    protected ResponseEntity<Body<PluginInstanceModel>> getInstance(String token,
             String identity, String zone, String name) throws Exception {        
-        InstanceModel model = new InstanceModel();
+        PluginInstanceModel model = new PluginInstanceModel();
         model.setZone(zone);
         model.setName(name);
         return ResponseEntity.ok().body(
@@ -36,11 +36,11 @@ public class InstanceControllerMock extends AbstractInstanceController {
                 new Body<Void>(Body.OK)); 
     }
     @Override
-    protected ResponseEntity<Body<List<InstanceModel>>> listInstances(
+    protected ResponseEntity<Body<List<PluginInstanceModel>>> listInstances(
             String token, String identity) throws Exception {   
-        List<InstanceModel> listRes = new ArrayList<>();
-        listRes.add(new InstanceModel());
-        listRes.add(new InstanceModel());        
+        List<PluginInstanceModel> listRes = new ArrayList<>();
+        listRes.add(new PluginInstanceModel());
+        listRes.add(new PluginInstanceModel());        
         return ResponseEntity.ok().body(
                 Body.create(Body.OK, listRes));
     }

@@ -15,7 +15,6 @@
 #{form action:@create(), enctype:'multipart/form-data'}
 
     #{crud.form}
-    
         
         #{crud.custom 'credentialUsage'}
         
@@ -78,22 +77,57 @@
             </div>
             #{/field}
             
-            #{field 'zoneSelected'}    
+            #{field 'regionSelected'}    
             <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
                 <label for="${field.id}">&{field.name}</label>
                 <div class="nav-container">
                     <select class="form-control nav" id="${field.id}" name="${field.name}.id">
                         <option value="">&{'crud.selectValue'}</option>                
                         %{                        
-                        if(pluginSelected != null) {
-                            zones = controllers.guest.InstanceController.getZones(pluginSelected.id);
-                            zones.each(){                                
+                        if(object.plugin != null) {
+                            regions = controllers.guest.InstanceController.getRegions(object.plugin.id);
+                            regions.each(){                                
                                 selected = false;
                                 if(field.value != null && field.value.id == it.id){                                    
                                     selected = true;
                                 }                                
                         }%                        
                         <option value="${it.id}" ${selected ? 'selected="true"'.raw() : ''}>${it.name}</option>                
+                        %{ } } }%
+                                
+                    </select>
+                </div>
+                #{ifError field.name}
+                    <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                #{/ifError}
+            </div>
+            #{/field}
+            
+        %{ 
+            instanceTypesZones = null;
+            if(object.plugin != null && regionSelected != null) {
+                instanceTypesZones = 
+                    controllers.guest.InstanceController.getInstanceTypesZones(
+                            object.plugin.id, regionSelected.id);
+            } 
+        }%
+            
+            #{field 'zoneSelected'}    
+            <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                <label for="${field.id}">&{field.name}</label>
+                <div class="nav-container">
+                    <select class="form-control nav" id="${field.id}" name="${field.name}">
+                        <option value="">&{'crud.selectValue'}</option>                
+                        %{                        
+                        if(instanceTypesZones != null) {
+                            zones = instanceTypesZones.listZones;
+                            zones.each(){                                
+                                selected = false;
+                                if(field.value != null && field.value == it){                                    
+                                    selected = true;
+                                }                                
+                        }%                        
+                        <option value="${it}" ${selected ? 'selected="true"'.raw() : ''}>${it}</option>                
                         %{ } } }%
                                 
                     </select>
@@ -127,11 +161,11 @@
                         </tr>
                     </thead>                    
                 %{                        
-                        if(zoneSelected != null) {
+                        if(instanceTypesZones != null) {
                 }%
                         <tbody>                        
                 %{
-                            instanceTypes = controllers.guest.InstanceController.getInstanceTypes(zoneSelected.id);
+                            instanceTypes = instanceTypesZones.listInstanceTypes;
                             instanceTypes.each() {     
                                 selected = false;
                                 if(field.value != null && field.value.id == it.id){                                    
@@ -199,21 +233,28 @@ $(function(){
         table.clear().draw();
     }
     
+    function clearRegionOptions() {
+        $("#regionSelected").empty();
+        addSelectItem($("#regionSelected"), "&{'crud.selectValue'}");
+    }
+    
     function clearZoneOptions() {
         $("#zoneSelected").empty();
         addSelectItem($("#zoneSelected"), "&{'crud.selectValue'}");
     }
     
-    function reloadZones() {      
+    function reloadRegions() {      
         
         showPleaseWait();
         
-        clearZoneOptions();
+        clearRegionOptions();
         
         clearInstanceTypeOptions();
         
+        clearZoneOptions();
+        
         plugin = $('#object_plugin').val();
-        var search = #{jsRoute @searchZones() /};
+        var search = #{jsRoute @searchRegions() /};
         if(plugin == ""){
             hidePleaseWait(); 
             return;
@@ -227,7 +268,7 @@ $(function(){
         .done(function(data) {
             for(var i in data) {                
                 addSelectItem(
-                    $("#zoneSelected"),
+                    $("#regionSelected"),
                     data[i]['name'],
                     data[i]['id']);
             }
@@ -247,22 +288,36 @@ $(function(){
         
         clearInstanceTypeOptions();
         
-        zone = $('#zoneSelected').val();
-        var search = #{jsRoute @searchInstanceTypes() /};
-        if(zone == ""){
+        clearZoneOptions();
+        
+        region = $('#regionSelected').val();
+        plugin = $('#object_plugin').val();
+        if(region == "" || plugin == ""){
             hidePleaseWait(); 
             return;
         }
         
+        var search = #{jsRoute @searchInstanceTypesZones() /};        
         $.ajax({
             url: search.url(),
             type: search.method,
-            data:{ zoneId: zone}
+            data:{ pluginId: plugin, regionId: region}
            })
         .done(function(data) {
+            debugger;
+            
+            listZones = data["listZones"];
+            for(var i in listZones) {           
+                row = listZones[i];      
+                addSelectItem(
+                    $("#zoneSelected"),
+                    row,
+                    row);
+            }
 
-            for(var i in data) {   
-                row = data[i];
+            listInstanceTypes = data["listInstanceTypes"];
+            for(var i in listInstanceTypes) {   
+                row = listInstanceTypes[i];
                 
                 inputColumn = "<input name='instanceTypeSelected.id' "+
                               "type='radio' class='icheck' value='"+row["id"]+"'/>"
@@ -285,9 +340,9 @@ $(function(){
         });
     }
     
-    $('#object_plugin').change(reloadZones);
+    $('#object_plugin').change(reloadRegions);
     
-    $('#zoneSelected').change(reloadInstanceTypes);
+    $('#regionSelected').change(reloadInstanceTypes);
 });
 
 </script>

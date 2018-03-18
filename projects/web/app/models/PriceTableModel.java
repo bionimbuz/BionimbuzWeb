@@ -13,7 +13,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import app.models.PriceTableStatusModel;
+import app.models.PluginPriceTableStatusModel;
 import play.db.jpa.GenericModel;
 
 @Entity
@@ -32,7 +32,7 @@ public class PriceTableModel extends GenericModel {
     @OneToOne
     private PluginModel plugin;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "instanceType")
-    private List<InstanceTypeZoneModel> listInstanceTypeZone;
+    private List<InstanceTypeRegionModel> listInstanceTypeRegion;
     private Date priceTableDate;
     private Date lastSearchDate;
     private Date lastSyncDate;
@@ -51,13 +51,13 @@ public class PriceTableModel extends GenericModel {
     // Data access
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public static void deletePriceTable(final Long idPriceTable) {
-        InstanceTypeZoneModel.deleteForPriceTable(idPriceTable);
-        ZoneModel.deleteForPriceTable(idPriceTable);
+        InstanceTypeRegionModel.deleteForPriceTable(idPriceTable);
+        RegionModel.deleteForPriceTable(idPriceTable);
         InstanceTypeModel.deleteForPriceTable(idPriceTable);
         delete("id = ?1", idPriceTable);
     }
     
-    public static SyncStatus getStatus(final PriceTableStatusModel status) {
+    public static SyncStatus getStatus(final PluginPriceTableStatusModel status) {
         switch(status.getStatus()) {
             case OK:
                 return SyncStatus.OK;
@@ -87,12 +87,12 @@ public class PriceTableModel extends GenericModel {
     public void setPlugin(PluginModel plugin) {
         this.plugin = plugin;
     }
-    public List<InstanceTypeZoneModel> getListInstanceTypeZone() {
-        return listInstanceTypeZone;
+    public List<InstanceTypeRegionModel> getListInstanceTypeRegion() {
+        return listInstanceTypeRegion;
     }
-    public void setListInstanceTypeZone(
-            List<InstanceTypeZoneModel> listInstanceTypeZone) {
-        this.listInstanceTypeZone = listInstanceTypeZone;
+    public void setListInstanceTypeRegion(
+            List<InstanceTypeRegionModel> listInstanceTypeRegion) {
+        this.listInstanceTypeRegion = listInstanceTypeRegion;
     }
     public Date getPriceTableDate() {
         return priceTableDate;

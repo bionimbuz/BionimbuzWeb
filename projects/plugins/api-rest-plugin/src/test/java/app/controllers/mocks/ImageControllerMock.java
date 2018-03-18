@@ -8,25 +8,25 @@ import org.springframework.web.bind.annotation.RestController;
 
 import app.controllers.AbstractImageController;
 import app.models.Body;
-import app.models.ImageModel;
+import app.models.PluginImageModel;
 
 @RestController
 public class ImageControllerMock extends AbstractImageController {
 
     @Override
-    protected ResponseEntity<Body<List<ImageModel>>> listImages(
+    protected ResponseEntity<Body<List<PluginImageModel>>> listImages(
             String token, String identity) throws Exception {   
-        List<ImageModel> listRes = new ArrayList<>();
-        listRes.add(new ImageModel());
-        listRes.add(new ImageModel());        
+        List<PluginImageModel> listRes = new ArrayList<>();
+        listRes.add(new PluginImageModel());
+        listRes.add(new PluginImageModel());        
         return ResponseEntity.ok().body(
                 Body.create(Body.OK, listRes));
     }
 
     @Override
-    protected ResponseEntity<Body<ImageModel>> getImage(
+    protected ResponseEntity<Body<PluginImageModel>> getImage(
             String token, String identity, String name) throws Exception {        
-        ImageModel res = new ImageModel();
+        PluginImageModel res = new PluginImageModel();
         res.setName(name);
         return ResponseEntity.ok().body(
                 Body.create(Body.OK, res));

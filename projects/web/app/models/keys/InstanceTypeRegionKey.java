@@ -6,27 +6,27 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 import models.InstanceTypeModel;
-import models.ZoneModel;
+import models.RegionModel;
 
 @Embeddable
-public class InstanceTypeZoneKey implements Serializable {
+public class InstanceTypeRegionKey implements Serializable {
     
     @Column(name = "id_instance_type", nullable = false, updatable = false)
     private Long instanceTypeId;
-    @Column(name = "id_zone", nullable = false, updatable = false)
-    private Long zoneId;
+    @Column(name = "id_region", nullable = false, updatable = false)
+    private Long regionId;
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Constructors
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
-    public InstanceTypeZoneKey() {
+    public InstanceTypeRegionKey() {
     }
-    public InstanceTypeZoneKey(Long instanceTypeId, Long zoneId) {
+    public InstanceTypeRegionKey(Long instanceTypeId, Long regionId) {
         this.instanceTypeId = instanceTypeId;
-        this.zoneId = zoneId;
+        this.regionId = regionId;
     }
-    public InstanceTypeZoneKey(InstanceTypeModel instanceType, ZoneModel zone) {
-        this(instanceType.getId(), zone.getId());
+    public InstanceTypeRegionKey(InstanceTypeModel instanceType, RegionModel region) {
+        this(instanceType.getId(), region.getId());
     }
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -38,13 +38,13 @@ public class InstanceTypeZoneKey implements Serializable {
     public void setInstanceTypeId(Long instanceTypeId) {
         this.instanceTypeId = instanceTypeId;
     }
-    public Long getZoneId() {
-        return zoneId;
+    public Long getRegionId() {
+        return regionId;
     }
-    public void setZoneId(Long zoneId) {
-        this.zoneId = zoneId;
+    public void setRegionId(Long regionId) {
+        this.regionId = regionId;
     }
-
+    
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Overrides
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -53,19 +53,19 @@ public class InstanceTypeZoneKey implements Serializable {
         if (this == other) {
             return true;
         }
-        if (!(other instanceof InstanceTypeZoneKey)) {
+        if (!(other instanceof InstanceTypeRegionKey)) {
             return false;
         }
-        final InstanceTypeZoneKey castOther = (InstanceTypeZoneKey) other;
+        final InstanceTypeRegionKey castOther = (InstanceTypeRegionKey) other;
         return this.instanceTypeId.equals(castOther.instanceTypeId) 
-                && this.zoneId.equals(castOther.zoneId);
+                && this.regionId.equals(castOther.regionId);
     }
     @Override
     public int hashCode() {
         final int prime = 31;
         int hash = 17;
         hash = hash * prime + this.instanceTypeId.hashCode();
-        hash = hash * prime + this.zoneId.hashCode();
+        hash = hash * prime + this.regionId.hashCode();
         return hash;
     }
 }

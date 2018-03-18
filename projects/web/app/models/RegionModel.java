@@ -15,8 +15,8 @@ import play.data.binding.NoBinding;
 import play.db.jpa.GenericModel;
 
 @Entity
-@Table(name = "tb_zone")
-public class ZoneModel extends GenericModel {
+@Table(name = "tb_region")
+public class RegionModel extends GenericModel {
 
     @Id
     @GeneratedValue
@@ -24,20 +24,20 @@ public class ZoneModel extends GenericModel {
     private String name;
     @Expose(serialize = false)
     @NoBinding
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "zone")
-    private List<InstanceTypeZoneModel> listInstanceTypeZone;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "region")
+    private List<InstanceTypeRegionModel> listInstanceTypeRegion;
     
-    public static class Zone {
+    public static class Region {
 
         private Long id;
         private String name;
         
-        public Zone(final ZoneModel zone) {
-            this.id = zone.getId();
-            this.name = zone.getName();
+        public Region(final RegionModel region) {
+            this.id = region.getId();
+            this.name = region.getName();
         }
         
-        public Zone(Long id, String name) {
+        public Region(Long id, String name) {
             this.id = id;
             this.name = name;
         }
@@ -59,7 +59,7 @@ public class ZoneModel extends GenericModel {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Constructors
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    public ZoneModel() {
+    public RegionModel() {
         super();
     }
     
@@ -68,19 +68,20 @@ public class ZoneModel extends GenericModel {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
     public static void deleteForPriceTable(final Long idPriceTable) {
         delete(
-              " DELETE FROM ZoneModel zone "
-            + " WHERE zone IN "
-            + "     (SELECT zone "
-            + "         FROM ZoneModel zone"
-            + "         JOIN zone.listInstanceTypeZone instanceTypeZone"
-            + "         WHERE instanceTypeZone.priceTable.id = ?1)", idPriceTable);
+              " DELETE FROM RegionModel region "
+            + " WHERE region IN "
+            + "     (SELECT region "
+            + "         FROM RegionModel region"
+            + "         JOIN region.listInstanceTypeRegion instanceTypeRegion"
+            + "         WHERE instanceTypeRegion.priceTable.id = ?1)", idPriceTable);
     }
-    public static List<ZoneModel> searchZonesForPlugin(final PluginModel plugin) {
+    public static List<RegionModel> searchRegionsForPlugin(final PluginModel plugin) {
         return find(
-            " SELECT DISTINCT zones "
-            + " FROM InstanceTypeZoneModel instanceTypeZones"
-            + " JOIN instanceTypeZones.zone zones"
-            + " WHERE instanceTypeZones.priceTable.plugin.id = ?1", plugin.getId()).fetch();
+            " SELECT DISTINCT regions "
+            + " FROM InstanceTypeRegionModel instanceTypeRegions"
+            + " JOIN instanceTypeRegions.region regions"
+            + " WHERE instanceTypeRegions.priceTable.plugin.id = ?1"
+            + " ORDER BY regions.name", plugin.getId()).fetch();
     }
     
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -98,11 +99,11 @@ public class ZoneModel extends GenericModel {
     public void setName(String name) {
         this.name = name;
     }
-    public List<InstanceTypeZoneModel> getListInstanceTypeZone() {
-        return listInstanceTypeZone;
+    public List<InstanceTypeRegionModel> getListInstanceTypeRegion() {
+        return listInstanceTypeRegion;
     }
-    public void setListInstanceTypeZone(
-            List<InstanceTypeZoneModel> listInstanceTypeZone) {
-        this.listInstanceTypeZone = listInstanceTypeZone;
+    public void setListInstanceTypeRegion(
+            List<InstanceTypeRegionModel> listInstanceTypeRegion) {
+        this.listInstanceTypeRegion = listInstanceTypeRegion;
     }
 }

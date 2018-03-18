@@ -11,6 +11,9 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Subselect;
 
+import common.fields.EncryptedFileField;
+import controllers.adm.BaseAdminController;
+import models.InstanceModel.CredentialUsagePolicy;
 import play.data.binding.NoBinding;
 import play.db.jpa.GenericModel;
 
@@ -18,6 +21,7 @@ import play.db.jpa.GenericModel;
 @Subselect(
         " SELECT DISTINCT"
         + "      C.id, "
+        + "      C.credentialData, "
         + "      C.enabled, "
         + "      C.name,"
         + "      C.plugin_id,"
@@ -52,6 +56,8 @@ public class VwCredentialModel extends GenericModel {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_user_shared", nullable = true)
     private UserModel userShared;
+    @NoBinding
+    private EncryptedFileField credentialData;     
     @Transient
     private List<GroupModel> listSharedGroups;
 
@@ -61,6 +67,25 @@ public class VwCredentialModel extends GenericModel {
     public VwCredentialModel() {
         super();
     }    
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Data access
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
+    public static List<VwCredentialModel> searchForCurrentUserAndPlugin(
+            final Long idPlugin,
+            final CredentialUsagePolicy credentialUsage) {        
+        String order = credentialUsage == CredentialUsagePolicy.OWNER_FIRST ?
+                            "DESC" : "ASC";        
+        UserModel currentUser = BaseAdminController.getConnectedUser();        
+        return find( 
+              " SELECT vwCredential " 
+            + " FROM VwCredentialModel vwCredential "
+            + " WHERE vwCredential.userShared.id = ?1 "
+            + "       AND vwCredential.plugin.id = ?2 "
+            + " ORDER BY vwCredential.owner " + order 
+            + "          ,vwCredential.id", 
+            currentUser.getId(), idPlugin).fetch();
+    }
     
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Getters and Setters
@@ -70,6 +95,12 @@ public class VwCredentialModel extends GenericModel {
     }
     public void setId(Long id) {
         this.id = id;
+    }
+    public EncryptedFileField getCredentialData() {
+        return credentialData;
+    }
+    public void setCredentialData(EncryptedFileField credentialData) {
+        this.credentialData = credentialData;
     }
     public boolean isEnabled() {
         return enabled;

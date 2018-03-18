@@ -87,8 +87,8 @@ GET     /adm/list/prices                        adm.PriceTableController.list
 GET     /adm/force/prices                       adm.PriceTableController.forceSync
 
 # InstanceController
-GET     /search/instance/types                  guest.InstanceController.searchInstanceTypes
-GET     /search/instance/zones                  guest.InstanceController.searchZones
+GET     /search/instance/types/zones            guest.InstanceController.searchInstanceTypesZones
+GET     /search/instance/regions                guest.InstanceController.searchRegions
 GET     /list/instances                         guest.InstanceController.list
 GET     /instances/{id}                         guest.InstanceController.show
 PUT     /instances/{id}                         guest.InstanceController.save

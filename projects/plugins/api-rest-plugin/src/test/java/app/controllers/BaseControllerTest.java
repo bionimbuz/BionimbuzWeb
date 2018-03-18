@@ -23,7 +23,7 @@ import app.common.HttpHeadersCustom;
 import app.common.Routes;
 import app.controllers.mocks.FirewallControllerMock;
 import app.models.Body;
-import app.models.FirewallModel;
+import app.models.PluginFirewallModel;
 import app.utils.TestUtils;
 
 @RunWith(SpringRunner.class)
@@ -47,17 +47,17 @@ public class BaseControllerTest {
     public void returningContentTest() throws Exception {
         TestUtils.setTimeout(restTemplate.getRestTemplate(), 20000000);
         try { // Returning with Error and Body defining a Model
-            ResponseEntity< Body<FirewallModel> > res = this.restTemplate
+            ResponseEntity< Body<PluginFirewallModel> > res = this.restTemplate
                     .exchange(
                             FirewallControllerMock.RETURN_GET + "/"
                                     + HttpStatus.MOVED_PERMANENTLY,
                             HttpMethod.GET, null,
-                            new ParameterizedTypeReference< Body<FirewallModel> >() {
+                            new ParameterizedTypeReference< Body<PluginFirewallModel> >() {
                             });
             assertThat(res.getStatusCode()).isEqualTo(HttpStatus.MOVED_PERMANENTLY);
             assertThat(res.getBody()).isNotNull();
             
-            Body<FirewallModel> body = res.getBody();            
+            Body<PluginFirewallModel> body = res.getBody();            
             assertThat(body.getMessage()).isNotEmpty();
             assertThat(body.getContent()).isNull();        
             
@@ -67,17 +67,17 @@ public class BaseControllerTest {
         }  
         
         try { // Returning Ok and Body defining a Model
-            ResponseEntity< Body<FirewallModel> > res = this.restTemplate
+            ResponseEntity< Body<PluginFirewallModel> > res = this.restTemplate
                     .exchange(
                             FirewallControllerMock.RETURN_GET + "/"
                                     + HttpStatus.OK,
                             HttpMethod.GET, null,
-                            new ParameterizedTypeReference< Body<FirewallModel> >() {
+                            new ParameterizedTypeReference< Body<PluginFirewallModel> >() {
                             });
             assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
             assertThat(res.getBody()).isNotNull();
             
-            Body<FirewallModel> body = res.getBody();            
+            Body<PluginFirewallModel> body = res.getBody();            
             assertThat(body.getMessage()).isEqualTo(Body.OK);
             assertThat(body.getContent()).isNotNull();        
             

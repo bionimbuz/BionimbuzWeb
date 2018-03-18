@@ -16,7 +16,7 @@ import com.google.common.net.HttpHeaders;
 import app.common.HttpHeadersCustom;
 import app.common.Routes;
 import app.models.Body;
-import app.models.InstanceModel;
+import app.models.PluginInstanceModel;
 
 public abstract class AbstractInstanceController extends BaseController {
     protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractInstanceController.class);  
@@ -26,15 +26,15 @@ public abstract class AbstractInstanceController extends BaseController {
      */
     
     @RequestMapping(path = Routes.INSTANCES, method = RequestMethod.POST)
-    private ResponseEntity<Body<List<InstanceModel>>> createInstanceAction(
+    private ResponseEntity<Body<List<PluginInstanceModel>>> createInstanceAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
             @RequestHeader(value=HttpHeaders.AUTHORIZATION) final String token, 
             @RequestHeader(value=HttpHeadersCustom.AUTHORIZATION_ID) final String identity, 
-            @RequestBody List<InstanceModel> listModel) {  
+            @RequestBody List<PluginInstanceModel> listModel) {  
         return callImplementedMethod("createInstance", version, token, identity, listModel);
     }    
     @RequestMapping(path = Routes.INSTANCES_ZONE_NAME, method = RequestMethod.GET)
-    private ResponseEntity<Body<InstanceModel>> getInstanceAction(
+    private ResponseEntity<Body<PluginInstanceModel>> getInstanceAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
             @RequestHeader(value=HttpHeaders.AUTHORIZATION) final String token, 
             @RequestHeader(value=HttpHeadersCustom.AUTHORIZATION_ID) final String identity, 
@@ -52,7 +52,7 @@ public abstract class AbstractInstanceController extends BaseController {
         return callImplementedMethod("deleteInstance", version, token, identity, zone, name);
     }   
     @RequestMapping(path = Routes.INSTANCES, method = RequestMethod.GET)
-    private ResponseEntity<Body<List<InstanceModel>>> listInstancesAction(
+    private ResponseEntity<Body<List<PluginInstanceModel>>> listInstancesAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
             @RequestHeader(value=HttpHeaders.AUTHORIZATION) final String token, 
             @RequestHeader(value=HttpHeadersCustom.AUTHORIZATION_ID) final String identity) {
@@ -63,11 +63,11 @@ public abstract class AbstractInstanceController extends BaseController {
      * Abstract Methods
      */
     
-    protected abstract ResponseEntity<Body<List<InstanceModel>>> createInstance(
+    protected abstract ResponseEntity<Body<List<PluginInstanceModel>>> createInstance(
             final String token, 
             final String identity,
-            List<InstanceModel> listModel) throws Exception;    
-    protected abstract ResponseEntity<Body<InstanceModel>> getInstance(
+            List<PluginInstanceModel> listModel) throws Exception;    
+    protected abstract ResponseEntity<Body<PluginInstanceModel>> getInstance(
             final String token, 
             final String identity,
             final String zone,
@@ -77,7 +77,7 @@ public abstract class AbstractInstanceController extends BaseController {
             final String identity,
             final String zone,
             final String name) throws Exception;   
-    protected abstract ResponseEntity<Body<List<InstanceModel>>> listInstances(
+    protected abstract ResponseEntity<Body<List<PluginInstanceModel>>> listInstances(
             final String token, 
             final String identity) throws Exception;
 

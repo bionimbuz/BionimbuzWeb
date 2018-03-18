@@ -9,15 +9,15 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import models.keys.InstanceTypeZoneKey;
+import models.keys.InstanceTypeRegionKey;
 import play.db.jpa.GenericModel;
 
 @Entity
-@Table(name = "tb_instance_type_zone")
-public class InstanceTypeZoneModel extends GenericModel {
+@Table(name = "tb_instance_type_region")
+public class InstanceTypeRegionModel extends GenericModel {
 
     @EmbeddedId 
-    private InstanceTypeZoneKey id;    
+    private InstanceTypeRegionKey id;    
     private Double price;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
@@ -26,16 +26,16 @@ public class InstanceTypeZoneModel extends GenericModel {
     @JoinColumn(name = "id_instance_type", nullable = false, insertable=false, updatable=false)
     private InstanceTypeModel instanceType;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_zone", nullable = false, insertable=false, updatable=false)
-    private ZoneModel zone;     
+    @JoinColumn(name = "id_region", nullable = false, insertable=false, updatable=false)
+    private RegionModel region;     
     
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Constructors
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
-    public InstanceTypeZoneModel(InstanceTypeModel instanceType, ZoneModel zone) {
+    public InstanceTypeRegionModel(InstanceTypeModel instanceType, RegionModel region) {
         this.instanceType = instanceType;
-        this.zone = zone;        
-        this.id = new InstanceTypeZoneKey(instanceType.getId(), zone.getId());
+        this.region = region;        
+        this.id = new InstanceTypeRegionKey(instanceType.getId(), region.getId());
     }
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -44,25 +44,26 @@ public class InstanceTypeZoneModel extends GenericModel {
     public static void deleteForPriceTable(final Long idPriceTable) {
         delete("priceTable.id = ?1", idPriceTable);
     }
-    public static List<InstanceTypeZoneModel> searchForZone(final ZoneModel zone){        
+    public static List<InstanceTypeRegionModel> searchForRegion(final RegionModel region){        
         return find(
-                " SELECT instanceTypeZones "
-                + " FROM InstanceTypeZoneModel instanceTypeZones"
-                + " JOIN FETCH instanceTypeZones.instanceType instanceType"
-                + " WHERE instanceTypeZones.zone.id = ?1", zone.getId()).fetch();
+                " SELECT instanceTypeRegions "
+                + " FROM InstanceTypeRegionModel instanceTypeRegions"
+                + " JOIN FETCH instanceTypeRegions.instanceType instanceType"
+                + " WHERE instanceTypeRegions.region.id = ?1"
+                + " ORDER BY instanceType.name", region.getId()).fetch();
     }
-    public static InstanceTypeZoneModel findByInstanceTypeAndZone(
-            final InstanceTypeModel instanceType, final ZoneModel zone) {
-        return findById(new InstanceTypeZoneKey(instanceType, zone));        
+    public static InstanceTypeRegionModel findByInstanceTypeAndRegion(
+            final InstanceTypeModel instanceType, final RegionModel region) {
+        return findById(new InstanceTypeRegionKey(instanceType, region));        
     }
     
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Getters and Setters
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    public InstanceTypeZoneKey getId() {
+    public InstanceTypeRegionKey getId() {
         return id;
     }
-    public void setId(InstanceTypeZoneKey id) {
+    public void setId(InstanceTypeRegionKey id) {
         this.id = id;
     }
     public Double getPrice() {
@@ -77,16 +78,16 @@ public class InstanceTypeZoneModel extends GenericModel {
     public void setInstanceType(InstanceTypeModel instanceType) {
         this.instanceType = instanceType;
     }
-    public ZoneModel getZone() {
-        return zone;
-    }
-    public void setZone(ZoneModel zone) {
-        this.zone = zone;
-    }
     public PriceTableModel getPriceTable() {
         return priceTable;
     }
     public void setPriceTable(PriceTableModel priceTable) {
         this.priceTable = priceTable;
+    }
+    public RegionModel getRegion() {
+        return region;
+    }
+    public void setRegion(RegionModel region) {
+        this.region = region;
     }
 }

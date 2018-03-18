@@ -10,17 +10,18 @@ import java.util.concurrent.locks.ReentrantLock;
 import app.client.PricingApi;
 import app.common.utils.DateCompareUtil;
 import app.models.Body;
-import app.models.PriceModel;
-import app.models.PriceTableStatusModel;
-import app.models.PriceTableStatusModel.Status;
+import app.models.PluginPriceModel;
+import app.models.PluginPriceTableModel;
+import app.models.PluginPriceTableStatusModel;
+import app.models.PluginPriceTableStatusModel.Status;
 import app.models.pricing.InstanceTypePricing;
-import app.models.pricing.ZonePricing;
+import app.models.pricing.RegionPricing;
 import models.InstanceTypeModel;
-import models.InstanceTypeZoneModel;
+import models.InstanceTypeRegionModel;
 import models.PluginModel;
 import models.PriceTableModel;
 import models.PriceTableModel.SyncStatus;
-import models.ZoneModel;
+import models.RegionModel;
 import play.jobs.Every;
 import play.jobs.Job;
 import play.jobs.OnApplicationStart;
@@ -58,10 +59,10 @@ public class PriceTableUpdaterJob extends Job {
         Date now = new Date(); 
         try {
             PricingApi api = new PricingApi(plugin.getUrl());   
-            Body<app.models.PriceTableModel> price = 
+            Body<PluginPriceTableModel> price = 
                     api.getPricing();  
-            PriceModel princingRequested = price.getContent().getPrice();
-            PriceTableStatusModel statusRequested = price.getContent().getStatus();
+            PluginPriceModel princingRequested = price.getContent().getPrice();
+            PluginPriceTableStatusModel statusRequested = price.getContent().getStatus();
             if(!priceTableMustBeSync(recentPriceTable, princingRequested, statusRequested)){
                 updateOrCreatePriceTableStatus(
                         plugin, recentPriceTable, now, 
@@ -84,8 +85,8 @@ public class PriceTableUpdaterJob extends Job {
             final Date now, 
             final SyncStatus status, 
             final String messageError,
-            final PriceModel princingRequested,
-            final PriceTableStatusModel princingStatusRequested) {
+            final PluginPriceModel princingRequested,
+            final PluginPriceTableStatusModel princingStatusRequested) {
         
         if(priceTable == null) {
             priceTable = new PriceTableModel();
@@ -106,8 +107,8 @@ public class PriceTableUpdaterJob extends Job {
     
     private static void processPriceTable(
             final Date now,
-            final PriceModel princingRequested,
-            final PriceTableStatusModel princingStatusRequested,
+            final PluginPriceModel princingRequested,
+            final PluginPriceTableStatusModel princingStatusRequested,
             final PluginModel plugin) {
         
         // Clean current price table
@@ -116,7 +117,7 @@ public class PriceTableUpdaterJob extends Job {
             PriceTableModel.deletePriceTable(priceTable.getId());
         }
 
-        HashMap<String, ZoneModel> listZones = new HashMap<>();  
+        HashMap<String, RegionModel> listRegions = new HashMap<>();  
         priceTable = 
                 updateOrCreatePriceTableStatus(
                     plugin, null, now, 
@@ -136,34 +137,34 @@ public class PriceTableUpdaterJob extends Job {
             instanceType.setName(instancePrice.getName());
             instanceType.save();
 
-            for(Map.Entry<String, ZonePricing> entryZone : 
-                    instancePrice.getListZonePricing().entrySet()) {
+            for(Map.Entry<String, RegionPricing> entryRegion : 
+                    instancePrice.getListRegionPricing().entrySet()) {
 
-                String zoneKey = entryZone.getKey();
-                ZonePricing zonePrice = entryZone.getValue();
-                ZoneModel zone = null;
-                if(listZones.containsKey(zoneKey)) {
-                    zone = listZones.get(zoneKey);
+                String regionKey = entryRegion.getKey();
+                RegionPricing regionPrice = entryRegion.getValue();
+                RegionModel region = null;
+                if(listRegions.containsKey(regionKey)) {
+                    region = listRegions.get(regionKey);
                 } else {
-                    zone = new ZoneModel();
-                    zone.setName(zoneKey);
-                    zone.save();
-                    listZones.put(zoneKey, zone);
+                    region = new RegionModel();
+                    region.setName(regionKey);
+                    region.save();
+                    listRegions.put(regionKey, region);
                 }
                 
-                InstanceTypeZoneModel instancePriceZone = 
-                        new InstanceTypeZoneModel(instanceType, zone);
-                instancePriceZone.setPrice(zonePrice.getPrice());
-                instancePriceZone.setPriceTable(priceTable);
-                instancePriceZone.save();
+                InstanceTypeRegionModel instancePriceRegion = 
+                        new InstanceTypeRegionModel(instanceType, region);
+                instancePriceRegion.setPrice(regionPrice.getPrice());
+                instancePriceRegion.setPriceTable(priceTable);
+                instancePriceRegion.save();
             }
         }
     }
     
     private static boolean priceTableMustBeSync(
             final PriceTableModel recentPriceTable,
-            final PriceModel princingRequested,
-            final PriceTableStatusModel princingStatusRequested) {
+            final PluginPriceModel princingRequested,
+            final PluginPriceTableStatusModel princingStatusRequested) {
         if(recentPriceTable == null) {
             return true;
         }        

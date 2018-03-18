@@ -1,15 +1,15 @@
 package app.models;
 
-public class ImageModel extends Body {
+public class PluginImageModel extends Body {
 
     private String id; 
     private String name; 
     private String url;
     
-    public ImageModel() {
+    public PluginImageModel() {
         super();
     } 
-    public ImageModel(String id, String name, String url) {
+    public PluginImageModel(String id, String name, String url) {
         super();
         this.id = id;
         this.name = name;

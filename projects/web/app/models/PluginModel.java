@@ -12,7 +12,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import app.models.InfoModel.AuthenticationType;
 import controllers.CRUD.Hidden;
 import controllers.adm.BaseAdminController;
 import play.data.validation.MaxSize;
@@ -51,7 +50,7 @@ public class PluginModel extends GenericModel {
     private String readScope;
     @Required
     @Enumerated(EnumType.STRING)
-    private AuthenticationType authType;    
+    private app.models.PluginInfoModel.AuthenticationType authType;    
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "plugin")
     private List<CredentialModel> listCredentials;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "plugin")
@@ -116,10 +115,10 @@ public class PluginModel extends GenericModel {
     public void setCloudType(String cloudType) {
         this.cloudType = cloudType;
     }
-    public AuthenticationType getAuthType() {
+    public app.models.PluginInfoModel.AuthenticationType getAuthType() {
         return authType;
     }
-    public void setAuthType(AuthenticationType authType) {
+    public void setAuthType(app.models.PluginInfoModel.AuthenticationType authType) {
         this.authType = authType;
     }
     public boolean isEnabled() {

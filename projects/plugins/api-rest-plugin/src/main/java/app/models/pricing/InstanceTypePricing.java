@@ -7,17 +7,17 @@ public class InstanceTypePricing {
     private String name;
     private Short cores;
     private Double memory;
-    private HashMap<String, ZonePricing> listZonePricing;
+    private HashMap<String, RegionPricing> listRegionPricing;
     
     public InstanceTypePricing(
             final String name, 
             final Short cores, 
             final Double memory,
-            final HashMap<String, ZonePricing> listZonePricing) {
+            final HashMap<String, RegionPricing> listRegionPricing) {
         this.name = name;
         this.cores = cores;
         this.memory = memory;
-        this.listZonePricing = listZonePricing;
+        this.listRegionPricing = listRegionPricing;
     }
 
     public InstanceTypePricing() {        
@@ -41,10 +41,11 @@ public class InstanceTypePricing {
     public void setMemory(final Double memory) {
         this.memory = memory;
     }
-    public HashMap<String, ZonePricing> getListZonePricing() {
-        return listZonePricing;
+    public HashMap<String, RegionPricing> getListRegionPricing() {
+        return listRegionPricing;
     }
-    public void setListZonePricing(final HashMap<String, ZonePricing> listZonePricing) {
-        this.listZonePricing = listZonePricing;
-    }
+    public void setListRegionPricing(
+            HashMap<String, RegionPricing> listRegionPricing) {
+        this.listRegionPricing = listRegionPricing;
+    }    
 }

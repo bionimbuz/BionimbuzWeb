@@ -16,7 +16,7 @@ import com.google.common.net.HttpHeaders;
 import app.common.HttpHeadersCustom;
 import app.common.Routes;
 import app.models.Body;
-import app.models.FirewallModel;
+import app.models.PluginFirewallModel;
 
 public abstract class AbstractFirewallController extends BaseController{  
     protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractFirewallController.class);  
@@ -26,15 +26,15 @@ public abstract class AbstractFirewallController extends BaseController{
      */    
 	
     @RequestMapping(path = Routes.FIREWALLS, method = RequestMethod.POST)
-    private ResponseEntity< Body<FirewallModel> > replaceRuleAction(
+    private ResponseEntity< Body<PluginFirewallModel> > replaceRuleAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
             @RequestHeader(value=HttpHeaders.AUTHORIZATION) final String token, 
             @RequestHeader(value=HttpHeadersCustom.AUTHORIZATION_ID) final String identity, 
-            @RequestBody FirewallModel model) {   
+            @RequestBody PluginFirewallModel model) {   
         return callImplementedMethod("replaceRule", version, token, identity, model);   
     }    
 	@RequestMapping(path = Routes.FIREWALLS_NAME, method = RequestMethod.GET)
-	private ResponseEntity< Body<FirewallModel> > getRuleAction(
+	private ResponseEntity< Body<PluginFirewallModel> > getRuleAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
             @RequestHeader(value=HttpHeaders.AUTHORIZATION) final String token, 
             @RequestHeader(value=HttpHeadersCustom.AUTHORIZATION_ID) final String identity, 
@@ -50,7 +50,7 @@ public abstract class AbstractFirewallController extends BaseController{
         return callImplementedMethod("deleteRule", version, token, identity, name);        
     }        
     @RequestMapping(path = Routes.FIREWALLS, method = RequestMethod.GET)
-    private ResponseEntity< Body<List<FirewallModel> >> listRulesAction(
+    private ResponseEntity< Body<List<PluginFirewallModel> >> listRulesAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
             @RequestHeader(value=HttpHeaders.AUTHORIZATION) final String token, 
             @RequestHeader(value=HttpHeadersCustom.AUTHORIZATION_ID) final String identity) { 
@@ -61,11 +61,11 @@ public abstract class AbstractFirewallController extends BaseController{
      * Abstract Methods
      */
     
-    protected abstract ResponseEntity<Body<FirewallModel>> replaceRule(
+    protected abstract ResponseEntity<Body<PluginFirewallModel>> replaceRule(
             final String token, 
             final String identity,
-            FirewallModel model) throws Exception;    
-    protected abstract ResponseEntity<Body<FirewallModel>> getRule(
+            PluginFirewallModel model) throws Exception;    
+    protected abstract ResponseEntity<Body<PluginFirewallModel>> getRule(
             final String token, 
             final String identity,
             final String name) throws Exception;    
@@ -73,7 +73,7 @@ public abstract class AbstractFirewallController extends BaseController{
             final String token, 
             final String identity,
             final String name) throws Exception;    
-    protected abstract ResponseEntity<Body<List<FirewallModel>>> listRules(
+    protected abstract ResponseEntity<Body<List<PluginFirewallModel>>> listRules(
             final String token, 
             final String identity) throws Exception;  
 }

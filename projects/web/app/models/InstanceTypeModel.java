@@ -22,8 +22,34 @@ public class InstanceTypeModel extends GenericModel {
     private Short cores;
     private Double memory;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "instanceType")
-    private List<InstanceTypeZoneModel> listInstanceTypeZone;
+    private List<InstanceTypeRegionModel> listInstanceTypeRegion;
 
+    public static class InstanceTypeZone {
+        
+        private List<InstanceType> listInstanceTypes;
+        private List<String> listZones;       
+        
+        public InstanceTypeZone(
+                List<InstanceType> listInstanceTypes,
+                List<String> listZones) {
+            super();
+            this.listInstanceTypes = listInstanceTypes;
+            this.listZones = listZones;
+        }
+        
+        public List<InstanceType> getListInstanceTypes() {
+            return listInstanceTypes;
+        }
+        public void setListInstanceTypes(List<InstanceType> listInstanceTypes) {
+            this.listInstanceTypes = listInstanceTypes;
+        }
+        public List<String> getListZones() {
+            return listZones;
+        }
+        public void setListZones(List<String> listZones) {
+            this.listZones = listZones;
+        }
+    }
 
     public static class InstanceType {
         
@@ -33,11 +59,11 @@ public class InstanceTypeModel extends GenericModel {
         private Short cores;
         private Double memory;
 
-        public InstanceType(final InstanceTypeZoneModel instanceTypeZone) {            
-            InstanceTypeModel instanceType = instanceTypeZone.getInstanceType();            
+        public InstanceType(final InstanceTypeRegionModel instanceTypeRegion) {            
+            InstanceTypeModel instanceType = instanceTypeRegion.getInstanceType();            
             this.id = instanceType.getId();
             this.name = instanceType.getName();
-            this.price = instanceTypeZone.getPrice();
+            this.price = instanceTypeRegion.getPrice();
             this.cores = instanceType.getCores();
             this.memory = instanceType.getMemory();
         }
@@ -89,8 +115,8 @@ public class InstanceTypeModel extends GenericModel {
               + " WHERE instanceTypeModel IN "
               + "     (SELECT instanceTypeModel "
               + "         FROM InstanceTypeModel instanceTypeModel"
-              + "         JOIN instanceTypeModel.listInstanceTypeZone instanceTypeZone"
-              + "         WHERE instanceTypeZone.priceTable.id = ?1)", idPriceTable);
+              + "         JOIN instanceTypeModel.listInstanceTypeRegion instanceTypeRegion"
+              + "         WHERE instanceTypeRegion.priceTable.id = ?1)", idPriceTable);
     }
     
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -120,11 +146,11 @@ public class InstanceTypeModel extends GenericModel {
     public void setMemory(Double memory) {
         this.memory = memory;
     }
-    public List<InstanceTypeZoneModel> getListInstanceTypeZone() {
-        return listInstanceTypeZone;
+    public List<InstanceTypeRegionModel> getListInstanceTypeRegion() {
+        return listInstanceTypeRegion;
     }
-    public void setListInstanceTypeZone(
-            List<InstanceTypeZoneModel> listInstanceTypeZone) {
-        this.listInstanceTypeZone = listInstanceTypeZone;
+    public void setListInstanceTypeRegion(
+            List<InstanceTypeRegionModel> listInstanceTypeRegion) {
+        this.listInstanceTypeRegion = listInstanceTypeRegion;
     }
 }

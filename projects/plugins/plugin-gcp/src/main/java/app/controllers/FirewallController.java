@@ -20,7 +20,7 @@ import com.google.common.collect.ImmutableList;
 import app.common.GlobalConstants;
 import app.common.GoogleComputeEngineUtils;
 import app.models.Body;
-import app.models.FirewallModel;
+import app.models.PluginFirewallModel;
 
 @RestController
 public class FirewallController extends AbstractFirewallController{  
@@ -30,10 +30,10 @@ public class FirewallController extends AbstractFirewallController{
      */
     
     @Override
-    protected ResponseEntity<Body<FirewallModel>> replaceRule(
+    protected ResponseEntity<Body<PluginFirewallModel>> replaceRule(
             final String token, 
             final String identity,
-            FirewallModel model) throws Exception {        
+            PluginFirewallModel model) throws Exception {        
         try(GoogleComputeEngineApi googleApi = 
                 GoogleComputeEngineUtils.createApi(
                         identity, 
@@ -45,7 +45,7 @@ public class FirewallController extends AbstractFirewallController{
     }
 
     @Override
-    protected ResponseEntity<Body<FirewallModel>> getRule(
+    protected ResponseEntity<Body<PluginFirewallModel>> getRule(
             final String token, 
             final String identity,
     		final String name) throws Exception {     
@@ -60,7 +60,7 @@ public class FirewallController extends AbstractFirewallController{
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND); 
             }
             
-            FirewallModel model = createFirewallModel(firewall);  
+            PluginFirewallModel model = createFirewallModel(firewall);  
             return ResponseEntity.ok(
                     Body.create(model));
         }
@@ -89,7 +89,7 @@ public class FirewallController extends AbstractFirewallController{
     }
 
     @Override
-    protected ResponseEntity<Body<List<FirewallModel>>> listRules(
+    protected ResponseEntity<Body<List<PluginFirewallModel>>> listRules(
             final String token, 
             final String identity) throws Exception  {     
         try(GoogleComputeEngineApi googleApi = 
@@ -99,13 +99,13 @@ public class FirewallController extends AbstractFirewallController{
             URI networkURL = GoogleComputeEngineUtils.assertDefaultNetwork(googleApi);
             FirewallApi firewallApi = googleApi.firewalls();
                         
-            List<FirewallModel> res = new ArrayList<>();
+            List<PluginFirewallModel> res = new ArrayList<>();
             
             Iterator<ListPage<Firewall>> listPages = firewallApi.list();
             while (listPages.hasNext()) {
                 ListPage<Firewall> firewalls = listPages.next();
                 for (Firewall firewall : firewalls) {                         
-                    FirewallModel model = createFirewallModel(firewall);
+                    PluginFirewallModel model = createFirewallModel(firewall);
                     if(model != null) {
                         res.add(model);
                     }
@@ -120,7 +120,7 @@ public class FirewallController extends AbstractFirewallController{
      * Specific Class Methods
      */
     
-    private FirewallModel createFirewallModel(final Firewall firewall) {
+    private PluginFirewallModel createFirewallModel(final Firewall firewall) {
         
         if(!firewall.name().startsWith(GlobalConstants.BNZ_FIREWALL))
             return null;                                        
@@ -132,9 +132,9 @@ public class FirewallController extends AbstractFirewallController{
             return null;   
         
         Integer port = Integer.parseInt(rule.ports().get(0));
-        FirewallModel.PROTOCOL protocol = FirewallModel.PROTOCOL.valueOf(rule.ipProtocol());
+        PluginFirewallModel.PROTOCOL protocol = PluginFirewallModel.PROTOCOL.valueOf(rule.ipProtocol());
         
-        return new FirewallModel(
+        return new PluginFirewallModel(
                         firewall.name(), 
                         protocol,
                         port,
@@ -144,7 +144,7 @@ public class FirewallController extends AbstractFirewallController{
     
     private void replaceFirewallRule(
             GoogleComputeEngineApi googleApi, 
-            FirewallModel firewallRule
+            PluginFirewallModel firewallRule
                 ) throws Exception {
 
         URI networkURL = GoogleComputeEngineUtils.assertDefaultNetwork(googleApi);

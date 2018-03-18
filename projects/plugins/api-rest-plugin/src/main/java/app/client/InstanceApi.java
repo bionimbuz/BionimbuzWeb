@@ -10,7 +10,7 @@ import app.common.GlobalConstants;
 import app.common.HttpHeadersCustom;
 import app.common.Routes;
 import app.models.Body;
-import app.models.InstanceModel;
+import app.models.PluginInstanceModel;
 import retrofit2.Call;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
@@ -24,10 +24,10 @@ public class InstanceApi  extends PluginApi<HttpMethods> {
         super(url, HttpMethods.class);
     }
     
-    public Body<List<InstanceModel>> createInstance(
+    public Body<List<PluginInstanceModel>> createInstance(
             final String token, 
             final String identity, 
-            List<InstanceModel> listModel) throws IOException
+            List<PluginInstanceModel> listModel) throws IOException
     {
         return getHttpMethods()
                 .createInstance(
@@ -36,7 +36,7 @@ public class InstanceApi  extends PluginApi<HttpMethods> {
                 .execute().body();
     }
     
-    public Body<InstanceModel> getInstance(
+    public Body<PluginInstanceModel> getInstance(
             final String token, 
             final String identity, 
             final String zone,
@@ -62,7 +62,7 @@ public class InstanceApi  extends PluginApi<HttpMethods> {
                 .execute().body();
     }
     
-    public Body<List<InstanceModel>> listInstances(
+    public Body<List<PluginInstanceModel>> listInstances(
             final String token, 
             final String identity) throws IOException
     {
@@ -75,13 +75,13 @@ public class InstanceApi  extends PluginApi<HttpMethods> {
     
     protected interface HttpMethods {
         @POST(Routes.INSTANCES)
-        public Call<Body<List<InstanceModel>>> createInstance(
+        public Call<Body<List<PluginInstanceModel>>> createInstance(
                 @Header(HttpHeadersCustom.API_VERSION) final String version,
                 @Header(HttpHeaders.AUTHORIZATION) final String token, 
                 @Header(HttpHeadersCustom.AUTHORIZATION_ID) final String identity, 
-                @retrofit2.http.Body List<InstanceModel> listModel);
+                @retrofit2.http.Body List<PluginInstanceModel> listModel);
         @GET(Routes.INSTANCES_ZONE_NAME)
-        public Call<Body<InstanceModel>> getInstance(
+        public Call<Body<PluginInstanceModel>> getInstance(
                 @Header(HttpHeadersCustom.API_VERSION) final String version,
                 @Header(HttpHeaders.AUTHORIZATION) final String token, 
                 @Header(HttpHeadersCustom.AUTHORIZATION_ID) final String identity, 
@@ -95,7 +95,7 @@ public class InstanceApi  extends PluginApi<HttpMethods> {
                 @Path("zone") final String zone,
                 @Path("name") final String name);
         @GET(Routes.INSTANCES)
-        public Call<Body<List<InstanceModel>>> listInstances(
+        public Call<Body<List<PluginInstanceModel>>> listInstances(
                 @Header(HttpHeadersCustom.API_VERSION) final String version,
                 @Header(HttpHeaders.AUTHORIZATION) final String token, 
                 @Header(HttpHeadersCustom.AUTHORIZATION_ID) final String identity);    

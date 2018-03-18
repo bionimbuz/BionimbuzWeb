@@ -9,7 +9,7 @@ import java.util.TreeSet;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class InstanceModel extends Body {
+public class PluginInstanceModel extends Body {
 
     private String id = "";
     private String name = "";
@@ -23,11 +23,11 @@ public class InstanceModel extends Body {
     private String imageUrl = "";
     private String type = "";
     
-    public InstanceModel() {    
+    public PluginInstanceModel() {    
         super();    
     }
     
-    public InstanceModel(
+    public PluginInstanceModel(
             String id, 
             String name, 
             String machineType,
@@ -40,7 +40,7 @@ public class InstanceModel extends Body {
     }
     
     public static List<String> generateUniqueNames(
-            List<InstanceModel> currentZones, int size, final String prefix) { 
+            List<PluginInstanceModel> currentZones, int size, final String prefix) { 
         
         List<String> res = new ArrayList<>();        
         Set<Integer> setOfNameIds = getSetOfCurrentIds(currentZones, prefix);
@@ -64,9 +64,9 @@ public class InstanceModel extends Body {
         return Integer.parseInt(nameSpplited[1].replaceAll("-", ""));     
     }
     
-    protected static Set<Integer> getSetOfCurrentIds(final List<InstanceModel> currentInstances, final String prefix) {        
+    protected static Set<Integer> getSetOfCurrentIds(final List<PluginInstanceModel> currentInstances, final String prefix) {        
         Set<Integer> ids = new TreeSet<>();   
-        for (InstanceModel instanceModel : currentInstances) {                
+        for (PluginInstanceModel instanceModel : currentInstances) {                
             Integer id = extractIdFromName(instanceModel.getName(), prefix);  
             if(id >= 0) {
                 ids.add(id);

@@ -1,14 +1,14 @@
 package app.models.pricing;
 
-public class ZonePricing {
+public class RegionPricing {
 
     private Double price;
     private String name;
     
-    public ZonePricing() {
+    public RegionPricing() {
     }
     
-    public ZonePricing(final String name, final Double price) {
+    public RegionPricing(final String name, final Double price) {
         this.price = price;
         this.name = name;
     }

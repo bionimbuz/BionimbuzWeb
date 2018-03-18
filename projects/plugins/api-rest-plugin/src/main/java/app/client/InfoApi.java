@@ -5,7 +5,7 @@ import java.io.IOException;
 import app.client.InfoApi.HttpMethods;
 import app.common.Routes;
 import app.models.Body;
-import app.models.InfoModel;
+import app.models.PluginInfoModel;
 import retrofit2.Call;
 import retrofit2.http.GET;
 
@@ -15,7 +15,7 @@ public class InfoApi extends PluginApi<HttpMethods> {
         super(url, HttpMethods.class);
     }
 
-    public Body<InfoModel> getInfo() throws IOException
+    public Body<PluginInfoModel> getInfo() throws IOException
     {
         return getHttpMethods()
                 .getInfo()
@@ -24,6 +24,6 @@ public class InfoApi extends PluginApi<HttpMethods> {
     
     protected interface HttpMethods {
         @GET(Routes.INFO)
-        public Call< Body<InfoModel> > getInfo();
+        public Call< Body<PluginInfoModel> > getInfo();
     }
 }

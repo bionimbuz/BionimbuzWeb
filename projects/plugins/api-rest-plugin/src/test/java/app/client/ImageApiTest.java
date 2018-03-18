@@ -14,7 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import app.controllers.mocks.InstanceControllerMock;
 import app.models.Body;
-import app.models.ImageModel;
+import app.models.PluginImageModel;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -33,7 +33,7 @@ public class ImageApiTest {
     @Test
     public void listTest() throws Exception {
         ImageApi instanceApi = new ImageApi(getUrl());
-        Body<List<ImageModel>> body = 
+        Body<List<PluginImageModel>> body = 
                 instanceApi.listImages(
                         "fake-token", "fake-identity");
         assertThat(body.getMessage()).isEqualTo(Body.OK);

@@ -14,9 +14,9 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
-import app.models.PriceModel;
+import app.models.PluginPriceModel;
 import app.models.pricing.InstanceTypePricing;
-import app.models.pricing.ZonePricing;
+import app.models.pricing.RegionPricing;
 import app.pricing.exceptions.PriceTableDateInvalidException;
 import app.pricing.exceptions.PriceTableVersionException;
 
@@ -45,7 +45,7 @@ public class PriceTableParser {
         return filePath;
     }
     
-    public PriceModel parse() 
+    public PluginPriceModel parse() 
                     throws JsonParseException, IOException, 
                     PriceTableVersionException, ParseException, 
                     PriceTableDateInvalidException {
@@ -79,7 +79,7 @@ public class PriceTableParser {
             if(lastUpdate == null) {
                 throw new PriceTableDateInvalidException();
             }            
-            return new PriceModel(
+            return new PluginPriceModel(
                     lastUpdate, 
                     instancePricing);            
         }    
@@ -91,11 +91,11 @@ public class PriceTableParser {
         Short cores = 0;
         Double memory = 0D;
         Double pricing = 0D;
-        ZonePricing zone = null;
+        RegionPricing zone = null;
         InstanceTypePricing instancePricing = null;
         HashMap<String, InstanceTypePricing> res = new HashMap<>();  
         while(jsonParser.nextToken() != JsonToken.END_OBJECT) {  
-            HashMap<String, ZonePricing> zones = new HashMap<>();          
+            HashMap<String, RegionPricing> zones = new HashMap<>();          
             String instanceName = jsonParser.getCurrentName();
             // Reads only VM contents
             if(instanceName.contains(SUBSTR_VMIMAGE)) {
@@ -112,7 +112,7 @@ public class PriceTableParser {
                     } else if (!zonesRead) {
                         jsonParser.nextToken();
                         pricing = Double.valueOf(jsonParser.getText());
-                        zone = new ZonePricing(vmContentName, pricing);
+                        zone = new RegionPricing(vmContentName, pricing);
                         zones.put(vmContentName, zone);
                     } else if(TAG_MEMORY.equals(vmContentName)) {
                         jsonParser.nextToken();

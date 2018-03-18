@@ -11,7 +11,6 @@ import java.util.List;
 
 import com.google.common.io.Files;
 
-import app.models.InfoModel.AuthenticationType;
 import common.fields.EncryptedFileField;
 import controllers.security.SecurityController;
 import models.CredentialModel;
@@ -158,7 +157,7 @@ public class DevelopmentStartupJob extends Job {
 
     private PluginModel insertPlugin() {
         PluginModel model = new PluginModel();
-        model.setAuthType(AuthenticationType.AUTH_BEARER_TOKEN);
+        model.setAuthType(app.models.PluginInfoModel.AuthenticationType.AUTH_BEARER_TOKEN);
         model.setCloudType("google-compute-engine");
         model.setEnabled(true);
         model.setName("Google Cloud Platform");

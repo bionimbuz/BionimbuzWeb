@@ -20,7 +20,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import app.common.Routes;
 import app.models.Body;
-import app.models.ImageModel;
+import app.models.PluginImageModel;
 import utils.TestUtils;
 
 @RunWith(SpringRunner.class)
@@ -44,13 +44,13 @@ public class ImageControllerTest {
 
         TestUtils.setTimeout(restTemplate.getRestTemplate(), 0);
         HttpEntity<Void> entity = TestUtils.createEntity(TestUtils.READ_SCOPE);        
-        ResponseEntity<Body<List<ImageModel>>> response = 
+        ResponseEntity<Body<List<PluginImageModel>>> response = 
                 restTemplate
                     .exchange(
                             Routes.IMAGES, 
                             HttpMethod.GET, 
                             entity,
-                            new ParameterizedTypeReference< Body<List<ImageModel>> >() {});          
+                            new ParameterizedTypeReference< Body<List<PluginImageModel>> >() {});          
         assertThat(response).isNotNull();    
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().getContent().isEmpty()).isFalse();        
@@ -61,13 +61,13 @@ public class ImageControllerTest {
         TestUtils.setTimeout(restTemplate.getRestTemplate(), 0);
         HttpEntity<Void> entity = TestUtils.createEntity(TestUtils.READ_SCOPE);
         
-        ResponseEntity<Body<ImageModel>> response = 
+        ResponseEntity<Body<PluginImageModel>> response = 
                 this.restTemplate
                     .exchange(
                             Routes.IMAGES +"/"+"ubuntu-1204-precise-v20141028", 
                             HttpMethod.GET, 
                             entity,
-                            new ParameterizedTypeReference<Body<ImageModel>>() {});          
+                            new ParameterizedTypeReference<Body<PluginImageModel>>() {});          
         assertThat(response).isNotNull(); 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);    
     }

@@ -19,10 +19,10 @@ import org.springframework.stereotype.Component;
 import app.common.SystemConstants;
 import app.common.utils.DateArithmeticUtil;
 import app.common.utils.DateCompareUtil;
-import app.models.PriceModel;
-import app.models.PriceTableModel;
-import app.models.PriceTableStatusModel;
-import app.models.PriceTableStatusModel.Status;
+import app.models.PluginPriceModel;
+import app.models.PluginPriceTableModel;
+import app.models.PluginPriceTableStatusModel;
+import app.models.PluginPriceTableStatusModel.Status;
 import app.pricing.exceptions.PriceTableDateInvalidException;
 import app.pricing.exceptions.PriceTableVersionException;
 
@@ -30,9 +30,9 @@ import app.pricing.exceptions.PriceTableVersionException;
 public class PriceTableScheduler {
     
     private static Lock _lock_ = new ReentrantLock();
-    private static PriceModel pricingModel = null;
-    private static PriceTableStatusModel pricingStatusModel = 
-            PriceTableStatusModel.createProcessingStatus();
+    private static PluginPriceModel pricingModel = null;
+    private static PluginPriceTableStatusModel pricingStatusModel = 
+            PluginPriceTableStatusModel.createProcessingStatus();
     
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Main scheduler call
@@ -40,7 +40,7 @@ public class PriceTableScheduler {
     @Scheduled(fixedDelay = 1 * 60 * 1000) // 1 minute
     public void updatePriceTable() {
         Calendar now = Calendar.getInstance();  
-        PriceTableStatusModel newStatus = null;
+        PluginPriceTableStatusModel newStatus = null;
         try {
             _lock_.lock();
             
@@ -60,7 +60,7 @@ public class PriceTableScheduler {
             } 
         } catch (IOException e) {
             pricingStatusModel = 
-                    PriceTableStatusModel.createDownloadErrorStatus(
+                    PluginPriceTableStatusModel.createDownloadErrorStatus(
                                 now.getTime(), e.getMessage());     
         }
         finally {
@@ -90,19 +90,19 @@ public class PriceTableScheduler {
         return false;
     }
     
-    private PriceTableStatusModel updatePricing(final Calendar now) {    
+    private PluginPriceTableStatusModel updatePricing(final Calendar now) {    
         try {
             PriceTableParser parser = new PriceTableParser(
                     SystemConstants.PRICE_TABLE_FILE,
                     SystemConstants.PRICE_TABLE_VERSION);
             pricingModel = parser.parse();
-            return PriceTableStatusModel.createOkStatus(now.getTime());
+            return PluginPriceTableStatusModel.createOkStatus(now.getTime());
         } catch (ParseException | PriceTableDateInvalidException e) {
-            return PriceTableStatusModel.createDateErrorStatus(now.getTime());
+            return PluginPriceTableStatusModel.createDateErrorStatus(now.getTime());
         } catch (PriceTableVersionException e) {
-            return PriceTableStatusModel.createVersionErrorStatus(now.getTime(), e.getMessage());
+            return PluginPriceTableStatusModel.createVersionErrorStatus(now.getTime(), e.getMessage());
         } catch (IOException e) {
-            return PriceTableStatusModel.createParseErrorStatus(now.getTime(), e.getMessage());
+            return PluginPriceTableStatusModel.createParseErrorStatus(now.getTime(), e.getMessage());
         }  
     }
     
@@ -136,21 +136,21 @@ public class PriceTableScheduler {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Non blocking methods 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    public static PriceTableModel getPricing() {
+    public static PluginPriceTableModel getPricing() {
         if(_lock_.tryLock()) {
             try {
-                return new PriceTableModel(pricingStatusModel, pricingModel);                
+                return new PluginPriceTableModel(pricingStatusModel, pricingModel);                
             }
             finally {
                 _lock_.unlock();
             }
         }
         else {
-            return new PriceTableModel(getLastSearchForProcessingStatus(), null);
+            return new PluginPriceTableModel(getLastSearchForProcessingStatus(), null);
         }
     }       
     
-    public static PriceTableStatusModel getPricingStatus() {
+    public static PluginPriceTableStatusModel getPricingStatus() {
         if(_lock_.tryLock()) {
             try {
                 return pricingStatusModel;                
@@ -164,9 +164,9 @@ public class PriceTableScheduler {
         }
     }   
     
-    private static PriceTableStatusModel getLastSearchForProcessingStatus() {
-        PriceTableStatusModel pricingStatus = 
-                PriceTableStatusModel.createProcessingStatus();
+    private static PluginPriceTableStatusModel getLastSearchForProcessingStatus() {
+        PluginPriceTableStatusModel pricingStatus = 
+                PluginPriceTableStatusModel.createProcessingStatus();
         if(pricingStatusModel != null) {
             pricingStatus.setLastSearch(pricingStatusModel.getLastSearch());
         }

@@ -12,7 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import app.controllers.mocks.PricingControllerMock;
 import app.models.Body;
-import app.models.PriceTableModel;
+import app.models.PluginPriceTableModel;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -32,7 +32,7 @@ public class PricingApiTest {
     public void getTest() throws Exception {
         PricingApi api = new PricingApi(getUrl());
         
-        Body<PriceTableModel> body = 
+        Body<PluginPriceTableModel> body = 
                 api.getPricing();
         
         assertThat(body.getContent()).isNotNull();

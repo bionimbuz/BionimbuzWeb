@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import app.common.GoogleComputeEngineUtils;
 import app.common.SystemConstants;
 import app.models.Body;
-import app.models.ImageModel;
+import app.models.PluginImageModel;
 
 @RestController
 public class ImageController extends AbstractImageController{ 
@@ -25,7 +25,7 @@ public class ImageController extends AbstractImageController{
      */
     
     @Override
-    protected ResponseEntity<Body<ImageModel>> getImage(
+    protected ResponseEntity<Body<PluginImageModel>> getImage(
             final String token, final String identity, final String name) throws Exception {
         
         try(GoogleComputeEngineApi googleApi = 
@@ -37,9 +37,9 @@ public class ImageController extends AbstractImageController{
             options.filter("name eq " + name);
             options.maxResults(1);
 
-            List<ImageModel> res = searchImages(api, options); 
+            List<PluginImageModel> res = searchImages(api, options); 
             
-            ImageModel model = null;
+            PluginImageModel model = null;
             if(!res.isEmpty()) {
                 model  = res.get(0);
             }            
@@ -49,7 +49,7 @@ public class ImageController extends AbstractImageController{
     }
     
     @Override
-    protected ResponseEntity<Body<List<ImageModel>>> listImages(
+    protected ResponseEntity<Body<List<PluginImageModel>>> listImages(
             final String token, 
             final String identity) throws Exception  {     
         try(GoogleComputeEngineApi googleApi = 
@@ -58,14 +58,14 @@ public class ImageController extends AbstractImageController{
                         token)) { 
             ImageApi api = googleApi.images();
                         
-            List<ImageModel> res = searchImages(api, null);
+            List<PluginImageModel> res = searchImages(api, null);
             return ResponseEntity.ok(
                     Body.create(res)); 
         }
     }
     
-    private List<ImageModel> searchImages(ImageApi api, final ListOptions options){
-        List<ImageModel> res = new ArrayList<>();
+    private List<PluginImageModel> searchImages(ImageApi api, final ListOptions options){
+        List<PluginImageModel> res = new ArrayList<>();
         
         Iterator<ListPage<Image>> listPages = 
                 api.listInProject(
@@ -73,7 +73,7 @@ public class ImageController extends AbstractImageController{
         while (listPages.hasNext()) {
             ListPage<Image> images = listPages.next();
             for (Image image : images) {                         
-                ImageModel model = createImageModel(image);
+                PluginImageModel model = createImageModel(image);
                 if(model != null) {
                     res.add(model);
                 }
@@ -83,8 +83,8 @@ public class ImageController extends AbstractImageController{
         return res;
     }
     
-    private ImageModel createImageModel(final Image image) {
-        ImageModel res = new ImageModel(
+    private PluginImageModel createImageModel(final Image image) {
+        PluginImageModel res = new PluginImageModel(
                 image.id(), 
                 image.name(), 
                 image.selfLink().toString());                

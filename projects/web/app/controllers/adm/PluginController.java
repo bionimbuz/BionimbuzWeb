@@ -2,7 +2,7 @@ package controllers.adm;
 
 import app.client.InfoApi;
 import app.models.Body;
-import app.models.InfoModel;
+import app.models.PluginInfoModel;
 import common.constants.I18N;
 import controllers.CRUD.For;
 import controllers.Check;
@@ -16,8 +16,8 @@ public class PluginController extends BaseAdminController {
     public static void searchPlugin(final String url) {
         try {
             InfoApi infoApi = new InfoApi(url);    
-            Body<InfoModel> body = infoApi.getInfo();        
-            InfoModel info = body.getContent();
+            Body<PluginInfoModel> body = infoApi.getInfo();        
+            PluginInfoModel info = body.getContent();
             
             PluginModel model = new PluginModel();
             model.setUrl(url);

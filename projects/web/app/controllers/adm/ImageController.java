@@ -9,6 +9,7 @@ import org.apache.commons.io.IOUtils;
 import app.client.ImageApi;
 import app.common.Authorization;
 import app.models.Body;
+import app.models.PluginImageModel;
 import app.models.security.TokenModel;
 import common.constants.I18N;
 import controllers.CRUD.For;
@@ -40,13 +41,13 @@ public class ImageController extends BaseAdminController {
                             plugin.getCloudType(),
                             plugin.getReadScope(),
                             writer.toString());
-                    Body<List<app.models.ImageModel>> body = 
+                    Body<List<PluginImageModel>> body = 
                             imageApi.listImages(
                                     token.getToken(), 
                                     token.getIdentity());       
                     if(body.getContent() == null || body.getContent().isEmpty())
                         continue;                    
-                    for(app.models.ImageModel image : body.getContent()) {
+                    for(PluginImageModel image : body.getContent()) {
                         listModels.add(new ImageModel(
                                 image.getName(),
                                 image.getUrl()));

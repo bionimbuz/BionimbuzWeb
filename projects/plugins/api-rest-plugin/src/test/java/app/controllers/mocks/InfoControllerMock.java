@@ -3,7 +3,7 @@ package app.controllers.mocks;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.controllers.AbstractInfoController;
-import app.models.InfoModel.AuthenticationType;
+import app.models.PluginInfoModel.AuthenticationType;
 
 @RestController
 public class InfoControllerMock extends AbstractInfoController {

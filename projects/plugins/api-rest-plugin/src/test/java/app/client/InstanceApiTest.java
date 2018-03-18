@@ -16,7 +16,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import app.controllers.mocks.InstanceControllerMock;
 import app.models.Body;
-import app.models.InstanceModel;
+import app.models.PluginInstanceModel;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -35,14 +35,14 @@ public class InstanceApiTest {
     @Test
     public void createTest() throws Exception {
         InstanceApi instanceApi = new InstanceApi(getUrl());
-        List<InstanceModel> listModel = createListModel();  
+        List<PluginInstanceModel> listModel = createListModel();  
         
-        Body<List<InstanceModel>> body = 
+        Body<List<PluginInstanceModel>> body = 
                 instanceApi.createInstance(
                         "fake-token", "fake-identity", listModel);
-        List<InstanceModel> listModelCreated = body.getContent();
+        List<PluginInstanceModel> listModelCreated = body.getContent();
         
-        Iterator<InstanceModel> 
+        Iterator<PluginInstanceModel> 
             iteratorNew = listModel.iterator(),
             iteratorCreated = listModelCreated.iterator();
         
@@ -55,11 +55,11 @@ public class InstanceApiTest {
     @Test
     public void getTest() throws Exception {
         InstanceApi instanceApi = new InstanceApi(getUrl());
-        InstanceModel model = createModel();  
+        PluginInstanceModel model = createModel();  
         String nameCreated = model.getName();
         String zoneCreated = model.getZone();
         
-        Body<InstanceModel> body = 
+        Body<PluginInstanceModel> body = 
                 instanceApi.getInstance(
                         "fake-token", "fake-identity", zoneCreated, nameCreated);
         assertThat(body.getContent().getName()).isEqualTo(nameCreated);
@@ -69,7 +69,7 @@ public class InstanceApiTest {
     @Test
     public void deleteTest() throws Exception {
         InstanceApi instanceApi = new InstanceApi(getUrl());
-        InstanceModel model = createModel();  
+        PluginInstanceModel model = createModel();  
         String nameCreated = model.getName();
         String zoneCreated = model.getZone();
         
@@ -82,7 +82,7 @@ public class InstanceApiTest {
     @Test
     public void listTest() throws Exception {
         InstanceApi instanceApi = new InstanceApi(getUrl());
-        Body<List<InstanceModel>> body = 
+        Body<List<PluginInstanceModel>> body = 
                 instanceApi.listInstances(
                         "fake-token", "fake-identity");
         assertThat(body.getMessage()).isEqualTo(Body.OK);
@@ -94,15 +94,15 @@ public class InstanceApiTest {
         return "http://localhost:"+PORT;
     }
     
-    private static List<InstanceModel> createListModel(){
-        List<InstanceModel> listModel = new ArrayList<>();
+    private static List<PluginInstanceModel> createListModel(){
+        List<PluginInstanceModel> listModel = new ArrayList<>();
         listModel.add(createModel());
         listModel.add(createModel());
         return listModel;
     }
     
-    private static InstanceModel createModel() {
-        InstanceModel model = new InstanceModel();
+    private static PluginInstanceModel createModel() {
+        PluginInstanceModel model = new PluginInstanceModel();
         model.setName("instance-name");
         model.setZone("instance-zone");
         return model;
