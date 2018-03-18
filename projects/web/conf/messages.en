@@ -252,6 +252,7 @@ object.zoneName=Zone
 object.cloudInstanceName=Instance Name
 object.cloudInstanceIp=External IP
 object.executor.name=Executor
+object.regionName=Region
 
 # InstanceTypeRegionModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
