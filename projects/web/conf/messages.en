@@ -49,6 +49,7 @@ crud.deleted=The &{%s} has been deleted
 crud.delete.error=Cannot delete this object
 crud.search=Search
 crud.searching=Searching...
+crud.processing=Processing...
 crud.none=(None)
 crud.selectValue=(Please select a value)
 crud.all=All &{%s}
@@ -73,6 +74,9 @@ crud.help.past=In the past.
 crud.help.after=After %s.
 crud.help.before=Before %s.
 crud.help.range=Between %d and %d
+
+validation.port.out.of.range=Some of ports informed are out of range (0 to 65535)
+validation.number.format=Some of ports informed are in the wrong format
 
 # Datetimepicker labels
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -213,6 +217,12 @@ ImageModel=Image
 object.plugin.name=&{PluginModel}
 image.search.obs=You must select a cloud plugin to find available images
 
+# ApplicationModel
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+object.firewallUdpRules=UDP Port Rules for Firewall
+object.firewallTcpRules=TCP Port Rules for Firewall
+firewall.separate.ports=Separate values with commas (,) or semicolons (;), ex.: 80,3306,5432
+
 # CoordinatorModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 CoordinatorModel=Coordinator
@@ -253,6 +263,7 @@ object.cloudInstanceName=Instance Name
 object.cloudInstanceIp=External IP
 object.executor.name=Executor
 object.regionName=Region
+object.creationDate=Creation Date
 
 # InstanceTypeRegionModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

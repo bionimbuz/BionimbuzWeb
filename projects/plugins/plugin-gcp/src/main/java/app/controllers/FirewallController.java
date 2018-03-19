@@ -4,6 +4,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.jclouds.googlecloud.domain.ListPage;
 import org.jclouds.googlecomputeengine.GoogleComputeEngineApi;
@@ -21,6 +23,8 @@ import app.common.GlobalConstants;
 import app.common.GoogleComputeEngineUtils;
 import app.models.Body;
 import app.models.PluginFirewallModel;
+import app.models.PluginFirewallModel.PROTOCOL;
+import app.models.PluginInstanceModel;
 
 @RestController
 public class FirewallController extends AbstractFirewallController{  
@@ -142,7 +146,33 @@ public class FirewallController extends AbstractFirewallController{
                         firewall.creationTimestamp());
     }
     
-    private void replaceFirewallRule(
+    public static void createRulesForInstances(GoogleComputeEngineApi googleApi, final List<PluginInstanceModel> instances) throws Exception {        
+        PluginFirewallModel firewall;
+        // TODO: implement range list 
+        List<String> range = new ArrayList();
+        
+        // First, TCP ports
+        Set<Integer> ports = new TreeSet<>();        
+        for(PluginInstanceModel instance : instances) {
+            ports.addAll(instance.getFirewallTcpPorts());
+        }
+        for(Integer port : ports) {
+            firewall = new PluginFirewallModel(PROTOCOL.tcp, port, range);
+            replaceFirewallRule(googleApi, firewall);
+        }
+        
+        // Second, UDP ports
+        ports = new TreeSet<>();        
+        for(PluginInstanceModel instance : instances) {
+            ports.addAll(instance.getFirewallUdpPorts());
+        }
+        for(Integer port : ports) {
+            firewall = new PluginFirewallModel(PROTOCOL.udp, port, range);
+            replaceFirewallRule(googleApi, firewall);
+        }
+    }
+    
+    public static void replaceFirewallRule(
             GoogleComputeEngineApi googleApi, 
             PluginFirewallModel firewallRule
                 ) throws Exception {

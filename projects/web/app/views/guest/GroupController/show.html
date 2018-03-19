@@ -45,7 +45,7 @@
 <div class="row col-lg-12" >
 &{'group.join.message'} 
 
-#{form action:@join(object._key()), enctype:'multipart/form-data'}    
+#{form action:@join(object._key()), enctype:'multipart/form-data', class: 'submitForm'}    
     <div class="btn-row text-center">        
         <input class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_leave" value="&{'crud.no'}" />
         <input class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_join" value="&{'crud.yes'}" />
@@ -58,7 +58,7 @@
 #{else}
 
 <div class="row col-lg-12" >
-#{form action:@save(object._key()), enctype:'multipart/form-data'}
+#{form action:@save(object._key()), enctype:'multipart/form-data', class: 'submitForm'}
 
     #{crud.form} 
         
@@ -187,7 +187,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">&{'modal.button.cancel'}</button>                
-                #{form @delete(object._key()), style: 'display:inline;'}
+                #{form @delete(object._key()), style: 'display:inline;', class: 'submitForm'}
                     <button type="submit" class="btn btn-primary">&{'modal.button.confirm'}</button>
                 #{/form}
             </div>
@@ -208,7 +208,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">&{'modal.button.cancel'}</button>                
-                #{form @leave(object._key()), style: 'display:inline;'}
+                #{form @leave(object._key()), style: 'display:inline;', class: 'submitForm'}
                     <button type="submit" class="btn btn-primary">&{'modal.button.confirm'}</button>
                 #{/form}
             </div>

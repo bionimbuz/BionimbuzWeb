@@ -1,7 +1,7 @@
 <div class=row>
 
     <div class="col-xs-12 col-sm-12 col-md-10 margin-bottom">
-        #{form action:@list().remove('page'), method:'GET', id:'searchForm'}
+        #{form action:@list().remove('page'), method:'GET', id:'searchForm', class: 'submitForm'}
             #{if _fields}
                 <input type="hidden" name="searchFields" value="${_fields.toString().substring(1, _fields.toString().length()-1).replace(',', '')}" />
             #{/if}

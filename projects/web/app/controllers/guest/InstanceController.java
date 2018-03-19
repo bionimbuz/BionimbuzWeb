@@ -1,6 +1,7 @@
 package controllers.guest;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import app.client.InstanceApi;
@@ -11,10 +12,12 @@ import app.models.PluginInstanceModel;
 import app.models.PluginZoneModel;
 import app.models.security.TokenModel;
 import common.constants.I18N;
+import common.utils.StringUtils;
 import common.utils.UserCredentialsReader;
 import controllers.CRUD.For;
 import controllers.Check;
 import controllers.adm.BaseAdminController;
+import models.ExecutorModel;
 import models.ImageModel;
 import models.InstanceModel;
 import models.InstanceTypeModel;
@@ -37,7 +40,6 @@ public class InstanceController extends BaseAdminController {
     private static final String INSTANCE_TYPE_SELECTED_ID = INSTANCE_TYPE_SELECTED + ".id";
     private static final String REGION_SELECTED = "regionSelected";
     private static final String REGION_SELECTED_ID = REGION_SELECTED + ".id";
-    private static final String ZONE_SELECTED = "zoneSelected";
 
     public static void blank() throws Exception {
         final CustomObjectType type = CustomObjectType.get(getControllerClass());
@@ -91,6 +93,7 @@ public class InstanceController extends BaseAdminController {
         object.setTypeName(instanceTypeSelected.getName());
         object.setCores(instanceTypeSelected.getCores());
         object.setMemory(instanceTypeSelected.getMemory());
+        object.setCreationDate(new Date());
         
         object._save();
         if(object.isExecutionAfterCreation()) {
@@ -119,6 +122,13 @@ public class InstanceController extends BaseAdminController {
             break;
         }
         
+        ExecutorModel executor = instance.getExecutor();
+        res.setFirewallUdpPorts(
+                StringUtils.splitToIntList(
+                        executor.getFirewallUdpRules()));
+        res.setFirewallTcpPorts(
+                StringUtils.splitToIntList(
+                        executor.getFirewallTcpRules()));        
         res.setMachineType(instance.getTypeName());
         res.setType(instance.getTypeName());
         res.setZone(instance.getZoneName());

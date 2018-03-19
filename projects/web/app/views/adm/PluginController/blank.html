@@ -12,7 +12,7 @@
 <br>
 
 <div class="row col-lg-12" >
-#{form action:@create(), enctype:'multipart/form-data'}
+#{form action:@create(), enctype:'multipart/form-data', class: 'submitForm'}
     #{crud.form}    
         #{crud.custom 'url'}        
             #{field 'object.url'} 

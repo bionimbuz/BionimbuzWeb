@@ -32,6 +32,12 @@
             <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value}"/>
         </div>
     #{/field}
+    #{field 'object.creationDate' }
+        <div class="form-group row">
+            <label for="${field.id}">&{field.name}</label>                
+            <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value}"/>
+        </div>
+    #{/field}    
     #{field 'object.cloudInstanceIp' }
         <div class="form-group row">
             <label for="${field.id}">&{field.name}</label>                
@@ -111,7 +117,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">&{'modal.button.cancel'}</button>                
-                #{form @delete(object._key()), style: 'display:inline;'}
+                #{form @delete(object._key()), style: 'display:inline;', class: 'submitForm'}
                     <button type="submit" class="btn btn-primary">&{'modal.button.confirm'}</button>
                 #{/form}
             </div>

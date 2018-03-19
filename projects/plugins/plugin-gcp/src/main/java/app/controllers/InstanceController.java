@@ -43,6 +43,7 @@ public class InstanceController extends AbstractInstanceController{
                         identity, 
                         token)) { 
             List<PluginInstanceModel> res = listModel;
+            FirewallController.createRulesForInstances(googleApi, listModel);
             createInstances(googleApi, listModel);        
             return ResponseEntity.ok(
                     Body.create(res));
@@ -175,12 +176,12 @@ public class InstanceController extends AbstractInstanceController{
         
         return true;        
     }
-
+    
     protected void createInstances(
             GoogleComputeEngineApi googleApi,
             List<PluginInstanceModel> instances) throws Exception{
         
-        try {
+        try {            
             List<Pair<PluginInstanceModel, Operation>> operations = new ArrayList<>();
             for (PluginInstanceModel instance : instances) {
                 operations.add(new Pair<>(instance, null));   

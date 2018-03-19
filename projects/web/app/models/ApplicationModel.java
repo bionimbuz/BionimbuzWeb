@@ -12,6 +12,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import common.fields.validation.NetworkPortsCheck;
+import play.data.validation.CheckWith;
 import play.data.validation.MaxSize;
 import play.data.validation.MinSize;
 import play.data.validation.Required;
@@ -34,6 +36,10 @@ public class ApplicationModel extends GenericModel {
     @MaxSize(500)
     @MinSize(3)
     private String startupScript;
+    @CheckWith(NetworkPortsCheck.class)
+    private String firewallUdpRules;
+    @CheckWith(NetworkPortsCheck.class)
+    private String firewallTcpRules;
     @Required
     @ManyToMany
     @JoinTable(name = "tb_application_image", 
@@ -67,6 +73,18 @@ public class ApplicationModel extends GenericModel {
     }
     public void setListImages(List<ImageModel> listImages) {
         this.listImages = listImages;
+    }    
+    public String getFirewallUdpRules() {
+        return firewallUdpRules;
+    }
+    public void setFirewallUdpRules(String firewallUdpRules) {
+        this.firewallUdpRules = firewallUdpRules;
+    }
+    public String getFirewallTcpRules() {
+        return firewallTcpRules;
+    }
+    public void setFirewallTcpRules(String firewallTcpRules) {
+        this.firewallTcpRules = firewallTcpRules;
     }
     
     @Override

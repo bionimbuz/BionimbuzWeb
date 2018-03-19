@@ -42,6 +42,8 @@ public class InstanceModel extends GenericModel {
     private PluginModel plugin;
     @Required
     private boolean executionAfterCreation;
+    @NoBinding
+    private Date creationDate;
 
     // ---- Redundant Data for price table exclusion/update  
     @NoBinding
@@ -154,5 +156,11 @@ public class InstanceModel extends GenericModel {
     }
     public void setMemory(Double memory) {
         this.memory = memory;
+    }
+    public Date getCreationDate() {
+        return creationDate;
+    }
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }    
 }

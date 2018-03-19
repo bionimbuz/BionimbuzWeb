@@ -22,6 +22,8 @@ public class PluginInstanceModel extends Body {
     private String zone = "";
     private String imageUrl = "";
     private String type = "";
+    private List<Integer> firewallUdpPorts;
+    private List<Integer> firewallTcpPorts;
     
     public PluginInstanceModel() {    
         super();    
@@ -144,5 +146,17 @@ public class PluginInstanceModel extends Body {
     }
     public void setRegion(String region) {
         this.region = region;
+    }
+    public List<Integer> getFirewallUdpPorts() {
+        return firewallUdpPorts;
+    }
+    public void setFirewallUdpPorts(List<Integer> firewallUdpPorts) {
+        this.firewallUdpPorts = firewallUdpPorts;
+    }
+    public List<Integer> getFirewallTcpPorts() {
+        return firewallTcpPorts;
+    }
+    public void setFirewallTcpPorts(List<Integer> firewallTcpPorts) {
+        this.firewallTcpPorts = firewallTcpPorts;
     }
 }

@@ -1,6 +1,7 @@
 package controllers.guest;
 
 import common.constants.I18N;
+import common.constants.SystemConstants;
 import controllers.CRUD.For;
 import controllers.Check;
 import controllers.adm.BaseAdminController;
@@ -17,7 +18,6 @@ import play.i18n.Messages;
 @Check("/list/user/groups")
 public class GroupController extends BaseAdminController {
     
-    private static final String SPLIT_EXP_COMMA = "(\\s*;\\s*)|(\\s*,\\s*)";
     private static final String OBJECT_STR_USERS = "object.strUsers";
 
     public static void create() throws Exception {
@@ -147,7 +147,7 @@ public class GroupController extends BaseAdminController {
     private static String[] getUsersValidated(final GroupModel object) {
         String [] strUsers = {};        
         if(!object.getStrUsers().isEmpty()){ 
-            strUsers = object.getStrUsers().trim().split(SPLIT_EXP_COMMA);
+            strUsers = object.getStrUsers().trim().split(SystemConstants.SPLIT_EXP_COMMA);
         }
         for(String strUser : strUsers) {
             validation.email(OBJECT_STR_USERS, strUser);

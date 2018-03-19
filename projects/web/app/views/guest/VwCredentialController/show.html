@@ -18,7 +18,7 @@
 <br>
 
 <div class="row col-lg-12" >
-#{form action:@save(object._key()), enctype:'multipart/form-data'}
+#{form action:@save(object._key()), enctype:'multipart/form-data', class: 'submitForm'}
 
     #{crud.form}
         #{crud.custom 'userShared'}
@@ -63,7 +63,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">&{'modal.button.cancel'}</button>                
-                #{form @delete(object._key()), style: 'display:inline;'}
+                #{form @delete(object._key()), style: 'display:inline;', class: 'submitForm'}
                     <button type="submit" class="btn btn-primary">&{'modal.button.confirm'}</button>
                 #{/form}
             </div>

@@ -12,9 +12,35 @@
 <br>
 
 <div class="row col-lg-12" >
-#{form action:@create(), enctype:'multipart/form-data'}
+#{form action:@create(), enctype:'multipart/form-data', class: 'submitForm'}
 
-    #{crud.form}     
+    #{crud.form}   
+         
+        #{crud.custom 'firewallTcpRules'}                             
+        #{/crud.custom}  
+        
+        #{crud.custom 'firewallUdpRules'}        
+            #{field 'object.firewallTcpRules'}
+            <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                <label for="${field.id}">&{field.name}</label>
+                <input id="${field.id}" class="form-control"  type="text" name="${field.name}" value="${field.value}" />
+                <span class="help-block">*&{'firewall.separate.ports'}</span>     
+                #{ifError field.name}
+                    <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                #{/ifError} 
+            </div>
+            #{/field}          
+            #{field 'object.firewallUdpRules'}
+            <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                <label for="${field.id}">&{field.name}</label>
+                <input id="${field.id}" class="form-control"  type="text" name="${field.name}" value="${field.value}" />
+                <span class="help-block">*&{'firewall.separate.ports'}</span>     
+                #{ifError field.name}
+                    <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                #{/ifError} 
+            </div>
+            #{/field}                 
+        #{/crud.custom}  
         
         #{crud.custom 'listImages'}
             

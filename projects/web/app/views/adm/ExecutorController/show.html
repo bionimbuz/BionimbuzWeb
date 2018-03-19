@@ -20,9 +20,35 @@
 <br>
 
 <div class="row col-lg-12" >
-#{form action:@save(object._key()), enctype:'multipart/form-data'}
+#{form action:@save(object._key()), enctype:'multipart/form-data', class: 'submitForm'}
 
-    #{crud.form}     
+    #{crud.form}        
+         
+        #{crud.custom 'firewallTcpRules'}                             
+        #{/crud.custom}  
+        
+        #{crud.custom 'firewallUdpRules'}        
+            #{field 'object.firewallTcpRules'}
+            <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                <label for="${field.id}">&{field.name}</label>
+                <input id="${field.id}" class="form-control"  type="text" name="${field.name}" value="${field.value}" />
+                <span class="help-block">*&{'firewall.separate.ports'}</span>     
+                #{ifError field.name}
+                    <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                #{/ifError} 
+            </div>
+            #{/field}          
+            #{field 'object.firewallUdpRules'}
+            <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                <label for="${field.id}">&{field.name}</label>
+                <input id="${field.id}" class="form-control"  type="text" name="${field.name}" value="${field.value}" />
+                <span class="help-block">*&{'firewall.separate.ports'}</span>     
+                #{ifError field.name}
+                    <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                #{/ifError} 
+            </div>
+            #{/field}                 
+        #{/crud.custom}  
         
         #{crud.custom 'listImages'}
             
@@ -88,7 +114,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">&{'modal.button.cancel'}</button>                
-                #{form @delete(object._key()), style: 'display:inline;'}
+                #{form @delete(object._key()), style: 'display:inline;', class: 'submitForm'}
                     <button type="submit" class="btn btn-primary">&{'modal.button.confirm'}</button>
                 #{/form}
             </div>
