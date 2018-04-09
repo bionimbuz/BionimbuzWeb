@@ -29,7 +29,7 @@ public class StorageController {
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
             @RequestHeader(value=HttpHeaders.AUTHORIZATION) final String token,
             @RequestHeader(value=HttpHeadersCustom.AUTHORIZATION_ID) final String identity) {
-//        US_CENTRAL2, US_EAST2, US_EAST3
+
         try(GoogleCloudStorageApi googleApi =
                 GoogleCloudStorageUtils.createApi(
                         identity,

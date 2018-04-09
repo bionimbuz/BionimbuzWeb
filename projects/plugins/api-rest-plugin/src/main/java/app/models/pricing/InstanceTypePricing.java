@@ -3,26 +3,26 @@ package app.models.pricing;
 import java.util.HashMap;
 
 public class InstanceTypePricing {
-    
+
     private String name;
     private Short cores;
     private Double memory;
-    private HashMap<String, RegionPricing> listRegionPricing;
-    
+    private HashMap<String, Double> listRegionPricing;
+
     public InstanceTypePricing(
-            final String name, 
-            final Short cores, 
+            final String name,
+            final Short cores,
             final Double memory,
-            final HashMap<String, RegionPricing> listRegionPricing) {
+            final HashMap<String, Double> listRegionPricing) {
         this.name = name;
         this.cores = cores;
         this.memory = memory;
         this.listRegionPricing = listRegionPricing;
     }
 
-    public InstanceTypePricing() {        
+    public InstanceTypePricing() {
     }
-    
+
     public String getName() {
         return name;
     }
@@ -41,11 +41,10 @@ public class InstanceTypePricing {
     public void setMemory(final Double memory) {
         this.memory = memory;
     }
-    public HashMap<String, RegionPricing> getListRegionPricing() {
+    public HashMap<String, Double> getListRegionPricing() {
         return listRegionPricing;
     }
-    public void setListRegionPricing(
-            HashMap<String, RegionPricing> listRegionPricing) {
+    public void setListRegionPricing(HashMap<String, Double> listRegionPricing) {
         this.listRegionPricing = listRegionPricing;
-    }    
+    }
 }

@@ -4,21 +4,25 @@ import java.util.Date;
 import java.util.HashMap;
 
 import app.models.pricing.InstanceTypePricing;
+import app.models.pricing.StoragePricing;
 
 public class PluginPriceModel extends Body {
 
     private Date lastUpdate;
     private HashMap<String, InstanceTypePricing> listInstancePricing;
-    
+    private HashMap<String, StoragePricing> listStoragePricing;
+
     public PluginPriceModel(
             final Date lastUpdate,
-            final HashMap<String, InstanceTypePricing> listInstancePricing) {
+            final HashMap<String, InstanceTypePricing> listInstancePricing,
+            final HashMap<String, StoragePricing> listStoragePricing) {
         super();
         this.lastUpdate = lastUpdate;
         this.listInstancePricing = listInstancePricing;
+        this.listStoragePricing = listStoragePricing;
     }
     public PluginPriceModel() {
-        this(null, null);
+        this(null, null, null);
     }
 
     public Date getLastUpdate() {
@@ -33,5 +37,12 @@ public class PluginPriceModel extends Body {
     public void setListInstancePricing(
             HashMap<String, InstanceTypePricing> listInstancePricing) {
         this.listInstancePricing = listInstancePricing;
+    }
+    public HashMap<String, StoragePricing> getListStoragePricing() {
+        return listStoragePricing;
+    }
+    public void setListStoragePricing(
+            HashMap<String, StoragePricing> listStoragePricing) {
+        this.listStoragePricing = listStoragePricing;
     }
 }
