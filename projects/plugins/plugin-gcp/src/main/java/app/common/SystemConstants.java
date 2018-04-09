@@ -4,10 +4,16 @@ public class SystemConstants {
 
     public static final String PLUGIN_VERSION = "0.1";
     public static final String PLUGIN_NAME = "Google Cloud Platform";
-    public static final String PLUGIN_READ_SCOPE = "https://www.googleapis.com/auth/compute.readonly"; 
-    public static final String PLUGIN_WRITE_SCOPE = "https://www.googleapis.com/auth/compute"; 
     
-    public static final String CLOUD_TYPE = "google-compute-engine";
+    public static final String PLUGIN_COMPUTE_READ_SCOPE = "https://www.googleapis.com/auth/compute.readonly"; 
+    public static final String PLUGIN_COMPUTE_WRITE_SCOPE = "https://www.googleapis.com/auth/compute"; 
+    
+    public static final String PLUGIN_STORAGE_READ_SCOPE = "https://www.googleapis.com/auth/devstorage.read_only"; 
+    public static final String PLUGIN_STORAGE_WRITE_SCOPE = "https://www.googleapis.com/auth/devstorage.read_write";    
+    
+    public static final String CLOUD_COMPUTE_TYPE = "google-compute-engine";
+    public static final String CLOUD_STORAGE_TYPE = "google-cloud-storage";
+    
     public static final String IMAGE_PROJECT_UBUNTU = "ubuntu-os-cloud";
     
     public static final String PRICE_TABLE_URL = "https://cloudpricingcalculator.appspot.com/static/data/pricelist.json";

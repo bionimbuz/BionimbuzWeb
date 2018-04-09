@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import app.common.Routes;
+import app.common.SystemConstants;
 import app.models.Body;
 import app.models.PluginFirewallModel;
 import utils.TestUtils;
@@ -68,7 +69,7 @@ public class FirewallControllerTest {
 
 	public static void deleteRuleTest(PluginFirewallModel model, final TestRestTemplate restTemplate) {
 	    
-        HttpEntity<Void> entity = TestUtils.createEntity(TestUtils.WRITE_SCOPE);
+        HttpEntity<Void> entity = TestUtils.createEntity(SystemConstants.PLUGIN_COMPUTE_WRITE_SCOPE);
         
 		ResponseEntity<Body<Void>> response = 
 		        restTemplate
@@ -83,7 +84,7 @@ public class FirewallControllerTest {
     
 	public static void createRuleTest(PluginFirewallModel firewall, final TestRestTemplate restTemplate) {
 
-        HttpEntity<PluginFirewallModel> entity = TestUtils.createEntity(firewall, TestUtils.WRITE_SCOPE);
+        HttpEntity<PluginFirewallModel> entity = TestUtils.createEntity(firewall, SystemConstants.PLUGIN_COMPUTE_WRITE_SCOPE);
         
         ResponseEntity<Body<PluginFirewallModel>> response = 
                 restTemplate
@@ -98,7 +99,7 @@ public class FirewallControllerTest {
 
 	private ResponseEntity<Body<PluginFirewallModel>> getRuleTest(PluginFirewallModel firewall) {
 	    
-        HttpEntity<Void> entity = TestUtils.createEntity(TestUtils.READ_SCOPE);
+        HttpEntity<Void> entity = TestUtils.createEntity(SystemConstants.PLUGIN_COMPUTE_READ_SCOPE);
         
 		ResponseEntity<Body<PluginFirewallModel>> response = 
 				this.restTemplate
@@ -113,7 +114,7 @@ public class FirewallControllerTest {
 
 	private List<PluginFirewallModel> listAllTest() {			
 
-        HttpEntity<Void> entity = TestUtils.createEntity(TestUtils.READ_SCOPE);
+        HttpEntity<Void> entity = TestUtils.createEntity(SystemConstants.PLUGIN_COMPUTE_READ_SCOPE);
 	    
         ResponseEntity< Body<List<PluginFirewallModel>> > responseList = 
 				this.restTemplate

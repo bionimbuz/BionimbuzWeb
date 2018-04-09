@@ -13,7 +13,7 @@ public class InfoController extends AbstractInfoController {
      */
     @Override
     protected String getCloudType() {
-        return SystemConstants.CLOUD_TYPE;
+        return SystemConstants.CLOUD_COMPUTE_TYPE;
     }
     @Override
     protected String getPluginVersion() {
@@ -29,10 +29,10 @@ public class InfoController extends AbstractInfoController {
     }
     @Override
     protected String getWriteScope() {
-        return SystemConstants.PLUGIN_WRITE_SCOPE;
+        return SystemConstants.PLUGIN_COMPUTE_WRITE_SCOPE;
     }
     @Override
     protected String getReadScope() {
-        return SystemConstants.PLUGIN_READ_SCOPE;
+        return SystemConstants.PLUGIN_COMPUTE_READ_SCOPE;
     }
 }

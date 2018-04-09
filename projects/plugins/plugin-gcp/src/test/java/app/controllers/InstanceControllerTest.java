@@ -24,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import app.common.Routes;
+import app.common.SystemConstants;
 import app.models.Body;
 import app.models.PluginFirewallModel;
 import app.models.PluginInstanceModel;
@@ -147,7 +148,7 @@ public class InstanceControllerTest {
     
     private void deleteInstanceTest(PluginInstanceModel model) {
         
-        HttpEntity<Void> entity = TestUtils.createEntity(TestUtils.WRITE_SCOPE);
+        HttpEntity<Void> entity = TestUtils.createEntity(SystemConstants.PLUGIN_COMPUTE_WRITE_SCOPE);
         
         ResponseEntity<Body<Void>> response = this.restTemplate
                 .exchange(
@@ -162,7 +163,7 @@ public class InstanceControllerTest {
     
     private List<PluginInstanceModel> createInstancesTest(List<PluginInstanceModel> instances){
         HttpEntity<List<PluginInstanceModel>> entity = 
-                TestUtils.createEntity(instances, TestUtils.WRITE_SCOPE);
+                TestUtils.createEntity(instances, SystemConstants.PLUGIN_COMPUTE_WRITE_SCOPE);
         
         ResponseEntity<Body<List<PluginInstanceModel>>> response = this.restTemplate
                 .exchange(
@@ -178,7 +179,7 @@ public class InstanceControllerTest {
     
     private List<PluginInstanceModel> listAllTest() {         
 
-        HttpEntity<Void> entity = TestUtils.createEntity(TestUtils.READ_SCOPE);
+        HttpEntity<Void> entity = TestUtils.createEntity(SystemConstants.PLUGIN_COMPUTE_READ_SCOPE);
         
         ResponseEntity< Body<List<PluginInstanceModel>> > responseList = 
                 this.restTemplate
@@ -195,7 +196,7 @@ public class InstanceControllerTest {
     
     private ResponseEntity<Body<PluginInstanceModel>> getInstanceTest(PluginInstanceModel model) {
         
-        HttpEntity<Void> entity = TestUtils.createEntity(TestUtils.READ_SCOPE);
+        HttpEntity<Void> entity = TestUtils.createEntity(SystemConstants.PLUGIN_COMPUTE_READ_SCOPE);
         
         ResponseEntity<Body<PluginInstanceModel>> response = 
                 this.restTemplate

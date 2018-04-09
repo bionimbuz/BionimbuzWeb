@@ -2,8 +2,6 @@ package app.controllers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,18 +16,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import app.common.Routes;
 import app.common.SystemConstants;
-import app.models.Body;
-import app.models.PluginZoneModel;
 import utils.TestUtils;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class ZoneControllerTest {
+public class StorageControllerTest {
     
     @Autowired
-    private InstanceController controller;
+    private StorageController controller;
     @Autowired
     private TestRestTemplate restTemplate;
     @Value("${local.server.port}")
@@ -41,19 +36,18 @@ public class ZoneControllerTest {
     }
 
     @Test
-    public void list_Test() {        
+    public void update_Test() {        
         TestUtils.setTimeout(restTemplate.getRestTemplate(), 0);
-        HttpEntity<Void> entity = TestUtils.createEntity(SystemConstants.PLUGIN_COMPUTE_READ_SCOPE);
+        HttpEntity<Void> entity = TestUtils.createEntity(SystemConstants.PLUGIN_STORAGE_WRITE_SCOPE);
     
-        ResponseEntity< Body<List<PluginZoneModel>> > responseList = 
+        ResponseEntity< Void > responseList = 
                 this.restTemplate
                     .exchange(
-                            Routes.ZONES, 
-                            HttpMethod.GET, 
+                            "/buckets", 
+                            HttpMethod.POST, 
                             entity,
-                            new ParameterizedTypeReference< Body<List<PluginZoneModel>> >() {});          
+                            new ParameterizedTypeReference< Void >() {});          
         
         assertThat(responseList.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(responseList.getBody()).isNotNull();
     }
 }

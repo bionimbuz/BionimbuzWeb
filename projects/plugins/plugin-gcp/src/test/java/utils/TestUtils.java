@@ -36,8 +36,6 @@ public class TestUtils {
     protected static final Logger LOGGER = LoggerFactory.getLogger(TestUtils.class);  
     
     private static Supplier<Credentials> credentialSupplier;    
-    public static final String READ_SCOPE = "https://www.googleapis.com/auth/compute.readonly"; 
-    public static final String WRITE_SCOPE = "https://www.googleapis.com/auth/compute"; 
         
     static {
         String credentialContent =
@@ -112,7 +110,7 @@ public class TestUtils {
         
         try(AuthorizationApi api = 
                 Authorization.createApi(
-                        credential, SystemConstants.CLOUD_TYPE)) {        
+                        credential, SystemConstants.CLOUD_COMPUTE_TYPE)) {        
             Token token = api.authorize(claims);            
             return token;
         }

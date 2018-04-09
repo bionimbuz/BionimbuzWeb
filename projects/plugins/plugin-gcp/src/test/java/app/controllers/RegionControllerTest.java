@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import app.common.Routes;
+import app.common.SystemConstants;
 import app.models.Body;
 import app.models.PluginRegionModel;
 import app.models.PluginZoneModel;
@@ -43,7 +44,7 @@ public class RegionControllerTest {
     @Test
     public void list_Test() {        
         TestUtils.setTimeout(restTemplate.getRestTemplate(), 0);
-        HttpEntity<Void> entity = TestUtils.createEntity(TestUtils.READ_SCOPE);
+        HttpEntity<Void> entity = TestUtils.createEntity(SystemConstants.PLUGIN_COMPUTE_READ_SCOPE);
     
         ResponseEntity< Body<List<PluginRegionModel>> > responseList = 
                 this.restTemplate
@@ -60,7 +61,7 @@ public class RegionControllerTest {
     @Test
     public void list_filtered_Test() {        
         TestUtils.setTimeout(restTemplate.getRestTemplate(), 0);
-        HttpEntity<Void> entity = TestUtils.createEntity(TestUtils.READ_SCOPE);
+        HttpEntity<Void> entity = TestUtils.createEntity(SystemConstants.PLUGIN_COMPUTE_READ_SCOPE);
     
         ResponseEntity< Body<List<PluginZoneModel>> > responseList = 
                 this.restTemplate

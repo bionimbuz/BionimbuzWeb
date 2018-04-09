@@ -9,6 +9,7 @@ import org.jclouds.googlecomputeengine.GoogleComputeEngineApi;
 import org.jclouds.googlecomputeengine.domain.Operation;
 import org.jclouds.googlecomputeengine.features.NetworkApi;
 import org.jclouds.googlecomputeengine.features.OperationApi;
+import org.jclouds.googlecomputeengine.features.SubnetworkApi;
 import org.jclouds.oauth.v2.config.CredentialType;
 import org.jclouds.oauth.v2.config.OAuthProperties;
 
@@ -25,7 +26,7 @@ public class GoogleComputeEngineUtils {
                 CredentialType.BEARER_TOKEN_CREDENTIALS.toString());
 
         ContextBuilder builder = ContextBuilder
-                .newBuilder(SystemConstants.CLOUD_TYPE);
+                .newBuilder(SystemConstants.CLOUD_COMPUTE_TYPE);
 
         ComputeServiceContext context = builder.overrides(overrides)
                 .credentials(identity, token)
@@ -38,14 +39,26 @@ public class GoogleComputeEngineUtils {
     
     public static URI assertDefaultNetwork(final GoogleComputeEngineApi googleApi)
             throws Exception {
-        NetworkApi networkApi = googleApi.networks();
-        URI networkURL = networkApi.get(GlobalConstants.DEFAULT_NETWORK)
+        NetworkApi api = googleApi.networks();
+        URI url = api.get(GlobalConstants.DEFAULT_NETWORK)
                 .selfLink();
-        if (networkURL == null) {
+        if (url == null) {
             throw new Exception(
                     "Your project does not have a default network. Please recreate the default network or try again with a new project");
         }
-        return networkURL;
+        return url;
+    }
+    
+    public static URI assertDefaultSubnetwork(final GoogleComputeEngineApi googleApi, final String region)
+            throws Exception {
+        SubnetworkApi api = googleApi.subnetworksInRegion(region);
+        URI url = api.get(GlobalConstants.DEFAULT_SUBNETWORK)
+                .selfLink();
+        if (url == null) {
+            throw new Exception(
+                    "Your project does not have a default subnetwork. Please recreate the default subnetwork or try again with a new project");
+        }
+        return url;
     }
     
     public static void waitOperation(

@@ -267,13 +267,17 @@ public class InstanceController extends AbstractInstanceController{
 
         InstanceApi instanceApi = googleApi.instancesInZone(instance.getZone());        
 
-        URI networkURL = GoogleComputeEngineUtils.assertDefaultNetwork(googleApi);
+        URI networkURL = GoogleComputeEngineUtils
+                .assertDefaultNetwork(googleApi);
+        URI subnetworkURL = GoogleComputeEngineUtils
+                .assertDefaultSubnetwork(googleApi, instance.getRegion());
                   
         NewInstance newInstance = 
                 NewInstance.create(
                     instance.getName(), 
                     machineTypeURL, 
                     networkURL,
+                    subnetworkURL,
                     instance.getImageUri());
         
         newInstance.metadata().put(
