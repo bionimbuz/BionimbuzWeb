@@ -25,14 +25,16 @@ public class PriceTableModel extends GenericModel {
         PROCESSING,
         ERROR,
     }
-    
+
     @Id
     @GeneratedValue
     private Long id;
     @OneToOne
     private PluginModel plugin;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "instanceType")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "priceTable")
     private List<InstanceTypeRegionModel> listInstanceTypeRegion;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "priceTable")
+    private List<StorageRegionModel> listStorageRegion;
     private Date priceTableDate;
     private Date lastSearchDate;
     private Date lastSyncDate;
@@ -46,17 +48,19 @@ public class PriceTableModel extends GenericModel {
     public PriceTableModel() {
         super();
     }
-    
+
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Data access
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public static void deletePriceTable(final Long idPriceTable) {
+        StorageRegionModel.deleteForPriceTable(idPriceTable);
         InstanceTypeRegionModel.deleteForPriceTable(idPriceTable);
-        RegionModel.deleteForPriceTable(idPriceTable);
+        RegionModel.deleteForInstancesPriceTable(idPriceTable);
+        RegionModel.deleteForStoragesPriceTable(idPriceTable);
         InstanceTypeModel.deleteForPriceTable(idPriceTable);
         delete("id = ?1", idPriceTable);
     }
-    
+
     public static SyncStatus getStatus(final PluginPriceTableStatusModel status) {
         switch(status.getStatus()) {
             case OK:
@@ -94,6 +98,12 @@ public class PriceTableModel extends GenericModel {
             List<InstanceTypeRegionModel> listInstanceTypeRegion) {
         this.listInstanceTypeRegion = listInstanceTypeRegion;
     }
+    public List<StorageRegionModel> getListStorageRegion() {
+        return listStorageRegion;
+    }
+    public void setListStorageRegion(List<StorageRegionModel> listStorageRegion) {
+        this.listStorageRegion = listStorageRegion;
+    }
     public Date getPriceTableDate() {
         return priceTableDate;
     }
@@ -123,5 +133,5 @@ public class PriceTableModel extends GenericModel {
     }
     public void setSyncMessage(String syncMessage) {
         this.syncMessage = syncMessage;
-    }   
+    }
 }

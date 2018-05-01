@@ -186,7 +186,7 @@ public class InstanceController extends BaseAdminController {
         if(plugin == null)
             return null;
         List<Region> listRegions = new ArrayList<>();
-        for(RegionModel region : RegionModel.searchRegionsForPlugin(plugin)) {
+        for(RegionModel region : RegionModel.searchInstanceRegionsForPlugin(plugin)) {
             listRegions.add(new Region(region));
         }        
         return listRegions;

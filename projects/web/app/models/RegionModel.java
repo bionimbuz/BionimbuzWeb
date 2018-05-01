@@ -26,22 +26,26 @@ public class RegionModel extends GenericModel {
     @NoBinding
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "region")
     private List<InstanceTypeRegionModel> listInstanceTypeRegion;
-    
+    @Expose(serialize = false)
+    @NoBinding
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "region")
+    private List<StorageRegionModel> listStorageRegion;
+
     public static class Region {
 
         private Long id;
         private String name;
-        
+
         public Region(final RegionModel region) {
             this.id = region.getId();
             this.name = region.getName();
         }
-        
+
         public Region(Long id, String name) {
             this.id = id;
             this.name = name;
         }
-        
+
         public Long getId() {
             return id;
         }
@@ -62,11 +66,11 @@ public class RegionModel extends GenericModel {
     public RegionModel() {
         super();
     }
-    
+
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Data access
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
-    public static void deleteForPriceTable(final Long idPriceTable) {
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    public static void deleteForInstancesPriceTable(final Long idPriceTable) {
         delete(
               " DELETE FROM RegionModel region "
             + " WHERE region IN "
@@ -75,7 +79,16 @@ public class RegionModel extends GenericModel {
             + "         JOIN region.listInstanceTypeRegion instanceTypeRegion"
             + "         WHERE instanceTypeRegion.priceTable.id = ?1)", idPriceTable);
     }
-    public static List<RegionModel> searchRegionsForPlugin(final PluginModel plugin) {
+    public static void deleteForStoragesPriceTable(final Long idPriceTable) {
+        delete(
+                " DELETE FROM RegionModel region "
+              + " WHERE region IN "
+              + "     (SELECT region "
+              + "         FROM RegionModel region"
+              + "         JOIN region.listStorageRegion storageRegion"
+              + "         WHERE storageRegion.priceTable.id = ?1)", idPriceTable);
+      }
+    public static List<RegionModel> searchInstanceRegionsForPlugin(final PluginModel plugin) {
         return find(
             " SELECT DISTINCT regions "
             + " FROM InstanceTypeRegionModel instanceTypeRegions"
@@ -83,7 +96,15 @@ public class RegionModel extends GenericModel {
             + " WHERE instanceTypeRegions.priceTable.plugin.id = ?1"
             + " ORDER BY regions.name", plugin.getId()).fetch();
     }
-    
+    public static List<RegionModel> searchStorageRegionsForPlugin(final PluginModel plugin) {
+        return find(
+            " SELECT DISTINCT regions "
+            + " FROM StorageRegionModel storageRegions"
+            + " JOIN storageRegions.region regions"
+            + " WHERE storageRegions.priceTable.plugin.id = ?1"
+            + " ORDER BY regions.name", plugin.getId()).fetch();
+    }
+
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Getters and Setters
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -105,5 +126,11 @@ public class RegionModel extends GenericModel {
     public void setListInstanceTypeRegion(
             List<InstanceTypeRegionModel> listInstanceTypeRegion) {
         this.listInstanceTypeRegion = listInstanceTypeRegion;
+    }
+    public List<StorageRegionModel> getListStorageRegion() {
+        return listStorageRegion;
+    }
+    public void setListStorageRegion(List<StorageRegionModel> listStorageRegion) {
+        this.listStorageRegion = listStorageRegion;
     }
 }

@@ -2,15 +2,15 @@ package app.models.pricing;
 
 public class StoragePricing {
 
-    private String location;
+    private String region;
     private Double price;
     private Double classAPrice;
     private Double classBPrice;
 
     public StoragePricing(
-            final String location, final Double price,
+            final String region, final Double price,
             final Double classAPrice, final Double classBPrice) {
-        this.location = location;
+        this.region = region;
         this.price = price;
         this.classAPrice = classAPrice;
         this.classBPrice = classBPrice;
@@ -24,11 +24,11 @@ public class StoragePricing {
         this(location, null, null, null);
     }
 
-    public String getLocation() {
-        return location;
+    public String getRegion() {
+        return region;
     }
-    public void setLocation(String location) {
-        this.location = location;
+    public void setRegion(String region) {
+        this.region = region;
     }
     public Double getPrice() {
         return price;

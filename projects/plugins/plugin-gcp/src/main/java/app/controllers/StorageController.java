@@ -35,7 +35,7 @@ public class StorageController {
                         identity,
                         token)) {
             // TODO: make dynamic location
-            Location location = Location.US_EAST3;
+            Location location = Location.US_CENTRAL1;
 
             String projectId =
                     CurrentProject.ClientEmail.toProjectNumber(identity);

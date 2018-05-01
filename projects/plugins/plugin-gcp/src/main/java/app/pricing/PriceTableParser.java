@@ -128,13 +128,13 @@ public class PriceTableParser {
             if(tagName.contains(SUBSTR_VMIMAGE)) {
                 parseInstance(jsonParser, listInstancePricing, tagName);
             } else if(TAG_STORAGE_REGIONAL.equals(tagName)) {
-                parseStorageRegional(jsonParser, listStoragePricing,
+                parseStorage(jsonParser, listStoragePricing,
                         StoragePriceType.PRICE_REGIONAL);
             } else if(TAG_STORAGE_A_CLASS.equals(tagName)) {
-                parseStorageRegional(jsonParser, listStoragePricing,
+                parseStorage(jsonParser, listStoragePricing,
                         StoragePriceType.PRICE_CLASS_A);
             } else if(TAG_STORAGE_B_CLASS.equals(tagName)) {
-                parseStorageRegional(jsonParser, listStoragePricing,
+                parseStorage(jsonParser, listStoragePricing,
                         StoragePriceType.PRICE_CLASS_B);
             } else {
                 jsonParser.nextToken();
@@ -143,7 +143,7 @@ public class PriceTableParser {
         }
     }
 
-    private void parseStorageRegional(
+    private void parseStorage(
             JsonParser jsonParser,
             HashMap<String, StoragePricing> listStoragePricing,
             final StoragePriceType storagePriceType) throws IOException {
