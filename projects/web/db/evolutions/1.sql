@@ -7,16 +7,16 @@ INSERT INTO tb_setting (settingName, settingValue, defaultValue, minSize, maxSiz
     ,('setting_decimal_temp',   '1.1',              '',              '1.0',     '10.5',     'DECIMAL',  FALSE)
     ,('setting_string_temp',    'test',             '',                '3',     '50',       'STRING',   TRUE)
     ,('setting_date_temp',      '2018-01-01 11:11', '', '2015-01-01 00:00',     '',         'DATE',     FALSE)
-; 
+;
 
 -- TB_ROLE
-INSERT INTO tb_role (id) VALUES 
+INSERT INTO tb_role (id) VALUES
      ('ADMIN')
     ,('NORMAL')
 ;
 
 -- TB_USER
-INSERT INTO tb_user (id, email, joined, name, role_id, pass) VALUES 
+INSERT INTO tb_user (id, email, joined, name, role_id, pass) VALUES
     -- pass: master
     (1, 'master@bionimbuz.org.br', TRUE, 'Administrador do Sistema', 'ADMIN', '353ba90f8c0b3e0f355a3d6c960b7caed5f2c1412992277c0669a04a62e7dfd35fba9f4631a7dc6d00fb44d93d305cc0b749c7501d9ce86f26148d05101b8324')
 ;
@@ -32,11 +32,12 @@ INSERT INTO tb_menu (id, parentmenu_id, menuorder, path, name, iconclass) VALUES
    ,(7,  NULL,  5, '#',                     'menu.applications',                'glyphicon glyphicon-play')
    ,(8,     7,  1, '/adm/coordinator',      'menu.applications.coordinators',   NULL)
    ,(9,     7,  2, '/adm/list/executors',   'menu.applications.executors',      NULL)
-   ,(10, NULL,  6, '#',                     'menu.execution',                   'glyphicon glyphicon-screenshot')
-   ,(11,   10,  1, '/list/instances',       'menu.instances',                   NULL)
-   ,(12,   10,  2, '#',                     'menu.workflows',                   NULL)
-   ,(13, NULL,  7, '/adm/list/settings',    'menu.settings',                   'glyphicon glyphicon-wrench')
-;   
+   ,(10, NULL,  6, '/list/storages',        'menu.storages',                   'glyphicon glyphicon-hdd')
+   ,(11, NULL,  7, '#',                     'menu.execution',                   'glyphicon glyphicon-screenshot')
+   ,(12,   11,  1, '/list/instances',       'menu.instances',                   NULL)
+   ,(13,   11,  2, '#',                     'menu.workflows',                   NULL)
+   ,(14, NULL,  8, '/adm/list/settings',    'menu.settings',                   'glyphicon glyphicon-wrench')
+;
 
 -- TB_ROLE_MENU
 INSERT INTO tb_role_menu (id_menu, id_role) VALUES
@@ -58,6 +59,8 @@ INSERT INTO tb_role_menu (id_menu, id_role) VALUES
    ,(12, 'ADMIN')
    ,(12, 'NORMAL')
    ,(13, 'ADMIN')
+   ,(13, 'NORMAL')
+   ,(14, 'ADMIN')
 ;
 
 # --- !Downs

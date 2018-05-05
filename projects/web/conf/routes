@@ -86,6 +86,14 @@ POST    /adm/executors                          adm.ExecutorController.create
 GET     /adm/list/prices                        adm.PriceTableController.list
 GET     /adm/force/prices                       adm.PriceTableController.forceSync
 
+# StorageController
+GET     /list/storages                          guest.StorageController.list
+GET     /storages/{id}                          guest.StorageController.show
+PUT     /storages/{id}                          guest.StorageController.save
+DELETE  /storages/{id}                          guest.StorageController.delete
+GET     /storages                               guest.StorageController.blank
+POST    /storages                               guest.StorageController.create
+
 # InstanceController
 GET     /search/instance/types/zones            guest.InstanceController.searchInstanceTypesZones
 GET     /search/instance/regions                guest.InstanceController.searchRegions

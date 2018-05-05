@@ -127,6 +127,8 @@ ExecutorController=Executors
 
 InstanceController=Instances
 
+StorageController=Storages
+
 SettingController=Settings
 
 # Menus
@@ -140,6 +142,7 @@ menu.groups=&{UserGroupController}
 menu.applications=&{ApplicationController}
 menu.applications.coordinators=&{CoordinatorController}
 menu.applications.executors=&{ExecutorController}
+menu.storages=&{StorageController}
 menu.instances=&{InstanceController}
 menu.execution=Executions
 menu.workflows=Workflows
@@ -152,7 +155,7 @@ object.settingName=Setting
 object.settingValue=Value
 object.defaultValue=Default Value
 
-# These translations below tags will be the ones 
+# These translations below tags will be the ones
 # used to store settings in database as KEYs
 setting_number_temp=Number Field
 setting_decimal_temp=Decimal Field
@@ -187,7 +190,7 @@ group.success.leave=You leaved the group with success
 group.modal.confirm.leave=Are you sure you want to leave this group?
 group.modal.confirm.leave.desc=Once you leave this group, you can no longer access it
 group.modal.confirm.delete.desc=The group will be deleted permanently and the participating users will be removed from it
-group.join.message=You will only be able to view other users if you agree to join the group. If do not agree, the group will be removed from your list. <br><br> Do you agree? 
+group.join.message=You will only be able to view other users if you agree to join the group. If do not agree, the group will be removed from your list. <br><br> Do you agree?
 
 # UserGroupModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -286,7 +289,7 @@ personal.data=Personal Data
 change.password=Change Password
 price.table.force.sync=Force Synchronization
 price.table.force.success=A request was sent to server, please update price table list in a few minutes
-price.table.force.error=The request cannot be processed, server may be synchronizing now 
+price.table.force.error=The request cannot be processed, server may be synchronizing now
 pluginSelected=Available Plugins
 regionSelected=Available Regions
 zoneSelected=Available Zones
