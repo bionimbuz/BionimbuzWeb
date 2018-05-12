@@ -11,8 +11,8 @@ import play.data.binding.NoBinding;
 import play.db.jpa.GenericModel;
 
 @Entity
-@Table(name = "tb_storage_region")
-public class StorageModel extends GenericModel {
+@Table(name = "tb_storage")
+public class SpaceModel extends GenericModel {
 
     @Id
     @GeneratedValue
@@ -34,7 +34,7 @@ public class StorageModel extends GenericModel {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Constructors
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    public StorageModel() {
+    public SpaceModel() {
         super();
     }
 

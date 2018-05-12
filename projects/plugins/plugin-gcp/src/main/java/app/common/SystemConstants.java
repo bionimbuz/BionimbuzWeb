@@ -19,5 +19,5 @@ public class SystemConstants {
     public static final String PRICE_TABLE_URL = "https://cloudpricingcalculator.appspot.com/static/data/pricelist.json";
     public static final String PRICE_TABLE_DIR = "pricing/";
     public static final String PRICE_TABLE_FILE = PRICE_TABLE_DIR + "table.json";
-    public static final String PRICE_TABLE_VERSION = "v1.28";
+    public static final String PRICE_TABLE_VERSION = "v1.29";
 }

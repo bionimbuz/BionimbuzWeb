@@ -18,4 +18,13 @@ repositories:
     artifact:   ${application.path}/../plugins/api-rest-plugin/target/[module]-[revision].jar
     contains:
         - br.unb.cic.bionimbuz -> *
-        
+
+- jclouds:
+    type: iBiblio
+    root: "https://repository.apache.org/content/repositories/snapshots/"
+    contains:
+        - org.apache.jclouds -> *
+        - org.apache.jclouds.api -> *
+        - org.apache.jclouds.provider -> *
+        - org.apache.jclouds.driver -> *
+        - org.apache.jclouds.common -> *

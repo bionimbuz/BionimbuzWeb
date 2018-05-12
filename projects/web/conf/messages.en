@@ -127,7 +127,7 @@ ExecutorController=Executors
 
 InstanceController=Instances
 
-StorageController=Storages
+SpaceController=Spaces
 
 SettingController=Settings
 
@@ -142,7 +142,9 @@ menu.groups=&{UserGroupController}
 menu.applications=&{ApplicationController}
 menu.applications.coordinators=&{CoordinatorController}
 menu.applications.executors=&{ExecutorController}
-menu.storages=&{StorageController}
+menu.storages=Storage
+menu.spaces=Spaces
+menu.files=Files
 menu.instances=&{InstanceController}
 menu.execution=Executions
 menu.workflows=Workflows

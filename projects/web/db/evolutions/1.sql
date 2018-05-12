@@ -32,11 +32,13 @@ INSERT INTO tb_menu (id, parentmenu_id, menuorder, path, name, iconclass) VALUES
    ,(7,  NULL,  5, '#',                     'menu.applications',                'glyphicon glyphicon-play')
    ,(8,     7,  1, '/adm/coordinator',      'menu.applications.coordinators',   NULL)
    ,(9,     7,  2, '/adm/list/executors',   'menu.applications.executors',      NULL)
-   ,(10, NULL,  6, '/list/storages',        'menu.storages',                   'glyphicon glyphicon-hdd')
-   ,(11, NULL,  7, '#',                     'menu.execution',                   'glyphicon glyphicon-screenshot')
-   ,(12,   11,  1, '/list/instances',       'menu.instances',                   NULL)
-   ,(13,   11,  2, '#',                     'menu.workflows',                   NULL)
-   ,(14, NULL,  8, '/adm/list/settings',    'menu.settings',                   'glyphicon glyphicon-wrench')
+   ,(10, NULL,  6, '#',                     'menu.storages',                    'glyphicon glyphicon-hdd')
+   ,(11,   10,  1, '/list/spaces',          'menu.spaces',                      NULL)
+   ,(12,   10,  2, '/list/files',           'menu.files',                       NULL)
+   ,(13, NULL,  7, '#',                     'menu.execution',                   'glyphicon glyphicon-screenshot')
+   ,(14,   13,  1, '/list/instances',       'menu.instances',                   NULL)
+   ,(15,   13,  2, '#',                     'menu.workflows',                   NULL)
+   ,(16, NULL,  8, '/adm/list/settings',    'menu.settings',                   'glyphicon glyphicon-wrench')
 ;
 
 -- TB_ROLE_MENU
@@ -61,6 +63,10 @@ INSERT INTO tb_role_menu (id_menu, id_role) VALUES
    ,(13, 'ADMIN')
    ,(13, 'NORMAL')
    ,(14, 'ADMIN')
+   ,(14, 'NORMAL')
+   ,(15, 'ADMIN')
+   ,(15, 'NORMAL')
+   ,(16, 'ADMIN')
 ;
 
 # --- !Downs
