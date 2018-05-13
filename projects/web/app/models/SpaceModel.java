@@ -3,11 +3,14 @@ package models;
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import play.data.binding.NoBinding;
+import play.data.validation.Required;
 import play.db.jpa.GenericModel;
 
 @Entity
@@ -17,11 +20,17 @@ public class SpaceModel extends GenericModel {
     @Id
     @GeneratedValue
     private Long id;
+    @Required
     private String name;
+    @NoBinding
+    private Date creationDate;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @Required
+    private PluginModel plugin;
 
     // ---- Redundant Data for price table exclusion/update
     @NoBinding
-    private String zoneName;
+    private String regionName;
     @NoBinding
     private Date priceTableDate;
     @NoBinding
@@ -57,11 +66,11 @@ public class SpaceModel extends GenericModel {
     public void setName(String name) {
         this.name = name;
     }
-    public String getZoneName() {
-        return zoneName;
+    public String getRegionName() {
+        return regionName;
     }
-    public void setZoneName(String zoneName) {
-        this.zoneName = zoneName;
+    public void setRegionName(String regionName) {
+        this.regionName = regionName;
     }
     public Date getPriceTableDate() {
         return priceTableDate;
@@ -86,5 +95,17 @@ public class SpaceModel extends GenericModel {
     }
     public void setClassBPrice(Double classBPrice) {
         this.classBPrice = classBPrice;
+    }
+    public Date getCreationDate() {
+        return creationDate;
+    }
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+    public PluginModel getPlugin() {
+        return plugin;
+    }
+    public void setPlugin(PluginModel plugin) {
+        this.plugin = plugin;
     }
 }

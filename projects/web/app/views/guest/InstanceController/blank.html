@@ -3,7 +3,7 @@
 #{set title:messages.get('crud.blank.title', type.modelName) /}
 
 <div class="row crud-title">
-    <div class="col-xs-12 col-sm-12 col-md-12">  
+    <div class="col-xs-12 col-sm-12 col-md-12">
         <h1> &{'crud.blank.title', type.modelName} </h1>
         <pre> &{'crud.blank.title.desc', type.modelName} </pre>
     </div>
@@ -15,18 +15,18 @@
 #{form action:@create(), enctype:'multipart/form-data', class: 'submitForm'}
 
     #{crud.form}
-        
+
         #{crud.custom 'credentialUsage'}
-        
+
             #{field 'object.credentialUsage'}
-            
+
             <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
                 <div class="div-label">
                     <label for="${field.id}">
                         &{field.name}
                     </label>
                 </div>
-                    %{ 
+                    %{
                     models.InstanceModel.CredentialUsagePolicy.each() {
                         selected = false;
                         if((field.value == null && it == models.InstanceModel.CredentialUsagePolicy.SHARED_FIRST)
@@ -35,40 +35,40 @@
                         }
                     }%
                     <div style="padding-top: 5px;padding-bottom: 5px;">
-                        <input type="radio" name="${field.name}" value="${it}" 
-                            ${selected ? 'checked'.raw() : ''} 
+                        <input type="radio" name="${field.name}" value="${it}"
+                            ${selected ? 'checked'.raw() : ''}
                             class="icheck icheckbox_table_list"/>&nbsp;&{it}<br/>
                     </div>
-                    %{ } }%  
-                
+                    %{ } }%
+
             #{ifError field.name}
                 <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
             #{/ifError}
-            </div>                      
-                
+            </div>
+
             #{/field}
         #{/crud.custom}
-            
+
         #{crud.custom 'plugin'}
-            #{field 'object.plugin'}    
+            #{field 'object.plugin'}
             <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
                 <label for="${field.id}">&{field.name}</label>
                 <div class="nav-container">
                     <select class="form-control nav" id="${field.id}" name="${field.name}.id">
                         <option value="">&{'crud.selectValue'}</option>
                         %{
-                            plugins = models.PluginModel.searchPluginsForUser();
+                            plugins = models.PluginModel.searchPluginsForUserWithShared();
                             plugins.each() {
                                 selected = false;
-                                if(field.value != null && field.value._key() == it._key()){                                    
+                                if(field.value != null && field.value._key() == it._key()){
                                     selected = true;
                                 }
                         }%
-                    
+
                         <option value="${it._key()}" ${selected ? 'selected="true"'.raw() : ''}>${it}</option>
-                
+
                         %{ } }%
-                        
+
                     </select>
                 </div>
                 #{ifError field.name}
@@ -76,25 +76,25 @@
                 #{/ifError}
             </div>
             #{/field}
-            
-            #{field 'regionSelected'}    
+
+            #{field 'regionSelected'}
             <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
                 <label for="${field.id}">&{field.name}</label>
                 <div class="nav-container">
                     <select class="form-control nav" id="${field.id}" name="${field.name}.id">
-                        <option value="">&{'crud.selectValue'}</option>                
-                        %{                        
+                        <option value="">&{'crud.selectValue'}</option>
+                        %{
                         if(object.plugin != null) {
-                            regions = controllers.guest.InstanceController.getRegions(object.plugin.id);
-                            regions.each(){                                
+                            regions = controllers.guest.InstanceController.getInstanceRegions(object.plugin.id);
+                            regions.each(){
                                 selected = false;
-                                if(field.value != null && field.value.id == it.id){                                    
+                                if(field.value != null && field.value.id == it.id){
                                     selected = true;
-                                }                                
-                        }%                        
-                        <option value="${it.id}" ${selected ? 'selected="true"'.raw() : ''}>${it.name}</option>                
+                                }
+                        }%
+                        <option value="${it.id}" ${selected ? 'selected="true"'.raw() : ''}>${it.name}</option>
                         %{ } } }%
-                                
+
                     </select>
                 </div>
                 #{ifError field.name}
@@ -102,34 +102,34 @@
                 #{/ifError}
             </div>
             #{/field}
-            
-        %{ 
+
+        %{
             instanceTypesZones = null;
             if(object.plugin != null && regionSelected != null) {
-                instanceTypesZones = 
+                instanceTypesZones =
                     controllers.guest.InstanceController.getInstanceTypesZones(
                             object.plugin.id, regionSelected.id);
-            } 
+            }
         }%
-            
-            #{field 'zoneSelected'}    
+
+            #{field 'zoneSelected'}
             <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
                 <label for="${field.id}">&{field.name}</label>
                 <div class="nav-container">
                     <select class="form-control nav" id="${field.id}" name="${field.name}">
-                        <option value="">&{'crud.selectValue'}</option>                
-                        %{                        
+                        <option value="">&{'crud.selectValue'}</option>
+                        %{
                         if(instanceTypesZones != null) {
                             zones = instanceTypesZones.listZones;
-                            zones.each(){                                
+                            zones.each(){
                                 selected = false;
-                                if(field.value != null && field.value == it){                                    
+                                if(field.value != null && field.value == it){
                                     selected = true;
-                                }                                
-                        }%                        
-                        <option value="${it}" ${selected ? 'selected="true"'.raw() : ''}>${it}</option>                
+                                }
+                        }%
+                        <option value="${it}" ${selected ? 'selected="true"'.raw() : ''}>${it}</option>
                         %{ } } }%
-                                
+
                     </select>
                 </div>
                 #{ifError field.name}
@@ -137,12 +137,12 @@
                 #{/ifError}
             </div>
             #{/field}
-            
+
             #{field 'instanceTypeSelected'}
             <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
                 <label for="${field.id}">&{field.name}</label>
                 <table id="tableInstanceTypes" class="table stripe table-bordered ${field.errorClass ? 'has-error' : ''}">
-                    <thead>                    
+                    <thead>
                         <tr>
                             <th style="width: 1px;">
                             </th>
@@ -159,47 +159,47 @@
                                 &{'object.price'}
                             </th>
                         </tr>
-                    </thead>                    
-                %{                        
+                    </thead>
+                %{
                         if(instanceTypesZones != null) {
                 }%
-                        <tbody>                        
+                        <tbody>
                 %{
                             instanceTypes = instanceTypesZones.listInstanceTypes;
-                            instanceTypes.each() {     
+                            instanceTypes.each() {
                                 selected = false;
-                                if(field.value != null && field.value.id == it.id){                                    
+                                if(field.value != null && field.value.id == it.id){
                                     selected = true;
-                                }                                
-                }%                        
-                            <tr>        
+                                }
+                }%
+                            <tr>
                                 <td>
-                                    <input name='${field.name}.id' type='radio' 
+                                    <input name='${field.name}.id' type='radio'
                                             class='icheck' value='${it.id}' ${selected ? 'checked'.raw() : ''} />
                                 </td>
                                 <td>${it.name}</td>
                                 <td>${it.cores}</td>
                                 <td>${it.memory}</td>
-                                <td>${it.price}</td>                                
+                                <td>${it.price}</td>
                             </tr>
-                %{                         
-                            } 
-                }%                
-                        </tbody>    
                 %{
-                        } 
-                }%                    
+                            }
+                }%
+                        </tbody>
+                %{
+                        }
+                }%
                 </table>
             #{ifError field.name}
                 <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
             #{/ifError}
             </div>
             #{/field}
-        #{/crud.custom}        
-        
+        #{/crud.custom}
+
     #{/crud.form}
-    
-    
+
+
     <div class="btn-row text-center">
         <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_save">&{'crud.save'}</button>
         <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_saveAndContinue">&{'crud.saveAndContinue'}</button>
@@ -211,62 +211,62 @@
 
 #{set 'moreScripts' }
 <script type="text/javascript">
-  
-$(function(){     
 
-    $('#tableInstanceTypes').DataTable( 
+$(function(){
+
+    $('#tableInstanceTypes').DataTable(
     {
         "paging":   false,
         "searching":   false,
         "info":   false,
     });
-        
+
     function addSelectItem(field, content, value) {
         if(value == null)
             value = "";
         field.append(
                 '<option value="'+value+'">'+content+'</option>');
     }
-    
+
     function clearInstanceTypeOptions() {
         var table = $('#tableInstanceTypes').DataTable();
         table.clear().draw();
     }
-    
+
     function clearRegionOptions() {
         $("#regionSelected").empty();
         addSelectItem($("#regionSelected"), "&{'crud.selectValue'}");
     }
-    
+
     function clearZoneOptions() {
         $("#zoneSelected").empty();
         addSelectItem($("#zoneSelected"), "&{'crud.selectValue'}");
     }
-    
-    function reloadRegions() {      
-        
+
+    function reloadRegions() {
+
         showPleaseWait();
-        
+
         clearRegionOptions();
-        
+
         clearInstanceTypeOptions();
-        
+
         clearZoneOptions();
-        
+
         plugin = $('#object_plugin').val();
         var search = #{jsRoute @searchRegions() /};
         if(plugin == ""){
-            hidePleaseWait(); 
+            hidePleaseWait();
             return;
         }
-        
+
         $.ajax({
             url: search.url(),
             type: search.method,
             data:{ pluginId: plugin}
            })
         .done(function(data) {
-            for(var i in data) {                
+            for(var i in data) {
                 addSelectItem(
                     $("#regionSelected"),
                     data[i]['name'],
@@ -277,38 +277,37 @@ $(function(){
             flashError(data.responseText);
         })
         .always(function() {
-            hidePleaseWait(); 
+            hidePleaseWait();
         });
     }
-    
+
     function reloadInstanceTypes() {
         var table = $('#tableInstanceTypes').DataTable();
 
         showPleaseWait();
-        
+
         clearInstanceTypeOptions();
-        
+
         clearZoneOptions();
-        
+
         region = $('#regionSelected').val();
         plugin = $('#object_plugin').val();
         if(region == "" || plugin == ""){
-            hidePleaseWait(); 
+            hidePleaseWait();
             return;
         }
-        
-        var search = #{jsRoute @searchInstanceTypesZones() /};        
+
+        var search = #{jsRoute @searchInstanceTypesZones() /};
         $.ajax({
             url: search.url(),
             type: search.method,
             data:{ pluginId: plugin, regionId: region}
            })
         .done(function(data) {
-            debugger;
-            
+
             listZones = data["listZones"];
-            for(var i in listZones) {           
-                row = listZones[i];      
+            for(var i in listZones) {
+                row = listZones[i];
                 addSelectItem(
                     $("#zoneSelected"),
                     row,
@@ -316,12 +315,12 @@ $(function(){
             }
 
             listInstanceTypes = data["listInstanceTypes"];
-            for(var i in listInstanceTypes) {   
+            for(var i in listInstanceTypes) {
                 row = listInstanceTypes[i];
-                
+
                 inputColumn = "<input name='instanceTypeSelected.id' "+
                               "type='radio' class='icheck' value='"+row["id"]+"'/>"
-                table.row.add( [ 
+                table.row.add( [
                     inputColumn,
                     row["name"],
                     row["cores"],
@@ -336,12 +335,12 @@ $(function(){
             flashError(data.responseText);
         })
         .always(function() {
-            hidePleaseWait(); 
+            hidePleaseWait();
         });
     }
-    
+
     $('#object_plugin').change(reloadRegions);
-    
+
     $('#regionSelected').change(reloadInstanceTypes);
 });
 

@@ -1,0 +1,198 @@
+
+#{extends 'CRUD/layout.html' /}
+#{set title:messages.get('crud.blank.title', type.modelName) /}
+
+<div class="row crud-title">
+    <div class="col-xs-12 col-sm-12 col-md-12">
+        <h1> &{'crud.blank.title', type.modelName} </h1>
+        <pre> &{'crud.blank.title.desc', type.modelName} </pre>
+    </div>
+</div>
+
+<br>
+
+<div class="row col-lg-12" >
+#{form action:@create(), enctype:'multipart/form-data', class: 'submitForm'}
+
+    #{crud.form}
+
+        #{crud.custom 'plugin'}
+            #{field 'object.plugin'}
+            <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                <label for="${field.id}">&{field.name}</label>
+                <div class="nav-container">
+                    <select class="form-control nav" id="${field.id}" name="${field.name}.id">
+                        <option value="">&{'crud.selectValue'}</option>
+                        %{
+                            plugins = models.PluginModel.searchPluginsForUser();
+                            plugins.each() {
+                                selected = false;
+                                if(field.value != null && field.value._key() == it._key()){
+                                    selected = true;
+                                }
+                        }%
+
+                        <option value="${it._key()}" ${selected ? 'selected="true"'.raw() : ''}>${it}</option>
+
+                        %{ } }%
+
+                    </select>
+                </div>
+                #{ifError field.name}
+                    <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                #{/ifError}
+            </div>
+            #{/field}
+
+            #{field 'storageRegionSelected'}
+            <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                <label for="${field.id}">&{field.name}</label>
+                <table id="tableStorageRegions" class="table stripe table-bordered ${field.errorClass ? 'has-error' : ''}">
+                    <thead>
+                        <tr>
+                            <th style="width: 1px;">
+                            </th>
+                            <th style="cursor: pointer;">
+                                &{'object.region'}
+                            </th>
+                            <th style="cursor: pointer;">
+                                &{'object.price'}
+                            </th>
+                            <th style="cursor: pointer;">
+                                &{'object.classAPrice'}
+                            </th>
+                            <th style="cursor: pointer;">
+                                &{'object.classBPrice'}
+                            </th>
+                        </tr>
+                    </thead>
+
+                %{
+                        if(object.plugin != null) {
+                }%
+                        <tbody>
+                %{
+                            regions = controllers.guest.SpaceController.searchStorageRegions(object.plugin.id);
+                            regions.each(){
+                                selected = false;
+                                if(field.value != null && field.value.id == it.id){
+                                    selected = true;
+                                }
+                }%
+                            <tr>
+                                <td>
+                                    <input name='${field.name}.id' type='radio'
+                                            class='icheck' value='${it.id}' ${selected ? 'checked'.raw() : ''} />
+                                </td>
+                                <td>${it.region}</td>
+                                <td>${it.price}</td>
+                                <td>${it.classAPrice}</td>
+                                <td>${it.classBPrice}</td>
+                            </tr>
+                %{
+                            }
+                }%
+                        </tbody>
+                %{
+                        }
+                }%
+                </table>
+            #{ifError field.name}
+                <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+            #{/ifError}
+            </div>
+            #{/field}
+        #{/crud.custom}
+
+    #{/crud.form}
+
+    <div class="btn-row text-center">
+        <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_save">&{'crud.save'}</button>
+        <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_saveAndContinue">&{'crud.saveAndContinue'}</button>
+        <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_saveAndAddAnother">&{'crud.saveAndAddAnother'}</button>
+        <a href="@{list()}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>
+    </div>
+#{/form}
+</div>
+
+#{set 'moreScripts' }
+<script type="text/javascript">
+
+$(function(){
+
+    var tableOptionsName = "tableStorageRegions";
+    var tableOptionsSelector = '#'+tableOptionsName;
+    var tableOptions = $(tableOptionsSelector);
+
+    tableOptions.DataTable(
+    {
+        "paging":   false,
+        "searching":   false,
+        "info":   false,
+    });
+
+    function clearTableOptions() {
+        var table = tableOptions.DataTable();
+        table.clear().draw();
+    }
+
+    function reloadStorageRegions() {
+        var table = tableOptions.DataTable();
+
+        showPleaseWait();
+
+        clearTableOptions();
+
+        plugin = $('#object_plugin').val();
+        if(plugin == ""){
+            hidePleaseWait();
+            return;
+        }
+
+        var search = #{jsRoute @searchStorageRegions() /};
+        $.ajax({
+            url: search.url(),
+            type: search.method,
+            data:{ pluginId: plugin}
+           })
+        .done(function(data) {
+
+            debugger;
+            for(var i in data) {
+                row = data[i];
+
+                inputColumn = "<input name='storageRegionSelected.id' "+
+                              "type='radio' class='icheck' value='"+row["id"]+"'/>";
+
+                region = row["region"];
+                if(!region)
+                    continue;
+                price = row["price"];
+                classAPrice = row["classAPrice"];
+                classBPrice = row["classBPrice"];
+
+                table.row.add( [
+                    inputColumn,
+                    region,
+                    price ? price : '' ,
+                    classAPrice ? classAPrice : '' ,
+                    classBPrice ? classBPrice : '' ,
+                ] );
+            }
+            table.draw();
+            update_iChecks();
+        })
+        .fail(function(data) {
+            flashError(data.responseText);
+        })
+        .always(function() {
+            hidePleaseWait();
+        });
+    }
+
+    $('#object_plugin').change(reloadStorageRegions);
+});
+
+</script>
+#{/set}
+

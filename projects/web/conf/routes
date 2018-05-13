@@ -87,6 +87,7 @@ GET     /adm/list/prices                        adm.PriceTableController.list
 GET     /adm/force/prices                       adm.PriceTableController.forceSync
 
 # SpaceController
+GET     /search/storage/regions                 guest.SpaceController.searchStorageRegions
 GET     /list/spaces                            guest.SpaceController.list
 GET     /spaces/{id}                            guest.SpaceController.show
 PUT     /spaces/{id}                            guest.SpaceController.save

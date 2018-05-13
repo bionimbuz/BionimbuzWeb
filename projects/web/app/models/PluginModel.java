@@ -12,6 +12,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import app.models.PluginInfoModel;
 import controllers.CRUD.Hidden;
 import controllers.adm.BaseAdminController;
 import play.data.validation.MaxSize;
@@ -50,7 +51,7 @@ public class PluginModel extends GenericModel {
     private String readScope;
     @Required
     @Enumerated(EnumType.STRING)
-    private app.models.PluginInfoModel.AuthenticationType authType;    
+    private PluginInfoModel.AuthenticationType authType;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "plugin")
     private List<CredentialModel> listCredentials;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "plugin")
@@ -61,18 +62,20 @@ public class PluginModel extends GenericModel {
     private List<VwCredentialModel> listUsersCredentials;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "plugin")
     private List<InstanceModel> listInstances;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "plugin")
+    private List<SpaceModel> listSpaces;
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Constructors
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    public PluginModel() {        
+    public PluginModel() {
         super();
     }
-    
+
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Data access
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    public static List<PluginModel> searchPluginsForUser() {
+    public static List<PluginModel> searchPluginsForUserWithShared() {
         UserModel currentUser = BaseAdminController.getConnectedUser();
         return find(
                 " SELECT DISTINCT plugins "
@@ -81,7 +84,16 @@ public class PluginModel extends GenericModel {
                 + " JOIN credentials.userShared userShared"
                 + " WHERE userShared.id = ?1", currentUser.getId()).fetch();
     }
-    
+    public static List<PluginModel> searchPluginsForUser() {
+        UserModel currentUser = BaseAdminController.getConnectedUser();
+        return find(
+                " SELECT DISTINCT plugins "
+                + " FROM PluginModel plugins"
+                + " JOIN plugins.listCredentials credentials"
+                + " JOIN credentials.user user"
+                + " WHERE user.id = ?1", currentUser.getId()).fetch();
+    }
+
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Getters and Setters
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -115,11 +127,17 @@ public class PluginModel extends GenericModel {
     public void setCloudType(String cloudType) {
         this.cloudType = cloudType;
     }
-    public app.models.PluginInfoModel.AuthenticationType getAuthType() {
+    public PluginInfoModel.AuthenticationType getAuthType() {
         return authType;
     }
-    public void setAuthType(app.models.PluginInfoModel.AuthenticationType authType) {
+    public void setAuthType(PluginInfoModel.AuthenticationType authType) {
         this.authType = authType;
+    }
+    public List<SpaceModel> getListSpaces() {
+        return listSpaces;
+    }
+    public void setListSpaces(List<SpaceModel> listSpaces) {
+        this.listSpaces = listSpaces;
     }
     public boolean isEnabled() {
         return enabled;
@@ -132,7 +150,7 @@ public class PluginModel extends GenericModel {
     }
     public void setListCredentials(List<CredentialModel> listCredentials) {
         this.listCredentials = listCredentials;
-    }         
+    }
     public List<ImageModel> getListImages() {
         return listImages;
     }

@@ -181,7 +181,7 @@ public class InstanceController extends BaseAdminController {
         }         
     }
     
-    public static List<Region> getRegions(final Long pluginId) {
+    public static List<Region> getInstanceRegions(final Long pluginId) {
         PluginModel plugin = PluginModel.findById(pluginId);
         if(plugin == null)
             return null;
@@ -194,7 +194,7 @@ public class InstanceController extends BaseAdminController {
     
     public static void searchRegions(final Long pluginId) {
         try {
-            List<Region> listRegions = getRegions(pluginId);
+            List<Region> listRegions = getInstanceRegions(pluginId);
             if(listRegions == null)
                 notFound(Messages.get(I18N.plugin_not_found));
             renderJSON(listRegions);            
