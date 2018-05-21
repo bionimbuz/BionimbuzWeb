@@ -1,15 +1,15 @@
 package app.models;
 
-public class PluginZoneModel extends Body {
+public class PluginInstanceRegionModel extends Body {
     
     private String name;
         
     @SuppressWarnings("unused") //Reflection purposes
-    private PluginZoneModel() {    
+    private PluginInstanceRegionModel() {    
         super();	
     }
     
-    public PluginZoneModel(String name) {
+    public PluginInstanceRegionModel(String name) {
         super();
         this.name = name;
     }

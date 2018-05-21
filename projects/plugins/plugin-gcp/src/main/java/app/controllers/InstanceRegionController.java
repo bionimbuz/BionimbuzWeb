@@ -15,30 +15,30 @@ import org.springframework.web.bind.annotation.RestController;
 
 import app.common.GoogleComputeEngineUtils;
 import app.models.Body;
-import app.models.PluginRegionModel;
-import app.models.PluginZoneModel;
+import app.models.PluginInstanceRegionModel;
+import app.models.PluginInstanceZoneModel;
 
 @RestController
-public class RegionController extends AbstractRegionController{ 
+public class InstanceRegionController extends AbstractInstanceRegionController{ 
 
     /*
      * Overwritten Methods
      */
     @Override
-    protected ResponseEntity<Body<List<PluginRegionModel>>> listRegions(
+    protected ResponseEntity<Body<List<PluginInstanceRegionModel>>> listInstanceRegions(
             final String token, 
             final String identity) throws Exception {          
         try(GoogleComputeEngineApi googleApi = 
                 GoogleComputeEngineUtils.createApi(
                         identity, 
                         token)) { 
-            List<PluginRegionModel> res = getRegions(googleApi);     
+            List<PluginInstanceRegionModel> res = getRegions(googleApi);     
             return ResponseEntity.ok(
                     Body.create(res));
         }
     }
     @Override
-    protected ResponseEntity<Body<List<PluginZoneModel>>> listRegionsZones(
+    protected ResponseEntity<Body<List<PluginInstanceZoneModel>>> listInstanceRegionsZones(
             final String token, 
             final String identity,
             final String name) throws Exception {          
@@ -46,7 +46,7 @@ public class RegionController extends AbstractRegionController{
                 GoogleComputeEngineUtils.createApi(
                         identity, 
                         token)) { 
-            List<PluginZoneModel> res = getRegionZones(googleApi, name);     
+            List<PluginInstanceZoneModel> res = getRegionZones(googleApi, name);     
             return ResponseEntity.ok(
                     Body.create(res));
         }
@@ -55,32 +55,32 @@ public class RegionController extends AbstractRegionController{
     /*
      * Specific Class Methods
      */    
-    private List<PluginRegionModel> getRegions(final GoogleComputeEngineApi googleApi){
+    private List<PluginInstanceRegionModel> getRegions(final GoogleComputeEngineApi googleApi){
         
-        List<PluginRegionModel> res = new ArrayList<>();        
+        List<PluginInstanceRegionModel> res = new ArrayList<>();        
         RegionApi api = googleApi.regions();
         Iterator<ListPage<Region>> listPages = api.list();
         while (listPages.hasNext()) {
             ListPage<Region> regions = listPages.next();
             for (Region region : regions) {      
-                res.add(new PluginRegionModel(region.name()));
+                res.add(new PluginInstanceRegionModel(region.name()));
             }
         }        
         
         return res;        
     }
-    private List<PluginZoneModel> getRegionZones(
+    private List<PluginInstanceZoneModel> getRegionZones(
             final GoogleComputeEngineApi googleApi,
             final String name){
         
-        List<PluginZoneModel> res = new ArrayList<>();        
+        List<PluginInstanceZoneModel> res = new ArrayList<>();        
         ZoneApi api = googleApi.zones();
         Iterator<ListPage<Zone>> listPages = api.list();
         while (listPages.hasNext()) {
             ListPage<Zone> zones = listPages.next();
             for (Zone zone : zones) {     
                 if(zone.name().startsWith(name)){
-                    res.add(new PluginZoneModel(zone.name()));
+                    res.add(new PluginInstanceZoneModel(zone.name()));
                 }
             }
         }       

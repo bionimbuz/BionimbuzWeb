@@ -14,7 +14,7 @@ public class PluginInstanceModel extends Body {
     private String id = "";
     private String name = "";
     private String machineType = "";
-    private Date creationDate;  
+    private Date creationDate;
     private String internalIp = "";
     private String externalIp = "";
     private String startupScript = "";
@@ -24,14 +24,14 @@ public class PluginInstanceModel extends Body {
     private String type = "";
     private List<Integer> firewallUdpPorts;
     private List<Integer> firewallTcpPorts;
-    
-    public PluginInstanceModel() {    
-        super();    
+
+    public PluginInstanceModel() {
+        super();
     }
-    
+
     public PluginInstanceModel(
-            String id, 
-            String name, 
+            String id,
+            String name,
             String machineType,
             Date creationDate) {
         super();
@@ -40,43 +40,43 @@ public class PluginInstanceModel extends Body {
         this.machineType = machineType;
         this.creationDate = creationDate;
     }
-    
+
     public static List<String> generateUniqueNames(
-            List<PluginInstanceModel> currentZones, int size, final String prefix) { 
-        
-        List<String> res = new ArrayList<>();        
+            List<PluginInstanceModel> currentZones, int size, final String prefix) {
+
+        List<String> res = new ArrayList<>();
         Set<Integer> setOfNameIds = getSetOfCurrentIds(currentZones, prefix);
-        
-        int newId = setOfNameIds.size();        
-        for(int i=0; i<size; i++) {            
+
+        int newId = setOfNameIds.size();
+        for(int i=0; i<size; i++) {
             while(setOfNameIds.contains(++newId));
             res.add(generateNameForId(newId, prefix));
-        }     
+        }
         return res;
-    }  
-    
-    protected static String generateNameForId(final Integer id, final String prefix) {               
-        return prefix + "-" + id;     
     }
-    
+
+    protected static String generateNameForId(final Integer id, final String prefix) {
+        return prefix + "-" + id;
+    }
+
     protected static Integer extractIdFromName(final String name, final String prefix) {
-        String [] nameSpplited = name.split(prefix);        
+        String [] nameSpplited = name.split(prefix);
         if(nameSpplited.length != 2)
-            return -1;        
-        return Integer.parseInt(nameSpplited[1].replaceAll("-", ""));     
+            return -1;
+        return Integer.parseInt(nameSpplited[1].replaceAll("-", ""));
     }
-    
-    protected static Set<Integer> getSetOfCurrentIds(final List<PluginInstanceModel> currentInstances, final String prefix) {        
-        Set<Integer> ids = new TreeSet<>();   
-        for (PluginInstanceModel instanceModel : currentInstances) {                
-            Integer id = extractIdFromName(instanceModel.getName(), prefix);  
+
+    protected static Set<Integer> getSetOfCurrentIds(final List<PluginInstanceModel> currentInstances, final String prefix) {
+        Set<Integer> ids = new TreeSet<>();
+        for (PluginInstanceModel instanceModel : currentInstances) {
+            Integer id = extractIdFromName(instanceModel.getName(), prefix);
             if(id >= 0) {
                 ids.add(id);
             }
         }
         return ids;
     }
-    
+
     public String getId() {
         return id;
     }
@@ -124,7 +124,7 @@ public class PluginInstanceModel extends Body {
     }
     public void setZone(String zone) {
         this.zone = zone;
-    }    
+    }
     @JsonIgnore
     public URI getImageUri() {
         return URI.create(imageUrl);

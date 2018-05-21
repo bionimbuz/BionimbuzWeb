@@ -14,16 +14,16 @@ import com.google.common.net.HttpHeaders;
 import app.common.HttpHeadersCustom;
 import app.common.Routes;
 import app.models.Body;
-import app.models.PluginZoneModel;
+import app.models.PluginInstanceZoneModel;
 
-public abstract class AbstractZoneController extends BaseController {
-    protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractZoneController.class);  
+public abstract class AbstractInstanceZoneController extends BaseController {
+    protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractInstanceZoneController.class);  
 
     /*
      * Action Methods
      */
-    @RequestMapping(path = Routes.ZONES, method = RequestMethod.GET)
-    private ResponseEntity<Body<List<PluginZoneModel>>> listInstancesAction(
+    @RequestMapping(path = Routes.INSTANCE_ZONES, method = RequestMethod.GET)
+    private ResponseEntity<Body<List<PluginInstanceZoneModel>>> listInstancesAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
             @RequestHeader(value=HttpHeaders.AUTHORIZATION) final String token, 
             @RequestHeader(value=HttpHeadersCustom.AUTHORIZATION_ID) final String identity) {
@@ -33,7 +33,7 @@ public abstract class AbstractZoneController extends BaseController {
     /*
      * Abstract Methods
      */
-    protected abstract ResponseEntity<Body<List<PluginZoneModel>>> listZones(
+    protected abstract ResponseEntity<Body<List<PluginInstanceZoneModel>>> listZones(
             final String token, 
             final String identity) throws Exception;
 

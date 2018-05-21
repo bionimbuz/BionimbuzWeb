@@ -21,7 +21,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import app.common.Routes;
 import app.common.SystemConstants;
 import app.models.Body;
-import app.models.PluginZoneModel;
+import app.models.PluginInstanceZoneModel;
 import utils.TestUtils;
 
 @RunWith(SpringRunner.class)
@@ -45,13 +45,13 @@ public class ZoneControllerTest {
         TestUtils.setTimeout(restTemplate.getRestTemplate(), 0);
         HttpEntity<Void> entity = TestUtils.createEntity(SystemConstants.PLUGIN_COMPUTE_READ_SCOPE);
     
-        ResponseEntity< Body<List<PluginZoneModel>> > responseList = 
+        ResponseEntity< Body<List<PluginInstanceZoneModel>> > responseList = 
                 this.restTemplate
                     .exchange(
-                            Routes.ZONES, 
+                            Routes.INSTANCE_ZONES, 
                             HttpMethod.GET, 
                             entity,
-                            new ParameterizedTypeReference< Body<List<PluginZoneModel>> >() {});          
+                            new ParameterizedTypeReference< Body<List<PluginInstanceZoneModel>> >() {});          
         
         assertThat(responseList.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseList.getBody()).isNotNull();

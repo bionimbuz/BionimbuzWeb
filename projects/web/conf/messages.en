@@ -270,6 +270,15 @@ object.executor.name=Executor
 object.regionName=Region
 object.creationDate=Creation Date
 
+# SpaceModel
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SpaceModel=Space
+object.classAPrice=Class A Price
+object.classBPrice=Class B Price
+object.region=Region
+object.price.per.GB=Price per GB per Month
+name.must.be.unique.on.platform=The name informed must be unique on platform selected
+
 # InstanceTypeRegionModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 object.price=Price per Hour
@@ -296,3 +305,4 @@ pluginSelected=Available Plugins
 regionSelected=Available Regions
 zoneSelected=Available Zones
 instanceTypeSelected=Available Instance Types
+storageRegionSelected=Available Regions

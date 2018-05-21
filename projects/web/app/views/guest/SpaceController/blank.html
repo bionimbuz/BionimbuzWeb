@@ -16,6 +16,23 @@
 
     #{crud.form}
 
+        #{crud.custom 'name'}
+            #{field 'object.name'}
+                <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                    <label for="${field.id}">&{field.name}</label>
+                    <input id="${field.id}" class="form-control"
+                            type="text"
+                            name="${field.name}"
+                            value="${field.value}" />
+                    #{ifError field.name}
+                        <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                    #{/ifError}
+                    <span id="helpBlock2" class="help-block">*&{'name.must.be.unique.on.platform'}</span>
+                </div>
+            #{/field}
+
+        #{/crud.custom}
+
         #{crud.custom 'plugin'}
             #{field 'object.plugin'}
             <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
@@ -41,6 +58,7 @@
                 #{ifError field.name}
                     <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
                 #{/ifError}
+
             </div>
             #{/field}
 
@@ -56,7 +74,7 @@
                                 &{'object.region'}
                             </th>
                             <th style="cursor: pointer;">
-                                &{'object.price'}
+                                &{'object.price.per.GB'}
                             </th>
                             <th style="cursor: pointer;">
                                 &{'object.classAPrice'}

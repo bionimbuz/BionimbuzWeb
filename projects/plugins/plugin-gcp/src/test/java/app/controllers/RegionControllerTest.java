@@ -21,8 +21,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import app.common.Routes;
 import app.common.SystemConstants;
 import app.models.Body;
-import app.models.PluginRegionModel;
-import app.models.PluginZoneModel;
+import app.models.PluginInstanceRegionModel;
+import app.models.PluginInstanceZoneModel;
 import utils.TestUtils;
 
 @RunWith(SpringRunner.class)
@@ -46,13 +46,13 @@ public class RegionControllerTest {
         TestUtils.setTimeout(restTemplate.getRestTemplate(), 0);
         HttpEntity<Void> entity = TestUtils.createEntity(SystemConstants.PLUGIN_COMPUTE_READ_SCOPE);
     
-        ResponseEntity< Body<List<PluginRegionModel>> > responseList = 
+        ResponseEntity< Body<List<PluginInstanceRegionModel>> > responseList = 
                 this.restTemplate
                     .exchange(
-                            Routes.REGIONS,
+                            Routes.INSTANCE_REGIONS,
                             HttpMethod.GET, 
                             entity,
-                            new ParameterizedTypeReference< Body<List<PluginRegionModel>> >() {});          
+                            new ParameterizedTypeReference< Body<List<PluginInstanceRegionModel>> >() {});          
         
         assertThat(responseList.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseList.getBody()).isNotNull();
@@ -63,13 +63,13 @@ public class RegionControllerTest {
         TestUtils.setTimeout(restTemplate.getRestTemplate(), 0);
         HttpEntity<Void> entity = TestUtils.createEntity(SystemConstants.PLUGIN_COMPUTE_READ_SCOPE);
     
-        ResponseEntity< Body<List<PluginZoneModel>> > responseList = 
+        ResponseEntity< Body<List<PluginInstanceZoneModel>> > responseList = 
                 this.restTemplate
                     .exchange(
-                            Routes.REGIONS + "/" + "us-east1" + Routes.ZONES,
+                            Routes.INSTANCE_REGIONS + "/" + "us-east1" + Routes.INSTANCE_ZONES,
                             HttpMethod.GET, 
                             entity,
-                            new ParameterizedTypeReference< Body<List<PluginZoneModel>> >() {});          
+                            new ParameterizedTypeReference< Body<List<PluginInstanceZoneModel>> >() {});          
         
         assertThat(responseList.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseList.getBody()).isNotNull();

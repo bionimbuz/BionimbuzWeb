@@ -13,23 +13,23 @@ import org.springframework.web.bind.annotation.RestController;
 
 import app.common.GoogleComputeEngineUtils;
 import app.models.Body;
-import app.models.PluginZoneModel;
+import app.models.PluginInstanceZoneModel;
 
 @RestController
-public class ZoneController extends AbstractZoneController{ 
+public class InstanceZoneController extends AbstractInstanceZoneController{ 
 
     /*
      * Overwritten Methods
      */
     @Override
-    protected ResponseEntity<Body<List<PluginZoneModel>>> listZones(
+    protected ResponseEntity<Body<List<PluginInstanceZoneModel>>> listZones(
             final String token, 
             final String identity) throws Exception {          
         try(GoogleComputeEngineApi googleApi = 
                 GoogleComputeEngineUtils.createApi(
                         identity, 
                         token)) { 
-            List<PluginZoneModel> res = getZones(googleApi);     
+            List<PluginInstanceZoneModel> res = getZones(googleApi);     
             return ResponseEntity.ok(
                     Body.create(res));
         }
@@ -38,15 +38,15 @@ public class ZoneController extends AbstractZoneController{
     /*
      * Specific Class Methods
      */    
-    private List<PluginZoneModel> getZones(final GoogleComputeEngineApi googleApi){
+    private List<PluginInstanceZoneModel> getZones(final GoogleComputeEngineApi googleApi){
         
-        List<PluginZoneModel> res = new ArrayList<>();        
+        List<PluginInstanceZoneModel> res = new ArrayList<>();        
         ZoneApi api = googleApi.zones();
         Iterator<ListPage<Zone>> listPages = api.list();
         while (listPages.hasNext()) {
             ListPage<Zone> zones = listPages.next();
             for (Zone zone : zones) {      
-                res.add(new PluginZoneModel(zone.name()));
+                res.add(new PluginInstanceZoneModel(zone.name()));
             }
         }        
         
