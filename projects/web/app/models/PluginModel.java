@@ -44,11 +44,19 @@ public class PluginModel extends GenericModel {
     @Required
     @MaxSize(100)
     @Hidden
-    private String writeScope;
+    private String instanceWriteScope;
     @Required
     @MaxSize(100)
     @Hidden
-    private String readScope;
+    private String instanceReadScope;
+    @Required
+    @MaxSize(100)
+    @Hidden
+    private String storageWriteScope;
+    @Required
+    @MaxSize(100)
+    @Hidden
+    private String storageReadScope;
     @Required
     @Enumerated(EnumType.STRING)
     private PluginInfoModel.AuthenticationType authType;
@@ -157,18 +165,6 @@ public class PluginModel extends GenericModel {
     public void setListImages(List<ImageModel> listImages) {
         this.listImages = listImages;
     }
-    public String getWriteScope() {
-        return writeScope;
-    }
-    public void setWriteScope(String writeScope) {
-        this.writeScope = writeScope;
-    }
-    public String getReadScope() {
-        return readScope;
-    }
-    public void setReadScope(String readScope) {
-        this.readScope = readScope;
-    }
     public PriceTableModel getPriceTable() {
         return priceTable;
     }
@@ -188,7 +184,30 @@ public class PluginModel extends GenericModel {
     public void setListInstances(List<InstanceModel> listInstances) {
         this.listInstances = listInstances;
     }
-
+    public String getInstanceWriteScope() {
+        return instanceWriteScope;
+    }
+    public void setInstanceWriteScope(String instanceWriteScope) {
+        this.instanceWriteScope = instanceWriteScope;
+    }
+    public String getInstanceReadScope() {
+        return instanceReadScope;
+    }
+    public void setInstanceReadScope(String instanceReadScope) {
+        this.instanceReadScope = instanceReadScope;
+    }
+    public String getStorageWriteScope() {
+        return storageWriteScope;
+    }
+    public void setStorageWriteScope(String storageWriteScope) {
+        this.storageWriteScope = storageWriteScope;
+    }
+    public String getStorageReadScope() {
+        return storageReadScope;
+    }
+    public void setStorageReadScope(String storageReadScope) {
+        this.storageReadScope = storageReadScope;
+    }
     @Override
     public String toString() {
         return this.name;

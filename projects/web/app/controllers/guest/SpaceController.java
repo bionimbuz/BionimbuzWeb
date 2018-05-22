@@ -4,10 +4,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import app.client.StorageApi;
+import app.common.Authorization;
+import app.models.Body;
+import app.models.PluginStorageModel;
+import app.models.security.TokenModel;
 import common.constants.I18N;
+import common.utils.UserCredentialsReader;
 import controllers.CRUD.For;
 import controllers.Check;
 import controllers.adm.BaseAdminController;
+import models.InstanceModel.CredentialUsagePolicy;
 import models.PluginModel;
 import models.SpaceModel;
 import models.StorageRegionModel;
@@ -22,6 +29,7 @@ import play.i18n.Messages;
 public class SpaceController extends BaseAdminController {
 
     private static final String STORAGE_REGION_SELECTED = "storageRegionSelected";
+    private static final String OBJECT_NAME = "object.name";
     private static final String STORAGE_REGION_SELECTED_ID = STORAGE_REGION_SELECTED + ".id";
 
     public static void create(
@@ -37,6 +45,19 @@ public class SpaceController extends BaseAdminController {
             storageRegionSelected = null;
             validation.addError(STORAGE_REGION_SELECTED, Messages.get("validation.required"));
         }
+        if(!Validation.hasErrors()) {
+            object.setRegionName(storageRegionSelected.getRegion().getName());
+            object.setPricePerGB(storageRegionSelected.getPrice());
+            object.setClassAPrice(storageRegionSelected.getClassAPrice());
+            object.setClassBPrice(storageRegionSelected.getClassBPrice());
+            object.setPriceTableDate(storageRegionSelected.getPriceTable().getPriceTableDate());
+            object.setCreationDate(new Date());
+            if(createSpace(object)) {
+                object._save();
+            } else {
+                validation.addError(OBJECT_NAME, Messages.get("error.space.not.created"));
+            }
+        }
         if (Validation.hasErrors()) {
             renderArgs.put("error", Messages.get("crud.hasErrors"));
             try {
@@ -45,13 +66,6 @@ public class SpaceController extends BaseAdminController {
                 render("CRUD/blank.html", type, object, storageRegionSelected);
             }
         }
-        object.setRegionName(storageRegionSelected.getRegion().getName());
-        object.setPrice(storageRegionSelected.getPrice());
-        object.setClassAPrice(storageRegionSelected.getClassAPrice());
-        object.setClassBPrice(storageRegionSelected.getClassBPrice());
-        object.setPriceTableDate(storageRegionSelected.getPriceTable().getPriceTableDate());
-        object.setCreationDate(new Date());
-        object._save();
         flash.success(Messages.get("crud.created", type.modelName));
         if (params.get("_save") != null) {
             redirect(request.controller + ".list");
@@ -93,5 +107,42 @@ public class SpaceController extends BaseAdminController {
                             storageRegion.getClassBPrice()));
         }
         return listStorageRegions;
+    }
+
+
+    private static boolean createSpace(SpaceModel space) {
+
+        PluginModel plugin = space.getPlugin();
+        StorageApi api = new StorageApi(plugin.getUrl());
+        PluginStorageModel spaceToCreate =
+                new PluginStorageModel(space.getName(), space.getRegionName());
+
+        UserCredentialsReader credentialReader =
+                new UserCredentialsReader(
+                        plugin,
+                        CredentialUsagePolicy.ONLY_OWNER);
+        for(String credential : credentialReader) {
+            try {
+                TokenModel token;
+                    token = Authorization.getToken(
+                            plugin.getCloudType(),
+                            plugin.getStorageWriteScope(),
+                            credential);
+
+                Body<PluginStorageModel> body =
+                        api.createSpace(
+                                token.getToken(),
+                                token.getIdentity(),
+                                spaceToCreate);
+                if(body == null || body.getContent() == null) {
+                    continue;
+                }
+
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
     }
 }

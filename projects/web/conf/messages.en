@@ -276,8 +276,9 @@ SpaceModel=Space
 object.classAPrice=Class A Price
 object.classBPrice=Class B Price
 object.region=Region
-object.price.per.GB=Price per GB per Month
+object.pricePerGB=Price per GB per Month
 name.must.be.unique.on.platform=The name informed must be unique on platform selected
+error.space.not.created=The space cannot be created, please try again with another name
 
 # InstanceTypeRegionModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

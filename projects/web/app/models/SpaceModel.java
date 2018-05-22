@@ -34,7 +34,7 @@ public class SpaceModel extends GenericModel {
     @NoBinding
     private Date priceTableDate;
     @NoBinding
-    private Double price;
+    private Double pricePerGB;
     @NoBinding
     private Double classAPrice;
     @NoBinding
@@ -78,11 +78,11 @@ public class SpaceModel extends GenericModel {
     public void setPriceTableDate(Date priceTableDate) {
         this.priceTableDate = priceTableDate;
     }
-    public Double getPrice() {
-        return price;
+    public Double getPricePerGB() {
+        return pricePerGB;
     }
-    public void setPrice(Double price) {
-        this.price = price;
+    public void setPricePerGB(Double pricePerGB) {
+        this.pricePerGB = pricePerGB;
     }
     public Double getClassAPrice() {
         return classAPrice;

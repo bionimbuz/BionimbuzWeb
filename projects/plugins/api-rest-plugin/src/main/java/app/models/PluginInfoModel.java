@@ -1,7 +1,7 @@
 package app.models;
 
 public class PluginInfoModel extends Body {
-    
+
     public static enum AuthenticationType {
         AUTH_BEARER_TOKEN
     }
@@ -11,19 +11,21 @@ public class PluginInfoModel extends Body {
     private String pluginVersion;
     private String cloudType;
     private AuthenticationType authType;
-    private String writeScope;
-    private String readScope;
-        
+    private String instanceWriteScope;
+    private String instanceReadScope;
+    private String storageWriteScope;
+    private String storageReadScope;
+
     @SuppressWarnings("unused") //Reflection purposes
-    private PluginInfoModel() {    
-        super();	
+    private PluginInfoModel() {
+        super();
     }
-    
-    public PluginInfoModel(final String apiVersion) {     
-        super();   
+
+    public PluginInfoModel(final String apiVersion) {
+        super();
         this.apiVersion = apiVersion;
     }
-    
+
     public String getName() {
         return name;
     }
@@ -54,16 +56,28 @@ public class PluginInfoModel extends Body {
     public void setAuthType(final AuthenticationType authType) {
         this.authType = authType;
     }
-    public String getWriteScope() {
-        return writeScope;
+    public String getInstanceWriteScope() {
+        return instanceWriteScope;
     }
-    public void setWriteScope(String writeScope) {
-        this.writeScope = writeScope;
+    public void setInstanceWriteScope(String instanceWriteScope) {
+        this.instanceWriteScope = instanceWriteScope;
     }
-    public String getReadScope() {
-        return readScope;
+    public String getInstanceReadScope() {
+        return instanceReadScope;
     }
-    public void setReadScope(String readScope) {
-        this.readScope = readScope;
+    public void setInstanceReadScope(String instanceReadScope) {
+        this.instanceReadScope = instanceReadScope;
+    }
+    public String getStorageWriteScope() {
+        return storageWriteScope;
+    }
+    public void setStorageWriteScope(String storageWriteScope) {
+        this.storageWriteScope = storageWriteScope;
+    }
+    public String getStorageReadScope() {
+        return storageReadScope;
+    }
+    public void setStorageReadScope(String storageReadScope) {
+        this.storageReadScope = storageReadScope;
     }
 }

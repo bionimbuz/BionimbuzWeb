@@ -74,7 +74,7 @@
                                 &{'object.region'}
                             </th>
                             <th style="cursor: pointer;">
-                                &{'object.price.per.GB'}
+                                &{'object.pricePerGB'}
                             </th>
                             <th style="cursor: pointer;">
                                 &{'object.classAPrice'}
@@ -88,9 +88,10 @@
                 %{
                         if(object.plugin != null) {
                 }%
+
                         <tbody>
                 %{
-                            regions = controllers.guest.SpaceController.searchStorageRegions(object.plugin.id);
+                            regions = controllers.guest.SpaceController.getStorageRegions(object.plugin.id);
                             regions.each(){
                                 selected = false;
                                 if(field.value != null && field.value.id == it.id){

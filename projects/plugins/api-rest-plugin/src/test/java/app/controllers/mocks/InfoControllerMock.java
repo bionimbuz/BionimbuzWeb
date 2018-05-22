@@ -14,7 +14,7 @@ public class InfoControllerMock extends AbstractInfoController {
     @Override
     protected String getPluginVersion() {
         return "version";
-    }    
+    }
     @Override
     protected AuthenticationType getAuthenticationType() {
         return AuthenticationType.AUTH_BEARER_TOKEN;
@@ -24,11 +24,19 @@ public class InfoControllerMock extends AbstractInfoController {
         return "GCP";
     }
     @Override
-    protected String getWriteScope() {
-        return "Write Scope";
+    protected String getInstanceWriteScope() {
+        return "Instance Write Scope";
     }
     @Override
-    protected String getReadScope() {
-        return "Read Scope";
+    protected String getInstanceReadScope() {
+        return "Instance Read Scope";
+    }
+    @Override
+    protected String getStorageWriteScope() {
+        return "Storage Write Scope";
+    }
+    @Override
+    protected String getStorageReadScope() {
+        return "Storage Read Scope";
     }
 }

@@ -42,15 +42,15 @@ public class DevelopmentStartupJob extends Job {
         if (UserModel.findByEmail("guest@bionimbuz.org.br") != null) {
             return;
         }
-        
+
         PluginModel plugin = this.insertPlugin();
         this.insertImages(plugin);
         this.insertTestModels(10);
         this.insertTempPlugins(2);
 
-        UserModel userAdmin = 
+        UserModel userAdmin =
                 UserModel.findByEmail("master@bionimbuz.org.br");
-        UserModel userNormal = 
+        UserModel userNormal =
                 this.insertTempUserNormal();
         this.insertTempGroup(
                 "Test Group",
@@ -70,10 +70,10 @@ public class DevelopmentStartupJob extends Job {
         this.insertCredential(plugin, userAdmin);
         this.insertCredential(plugin, userNormal);
         this.insertCredential(plugin, userNormal);
-        
+
         insertExecutor(plugin);
     }
-    
+
     private void insertExecutor(PluginModel plugin) {
         ExecutorModel executor = new ExecutorModel();
         List<ImageModel> listImages = new ArrayList<>();
@@ -84,52 +84,52 @@ public class DevelopmentStartupJob extends Job {
         executor.setStartupScript("apt-get update && apt-get install -y apache2 && hostname > /var/www/index.html");
         executor.setFirewallTcpRules("80,8080");
         executor.setListImages(listImages);
-        executor.save();        
+        executor.save();
     }
-    
+
     private void insertTempGroup(String name, UserModel... users) {
         GroupModel group = new GroupModel();
         group.setName(name);
         group.save();
-            
-        for(UserModel user : users) {            
+
+        for(UserModel user : users) {
             UserGroupModel userGroup = new UserGroupModel(user, group);
             userGroup.setJoined(true);
-            userGroup.setOwner(true);  
+            userGroup.setOwner(true);
             userGroup.save();
-        }        
+        }
     }
-    
+
     private void insertImages(PluginModel plugin) {
         ImageModel image = new ImageModel();
         image.setName("ubuntu-1710-artful-v20180126");
         image.setUrl("https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1710-artful-v20180126");
         image.setPlugin(plugin);
         image.save();
-        
+
         image = new ImageModel();
         image.setName("ubuntu-1204-precise-v20141028");
         image.setUrl("https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1204-precise-v20141028");
         image.setPlugin(plugin);
-        image.save();        
+        image.save();
     }
-    
+
     private MenuModel insertMenu(
-            String name, 
-            String iconClass, 
-            String path, 
-            short order, 
-            MenuModel parentMenu, 
+            String name,
+            String iconClass,
+            String path,
+            short order,
+            MenuModel parentMenu,
             RoleType... roleTypes) {
-        
-        MenuModel menu = new MenuModel();  
+
+        MenuModel menu = new MenuModel();
         menu.setName(name);
         menu.setMenuOrder(order);
         menu.setIconClass(iconClass);
-        menu.setPath(path);        
+        menu.setPath(path);
         menu.setParentMenu(parentMenu);
         menu.save();
-        
+
 
 
         for(RoleType roleType : roleTypes) {
@@ -138,17 +138,17 @@ public class DevelopmentStartupJob extends Job {
             if(menus == null)
                 menus = new ArrayList<>();
             menus.add(menu);
-            role.setListMenus(menus);   
-        }    
-        
+            role.setListMenus(menus);
+        }
+
         return menu;
     }
 
     private void insertCredential(PluginModel plugin, UserModel user) {
-        CredentialModel model = new CredentialModel();     
+        CredentialModel model = new CredentialModel();
         EncryptedFileField data = new EncryptedFileField(readCredential().getBytes());
         model.setCredentialData(data);
-        model.setCredentialDataType("application/json");   
+        model.setCredentialDataType("application/json");
         model.setEnabled(true);
         model.setName("Credential Google");
         model.setPlugin(plugin);
@@ -164,8 +164,10 @@ public class DevelopmentStartupJob extends Job {
         model.setName("Google Cloud Platform");
         model.setPluginVersion("0.1");
         model.setUrl("http://localhost:8080");
-        model.setReadScope("https://www.googleapis.com/auth/compute.readonly");
-        model.setWriteScope("https://www.googleapis.com/auth/compute");
+        model.setInstanceReadScope("https://www.googleapis.com/auth/compute.readonly");
+        model.setInstanceWriteScope("https://www.googleapis.com/auth/compute");
+        model.setStorageReadScope("https://www.googleapis.com/auth/devstorage.read_only");
+        model.setStorageWriteScope("https://www.googleapis.com/auth/devstorage.read_write");
         model.save();
         return model;
     }
@@ -283,11 +285,11 @@ public class DevelopmentStartupJob extends Job {
             return null;
         }
     }
-    
+
     private static String readCredential() {
-        String fileContents = null;        
+        String fileContents = null;
         try {
-            fileContents = 
+            fileContents =
                     Files.toString(
                         new File(System.getProperty("credential.file")),
                         Charset.defaultCharset());
@@ -295,5 +297,5 @@ public class DevelopmentStartupJob extends Job {
             e.printStackTrace();
         }
         return fileContents;
-    }    
+    }
 }

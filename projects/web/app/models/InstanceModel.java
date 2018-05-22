@@ -20,10 +20,12 @@ import play.db.jpa.GenericModel;
 public class InstanceModel extends GenericModel {
 
     public static enum CredentialUsagePolicy {
+        ONLY_SHARED,
+        ONLY_OWNER,
         SHARED_FIRST,
         OWNER_FIRST
     }
-    
+
     @Id
     @GeneratedValue
     private Long id;
@@ -45,7 +47,7 @@ public class InstanceModel extends GenericModel {
     @NoBinding
     private Date creationDate;
 
-    // ---- Redundant Data for price table exclusion/update  
+    // ---- Redundant Data for price table exclusion/update
     @NoBinding
     private Date priceTableDate;
     @NoBinding
@@ -61,8 +63,8 @@ public class InstanceModel extends GenericModel {
     @NoBinding
     private Double memory;
     // ---------------------------------------
-    
-    
+
+
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Constructors
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -162,5 +164,5 @@ public class InstanceModel extends GenericModel {
     }
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
-    }    
+    }
 }
