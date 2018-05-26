@@ -95,6 +95,14 @@ DELETE  /spaces/{id}                            guest.SpaceController.delete
 GET     /spaces                                 guest.SpaceController.blank
 POST    /spaces                                 guest.SpaceController.create
 
+# SpaceFileController
+GET     /list/space/files                       guest.SpaceFileController.list
+GET     /space/files/{id}                       guest.SpaceFileController.show
+PUT     /space/files/{id}                       guest.SpaceFileController.save
+DELETE  /space/files/{id}                       guest.SpaceFileController.delete
+GET     /space/files                            guest.SpaceFileController.blank
+POST    /space/files                            guest.SpaceFileController.create
+
 # InstanceController
 GET     /search/instance/types/zones            guest.InstanceController.searchInstanceTypesZones
 GET     /search/instance/regions                guest.InstanceController.searchRegions

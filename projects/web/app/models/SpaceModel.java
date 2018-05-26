@@ -27,6 +27,8 @@ public class SpaceModel extends GenericModel {
     @ManyToOne(fetch = FetchType.LAZY)
     @Required
     private PluginModel plugin;
+    @Required
+    private boolean alocationAfterCreation;
 
     // ---- Redundant Data for price table exclusion/update
     @NoBinding
@@ -107,5 +109,16 @@ public class SpaceModel extends GenericModel {
     }
     public void setPlugin(PluginModel plugin) {
         this.plugin = plugin;
+    }
+    public boolean isAlocationAfterCreation() {
+        return alocationAfterCreation;
+    }
+    public void setAlocationAfterCreation(boolean alocationAfterCreation) {
+        this.alocationAfterCreation = alocationAfterCreation;
+    }
+
+    @Override
+    public String toString() {
+        return this.name;
     }
 }

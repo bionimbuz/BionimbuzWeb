@@ -1,0 +1,22 @@
+
+#{extends 'CRUD/layout.html' /}
+#{set title:messages.get('crud.list.title', type.name) /}
+
+<div class="row crud-title">
+    <div class="col-xs-12 col-sm-12 col-md-12">
+        <h1> &{'crud.list.title', type.name} </h1>
+        <pre> &{'crud.list.title.desc', type.name+'.desc'} </pre>
+    </div>
+</div>
+
+<br>
+
+#{crud.searchAndAdd /}
+
+<br>
+
+#{crud.table fields: ['name', 'space.name', 'url']}
+    #{crud.custom 'space.name'}
+        ${object.space.name}
+    #{/crud.custom}
+#{/crud.table}

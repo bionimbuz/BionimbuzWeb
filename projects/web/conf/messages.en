@@ -129,6 +129,8 @@ InstanceController=Instances
 
 SpaceController=Spaces
 
+SpaceFileController=Space Files
+
 SettingController=Settings
 
 # Menus
@@ -258,7 +260,7 @@ object.instanceTypeName=Name
 InstanceModel=Instance
 object.credentialUsage=Credential Usage
 object.executor=Executor
-object.executionAfterCreation=Request Execution After Creation
+object.executionAfterCreation=Request execution after creation
 object.instanceTypeRegion=Instance Types
 SHARED_FIRST=Shared First
 OWNER_FIRST=Owner First
@@ -279,6 +281,13 @@ object.region=Region
 object.pricePerGB=Price per GB per Month
 name.must.be.unique.on.platform=The name informed must be unique on platform selected
 error.space.not.created=The space cannot be created, please try again with another name
+object.alocationAfterCreation=Request space alocation after creation
+
+# SpaceFileModel
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SpaceFileModel=Space File
+object.space=Space
+object.space.name=&{SpaceModel}
 
 # InstanceTypeRegionModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
