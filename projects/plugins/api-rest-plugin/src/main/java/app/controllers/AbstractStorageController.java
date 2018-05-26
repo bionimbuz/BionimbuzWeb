@@ -17,6 +17,8 @@ import app.common.HttpHeadersCustom;
 import app.common.Routes;
 import app.models.Body;
 import app.models.PluginInstanceModel;
+import app.models.PluginStorageFileDownloadModel;
+import app.models.PluginStorageFileUploadModel;
 import app.models.PluginStorageModel;
 
 public abstract class AbstractStorageController extends BaseController {
@@ -42,6 +44,20 @@ public abstract class AbstractStorageController extends BaseController {
             @PathVariable(value = "name") final String name) {
         return callImplementedMethod("deleteSpace", version, token, identity, name);
     }
+    @RequestMapping(path = Routes.SPACES_NAME_UPLOAD_FILE, method = RequestMethod.GET)
+    private ResponseEntity<Body<PluginStorageFileUploadModel>> getUploadUrlAction(
+            @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
+            @PathVariable(value = "name") final String name,
+            @PathVariable(value = "file") final String file) {
+        return callImplementedMethod("getUploadUrl", version, name, file);
+    }
+    @RequestMapping(path = Routes.SPACES_NAME_DOWNLOAD_FILE, method = RequestMethod.GET)
+    private ResponseEntity<Body<PluginStorageFileDownloadModel>> getDownloadUrlAction(
+            @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
+            @PathVariable(value = "name") final String name,
+            @PathVariable(value = "file") final String file) {
+        return callImplementedMethod("getDownloadUrl", version, name, file);
+    }
 
     /*
      * Abstract Methods
@@ -55,4 +71,10 @@ public abstract class AbstractStorageController extends BaseController {
             final String token,
             final String identity,
             final String name) throws Exception;
+    protected abstract ResponseEntity<Body<PluginStorageFileUploadModel>> getUploadUrl(
+            final String name,
+            final String file) throws Exception;
+    protected abstract ResponseEntity<Body<PluginStorageFileDownloadModel>> getDownloadUrl(
+            final String name,
+            final String file) throws Exception;
 }

@@ -9,9 +9,12 @@ import app.common.GlobalConstants;
 import app.common.HttpHeadersCustom;
 import app.common.Routes;
 import app.models.Body;
+import app.models.PluginStorageFileDownloadModel;
+import app.models.PluginStorageFileUploadModel;
 import app.models.PluginStorageModel;
 import retrofit2.Call;
 import retrofit2.http.DELETE;
+import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
@@ -46,6 +49,26 @@ public class StorageApi  extends PluginApi<HttpMethods> {
                 .execute().body();
     }
 
+    public Body<PluginStorageFileUploadModel> getUploadUrl(
+            final String name,
+            final String file) throws IOException{
+        return getHttpMethods()
+                .getUploadUrl(
+                        GlobalConstants.API_VERSION,
+                        name, file)
+                .execute().body();
+    }
+
+    public Body<PluginStorageFileDownloadModel> getDownloadUrl(
+            final String name,
+            final String file) throws IOException{
+        return getHttpMethods()
+                .getDownloadUrl(
+                        GlobalConstants.API_VERSION,
+                        name, file)
+                .execute().body();
+    }
+
     protected interface HttpMethods {
         @POST(Routes.SPACES)
         public Call<Body<PluginStorageModel>> createSpace(
@@ -59,5 +82,15 @@ public class StorageApi  extends PluginApi<HttpMethods> {
                 @Header(HttpHeaders.AUTHORIZATION) final String token,
                 @Header(HttpHeadersCustom.AUTHORIZATION_ID) final String identity,
                 @Path("name") final String name);
+        @GET(Routes.SPACES_NAME_UPLOAD_FILE)
+        public Call<Body<PluginStorageFileUploadModel>> getUploadUrl(
+                @Header(HttpHeadersCustom.API_VERSION) final String version,
+                @Path("name") final String name,
+                @Path("file") final String file);
+        @GET(Routes.SPACES_NAME_DOWNLOAD_FILE)
+        public Call<Body<PluginStorageFileDownloadModel>> getDownloadUrl(
+                @Header(HttpHeadersCustom.API_VERSION) final String version,
+                @Path("name") final String name,
+                @Path("file") final String file);
     }
 }

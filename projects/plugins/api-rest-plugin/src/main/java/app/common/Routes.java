@@ -47,4 +47,6 @@ public class Routes {
      */
     public static final String SPACES = "/spaces";
     public static final String SPACES_NAME = "/spaces/{name}";
+    public static final String SPACES_NAME_UPLOAD_FILE = "/spaces/{name}/upload/url/{file}";
+    public static final String SPACES_NAME_DOWNLOAD_FILE = "/spaces/{name}/download/url/{file}";
 }
