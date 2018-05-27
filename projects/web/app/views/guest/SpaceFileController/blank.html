@@ -124,10 +124,8 @@
 
     <div class="btn-row text-center">
         <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="button" name="_save">&{'crud.save'}</button>
-*{
-        <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_saveAndContinue">&{'crud.saveAndContinue'}</button>
-        <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_saveAndAddAnother">&{'crud.saveAndAddAnother'}</button>
-}*
+        <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="button" name="_saveAndContinue">&{'crud.saveAndContinue'}</button>
+        <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="button" name="_saveAndAddAnother">&{'crud.saveAndAddAnother'}</button>
         <a href="@{list()}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>
     </div>
 #{/form}
@@ -215,7 +213,21 @@ $(function(){
         $('.submitForm').submit();
     }
 
-    $("button[name=_save]").click(function(){
+    $("button[name=_save], button[name=_saveAndContinue], button[name=_saveAndAddAnother]")
+            .click(function(){
+
+                debugger ;
+        var self= $(this),
+        form = $('.submitForm'),
+        tempElement = $("<input type='hidden'/>");
+
+        // clone the important parts of the button used to submit the form.
+        tempElement
+            .attr("name", this.name)
+            .val(self.val())
+            .appendTo(form);
+
+
         if($("#object_name").val() &&
             $("#checkUploadFile").is(":checked")) {
             showPleaseWaitEmpty();
