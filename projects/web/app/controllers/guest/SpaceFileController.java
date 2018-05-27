@@ -29,6 +29,7 @@ public class SpaceFileController extends BaseAdminController {
 
         private String url;
         private String method;
+        private String virtualName;
         private Map<String, String> headers;
 
         public String getUrl() {
@@ -48,6 +49,12 @@ public class SpaceFileController extends BaseAdminController {
         }
         public void setHeaders(Map<String, String> headers) {
             this.headers = headers;
+        }
+        public String getVirtualName() {
+            return virtualName;
+        }
+        public void setVirtualName(String virtualName) {
+            this.virtualName = virtualName;
         }
     }
 
@@ -83,6 +90,7 @@ public class SpaceFileController extends BaseAdminController {
 
                     res.setUrl(content.getUrl());
                     res.setMethod(content.getMethod());
+                    res.setVirtualName(virtualName);
 
                     Map<String, String> headers =
                             new HashMap<>();

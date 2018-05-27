@@ -23,8 +23,29 @@
 #{form action:@save(object._key()), enctype:'multipart/form-data', class: 'submitForm'}
 
     #{crud.form}
-        #{crud.custom 'url'}
-            #{field 'object.url'}
+
+        #{crud.custom 'space'}
+            #{field 'object.space'}
+                <div class="form-group row ">
+                    <label for="${field.id}">&{field.name}</label>
+                    <input id="${field.id}" readonly class="form-control" type="text"
+                            name="${field.name}" value="${field.value}" />
+                </div>
+            #{/field}
+        #{/crud.custom}
+
+        #{crud.custom 'virtualName'}
+            #{field 'object.virtualName'}
+                <div class="form-group row ">
+                    <label for="${field.id}">&{field.name}</label>
+                    <input id="${field.id}" readonly class="form-control" type="text"
+                            name="${field.name}" value="${field.value}" />
+                </div>
+            #{/field}
+        #{/crud.custom}
+
+        #{crud.custom 'publicUrl'}
+            #{field 'object.publicUrl'}
             <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
                 <label for="${field.id}">&{field.name}</label>
                 <input id="${field.id}" class="form-control"  type="text" name="${field.name}" value="${field.value}" />

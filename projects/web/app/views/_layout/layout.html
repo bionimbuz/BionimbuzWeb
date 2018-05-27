@@ -8,35 +8,35 @@
         <title>&{'application.title'}</title>
         <link href="@{'/public/images/favicon.png'}" rel="icon" type="image/png">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        
+
         <link rel="stylesheet" type="text/css" href="@{'/public/assets/icheck-1.0.2/skins/square/blue.css'}" >
         <link rel="stylesheet" type="text/css" href="@{'/public/assets/datetimepicker/bootstrap-datetimepicker.min.css'}">
         <link rel="stylesheet" type="text/css" href="@{'/public/assets/entypo/entypo-icon.css'}"/>
         <link rel="stylesheet" type="text/css" href="@{'/public/assets/animate/animate.css'}"/>
         <link rel="stylesheet" type="text/css" href="@{'/public/stylesheets/bootstrap.min.css'}">
         <link rel="stylesheet" type="text/css" href="@{'/public/stylesheets/main.css'}">
-        <link rel="stylesheet" type="text/css" href="@{'/public/stylesheets/custom.css'}">        
+        <link rel="stylesheet" type="text/css" href="@{'/public/stylesheets/custom.css'}">
         <link rel="stylesheet" type="text/css" href="@{'/public/lib/multi-select/css/multi-select.css'}" media="screen">
         #{get 'moreStyles' /}
     </head>
-    
-    <body>    
-        
-        #{doLayout /}     
-    
-        <script type="text/javascript" src="@{'/public/javascripts/jquery-2.2.2.min.js'}"></script>    
+
+    <body>
+
+        #{doLayout /}
+
+        <script type="text/javascript" src="@{'/public/javascripts/jquery-2.2.2.min.js'}"></script>
         <script type="text/javascript" src="@{'/public/javascripts/bootstrap.min.js'}"></script>
         <script type="text/javascript" src="@{'/public/assets/icheck-1.0.2/icheck.js'}"></script>
         <script type="text/javascript" src="@{'/public/assets/moment/moment-with-locales.js'}"></script>
         <script type="text/javascript" src="@{'/public/assets/datetimepicker/bootstrap-datetimepicker.min.js'}"></script>
         <script type="text/javascript" src="@{'/public/assets/bootstrap-notify-master/bootstrap-notify.min.js'}"></script>
-        <script type="text/javascript" src="@{'/public/javascripts/shared-library.js'}"></script>        
+        <script type="text/javascript" src="@{'/public/javascripts/shared-library.js'}"></script>
         <script type="text/javascript" src="@{'/public/javascripts/jquery.blockUI.js'}"></script>
-        <script type="text/javascript" src="@{'/public/javascripts/main.js'}"></script>        
+        <script type="text/javascript" src="@{'/public/javascripts/main.js'}"></script>
         <script type="text/javascript" src="@{'/public/lib/multi-select/js/jquery.multi-select.js'}"></script>
         <script type="text/javascript" src="@{'/public/lib/datatables/jquery.dataTables.min.js'}"></script>
         <script type="text/javascript" src="@{'/public/lib/datatables/dataTables.bootstrap4.min.js'}"></script>
-        
+
         <script type="text/javascript">
             // Date picker
             SharedLibrary.setLang("${lang}");
@@ -56,7 +56,7 @@
                     'prevCentury':  "&{'datetimepicker.tooltip.previous.century'}",
                     'nextCentury':  "&{'datetimepicker.tooltip.next.century'}"
             };
-            
+
             function update_iChecks(){
                 $('.icheck').iCheck({
                     checkboxClass: 'icheckbox_square-blue',
@@ -64,17 +64,17 @@
                     increaseArea: '20%' // optional
                 });
             }
-            
+
             $(function () {
                 	// navbar control
                 $('.navbar-toggle').click(function () {
                     $('.navbar-nav').toggleClass('slide-in');
                     $('.side-body').toggleClass('body-slide-in');
                 });
-                
+
                 // Custom checkboxes
-                update_iChecks();                
-                
+                update_iChecks();
+
                 $(document).on('change','select.nav',function(){
                     var $this = this;
                     var target = $this.value;
@@ -84,7 +84,7 @@
                 $(document).on('click','.series-select',function(){
                     var $this = this;
                     var txt = $this.text+'<span class="caret"></span>';
-                    $($this).closest('li.dropdown').find('a.dropdown-toggle').html(txt);            
+                    $($this).closest('li.dropdown').find('a.dropdown-toggle').html(txt);
                 });
 
                 // Bind all datetimepicker elements if they exist.
@@ -112,42 +112,53 @@
                             nextCentury: datetimepickerTooltipsMap['nextCentury']
                         }
                     });
-                }               
-                
+                }
+
                 // Bind notify messages
                 #{if flash.success || success}
                     flashSuccess('${success ?: flash.success}');
-                #{/if} 
+                #{/if}
                 #{if flash.error || error}
                     flashError('${error ?: flash.error}');
                 #{/if}
                 #{if flash.warning}
                     flashWarn('${flash.warning}');
                 #{/if}
-                
+
                 $('.submitForm').submit(function( event ) {
                     showPleaseWait();
                 });
             });
-            
+
             //Configure the check and uncheck for checkboxes
             function configureCheckAll(checkAllElement, checkOneElement) {
                 labelCheckAll = "&{'crud.field.check.all'}";
-                labelUncheckAll = "&{'crud.field.check.none'}";                  
+                labelUncheckAll = "&{'crud.field.check.none'}";
                 configureCheckAllForLabels(checkAllElement, checkOneElement, labelCheckAll, labelUncheckAll);
             }
-            
+
+            function updateProgressBar(progress){
+                $('.progress-bar').width(progress + "%");
+            }
+
+            function showPleaseWaitEmpty() {
+                updateProgressBar(0);
+                $('#pleaseWaitDialog').modal();
+            }
+
             function showPleaseWait() {
-                $('#pleaseWaitDialog').modal(); 
+                updateProgressBar(100);
+                $('#pleaseWaitDialog').modal();
             }
+
             function hidePleaseWait() {
-                $('#pleaseWaitDialog').modal('hide'); 
+                $('#pleaseWaitDialog').modal('hide');
             }
-            
+
         </script>
-        
+
         #{get 'moreScripts' /}
         #{get 'moreInnerScripts' /}
-        
+
     </body>
 </html>

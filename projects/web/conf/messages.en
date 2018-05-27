@@ -290,6 +290,7 @@ object.space=Space
 object.space.name=&{SpaceModel}
 object.publicUrl=Public URL
 uploadFileInput=Upload File
+object.virtualName=Virtual Name
 
 # InstanceTypeRegionModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -9,7 +9,7 @@
     <div class="side-menu">
         <nav class="navbar navbar-default" role="navigation">
             <!-- Brand and toggle get grouped for better mobile display -->
-            
+
             <div class="navbar-header">
                 <div class="brand-wrapper">
                     <!-- Hamburger -->
@@ -26,13 +26,13 @@
                     <div class="navbar-collapse collapse user-profile-menu-div">
                         <ul class="nav navbar-nav navbar-right" style="margin: 0px; margin-right: -15px; background-color: #fff; ">
                             <li class="dropdown">
-                            
+
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="padding-bottom: 35px;">
                                     <span class="user-profile-menu pull-left btn btn-default">
                                         <span class="glyphicon glyphicon-user"></span>
                                     </span>
                                 </a>
-                                
+
                                 <ul class="dropdown-menu">
                                     <li class="profile-menu">
                                         <div class="navbar-content">
@@ -42,7 +42,7 @@
                                                         ${connectedUser.name}
                                                     </span>
                                                     <p class="text-muted">
-                                                        ${session.username}    
+                                                        ${session.username}
                                                     </p>
                                                     <div class="divider">
                                                     </div>
@@ -58,26 +58,26 @@
                             </li>
                         </ul>
                     </div>
-                    
+
                 </div>
             </div>
             <!-- Main Menu -->
             <div class="side-menu-container">
                 <ul class="nav navbar-nav">
-                
-                
-                
-                
-                
+
+
+
+
+
                 %{
                     menus = models.MenuModel.searchMenus();
                     menusParents = 0;
-                    
-                    for(menu in menus) { 
-                        
+
+                    for(menu in menus) {
+
                         if(menu.listChildrenMenus.size() > 0) {
                             menusParents++;
-                    }%                        
+                    }%
                             <!-- Dropdown-->
                             <li class="panel panel-default dropdown">
                                 <a data-toggle="collapse" href="#dropdown${menusParents}">
@@ -87,35 +87,35 @@
                                 <div id="dropdown${menusParents}" class="panel-collapse collapse">
                                     <div class="panel-body">
                                         <ul class="nav navbar-nav">
-                                        
+
                                         %{
-                                            for(child in menu.listChildrenMenus) { 
-                                        }%                                        
+                                            for(child in menu.listChildrenMenus) {
+                                        }%
                                             <li><a href="${child.path}">&{child.name}</a></li>
                                         %{ } }%
-                                                               
+
                                         </ul>
                                     </div>
                                 </div>
-                            </li>  
-                    %{                         
-                        } else { 
+                            </li>
+                    %{
+                        } else {
                     }%
-                            <li><a href="${menu.path}"><span class="${menu.iconClass}"></span> &{menu.name}</a></li>  
-                    %{ 
+                            <li><a href="${menu.path}"><span class="${menu.iconClass}"></span> &{menu.name}</a></li>
+                    %{
                         }
-                        
-                    } 
+
+                    }
                 }%
-                
-                
-                
-                
-                
-                
-                
+
+
+
+
+
+
+
                 *{
-                
+
                     <!-- Dropdown-->
                     <li class="panel panel-default" id="dropdown">
                         <a data-toggle="collapse" href="#dropdown-workflow-lvl1">
@@ -126,12 +126,12 @@
                             <div class="panel-body">
                                 <ul class="nav navbar-nav">
                                     <li><a href="#">Create New</a></li>
-                                    <li><a href="#">Execution Status</a></li>                        
+                                    <li><a href="#">Execution Status</a></li>
                                 </ul>
                             </div>
                         </div>
-                    </li>  
-                    
+                    </li>
+
                     <!-- Dropdown-->
                     <li class="panel panel-default" id="dropdown">
                         <a data-toggle="collapse" href="#dropdown-storage-lvl2">
@@ -144,12 +144,12 @@
                                     <li><a href="#">My Storage</a></li>
                                     <li><a href="#">Send File</a></li>
                                     <li><a href="#">Delete File</a></li>
-                                    <li><a href="#">Download File</a></li>                        
+                                    <li><a href="#">Download File</a></li>
                                 </ul>
                             </div>
                         </div>
-                    </li>                     
-                    <li><a href="#"><span class="glyphicon glyphicon-signal"></span> Statistics</a></li>    
+                    </li>
+                    <li><a href="#"><span class="glyphicon glyphicon-signal"></span> Statistics</a></li>
                     <li><a href="@{adm.PluginController.list}"><span class="glyphicon glyphicon-cloud-upload"></span> &{'PluginController'}</a></li>
                     <li><a href="@{adm.ImageController.list}"><span class="glyphicon glyphicon-play-circle"></span> &{'ImageController'}</a></li>
                     <li><a href="@{guest.CredentialController.list}"><span class="glyphicon glyphicon-lock"></span> &{'CredentialController'}</a></li>
@@ -165,19 +165,19 @@
                             <div class="panel-body">
                                 <ul class="nav navbar-nav">
                                     <li><a href="#">Coordinators</a></li>
-                                    <li><a href="#">Executors</a></li>                        
+                                    <li><a href="#">Executors</a></li>
                                 </ul>
                             </div>
                         </div>
-                    </li>  
+                    </li>
                     <!-- ################################### -->
                     <!-- ### Template Menu for 1 and 2 level menus -->
-                    
-                    <!-- 
+
+                    <!--
                     <li class="panel panel-default" id="dropdown">
                         <a data-toggle="collapse" href="#dropdown-lvl1">
                             <span class="glyphicon glyphicon-user"></span> Template Menu<span class="caret"></span>
-                        </a>       
+                        </a>
                         <div id="dropdown-lvl1" class="panel-collapse collapse">
                             <div class="panel-body">
                                 <ul class="nav navbar-nav">
@@ -203,25 +203,25 @@
                         </div>
                     </li>
                      -->
-                    
-                    <!-- ################################### -->              
+
+                    <!-- ################################### -->
                     <li><a href="@{adm.TestController.list}"><span class="glyphicon glyphicon-screenshot"></span> Test</a></li>
-                    
+
              }*
-                    
+
                 </ul>
             </div>
             <!-- /.navbar-collapse -->
         </nav>
     </div>
-</header>  
+</header>
 
     <section>
         <!-- Main Content -->
         <div class="container-fluid">
-            #{doLayout /}    
+            #{doLayout /}
         </div>
-    </section>  
+    </section>
 </div>
 
 <div id="pleaseWaitDialog" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true" >
@@ -231,7 +231,8 @@
                 <h4 class="modal-title">&{'crud.processing'}</h4>
             </div>
             <div class="modal-body">
-                <div class="progress progress-striped active" style="margin-bottom:0;"><div class="progress-bar" style="width: 100%"></div></div>            
+                <div class="progress progress-striped active" style="margin-bottom:0;">
+                <div class="progress-bar" style="width: 100%"></div></div>
             </div>
         </div>
     </div>

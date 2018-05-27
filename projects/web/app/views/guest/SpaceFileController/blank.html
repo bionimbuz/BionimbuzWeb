@@ -30,72 +30,91 @@
 
         #{crud.custom 'virtualName'}
 
-            #{field 'uploadFileInput'}
+            %{ if(object.virtualName != null && object.virtualName != "") { }%
 
-                <div class="form-group row">
-                    <input type="checkbox" id="checkUploadFile" class="icheck" value="true" />
-                    <input type="hidden" value="false" />
-                    <label for="checkUploadFile" style="margin-left: 10px;">&{field.name}</label>
-                </div>
+                #{field 'object.virtualName'}
+                    <div class="form-group row ">
+                        <label for="${field.id}">&{field.name}</label>
+                        <input id="${field.id}" readonly class="form-control" type="text"
+                                name="${field.name}" value="${field.value}" />
+                    </div>
+                #{/field}
 
-                #{set fileName: null /}
+            %{ } else { }%
 
-                #{set clearFunction: "clearFile_" + field.id /}
-                #{set 'tempInnerScript' }
-                <script type="text/javascript">
+                #{field 'object.virtualName'}
+                    <input id="${field.id}" class="${field.errorClass}" type="hidden"
+                            name="${field.name}" value="${field.value}" size="50" />
+                #{/field}
 
-                $(function(){
-                    function ${clearFunction}(){
-                        document.getElementById('${field.id}_delete_').checked = true;
-                        document.getElementById('${field.id}_download_button').style.display = "none";
-                        document.getElementById('${field.id}_delete_button').style.display = "none";
-                        document.getElementById('${field.id}_fileName').value = "";
-                    }
-                    $('#${field.id}_delete_button').click(function(){
-                        ${clearFunction}();
-                    });
-                });
+                #{field 'uploadFileInput'}
 
-                </script>
-                #{/set}
-
-                #{set 'moreInnerScripts'}
-                    #{get 'moreInnerScripts' /}
-                    #{get 'tempInnerScript' /}
-                #{/set}
-
-                <div id="divUploadFile" style="display: none;" class="form-group row ${field.errorClass ? 'has-error' : ''}">
-                    <div class="input-group file-input">
-                        <input name="${field.name}_fileName" id="${field.id}_fileName" type="text" class="form-control" disabled="disabled" value="${fileName}">
-                        <span class="input-group-btn" id="${field.id}_download_button" style="${hasContent ? '' : 'display: none;'}" onclick="javascript: document.getElementById('${field.id}_download_').click();">
-                        <div class="btn btn-default" style="border-radius: 0px;border-left: 0px;">
-                            <span class="glyphicon glyphicon-download-alt">
-                            <a id="${field.id}_download_" href="@{attachment(_id, _name)}" download hidden>...</a>
-                            </span>
-                        </div>
-                        </span>
-                        <span class="input-group-btn " id="${field.id}_delete_button" style="${hasContent ? '' : 'display: none;'}">
-                        <div class="btn btn-default" style="border-radius: 0px;border-left: 0px;">
-                            <span class="glyphicon glyphicon-remove">
-                            <input id="${field.id}_delete_" ${hasContent ? '' : 'checked'} type="checkbox" name="${field.name}_delete_" value="true" style="display: none;visibility: hidden;" />
-                            </span>
-                        </div>
-                        </span>
-                        <span class="input-group-btn ">
-                            <div class="btn btn-default">
-                                <span class="glyphicon glyphicon-folder-open"></span>
-                                <span class="input-file-text">&{'crud.field.file.browse'}</span>
-                                <input id="${field.id}" type="file" name="${field.name}" style="width: 100px;"/>
-                            </div>
-                        </span>
+                    <div class="form-group row">
+                        <input type="checkbox" id="checkUploadFile" class="icheck" value="true" />
+                        <input type="hidden" value="false" />
+                        <label for="checkUploadFile" style="margin-left: 10px;">&{field.name}</label>
                     </div>
 
-                    #{ifError field.name}
-                        <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
-                    #{/ifError}
-                </div>
+                    #{set fileName: null /}
 
-            #{/field}
+                    #{set clearFunction: "clearFile_" + field.id /}
+                    #{set 'tempInnerScript' }
+                    <script type="text/javascript">
+
+                    $(function(){
+                        function ${clearFunction}(){
+                            document.getElementById('${field.id}_delete_').checked = true;
+                            document.getElementById('${field.id}_download_button').style.display = "none";
+                            document.getElementById('${field.id}_delete_button').style.display = "none";
+                            document.getElementById('${field.id}_fileName').value = "";
+                        }
+                        $('#${field.id}_delete_button').click(function(){
+                            ${clearFunction}();
+                        });
+                    });
+
+                    </script>
+                    #{/set}
+
+                    #{set 'moreInnerScripts'}
+                        #{get 'moreInnerScripts' /}
+                        #{get 'tempInnerScript' /}
+                    #{/set}
+
+                    <div id="divUploadFile" style="display: none;" class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                        <div class="input-group file-input">
+                            <input name="${field.name}_fileName" id="${field.id}_fileName" type="text" class="form-control" disabled="disabled" value="${fileName}">
+                            <span class="input-group-btn" id="${field.id}_download_button" style="${hasContent ? '' : 'display: none;'}" onclick="javascript: document.getElementById('${field.id}_download_').click();">
+                            <div class="btn btn-default" style="border-radius: 0px;border-left: 0px;">
+                                <span class="glyphicon glyphicon-download-alt">
+                                <a id="${field.id}_download_" href="@{attachment(_id, _name)}" download hidden>...</a>
+                                </span>
+                            </div>
+                            </span>
+                            <span class="input-group-btn " id="${field.id}_delete_button" style="${hasContent ? '' : 'display: none;'}">
+                            <div class="btn btn-default" style="border-radius: 0px;border-left: 0px;">
+                                <span class="glyphicon glyphicon-remove">
+                                <input id="${field.id}_delete_" ${hasContent ? '' : 'checked'} type="checkbox" name="${field.name}_delete_" value="true" style="display: none;visibility: hidden;" />
+                                </span>
+                            </div>
+                            </span>
+                            <span class="input-group-btn ">
+                                <div class="btn btn-default">
+                                    <span class="glyphicon glyphicon-folder-open"></span>
+                                    <span class="input-file-text">&{'crud.field.file.browse'}</span>
+                                    <input id="${field.id}" type="file" name="${field.name}" style="width: 100px;"/>
+                                </div>
+                            </span>
+                        </div>
+
+                        #{ifError field.name}
+                            <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                        #{/ifError}
+                    </div>
+
+                #{/field}
+
+            %{ } }%
 
         #{/crud.custom}
 
@@ -105,8 +124,6 @@
 
     <div class="btn-row text-center">
         <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="button" name="_save">&{'crud.save'}</button>
-
-
 *{
         <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_saveAndContinue">&{'crud.saveAndContinue'}</button>
         <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_saveAndAddAnother">&{'crud.saveAndAddAnother'}</button>
@@ -121,60 +138,98 @@
 
 <script type="text/javascript">
 
-function uploadFile(uploadInfo){
-
-    var uploadFileInput = document.getElementById('uploadFileInput').files[0];
-
-    $.ajax({
-        url: uploadInfo.url,
-        type: uploadInfo.method,
-        data: uploadFileInput,
-        processData: false,
-        beforeSend: function (xhr) {
-            Object.entries(uploadInfo.headers).map(([key, value]) => {
-               xhr.setRequestHeader(key, value);
-            })
-        }
-    })
-    .done(function(data) {
-        return data;
-    })
-    .fail(function(data) {
-        flashError(data.responseText);
-    })
-    .always(function() {
-        hidePleaseWait();
-    });
-}
-
-function prepareUpload(){
-
-    space = $('#object_space').val();
-    fileName = $('#object_name').val();
-    var action = #{jsRoute @getFileLocationToUpload() /};
-    if(space == ""){
-        hidePleaseWait();
-        return;
-    }
-
-    $.ajax({
-        url: action.url(),
-        type: action.method,
-        data:{ spaceId: space, fileName: fileName }
-    })
-    .done(function(data) {
-        uploadFile(data);
-    })
-    .fail(function(data) {
-        flashError(data.responseText);
-    });
-}
 
 $(function(){
+
+    function updateProgress(evt){
+        if ( !evt.lengthComputable )
+            return;
+        var percentComplete = Math.round( (evt.loaded * 100) / evt.total );
+        updateProgressBar(percentComplete);
+    }
+
+    var uploadRequest = null;
+    function uploadFile(uploadInfo, callBack){
+
+        var uploadFileInput = document.getElementById('uploadFileInput').files[0];
+
+        uploadRequest = $.ajax({
+            url: uploadInfo.url,
+            type: uploadInfo.method,
+            data: uploadFileInput,
+            processData: false,
+            beforeSend: function (xhr) {
+                Object.entries(uploadInfo.headers).map(([key, value]) => {
+                   xhr.setRequestHeader(key, value);
+                })
+            },
+            xhr: function() {
+                var jqXHR = null;
+                if ( window.ActiveXObject )
+                    jqXHR = new window.ActiveXObject( "Microsoft.XMLHTTP" );
+                else
+                    jqXHR = new window.XMLHttpRequest();
+
+                //Upload progress
+                jqXHR.upload.addEventListener( "progress", updateProgress, false );
+
+                //Download progress
+                //jqXHR.addEventListener( "progress", updateProgress, false );
+                return jqXHR;
+            },
+        })
+        .done(function(data) {
+            $('#object_virtualName').val(uploadInfo.virtualName);
+            callBack();
+        })
+        .fail(function(data) {
+            flashError(data.responseText);
+        })
+        .always(function() {
+            hidePleaseWait();
+        });
+    }
+
+    function prepareUpload(callBack){
+        space = $('#object_space').val();
+        fileName = $('#object_name').val();
+        var action = #{jsRoute @getFileLocationToUpload() /};
+        if(space == ""){
+            hidePleaseWait();
+            return;
+        }
+        $.ajax({
+            url: action.url(),
+            type: action.method,
+            data:{ spaceId: space, fileName: fileName }
+        })
+        .done(function(data) {
+            callBack(data);
+        })
+        .fail(function(data) {
+            flashError(data.responseText);
+        });
+    }
+
+    function submitForm(){
+        $('.submitForm').submit();
+    }
+
     $("button[name=_save]").click(function(){
-        showPleaseWait();
-        prepareUpload();
-        hidePleaseWait();
+        if($("#object_name").val() &&
+            $("#checkUploadFile").is(":checked")) {
+            showPleaseWaitEmpty();
+            prepareUpload(function(data){
+                if(!data) {
+                    hidePleaseWait();
+                    return;
+                }
+                uploadFile(data, submitForm);
+            });
+        } else {
+            showPleaseWait();
+            submitForm();
+        }
     });
     $("#checkUploadFile").on("ifChecked", function(){
         $("#divUploadFile").show();
