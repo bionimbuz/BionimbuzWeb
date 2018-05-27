@@ -288,6 +288,8 @@ object.alocationAfterCreation=Request space alocation after creation
 SpaceFileModel=Space File
 object.space=Space
 object.space.name=&{SpaceModel}
+object.publicUrl=Public URL
+uploadFileInput=Upload File
 
 # InstanceTypeRegionModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

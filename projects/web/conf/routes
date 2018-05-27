@@ -96,6 +96,7 @@ GET     /spaces                                 guest.SpaceController.blank
 POST    /spaces                                 guest.SpaceController.create
 
 # SpaceFileController
+GET     /upload/space/files                     guest.SpaceFileController.getFileLocationToUpload
 GET     /list/space/files                       guest.SpaceFileController.list
 GET     /space/files/{id}                       guest.SpaceFileController.show
 PUT     /space/files/{id}                       guest.SpaceFileController.save

@@ -1,5 +1,8 @@
 package models;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -16,6 +19,9 @@ import play.db.jpa.GenericModel;
 @Table(name = "tb_space_file")
 public class SpaceFileModel extends GenericModel {
 
+    private static SimpleDateFormat DATE_FORMAT =
+            new SimpleDateFormat("yyyyMMddHHmmssSSS");
+
     @Id
     @GeneratedValue
     private Long id;
@@ -25,10 +31,12 @@ public class SpaceFileModel extends GenericModel {
     private SpaceModel space;
     @Required
     @MaxSize(100)
-    private String name;
+    private String virtualName;
     @Required
+    @MaxSize(100)
+    private String name;
     @MaxSize(200)
-    private String url;
+    private String publicUrl;
 
     public Long getId() {
         return id;
@@ -48,10 +56,22 @@ public class SpaceFileModel extends GenericModel {
     public void setName(String name) {
         this.name = name;
     }
-    public String getUrl() {
-        return url;
+    public String getVirtualName() {
+        return virtualName;
     }
-    public void setUrl(String url) {
-        this.url = url;
+    public void setVirtualName(String virtualName) {
+        this.virtualName = virtualName;
+    }
+    public String getPublicUrl() {
+        return publicUrl;
+    }
+    public void setPublicUrl(String publicUrl) {
+        this.publicUrl = publicUrl;
+    }
+
+    public static String generateVirtualName(final String fileName) {
+        String virtualName = DATE_FORMAT.format(new Date());
+        virtualName += "_" + Math.abs(fileName.hashCode());
+        return virtualName;
     }
 }
