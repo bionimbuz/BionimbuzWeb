@@ -43,15 +43,13 @@ public class DevelopmentStartupJob extends Job {
             return;
         }
 
-        PluginModel plugin = this.insertPlugin();
+        final PluginModel plugin = this.insertPlugin();
         this.insertImages(plugin);
         this.insertTestModels(10);
         this.insertTempPlugins(2);
 
-        UserModel userAdmin =
-                UserModel.findByEmail("master@bionimbuz.org.br");
-        UserModel userNormal =
-                this.insertTempUserNormal();
+        final UserModel userAdmin = UserModel.findByEmail("master@bionimbuz.org.br");
+        final UserModel userNormal = this.insertTempUserNormal();
         this.insertTempGroup(
                 "Test Group",
                 userAdmin,
@@ -71,12 +69,12 @@ public class DevelopmentStartupJob extends Job {
         this.insertCredential(plugin, userNormal);
         this.insertCredential(plugin, userNormal);
 
-        insertExecutor(plugin);
+        this.insertExecutor(plugin);
     }
 
-    private void insertExecutor(PluginModel plugin) {
-        ExecutorModel executor = new ExecutorModel();
-        List<ImageModel> listImages = new ArrayList<>();
+    private void insertExecutor(final PluginModel plugin) {
+        final ExecutorModel executor = new ExecutorModel();
+        final List<ImageModel> listImages = new ArrayList<>();
         plugin.refresh();
         listImages.add(
                 plugin.getListImages().get(0));
@@ -87,23 +85,23 @@ public class DevelopmentStartupJob extends Job {
         executor.save();
     }
 
-    private void insertTempGroup(String name, UserModel... users) {
-        GroupModel group = new GroupModel();
+    private void insertTempGroup(final String name, final UserModel... users) {
+        final GroupModel group = new GroupModel();
         group.setName(name);
         group.save();
 
-        for(UserModel user : users) {
-            UserGroupModel userGroup = new UserGroupModel(user, group);
+        for (final UserModel user : users) {
+            final UserGroupModel userGroup = new UserGroupModel(user, group);
             userGroup.setJoined(true);
             userGroup.setOwner(true);
             userGroup.save();
         }
     }
 
-    private void insertImages(PluginModel plugin) {
+    private void insertImages(final PluginModel plugin) {
         ImageModel image = new ImageModel();
-        image.setName("ubuntu-1710-artful-v20180126");
-        image.setUrl("https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1710-artful-v20180126");
+        image.setName("ubuntu-1804-bionic-v20180522");
+        image.setUrl("https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1804-bionic-v20180522");
         image.setPlugin(plugin);
         image.save();
 
@@ -112,17 +110,18 @@ public class DevelopmentStartupJob extends Job {
         image.setUrl("https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1204-precise-v20141028");
         image.setPlugin(plugin);
         image.save();
+
     }
 
     private MenuModel insertMenu(
-            String name,
-            String iconClass,
-            String path,
-            short order,
-            MenuModel parentMenu,
-            RoleType... roleTypes) {
+            final String name,
+            final String iconClass,
+            final String path,
+            final short order,
+            final MenuModel parentMenu,
+            final RoleType... roleTypes) {
 
-        MenuModel menu = new MenuModel();
+        final MenuModel menu = new MenuModel();
         menu.setName(name);
         menu.setMenuOrder(order);
         menu.setIconClass(iconClass);
@@ -130,13 +129,12 @@ public class DevelopmentStartupJob extends Job {
         menu.setParentMenu(parentMenu);
         menu.save();
 
-
-
-        for(RoleType roleType : roleTypes) {
+        for (final RoleType roleType : roleTypes) {
             final RoleModel role = RoleModel.findById(roleType);
             List<MenuModel> menus = role.getListMenus();
-            if(menus == null)
+            if (menus == null) {
                 menus = new ArrayList<>();
+            }
             menus.add(menu);
             role.setListMenus(menus);
         }
@@ -144,9 +142,9 @@ public class DevelopmentStartupJob extends Job {
         return menu;
     }
 
-    private void insertCredential(PluginModel plugin, UserModel user) {
-        CredentialModel model = new CredentialModel();
-        EncryptedFileField data = new EncryptedFileField(readCredential().getBytes());
+    private void insertCredential(final PluginModel plugin, final UserModel user) {
+        final CredentialModel model = new CredentialModel();
+        final EncryptedFileField data = new EncryptedFileField(readCredential().getBytes());
         model.setCredentialData(data);
         model.setCredentialDataType("application/json");
         model.setEnabled(true);
@@ -157,7 +155,7 @@ public class DevelopmentStartupJob extends Job {
     }
 
     private PluginModel insertPlugin() {
-        PluginModel model = new PluginModel();
+        final PluginModel model = new PluginModel();
         model.setAuthType(app.models.PluginInfoModel.AuthenticationType.AUTH_BEARER_TOKEN);
         model.setCloudType("google-compute-engine");
         model.setEnabled(true);
@@ -173,7 +171,7 @@ public class DevelopmentStartupJob extends Job {
     }
 
     @SuppressWarnings("deprecation")
-    private void insertTestModels(int lenght) {
+    private void insertTestModels(final int lenght) {
         try {
 
             Date date = null;
@@ -224,7 +222,7 @@ public class DevelopmentStartupJob extends Job {
                 + "culpa qui officia deserunt mollit anim id est laborum.";
     }
 
-    private void insertTempPlugins(int lenght) {
+    private void insertTempPlugins(final int lenght) {
         try {
             for (int i = 1; i <= lenght; i++) {
                 final PluginModel model = new PluginModel();
@@ -233,7 +231,7 @@ public class DevelopmentStartupJob extends Job {
                 model.setPluginVersion("v" + i);
                 model.setUrl("http://localhost:" + i);
                 model.save();
-                insertImages(model);
+                this.insertImages(model);
             }
         } catch (final Exception e) {
             Logger.error(e.getMessage(), e);
@@ -289,11 +287,10 @@ public class DevelopmentStartupJob extends Job {
     private static String readCredential() {
         String fileContents = null;
         try {
-            fileContents =
-                    Files.toString(
-                        new File(System.getProperty("credential.file")),
-                        Charset.defaultCharset());
-        } catch (IOException e) {
+            fileContents = Files.toString(
+                    new File(System.getProperty("credential.file"), "conf/credentials-gcp_template"),
+                    Charset.defaultCharset());
+        } catch (final IOException e) {
             e.printStackTrace();
         }
         return fileContents;

@@ -19,6 +19,7 @@ import app.models.PluginInstanceRegionModel;
 import app.models.PluginInstanceZoneModel;
 
 public abstract class AbstractInstanceRegionController extends BaseController {
+
     protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractInstanceRegionController.class);
 
     /*
@@ -26,18 +27,19 @@ public abstract class AbstractInstanceRegionController extends BaseController {
      */
     @RequestMapping(path = Routes.INSTANCE_REGIONS, method = RequestMethod.GET)
     private ResponseEntity<Body<List<PluginInstanceRegionModel>>> listInstanceRegionsAction(
-            @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
-            @RequestHeader(value=HttpHeaders.AUTHORIZATION) final String token,
-            @RequestHeader(value=HttpHeadersCustom.AUTHORIZATION_ID) final String identity) {
-        return callImplementedMethod("listInstanceRegions", version, token, identity);
+            @RequestHeader(value = HttpHeadersCustom.API_VERSION) final String version,
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION) final String token,
+            @RequestHeader(value = HttpHeadersCustom.AUTHORIZATION_ID) final String identity) {
+        return this.callImplementedMethod("listInstanceRegions", version, token, identity);
     }
+
     @RequestMapping(path = Routes.INSTANCE_REGIONS_ZONES, method = RequestMethod.GET)
     private ResponseEntity<Body<List<PluginInstanceZoneModel>>> listInstanceRegionsZonesAction(
-            @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
-            @RequestHeader(value=HttpHeaders.AUTHORIZATION) final String token,
-            @RequestHeader(value=HttpHeadersCustom.AUTHORIZATION_ID) final String identity,
-            @PathVariable(value="name") final String name) {
-        return callImplementedMethod("listInstanceZones", version, token, identity, name);
+            @RequestHeader(value = HttpHeadersCustom.API_VERSION) final String version,
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION) final String token,
+            @RequestHeader(value = HttpHeadersCustom.AUTHORIZATION_ID) final String identity,
+            @PathVariable(value = "name") final String name) {
+        return this.callImplementedMethod("listInstanceRegionsZones", version, token, identity, name);
     }
 
     /*
@@ -46,6 +48,7 @@ public abstract class AbstractInstanceRegionController extends BaseController {
     protected abstract ResponseEntity<Body<List<PluginInstanceRegionModel>>> listInstanceRegions(
             final String token,
             final String identity) throws Exception;
+
     protected abstract ResponseEntity<Body<List<PluginInstanceZoneModel>>> listInstanceRegionsZones(
             final String token,
             final String identity,
