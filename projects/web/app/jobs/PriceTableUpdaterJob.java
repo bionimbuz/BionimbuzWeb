@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.apache.commons.lang.StringUtils;
+
 import app.client.PricingApi;
 import app.common.utils.DateCompareUtil;
 import app.models.Body;
@@ -23,14 +25,15 @@ import models.PriceTableModel;
 import models.PriceTableModel.SyncStatus;
 import models.RegionModel;
 import models.StorageRegionModel;
+import play.i18n.Messages;
 import play.jobs.Every;
 import play.jobs.Job;
 import play.jobs.OnApplicationStart;
 
-
 @OnApplicationStart
 @Every("30min")
 public class PriceTableUpdaterJob extends Job {
+
     private static Lock _lock_ = new ReentrantLock();
 
     @Override
@@ -39,15 +42,13 @@ public class PriceTableUpdaterJob extends Job {
     }
 
     public static boolean processPlugins() {
-        if(_lock_.tryLock()) {
+        if (_lock_.tryLock()) {
             try {
-                List<PluginModel> listPlugins =
-                        PluginModel.findAll();
-                for(PluginModel plugin : listPlugins) {
+                final List<PluginModel> listPlugins = PluginModel.findAll();
+                for (final PluginModel plugin : listPlugins) {
                     processPlugin(plugin);
                 }
-            }
-            finally {
+            } finally {
                 _lock_.unlock();
             }
             return true;
@@ -56,27 +57,27 @@ public class PriceTableUpdaterJob extends Job {
     }
 
     private static void processPlugin(final PluginModel plugin) {
-        PriceTableModel recentPriceTable = plugin.getPriceTable();
-        Date now = new Date();
+        final PriceTableModel recentPriceTable = plugin.getPriceTable();
+        final Date now = new Date();
         try {
-            PricingApi api = new PricingApi(plugin.getUrl());
-            Body<PluginPriceTableModel> price =
-                    api.getPricing();
-            PluginPriceModel princingRequested = price.getContent().getPrice();
-            PluginPriceTableStatusModel statusRequested = price.getContent().getStatus();
-            if(!priceTableMustBeSync(recentPriceTable, princingRequested, statusRequested)){
+            final PricingApi api = new PricingApi(plugin.getUrl());
+            final Body<PluginPriceTableModel> price = api.getPricing();
+            final PluginPriceModel princingRequested = price.getContent().getPrice();
+            final PluginPriceTableStatusModel statusRequested = price.getContent().getStatus();
+            if (!priceTableMustBeSync(recentPriceTable, princingRequested, statusRequested)) {
                 updateOrCreatePriceTableStatus(
                         plugin, recentPriceTable, now,
                         SyncStatus.OK, "OK", null, null);
-            }
-            else {
+            } else {
                 processPriceTable(now, princingRequested, statusRequested, plugin);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
+            String message = e.getMessage() == null && e.getCause() != null ? e.getCause().getMessage() : null;
+            message = StringUtils.isNotEmpty(message) ? message : Messages.get("application.unknow.error.synchronizing.process");
             updateOrCreatePriceTableStatus(
                     plugin, recentPriceTable, now,
-                    SyncStatus.ERROR, e.getMessage(), null, null);
+                    SyncStatus.ERROR, message, null, null);
         }
     }
 
@@ -88,17 +89,17 @@ public class PriceTableUpdaterJob extends Job {
 
         // Clean current price table
         PriceTableModel priceTable = plugin.getPriceTable();
-        if(priceTable != null) {
+        if (priceTable != null) {
             PriceTableModel.deletePriceTable(priceTable.getId());
+            priceTable = null;
         }
 
-        priceTable =
-                updateOrCreatePriceTableStatus(
-                    plugin, null, now,
-                    PriceTableModel.getStatus(princingStatusRequested),
-                    princingStatusRequested.getErrorMessage(),
-                    princingRequested,
-                    princingStatusRequested);
+        priceTable = updateOrCreatePriceTableStatus(
+                plugin, null, now,
+                PriceTableModel.getStatus(princingStatusRequested),
+                princingStatusRequested.getErrorMessage(),
+                princingRequested,
+                princingStatusRequested);
 
         createStoragePrices(princingRequested, priceTable);
         createInstancePrices(princingRequested, priceTable);
@@ -107,17 +108,15 @@ public class PriceTableUpdaterJob extends Job {
     private static void createStoragePrices(
             final PluginPriceModel princingRequested,
             final PriceTableModel priceTable) {
-        for(Map.Entry<String, StoragePricing> entryInstance :
-                princingRequested.getListStoragePricing().entrySet()) {
+        for (final Map.Entry<String, StoragePricing> entryInstance : princingRequested.getListStoragePricing().entrySet()) {
 
-            StoragePricing storagePrice = entryInstance.getValue();
+            final StoragePricing storagePrice = entryInstance.getValue();
 
-            RegionModel region = new RegionModel();
+            final RegionModel region = new RegionModel();
             region.setName(storagePrice.getRegion());
             region.save();
 
-            StorageRegionModel storageRegion =
-                    new StorageRegionModel(region);
+            final StorageRegionModel storageRegion = new StorageRegionModel(region);
             storageRegion.setPrice(storagePrice.getPrice());
             storageRegion.setClassAPrice(storagePrice.getClassAPrice());
             storageRegion.setClassBPrice(storagePrice.getClassBPrice());
@@ -130,25 +129,23 @@ public class PriceTableUpdaterJob extends Job {
     private static void createInstancePrices(
             final PluginPriceModel princingRequested,
             final PriceTableModel priceTable) {
-        HashMap<String, RegionModel> listRegions = new HashMap<>();
-        for(Map.Entry<String, InstanceTypePricing> entryInstance :
-                princingRequested.getListInstancePricing().entrySet()) {
+        final HashMap<String, RegionModel> listRegions = new HashMap<>();
+        for (final Map.Entry<String, InstanceTypePricing> entryInstance : princingRequested.getListInstancePricing().entrySet()) {
 
-            InstanceTypePricing instancePrice = entryInstance.getValue();
+            final InstanceTypePricing instancePrice = entryInstance.getValue();
 
-            InstanceTypeModel instanceType = new InstanceTypeModel();
+            final InstanceTypeModel instanceType = new InstanceTypeModel();
             instanceType.setMemory(instancePrice.getMemory());
             instanceType.setCores(instancePrice.getCores());
             instanceType.setName(instancePrice.getName());
             instanceType.save();
 
-            for(Map.Entry<String, Double> entryRegion :
-                    instancePrice.getListRegionPricing().entrySet()) {
+            for (final Map.Entry<String, Double> entryRegion : instancePrice.getListRegionPricing().entrySet()) {
 
-                String regionKey = entryRegion.getKey();
-                Double regionPrice = entryRegion.getValue();
+                final String regionKey = entryRegion.getKey();
+                final Double regionPrice = entryRegion.getValue();
                 RegionModel region = null;
-                if(listRegions.containsKey(regionKey)) {
+                if (listRegions.containsKey(regionKey)) {
                     region = listRegions.get(regionKey);
                 } else {
                     region = new RegionModel();
@@ -157,8 +154,7 @@ public class PriceTableUpdaterJob extends Job {
                     listRegions.put(regionKey, region);
                 }
 
-                InstanceTypeRegionModel instancePriceRegion =
-                        new InstanceTypeRegionModel(instanceType, region);
+                final InstanceTypeRegionModel instancePriceRegion = new InstanceTypeRegionModel(instanceType, region);
                 instancePriceRegion.setPrice(regionPrice);
                 instancePriceRegion.setPriceTable(priceTable);
                 instancePriceRegion.save();
@@ -175,7 +171,8 @@ public class PriceTableUpdaterJob extends Job {
             final PluginPriceModel princingRequested,
             final PluginPriceTableStatusModel princingStatusRequested) {
 
-        if(priceTable == null) {
+        priceTable = PriceTableModel.findByPluginId(plugin.getId());
+        if (priceTable == null) {
             priceTable = new PriceTableModel();
             priceTable.setPlugin(plugin);
         }
@@ -183,7 +180,7 @@ public class PriceTableUpdaterJob extends Job {
         priceTable.setSyncStatus(status);
         priceTable.setSyncMessage(messageError);
 
-        if(princingRequested != null) {
+        if (princingRequested != null) {
             priceTable.setPriceTableDate(princingRequested.getLastUpdate());
             priceTable.setLastSearchDate(princingStatusRequested.getLastSearch());
         }
@@ -196,14 +193,14 @@ public class PriceTableUpdaterJob extends Job {
             final PriceTableModel recentPriceTable,
             final PluginPriceModel princingRequested,
             final PluginPriceTableStatusModel princingStatusRequested) {
-        if(recentPriceTable == null) {
+        if (recentPriceTable == null) {
             return true;
         }
-        if(DateCompareUtil.is(princingRequested.getLastUpdate())
+        if (DateCompareUtil.is(princingRequested.getLastUpdate())
                 .greaterThan(recentPriceTable.getPriceTableDate())) {
             return true;
         }
-        if(princingStatusRequested.getStatus() != Status.OK) {
+        if (princingStatusRequested.getStatus() != Status.OK) {
             return true;
         }
         return false;

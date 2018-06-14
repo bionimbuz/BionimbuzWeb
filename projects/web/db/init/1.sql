@@ -1,5 +1,5 @@
 
-# --- !Ups
+-- # --- !Ups
 
 -- TB_SETTING
 INSERT INTO tb_setting (settingName, settingValue, defaultValue, minSize, maxSize, settingType, required) VALUES
@@ -69,5 +69,5 @@ INSERT INTO tb_role_menu (id_menu, id_role) VALUES
    ,(16, 'ADMIN')
 ;
 
-# --- !Downs
+-- # --- !Downs
 

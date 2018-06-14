@@ -61,8 +61,12 @@ public class PriceTableModel extends GenericModel {
         delete("id = ?1", idPriceTable);
     }
 
+    public static PriceTableModel findByPluginId(final Long pluginId) {
+        return find("plugin.id = ?1", pluginId).first();
+    }
+
     public static SyncStatus getStatus(final PluginPriceTableStatusModel status) {
-        switch(status.getStatus()) {
+        switch (status.getStatus()) {
             case OK:
                 return SyncStatus.OK;
             case PROCESSING:
@@ -80,58 +84,75 @@ public class PriceTableModel extends GenericModel {
     // Getters and Setters
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public Long getId() {
-        return id;
+        return this.id;
     }
-    public void setId(Long id) {
+
+    public void setId(final Long id) {
         this.id = id;
     }
+
     public PluginModel getPlugin() {
-        return plugin;
+        return this.plugin;
     }
-    public void setPlugin(PluginModel plugin) {
+
+    public void setPlugin(final PluginModel plugin) {
         this.plugin = plugin;
     }
+
     public List<InstanceTypeRegionModel> getListInstanceTypeRegion() {
-        return listInstanceTypeRegion;
+        return this.listInstanceTypeRegion;
     }
+
     public void setListInstanceTypeRegion(
-            List<InstanceTypeRegionModel> listInstanceTypeRegion) {
+            final List<InstanceTypeRegionModel> listInstanceTypeRegion) {
         this.listInstanceTypeRegion = listInstanceTypeRegion;
     }
+
     public List<StorageRegionModel> getListStorageRegion() {
-        return listStorageRegion;
+        return this.listStorageRegion;
     }
-    public void setListStorageRegion(List<StorageRegionModel> listStorageRegion) {
+
+    public void setListStorageRegion(final List<StorageRegionModel> listStorageRegion) {
         this.listStorageRegion = listStorageRegion;
     }
+
     public Date getPriceTableDate() {
-        return priceTableDate;
+        return this.priceTableDate;
     }
-    public void setPriceTableDate(Date priceTableDate) {
+
+    public void setPriceTableDate(final Date priceTableDate) {
         this.priceTableDate = priceTableDate;
     }
+
     public Date getLastSyncDate() {
-        return lastSyncDate;
+        return this.lastSyncDate;
     }
-    public void setLastSyncDate(Date lastSyncDate) {
+
+    public void setLastSyncDate(final Date lastSyncDate) {
         this.lastSyncDate = lastSyncDate;
     }
+
     public Date getLastSearchDate() {
-        return lastSearchDate;
+        return this.lastSearchDate;
     }
-    public void setLastSearchDate(Date lastSearchDate) {
+
+    public void setLastSearchDate(final Date lastSearchDate) {
         this.lastSearchDate = lastSearchDate;
     }
+
     public SyncStatus getSyncStatus() {
-        return syncStatus;
+        return this.syncStatus;
     }
-    public void setSyncStatus(SyncStatus syncStatus) {
+
+    public void setSyncStatus(final SyncStatus syncStatus) {
         this.syncStatus = syncStatus;
     }
+
     public String getSyncMessage() {
-        return syncMessage;
+        return this.syncMessage;
     }
-    public void setSyncMessage(String syncMessage) {
+
+    public void setSyncMessage(final String syncMessage) {
         this.syncMessage = syncMessage;
     }
 }

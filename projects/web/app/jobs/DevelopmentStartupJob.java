@@ -17,8 +17,8 @@ import models.CredentialModel;
 import models.ExecutorModel;
 import models.GroupModel;
 import models.ImageModel;
-import models.MenuModel;
 import models.PluginModel;
+import models.PriceTableModel;
 import models.RoleModel;
 import models.RoleModel.RoleType;
 import models.TestModel;
@@ -29,6 +29,7 @@ import models.UserModel;
 import play.Logger;
 import play.jobs.Job;
 import play.jobs.OnApplicationStart;
+import play.test.Fixtures;
 
 @OnApplicationStart
 public class DevelopmentStartupJob extends Job {
@@ -38,6 +39,9 @@ public class DevelopmentStartupJob extends Job {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @Override
     public void doJob() {
+
+        Fixtures.executeSQL(new File("db/init/1.sql"));
+
         // Check if Job has already ran
         if (UserModel.findByEmail("guest@bionimbuz.org.br") != null) {
             return;
@@ -113,34 +117,34 @@ public class DevelopmentStartupJob extends Job {
 
     }
 
-    private MenuModel insertMenu(
-            final String name,
-            final String iconClass,
-            final String path,
-            final short order,
-            final MenuModel parentMenu,
-            final RoleType... roleTypes) {
-
-        final MenuModel menu = new MenuModel();
-        menu.setName(name);
-        menu.setMenuOrder(order);
-        menu.setIconClass(iconClass);
-        menu.setPath(path);
-        menu.setParentMenu(parentMenu);
-        menu.save();
-
-        for (final RoleType roleType : roleTypes) {
-            final RoleModel role = RoleModel.findById(roleType);
-            List<MenuModel> menus = role.getListMenus();
-            if (menus == null) {
-                menus = new ArrayList<>();
-            }
-            menus.add(menu);
-            role.setListMenus(menus);
-        }
-
-        return menu;
-    }
+    //    private MenuModel insertMenu(
+    //            final String name,
+    //            final String iconClass,
+    //            final String path,
+    //            final short order,
+    //            final MenuModel parentMenu,
+    //            final RoleType... roleTypes) {
+    //
+    //        final MenuModel menu = new MenuModel();
+    //        menu.setName(name);
+    //        menu.setMenuOrder(order);
+    //        menu.setIconClass(iconClass);
+    //        menu.setPath(path);
+    //        menu.setParentMenu(parentMenu);
+    //        menu.save();
+    //
+    //        for (final RoleType roleType : roleTypes) {
+    //            final RoleModel role = RoleModel.findById(roleType);
+    //            List<MenuModel> menus = role.getListMenus();
+    //            if (menus == null) {
+    //                menus = new ArrayList<>();
+    //            }
+    //            menus.add(menu);
+    //            role.setListMenus(menus);
+    //        }
+    //
+    //        return menu;
+    //    }
 
     private void insertCredential(final PluginModel plugin, final UserModel user) {
         final CredentialModel model = new CredentialModel();
@@ -238,28 +242,28 @@ public class DevelopmentStartupJob extends Job {
         }
     }
 
-    private UserModel insertTempUserAdmin() {
-        try {
-            UserModel user = UserModel.findByEmail("master@bionimbuz.org.br");
-            if (user != null) {
-                return null;
-            }
-
-            final RoleModel role = RoleModel.findById(RoleType.ADMIN);
-
-            user = new UserModel();
-            user.setRole(role);
-            user.setEmail("master@bionimbuz.org.br");
-            user.setName("Administrador do Sistema");
-            user.setPass(SecurityController.getSHA512("master"));
-            user.setJoined(true);
-            user.save();
-            return user;
-        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
-            Logger.error(e.getMessage(), e);
-            return null;
-        }
-    }
+    //    private UserModel insertTempUserAdmin() {
+    //        try {
+    //            UserModel user = UserModel.findByEmail("master@bionimbuz.org.br");
+    //            if (user != null) {
+    //                return null;
+    //            }
+    //
+    //            final RoleModel role = RoleModel.findById(RoleType.ADMIN);
+    //
+    //            user = new UserModel();
+    //            user.setRole(role);
+    //            user.setEmail("master@bionimbuz.org.br");
+    //            user.setName("Administrador do Sistema");
+    //            user.setPass(SecurityController.getSHA512("master"));
+    //            user.setJoined(true);
+    //            user.save();
+    //            return user;
+    //        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+    //            Logger.error(e.getMessage(), e);
+    //            return null;
+    //        }
+    //    }
 
     private UserModel insertTempUserNormal() {
         try {
@@ -288,7 +292,7 @@ public class DevelopmentStartupJob extends Job {
         String fileContents = null;
         try {
             fileContents = Files.toString(
-                    new File(System.getProperty("credential.file"), "conf/credentials-gcp_template"),
+                    new File(System.getProperty("credential.file"), "conf/credentials/credentials-gcp_template.json"),
                     Charset.defaultCharset());
         } catch (final IOException e) {
             e.printStackTrace();

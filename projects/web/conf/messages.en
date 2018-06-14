@@ -99,6 +99,7 @@ datetimepicker.tooltip.next.century=Next century
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 application.title=BioNimbuZ
 application.description=Cloud Federation Platform
+application.unknow.error.synchronizing.process=The server encountered an error! Check your credentials file.
 
 # Controllers
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
