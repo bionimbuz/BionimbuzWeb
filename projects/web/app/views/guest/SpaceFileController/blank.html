@@ -118,9 +118,7 @@
 
         #{/crud.custom}
 
-
     #{/crud.form}
-
 
     <div class="btn-row text-center">
         <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="button" name="_save">&{'crud.save'}</button>
@@ -182,9 +180,7 @@ $(function(){
         })
         .fail(function(data) {
             flashError(data.responseText);
-        })
-        .always(function() {
-            hidePleaseWait();
+            callBack();
         });
     }
 
@@ -206,17 +202,18 @@ $(function(){
         })
         .fail(function(data) {
             flashError(data.responseText);
+            callBack();
         });
     }
 
     function submitForm(){
+        $('#uploadFileInput').remove();
         $('.submitForm').submit();
     }
 
     $("button[name=_save], button[name=_saveAndContinue], button[name=_saveAndAddAnother]")
             .click(function(){
 
-                debugger ;
         var self= $(this),
         form = $('.submitForm'),
         tempElement = $("<input type='hidden'/>");
@@ -226,7 +223,6 @@ $(function(){
             .attr("name", this.name)
             .val(self.val())
             .appendTo(form);
-
 
         if($("#object_name").val() &&
             $("#checkUploadFile").is(":checked")) {

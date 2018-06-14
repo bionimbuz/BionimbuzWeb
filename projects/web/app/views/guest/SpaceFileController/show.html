@@ -28,8 +28,10 @@
             #{field 'object.space'}
                 <div class="form-group row ">
                     <label for="${field.id}">&{field.name}</label>
-                    <input id="${field.id}" readonly class="form-control" type="text"
-                            name="${field.name}" value="${field.value}" />
+                    <input id="${field.id}" readonly class="form-control" type="hidden"
+                            name="${field.name}" value="${field.value.id}" />
+                    <input readonly class="form-control" type="text"
+                            value="${field.value}" />
                 </div>
             #{/field}
         #{/crud.custom}
@@ -54,6 +56,9 @@
                 #{/ifError}
             </div>
             #{/field}
+            <br>
+            <button id="btnDownloadFile" class="btn btn-success col-xs-12 btn-md btn-mobile margin-bottom" type="button" name="_save">&{'download.file'}</button>
+            <br>
         #{/crud.custom}
     #{/crud.form}
 
@@ -65,3 +70,105 @@
 #{/form}
 </div>
 
+#{set 'moreScripts' }
+
+<script type="text/javascript">
+
+
+$(function(){
+
+
+
+    function updateProgress(evt){
+        if ( !evt.lengthComputable )
+            return;
+        var percentComplete = Math.round( (evt.loaded * 100) / evt.total );
+        updateProgressBar(percentComplete);
+    }
+
+    var downloadRequest = null;
+    function downloadFile(downloadInfo, callBack){
+        debugger;
+
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+//             document.getElementById("demo").innerHTML = this.responseText;
+          }
+        };
+        xhttp.open(downloadInfo.method, downloadInfo.url, true);
+        Object.entries(downloadInfo.headers).map(([key, value]) => {
+            xhttp.setRequestHeader(key, value);
+        })
+        xhttp.send("fname=Henry&lname=Ford");
+
+
+
+
+//         downloadRequest = $.ajax({
+//             url: downloadInfo.url,
+//             type: downloadInfo.method,
+//             processData: false,
+//             beforeSend: function (xhr) {
+//                 Object.entries(downloadInfo.headers).map(([key, value]) => {
+//                    xhr.setRequestHeader(key, value);
+//                 })
+//             },
+//             xhr: function() {
+//                 var jqXHR = null;
+//                 if ( window.ActiveXObject )
+//                     jqXHR = new window.ActiveXObject( "Microsoft.XMLHTTP" );
+//                 else
+//                     jqXHR = new window.XMLHttpRequest();
+//                 jqXHR.addEventListener( "progress", updateProgress, false );
+//                 return jqXHR;
+//             },
+//         })
+//         .done(function(data) {
+//             callBack();
+//         })
+//         .fail(function(data) {
+//             flashError(data.responseText);
+//             callBack();
+//         });
+    }
+
+    function prepareDownload(callBack){
+        debugger;
+        space = $('#object_space').val();
+        virtualName = $('#object_virtualName').val();
+        var action = #{jsRoute @getFileLocationToDownload() /};
+        if(space == ""){
+            hidePleaseWait();
+            return;
+        }
+        $.ajax({
+            url: action.url(),
+            type: action.method,
+            data:{ spaceId: space, virtualName: virtualName }
+        })
+        .done(function(data) {
+            callBack(data);
+        })
+        .fail(function(data) {
+            flashError(data.responseText);
+            callBack();
+        });
+    }
+
+    $("#btnDownloadFile").click(function(){
+        showPleaseWaitEmpty();
+        prepareDownload(function(data){
+            if(!data) {
+                hidePleaseWait();
+                return;
+            }
+            downloadFile(data, hidePleaseWait);
+        });
+    });
+
+});
+</script>
+
+#{/set}

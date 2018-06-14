@@ -84,7 +84,7 @@ public class StorageController extends AbstractStorageController {
         PluginStorageFileDownloadModel model = new PluginStorageFileDownloadModel();
         model.setFileName(file);
         model.setSpaceName(name);
-        model.setMethod(HttpMethod.POST);
+        model.setMethod(HttpMethod.GET);
         model.setUrl(String.format(
                 SystemConstants.STORAGE_FILE_DOWNLOAD_URL, name, file));
         return ResponseEntity.ok(
