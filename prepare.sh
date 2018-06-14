@@ -3,6 +3,7 @@ ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SYSTEM_FOLDER=${ROOT_DIR}/system
 WEB_FOLDER=${ROOT_DIR}/projects/web
 PLUGINS_FOLDER=${ROOT_DIR}/projects/plugins
+COORDINATORS_FOLDER=${ROOT_DIR}/projects/coordinators
 PLAY_FOLDER=${SYSTEM_FOLDER}/playframework
 PLAY_BIN=${PLAY_FOLDER}/play
 
@@ -49,6 +50,8 @@ echo "##################################################"
 
 if [ ! -z "$PREPARE_ALL" ]; then 
 
+	echo ""
+	echo "# ======================================="
     echo "# Installing dependencies"
     echo "# ======================================="
 
@@ -57,6 +60,8 @@ if [ ! -z "$PREPARE_ALL" ]; then
         maven \
 	openjdk-8-jdk
 
+	echo ""
+	echo "# ======================================="
     echo "# Downloading Playframework"
     echo "# ======================================="
 
@@ -80,6 +85,26 @@ if [ ! -z "$PREPARE_ALL" ]; then
     
 fi
 
+echo ""
+echo "# ======================================="
+echo "# Preparing coordinators projects"
+echo "# ======================================="
+
+cd ${COORDINATORS_FOLDER}
+
+for d in *-coordinator/ ; do
+
+    echo ""
+    echo "# Project found: $d"
+    echo ""
+    
+    cd $d
+    mvn clean package -DskipTests
+    cd ..
+done
+
+echo ""
+echo "# ======================================="
 echo "# Preparing plugins projects"
 echo "# ======================================="
 
@@ -100,13 +125,17 @@ for d in plugin-*/ ; do
     cd ..
 done
 
-cd ${ROOT_DIR}
-
-
+echo ""
+echo "# ======================================="
 echo "# Preparing web project"
 echo "# ======================================="
 
 cd ${WEB_FOLDER}
+
+# Use play from path if it was not downloaded before
+if [ -z `command -v ${PLAY_BIN}` ]; then
+	PLAY_BIN=play
+fi	
 
 echo "# Computing dependencies"    
 ${PLAY_BIN} deps
@@ -122,3 +151,5 @@ if [ ! -z "$PREPARE_NETBEANS" ]; then
 fi    
 
 cd ${ROOT_DIR}
+
+
