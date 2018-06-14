@@ -18,7 +18,6 @@ import models.ExecutorModel;
 import models.GroupModel;
 import models.ImageModel;
 import models.PluginModel;
-import models.PriceTableModel;
 import models.RoleModel;
 import models.RoleModel.RoleType;
 import models.TestModel;
