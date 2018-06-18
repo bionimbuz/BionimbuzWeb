@@ -73,7 +73,7 @@ if [ ! -z "$PREPARE_ALL" ]; then
     rm -rf ${PACKAGE_ZIP} ${PLAY_FOLDER}
 
     echo "# Downloading"
-    wget https://downloads.typesafe.com/play/${VERSION}/${PACKAGE_ZIP}
+    curl https://downloads.typesafe.com/play/${VERSION}/${PACKAGE_ZIP} --output ${PACKAGE_ZIP}
     
     echo "# Unzipping"
     unzip ${PACKAGE_ZIP}
@@ -134,8 +134,11 @@ cd ${WEB_FOLDER}
 
 # Use play from path if it was not downloaded before
 if [ -z `command -v ${PLAY_BIN}` ]; then
+    echo "# Play folder from system not fount, setting default."
 	PLAY_BIN=play
 fi	
+
+export PATH=$PATH:${PLAY_FOLDER}/python
 
 echo "# Computing dependencies"    
 ${PLAY_BIN} deps
