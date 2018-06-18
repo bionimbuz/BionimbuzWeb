@@ -291,7 +291,7 @@ public class DevelopmentStartupJob extends Job {
         String fileContents = null;
         try {
             fileContents = Files.toString(
-                    new File(System.getProperty("credential.file"), "conf/credentials/credentials-gcp_template.json"),
+                    new File(System.getProperty("credential.file"), "conf/credentials/credentials-gcp.json"),
                     Charset.defaultCharset());
         } catch (final IOException e) {
             e.printStackTrace();
