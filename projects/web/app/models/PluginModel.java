@@ -41,19 +41,15 @@ public class PluginModel extends GenericModel {
     @MaxSize(100)
     @Unique
     private String cloudType;
-    @Required
     @MaxSize(100)
     @Hidden
     private String instanceWriteScope;
-    @Required
     @MaxSize(100)
     @Hidden
     private String instanceReadScope;
-    @Required
     @MaxSize(100)
     @Hidden
     private String storageWriteScope;
-    @Required
     @MaxSize(100)
     @Hidden
     private String storageReadScope;

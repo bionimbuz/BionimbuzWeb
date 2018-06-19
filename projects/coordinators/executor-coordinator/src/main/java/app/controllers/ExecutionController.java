@@ -23,7 +23,7 @@ public class ExecutionController {
      * Action Methods
      */
 
-    @RequestMapping(path = Routes.EXECUTION, method = RequestMethod.GET)
+    @RequestMapping(path = Routes.EXECUTION_START, method = RequestMethod.GET)
     public ResponseEntity< Boolean > startExecution(
 //            @RequestBody Command command
             ) {

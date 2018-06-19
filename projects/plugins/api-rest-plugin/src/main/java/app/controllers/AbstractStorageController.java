@@ -47,16 +47,16 @@ public abstract class AbstractStorageController extends BaseController {
     @RequestMapping(path = Routes.SPACES_NAME_UPLOAD_FILE, method = RequestMethod.GET)
     private ResponseEntity<Body<PluginStorageFileUploadModel>> getUploadUrlAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
-            @PathVariable(value = "name") final String name,
+            @PathVariable(value = "name") final String space,
             @PathVariable(value = "file") final String file) {
-        return callImplementedMethod("getUploadUrl", version, name, file);
+        return callImplementedMethod("getUploadUrl", version, space, file);
     }
     @RequestMapping(path = Routes.SPACES_NAME_DOWNLOAD_FILE, method = RequestMethod.GET)
     private ResponseEntity<Body<PluginStorageFileDownloadModel>> getDownloadUrlAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
-            @PathVariable(value = "name") final String name,
+            @PathVariable(value = "name") final String space,
             @PathVariable(value = "file") final String file) {
-        return callImplementedMethod("getDownloadUrl", version, name, file);
+        return callImplementedMethod("getDownloadUrl", version, space, file);
     }
 
     /*
@@ -72,9 +72,9 @@ public abstract class AbstractStorageController extends BaseController {
             final String identity,
             final String name) throws Exception;
     protected abstract ResponseEntity<Body<PluginStorageFileUploadModel>> getUploadUrl(
-            final String name,
+            final String space,
             final String file) throws Exception;
     protected abstract ResponseEntity<Body<PluginStorageFileDownloadModel>> getDownloadUrl(
-            final String name,
+            final String space,
             final String file) throws Exception;
 }

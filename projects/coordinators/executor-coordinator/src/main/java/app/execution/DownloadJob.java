@@ -42,11 +42,11 @@ public class DownloadJob {
     }
 
     private boolean createOutDir() {
-        File theDir = new File(outputDir);
-        if (theDir.exists()) {
+        File dir = new File(outputDir);
+        if (dir.exists()) {
             return true;
         }
-        return theDir.mkdir();
+        return dir.mkdir();
     }
 
     public boolean hasFinished() {
@@ -61,6 +61,15 @@ public class DownloadJob {
                 return false;
         }
         return true;
+    }
+
+    public int alreadyDownloaded() {
+        int i = 0;
+        for (Core downloadJob : downloadJobs) {
+            if(downloadJob.hasSuccess())
+                i++;
+        }
+        return i;
     }
 
     private static class Core implements Runnable{
