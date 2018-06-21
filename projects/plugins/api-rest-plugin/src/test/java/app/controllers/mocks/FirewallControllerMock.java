@@ -33,9 +33,9 @@ public class FirewallControllerMock extends AbstractFirewallController {
                 Body.create(model));
     }
     @Override
-    protected ResponseEntity<Body<Void>> deleteRule(String token, String identity, String name) throws Exception {        
+    protected ResponseEntity<Body<Boolean>> deleteRule(String token, String identity, String name) throws Exception {        
         return ResponseEntity.ok().body(
-                new Body<Void>(Body.OK)); 
+                new Body<Boolean>(Body.OK)); 
     }
     @Override
     protected ResponseEntity<Body<List<PluginFirewallModel>>> listRules(String token, String identity) throws Exception {        

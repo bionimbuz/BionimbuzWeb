@@ -33,7 +33,7 @@ public abstract class AbstractFirewallController extends BaseController{
             @RequestBody PluginFirewallModel model) {   
         return callImplementedMethod("replaceRule", version, token, identity, model);   
     }    
-	@RequestMapping(path = Routes.FIREWALLS_NAME, method = RequestMethod.GET)
+	@RequestMapping(path = Routes.FIREWALLS_NAME_, method = RequestMethod.GET)
 	private ResponseEntity< Body<PluginFirewallModel> > getRuleAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
             @RequestHeader(value=HttpHeaders.AUTHORIZATION) final String token, 
@@ -41,8 +41,8 @@ public abstract class AbstractFirewallController extends BaseController{
     		@PathVariable(value="name") final String name) {  
         return callImplementedMethod("getRule", version, token, identity, name);   
     }    
-    @RequestMapping(path = Routes.FIREWALLS_NAME, method = RequestMethod.DELETE)
-    private ResponseEntity< Body<Void> > deleteRuleAction(
+    @RequestMapping(path = Routes.FIREWALLS_NAME_, method = RequestMethod.DELETE)
+    private ResponseEntity< Body<Boolean> > deleteRuleAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
             @RequestHeader(value=HttpHeaders.AUTHORIZATION) final String token,  
             @RequestHeader(value=HttpHeadersCustom.AUTHORIZATION_ID) final String identity, 
@@ -69,7 +69,7 @@ public abstract class AbstractFirewallController extends BaseController{
             final String token, 
             final String identity,
             final String name) throws Exception;    
-    protected abstract ResponseEntity<Body<Void>> deleteRule(
+    protected abstract ResponseEntity<Body<Boolean>> deleteRule(
             final String token, 
             final String identity,
             final String name) throws Exception;    

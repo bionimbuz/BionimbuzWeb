@@ -3,6 +3,7 @@ package app.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,9 +19,15 @@ public class ImageController extends AbstractImageController{
 
     @Override
     protected ResponseEntity<Body<PluginImageModel>> getImage(
-            final String token, final String identity, final String name) throws Exception {
+            final String token, final String identity, final String name) throws Exception {        
+        String localImageName = getLocalSOVersion();
+        if(!localImageName.equals(name)) {     
+            return new ResponseEntity<>(
+                    Body.create(null),
+                    HttpStatus.NOT_FOUND);
+        }
         return ResponseEntity.ok(
-                Body.create(createImageModel()));
+                Body.create(createImageModel(localImageName)));
     }
 
     @Override
@@ -28,7 +35,8 @@ public class ImageController extends AbstractImageController{
             final String token,
             final String identity) throws Exception  {
         List<PluginImageModel> res = new ArrayList<>();
-        res.add(createImageModel());
+        String localImageName = getLocalSOVersion();
+        res.add(createImageModel(localImageName));
         return ResponseEntity.ok(
                 Body.create(res));
     }
@@ -40,10 +48,10 @@ public class ImageController extends AbstractImageController{
         return soVersion.toLowerCase();
     }
 
-    private PluginImageModel createImageModel() {
+    private PluginImageModel createImageModel(String imageName) {
         return new PluginImageModel(
                 "",
-                getLocalSOVersion(),
+                imageName,
                 "");
     }
 }

@@ -30,10 +30,10 @@ public class InstanceControllerMock extends AbstractInstanceController {
                 Body.create(Body.OK, model));
     }
     @Override
-    protected ResponseEntity<Body<Void>> deleteInstance(String token,
+    protected ResponseEntity<Body<Boolean>> deleteInstance(String token,
             String identity, String zone, String name) throws Exception {
         return ResponseEntity.ok().body(
-                new Body<Void>(Body.OK)); 
+                new Body<Boolean>(Body.OK)); 
     }
     @Override
     protected ResponseEntity<Body<List<PluginInstanceModel>>> listInstances(

@@ -17,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import app.common.Routes;
-import app.common.SystemConstants;
 import app.models.Body;
 import app.models.PluginStorageModel;
 import utils.TestUtils;
@@ -53,7 +52,7 @@ public class StorageControllerTest {
                 LOCATION);
 
         HttpEntity<PluginStorageModel> entity =
-                TestUtils.createEntity(model, SystemConstants.PLUGIN_STORAGE_WRITE_SCOPE);
+                TestUtils.createEntity(model, "");
 
         ResponseEntity<Body<PluginStorageModel>> response = this.restTemplate
                 .exchange(
@@ -67,7 +66,7 @@ public class StorageControllerTest {
 
     public void deleteSpaceTest() {
 
-        HttpEntity<Void> entity = TestUtils.createEntity(SystemConstants.PLUGIN_STORAGE_WRITE_SCOPE);
+        HttpEntity<Void> entity = TestUtils.createEntity("");
 
         ResponseEntity<Body<Boolean>> response =
                 restTemplate

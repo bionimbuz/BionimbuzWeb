@@ -1,5 +1,6 @@
 package app.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -26,8 +27,8 @@ public class FirewallController extends AbstractFirewallController{
             final String token,
             final String identity,
             PluginFirewallModel model) throws Exception {
-        return ResponseEntity.ok(
-                Body.create(model));
+        return new ResponseEntity<>(
+                HttpStatus.BAD_REQUEST);
     }
 
     @Override
@@ -35,16 +36,18 @@ public class FirewallController extends AbstractFirewallController{
             final String token,
             final String identity,
     		final String name) throws Exception {
-        return ResponseEntity.ok(
-                Body.create(null));
+        return new ResponseEntity<>(
+                HttpStatus.NOT_FOUND);
     }
 
     @Override
-    protected ResponseEntity<Body<Void>> deleteRule(
+    protected ResponseEntity<Body<Boolean>> deleteRule(
             final String token,
             final String identity,
     		final String name) throws Exception  {
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(
+                Body.create(false),
+                HttpStatus.OK);
     }
 
     @Override
@@ -52,6 +55,6 @@ public class FirewallController extends AbstractFirewallController{
             final String token,
             final String identity) throws Exception  {
         return ResponseEntity.ok(
-                Body.create(null));
+                Body.create(new ArrayList<>()));
     }
 }

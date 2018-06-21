@@ -24,7 +24,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import app.common.Routes;
-import app.common.SystemConstants;
 import app.models.Body;
 import app.models.PluginFirewallModel;
 import app.models.PluginInstanceModel;
@@ -34,12 +33,6 @@ import utils.TestUtils;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class InstanceControllerTest {
 
-    private static final String INSTANCE_ZONE = "us-east1-b";
-    private static final String INSTANCE_REGION = "us-east1";
-    private static final String INSTANCE_TYPE = "f1-micro";
-    private static final String INSTANCE_STARTUP_SCRIPT = "apt-get update && apt-get install -y apache2 && hostname > /var/www/index.html";
-    private static final String INSTANCE_IMAGE_URL = "https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1604-xenial-v20170919";
-    
     private static final Integer STARTUP_SCRIPT_APACHE_PORT = 80;
     private static final Integer WAIT_MS_TO_START_INSTANCE = 60 * 1000;
     private static final Integer LENGTH_CREATION = 2;
@@ -83,26 +76,19 @@ public class InstanceControllerTest {
         assertThat(responseList.size()).isEqualTo(initialSize + LENGTH_CREATION);
         
         try {
-            FirewallControllerTest.createRuleTest(getApacheFirewallRule(), restTemplate);
-
-            try {
-                // Wait for instances configuration start
-                Thread.sleep(WAIT_MS_TO_START_INSTANCE);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                assertThat(e).isNull();
-            }
-            
-            for (PluginInstanceModel model : createdInstances) {
-                responseGet = getInstanceTest(model);            
-                assertThat(responseGet.getStatusCode()).isEqualTo(HttpStatus.OK);
-                assertThat(responseGet.getBody()).isNotNull();            
-                doHttGetInInstancesTest(responseGet.getBody().getContent());
-            }
-        }         
-        finally{
-            FirewallControllerTest.deleteRuleTest(getApacheFirewallRule(), restTemplate);                
+            // Wait for instances configuration start
+            Thread.sleep(WAIT_MS_TO_START_INSTANCE);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            assertThat(e).isNull();
         }
+        
+        for (PluginInstanceModel model : createdInstances) {
+            responseGet = getInstanceTest(model);            
+            assertThat(responseGet.getStatusCode()).isEqualTo(HttpStatus.OK);
+            assertThat(responseGet.getBody()).isNotNull();            
+            doHttGetInInstancesTest(responseGet.getBody().getContent());
+        }     
            
         for (PluginInstanceModel model : createdInstances) {
             deleteInstanceTest(model);
@@ -148,7 +134,7 @@ public class InstanceControllerTest {
     
     private void deleteInstanceTest(PluginInstanceModel model) {
         
-        HttpEntity<Void> entity = TestUtils.createEntity(SystemConstants.PLUGIN_COMPUTE_WRITE_SCOPE);
+        HttpEntity<Void> entity = TestUtils.createEntity("");
         
         ResponseEntity<Body<Boolean>> response = this.restTemplate
                 .exchange(
@@ -163,7 +149,7 @@ public class InstanceControllerTest {
     
     private List<PluginInstanceModel> createInstancesTest(List<PluginInstanceModel> instances){
         HttpEntity<List<PluginInstanceModel>> entity = 
-                TestUtils.createEntity(instances, SystemConstants.PLUGIN_COMPUTE_WRITE_SCOPE);
+                TestUtils.createEntity(instances, "");
         
         ResponseEntity<Body<List<PluginInstanceModel>>> response = this.restTemplate
                 .exchange(
@@ -179,7 +165,7 @@ public class InstanceControllerTest {
     
     private List<PluginInstanceModel> listAllTest() {         
 
-        HttpEntity<Void> entity = TestUtils.createEntity(SystemConstants.PLUGIN_COMPUTE_READ_SCOPE);
+        HttpEntity<Void> entity = TestUtils.createEntity("");
         
         ResponseEntity< Body<List<PluginInstanceModel>> > responseList = 
                 this.restTemplate
@@ -196,7 +182,7 @@ public class InstanceControllerTest {
     
     private ResponseEntity<Body<PluginInstanceModel>> getInstanceTest(PluginInstanceModel model) {
         
-        HttpEntity<Void> entity = TestUtils.createEntity(SystemConstants.PLUGIN_COMPUTE_READ_SCOPE);
+        HttpEntity<Void> entity = TestUtils.createEntity("");
         
         ResponseEntity<Body<PluginInstanceModel>> response = 
                 this.restTemplate
@@ -215,11 +201,11 @@ public class InstanceControllerTest {
 
         for(int i=0;i<length;i++) {
             PluginInstanceModel instance = new PluginInstanceModel();
-            instance.setImageUrl(INSTANCE_IMAGE_URL);
-            instance.setStartupScript(INSTANCE_STARTUP_SCRIPT);
-            instance.setType(INSTANCE_TYPE);
-            instance.setRegion(INSTANCE_REGION);
-            instance.setZone(INSTANCE_ZONE);
+            instance.setImageUrl("");
+            instance.setStartupScript("echo TESTE");
+            instance.setType("");
+            instance.setRegion("");
+            instance.setZone("");
             
             instances.add(instance);
         }

@@ -73,7 +73,7 @@ public class InstanceApiTest {
         String nameCreated = model.getName();
         String zoneCreated = model.getZone();
         
-        Body<Void> body = 
+        Body<Boolean> body = 
                 instanceApi.deleteInstance(
                         "fake-token", "fake-identity", zoneCreated, nameCreated);
         assertThat(body.getMessage()).isEqualTo(Body.OK);

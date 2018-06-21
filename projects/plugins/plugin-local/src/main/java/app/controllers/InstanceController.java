@@ -40,13 +40,15 @@ public class InstanceController extends AbstractInstanceController {
     }
 
     @Override
-    protected ResponseEntity<Body<Void>> deleteInstance(
+    protected ResponseEntity<Body<Boolean>> deleteInstance(
             final String token,
             final String identity,
             final String zone,
             final String name) throws Exception {
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(
+                Body.create(true),
+                HttpStatus.OK);
     }
 
     @Override

@@ -49,7 +49,7 @@ public class InstanceApi  extends PluginApi<HttpMethods> {
                 .execute().body();
     }
     
-    public Body<Void> deleteInstance(
+    public Body<Boolean> deleteInstance(
             final String token, 
             final String identity, 
             final String zone,
@@ -88,7 +88,7 @@ public class InstanceApi  extends PluginApi<HttpMethods> {
                 @Path("zone") final String zone,
                 @Path("name") final String name);
         @DELETE(Routes.INSTANCES_ZONE_NAME)
-        public Call<Body<Void>> deleteInstance(
+        public Call<Body<Boolean>> deleteInstance(
                 @Header(HttpHeadersCustom.API_VERSION) final String version,
                 @Header(HttpHeaders.AUTHORIZATION) final String token, 
                 @Header(HttpHeadersCustom.AUTHORIZATION_ID) final String identity, 

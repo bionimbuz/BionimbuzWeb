@@ -36,8 +36,8 @@ public abstract class AbstractStorageController extends BaseController {
             @RequestBody PluginStorageModel model) {
         return callImplementedMethod("createSpace", version, token, identity, model);
     }
-    @RequestMapping(path = Routes.SPACES_NAME, method = RequestMethod.DELETE)
-    private ResponseEntity<Body<Void>> deleteSpaceAction(
+    @RequestMapping(path = Routes.SPACES_NAME_, method = RequestMethod.DELETE)
+    private ResponseEntity<Body<Boolean>> deleteSpaceAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
             @RequestHeader(value=HttpHeaders.AUTHORIZATION) final String token,
             @RequestHeader(value=HttpHeadersCustom.AUTHORIZATION_ID) final String identity,
@@ -67,7 +67,7 @@ public abstract class AbstractStorageController extends BaseController {
             final String token,
             final String identity,
             PluginStorageModel model) throws Exception;
-    protected abstract ResponseEntity<Body<Void>> deleteSpace(
+    protected abstract ResponseEntity<Body<Boolean>> deleteSpace(
             final String token,
             final String identity,
             final String name) throws Exception;

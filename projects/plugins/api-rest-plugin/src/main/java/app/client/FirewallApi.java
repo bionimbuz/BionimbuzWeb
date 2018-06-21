@@ -48,7 +48,7 @@ public class FirewallApi extends PluginApi<HttpMethods> {
                 .execute().body();
     }
     
-    public Body<Void> deleteRule(
+    public Body<Boolean> deleteRule(
             final String token,  
             final String identity, 
             final String name) throws IOException
@@ -84,7 +84,7 @@ public class FirewallApi extends PluginApi<HttpMethods> {
                 @Header(HttpHeadersCustom.AUTHORIZATION_ID) final String identity, 
                 @Path("name") final String name);
         @DELETE(Routes.FIREWALLS_NAME)
-        public Call< Body<Void> > deleteRule(
+        public Call< Body<Boolean> > deleteRule(
                 @Header(HttpHeadersCustom.API_VERSION) final String version,
                 @Header(HttpHeaders.AUTHORIZATION) final String token,  
                 @Header(HttpHeadersCustom.AUTHORIZATION_ID) final String identity, 

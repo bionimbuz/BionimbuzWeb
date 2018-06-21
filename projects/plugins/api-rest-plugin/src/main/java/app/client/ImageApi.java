@@ -14,6 +14,7 @@ import app.models.PluginImageModel;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.Path;
 
 public class ImageApi extends PluginApi<HttpMethods> {  
 
@@ -31,11 +32,28 @@ public class ImageApi extends PluginApi<HttpMethods> {
                 .execute().body();
     }
     
+    public Body<PluginImageModel> getImage (
+            final String token, 
+            final String identity,
+            final String name) throws IOException {
+        return getHttpMethods()
+                .getImage(
+                        GlobalConstants.API_VERSION,
+                        token, identity, name)
+                .execute().body();
+    }
+    
     protected interface HttpMethods {
         @GET(Routes.IMAGES)
         public Call<Body<List<PluginImageModel>>> listImages(
                 @Header(HttpHeadersCustom.API_VERSION) final String version,
                 @Header(HttpHeaders.AUTHORIZATION) final String token, 
                 @Header(HttpHeadersCustom.AUTHORIZATION_ID) final String identity); 
+        @GET(Routes.IMAGES_NAME)
+        public Call<Body<PluginImageModel>> getImage(
+                @Header(HttpHeadersCustom.API_VERSION) final String version,
+                @Header(HttpHeaders.AUTHORIZATION) final String token, 
+                @Header(HttpHeadersCustom.AUTHORIZATION_ID) final String identity,
+                @Path("name") final String name); 
     }
 }

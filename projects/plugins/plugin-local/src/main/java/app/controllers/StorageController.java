@@ -44,11 +44,13 @@ public class StorageController extends AbstractStorageController {
     }
 
     @Override
-    protected ResponseEntity<Body<Void>> deleteSpace(String token,
+    protected ResponseEntity<Body<Boolean>> deleteSpace(String token,
             String identity, String name) throws Exception {
         File spaceDir = new File(getSpacePath(name));
         deleteDir(spaceDir);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(
+                Body.create(true),
+                HttpStatus.OK);
     }
 
     @Override

@@ -41,7 +41,9 @@ public class StorageController extends AbstractStorageController {
                         .storageClass(StorageClass.STANDARD);
             Bucket bucket = bucketApi.createBucket(projectId, templategoogleApi);
             if (bucket == null) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(
+                        Body.create(null),
+                        HttpStatus.BAD_REQUEST);
             }
             return ResponseEntity.ok(
                     Body.create(model));
@@ -49,7 +51,7 @@ public class StorageController extends AbstractStorageController {
     }
 
     @Override
-    protected ResponseEntity<Body<Void>> deleteSpace(String token,
+    protected ResponseEntity<Body<Boolean>> deleteSpace(String token,
             String identity, String name) throws Exception {
         try(GoogleCloudStorageApi googleApi =
                 GoogleCloudStorageUtils.createApi(
@@ -58,10 +60,14 @@ public class StorageController extends AbstractStorageController {
             BucketApi bucketApi = googleApi.getBucketApi();
             Bucket bucket = bucketApi.getBucket(name);
             if(bucket == null) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(
+                        Body.create(false),
+                        HttpStatus.NOT_FOUND);
             }
             bucketApi.deleteBucket(name);
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(
+                    Body.create(false),
+                    HttpStatus.OK);
         }
     }
 

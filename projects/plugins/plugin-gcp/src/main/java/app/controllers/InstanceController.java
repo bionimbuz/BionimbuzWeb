@@ -64,7 +64,9 @@ public class InstanceController extends AbstractInstanceController {
             final InstanceApi instanceApi = googleApi.instancesInZone(zone);
             final Instance instance = instanceApi.get(name);
             if (instance == null) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(
+                        Body.create(null),
+                        HttpStatus.NOT_FOUND);
             }
 
             final PluginInstanceModel model = new PluginInstanceModel();
@@ -75,7 +77,7 @@ public class InstanceController extends AbstractInstanceController {
     }
 
     @Override
-    protected ResponseEntity<Body<Void>> deleteInstance(
+    protected ResponseEntity<Body<Boolean>> deleteInstance(
             final String token,
             final String identity,
             final String zone,
@@ -85,9 +87,13 @@ public class InstanceController extends AbstractInstanceController {
                      identity,
                      token)) {
             if (!this.deleteInstance(googleApi, zone, name)) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(
+                        Body.create(false),
+                        HttpStatus.NOT_FOUND);
             }
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(
+                    Body.create(true),
+                    HttpStatus.OK);
         }
     }
 

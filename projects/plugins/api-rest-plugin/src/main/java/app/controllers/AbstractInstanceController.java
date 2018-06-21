@@ -33,7 +33,7 @@ public abstract class AbstractInstanceController extends BaseController {
             @RequestBody List<PluginInstanceModel> listModel) {  
         return callImplementedMethod("createInstance", version, token, identity, listModel);
     }    
-    @RequestMapping(path = Routes.INSTANCES_ZONE_NAME, method = RequestMethod.GET)
+    @RequestMapping(path = Routes.INSTANCES_ZONE_NAME_, method = RequestMethod.GET)
     private ResponseEntity<Body<PluginInstanceModel>> getInstanceAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
             @RequestHeader(value=HttpHeaders.AUTHORIZATION) final String token, 
@@ -42,8 +42,8 @@ public abstract class AbstractInstanceController extends BaseController {
             @PathVariable(value = "name") final String name) {
         return callImplementedMethod("getInstance", version, token, identity, zone, name);
     }    
-    @RequestMapping(path = Routes.INSTANCES_ZONE_NAME, method = RequestMethod.DELETE)
-    private ResponseEntity<Body<Void>> deleteInstanceAction(
+    @RequestMapping(path = Routes.INSTANCES_ZONE_NAME_, method = RequestMethod.DELETE)
+    private ResponseEntity<Body<Boolean>> deleteInstanceAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
             @RequestHeader(value=HttpHeaders.AUTHORIZATION) final String token, 
             @RequestHeader(value=HttpHeadersCustom.AUTHORIZATION_ID) final String identity, 
@@ -72,7 +72,7 @@ public abstract class AbstractInstanceController extends BaseController {
             final String identity,
             final String zone,
             final String name) throws Exception;    
-    protected abstract ResponseEntity<Body<Void>> deleteInstance(
+    protected abstract ResponseEntity<Body<Boolean>> deleteInstance(
             final String token, 
             final String identity,
             final String zone,

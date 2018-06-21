@@ -65,7 +65,7 @@ public class FirewallApiTest {
         String nameCreated = model.getName();
         assertThat(nameCreated).isNotEmpty();
         
-        Body<Void> body = 
+        Body<Boolean> body = 
                 firewallApi.deleteRule(
                         "fake-token", "fake-identity", nameCreated);
         assertThat(body.getMessage()).isEqualTo(Body.OK);

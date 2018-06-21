@@ -71,13 +71,13 @@ public class FirewallControllerTest {
 	    
         HttpEntity<Void> entity = TestUtils.createEntity(SystemConstants.PLUGIN_COMPUTE_WRITE_SCOPE);
         
-		ResponseEntity<Body<Void>> response = 
+		ResponseEntity<Body<Boolean>> response = 
 		        restTemplate
                     .exchange(
                             Routes.FIREWALLS+"/"+model.getName(), 
                             HttpMethod.DELETE, 
                             entity,
-                            new ParameterizedTypeReference< Body<Void> >() {});          
+                            new ParameterizedTypeReference< Body<Boolean> >() {});          
         assertThat(response).isNotNull();    
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}

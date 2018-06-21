@@ -37,7 +37,7 @@ public class StorageApi  extends PluginApi<HttpMethods> {
                 .execute().body();
     }
 
-    public Body<Void> deleteSpace(
+    public Body<Boolean> deleteSpace(
             final String token,
             final String identity,
             final String name) throws IOException
@@ -77,7 +77,7 @@ public class StorageApi  extends PluginApi<HttpMethods> {
                 @Header(HttpHeadersCustom.AUTHORIZATION_ID) final String identity,
                 @retrofit2.http.Body PluginStorageModel model);
         @DELETE(Routes.SPACES_NAME)
-        public Call<Body<Void>> deleteSpace(
+        public Call<Body<Boolean>> deleteSpace(
                 @Header(HttpHeadersCustom.API_VERSION) final String version,
                 @Header(HttpHeaders.AUTHORIZATION) final String token,
                 @Header(HttpHeadersCustom.AUTHORIZATION_ID) final String identity,

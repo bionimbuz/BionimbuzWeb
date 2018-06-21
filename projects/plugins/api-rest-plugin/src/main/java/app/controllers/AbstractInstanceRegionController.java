@@ -33,7 +33,7 @@ public abstract class AbstractInstanceRegionController extends BaseController {
         return this.callImplementedMethod("listInstanceRegions", version, token, identity);
     }
 
-    @RequestMapping(path = Routes.INSTANCE_REGIONS_ZONES, method = RequestMethod.GET)
+    @RequestMapping(path = Routes.INSTANCE_REGIONS_ZONES_, method = RequestMethod.GET)
     private ResponseEntity<Body<List<PluginInstanceZoneModel>>> listInstanceRegionsZonesAction(
             @RequestHeader(value = HttpHeadersCustom.API_VERSION) final String version,
             @RequestHeader(value = HttpHeaders.AUTHORIZATION) final String token,

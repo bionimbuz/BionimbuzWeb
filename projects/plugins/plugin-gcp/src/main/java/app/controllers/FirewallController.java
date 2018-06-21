@@ -61,7 +61,9 @@ public class FirewallController extends AbstractFirewallController{
                   
             Firewall firewall = firewallApi.get(name);
             if(firewall == null) { 
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND); 
+                return new ResponseEntity<>(
+                        Body.create(null),
+                        HttpStatus.NOT_FOUND); 
             }
             
             PluginFirewallModel model = createFirewallModel(firewall);  
@@ -71,7 +73,7 @@ public class FirewallController extends AbstractFirewallController{
     }
 
     @Override
-    protected ResponseEntity<Body<Void>> deleteRule(
+    protected ResponseEntity<Body<Boolean>> deleteRule(
             final String token, 
             final String identity,
     		final String name) throws Exception  {     
@@ -83,12 +85,16 @@ public class FirewallController extends AbstractFirewallController{
             FirewallApi firewallApi = googleApi.firewalls();                    
             Firewall firewall = firewallApi.get(name);
             if(firewall == null) {   
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND); 
+                return new ResponseEntity<>(
+                        Body.create(false),
+                        HttpStatus.NOT_FOUND); 
             }
                       
             Operation operation = firewallApi.delete(name);
             GoogleComputeEngineUtils.waitOperation(googleApi, operation);            
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(
+                    Body.create(true),
+                    HttpStatus.OK);
         }
     }
 

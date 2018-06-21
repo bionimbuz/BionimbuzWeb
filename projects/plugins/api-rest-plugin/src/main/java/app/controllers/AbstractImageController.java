@@ -25,13 +25,13 @@ public abstract class AbstractImageController extends BaseController {
      */
     
     @RequestMapping(path = Routes.IMAGES, method = RequestMethod.GET)
-    private ResponseEntity<Body<List<PluginImageModel>>> listInstancesAction(
+    private ResponseEntity<Body<List<PluginImageModel>>> listImagesAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
             @RequestHeader(value=HttpHeaders.AUTHORIZATION) final String token, 
             @RequestHeader(value=HttpHeadersCustom.AUTHORIZATION_ID) final String identity) {
         return callImplementedMethod("listImages", version, token, identity);        
     }     
-    @RequestMapping(path = Routes.IMAGES_NAME, method = RequestMethod.GET)
+    @RequestMapping(path = Routes.IMAGES_NAME_, method = RequestMethod.GET)
     private ResponseEntity< Body<PluginImageModel> > getImageAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
             @RequestHeader(value=HttpHeaders.AUTHORIZATION) final String token, 
