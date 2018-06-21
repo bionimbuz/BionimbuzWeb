@@ -66,6 +66,6 @@ public class FirewallControllerTest {
         FirewallApi api = new FirewallApi(TestUtils.getUrl(PORT));
         Body<List<PluginFirewallModel>> body = api.listRules("", "");
         assertThat(body).isNotNull();   
-        assertThat(body.getContent().isEmpty());
+        assertThat(body.getContent().isEmpty()).isFalse();
 	}    
 }

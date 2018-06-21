@@ -3,6 +3,7 @@ package app.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,16 +28,20 @@ public class InstanceRegionController extends AbstractInstanceRegionController{
         return ResponseEntity.ok(
                 Body.create(res));
     }
+    
     @Override
     protected ResponseEntity<Body<List<PluginInstanceZoneModel>>> listInstanceRegionsZones(
             final String token,
             final String identity,
-            final String name) throws Exception {
-
-        List<PluginInstanceZoneModel> res = new ArrayList<>();
-        res.add(InstanceZoneController.createZoneModel());
-        return ResponseEntity.ok(
-                Body.create(res));
+            final String name) throws Exception {        
+        if(SystemConstants.PLUGIN_REGION.equals(name)) {
+            List<PluginInstanceZoneModel> res = new ArrayList<>();
+            res.add(InstanceZoneController.createZoneModel());
+            return ResponseEntity.ok(
+                    Body.create(res));
+        }
+        return new ResponseEntity<>(
+                HttpStatus.NOT_FOUND);
     }
 
     private PluginInstanceRegionModel createRegionModel() {
