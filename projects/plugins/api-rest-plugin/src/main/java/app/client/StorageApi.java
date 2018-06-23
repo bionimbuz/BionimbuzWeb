@@ -82,12 +82,12 @@ public class StorageApi  extends PluginApi<HttpMethods> {
                 @Header(HttpHeaders.AUTHORIZATION) final String token,
                 @Header(HttpHeadersCustom.AUTHORIZATION_ID) final String identity,
                 @Path("name") final String name);
-        @GET(Routes.SPACES_NAME_UPLOAD_FILE)
+        @GET(Routes.SPACES_NAME_FILE_UPLOAD)
         public Call<Body<PluginStorageFileUploadModel>> getUploadUrl(
                 @Header(HttpHeadersCustom.API_VERSION) final String version,
                 @Path("name") final String name,
                 @Path("file") final String file);
-        @GET(Routes.SPACES_NAME_DOWNLOAD_FILE)
+        @GET(Routes.SPACES_NAME_FILE_DOWNLOAD)
         public Call<Body<PluginStorageFileDownloadModel>> getDownloadUrl(
                 @Header(HttpHeadersCustom.API_VERSION) final String version,
                 @Path("name") final String name,

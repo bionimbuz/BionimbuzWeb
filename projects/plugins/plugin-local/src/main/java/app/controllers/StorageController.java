@@ -2,7 +2,6 @@ package app.controllers;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.HttpMethod;
@@ -20,7 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import app.common.ControllerRoutes;
 import app.common.FileStorageService;
+import app.common.FileUtils;
 import app.common.UploadFileResponse;
 import app.models.Body;
 import app.models.PluginStorageFileDownloadModel;
@@ -47,7 +48,12 @@ public class StorageController extends AbstractStorageController {
     protected ResponseEntity<Body<Boolean>> deleteSpace(String token,
             String identity, String name) throws Exception {
         File spaceDir = new File(getSpacePath(name));
-        deleteDir(spaceDir);
+        if (!spaceDir.exists()) {
+            return new ResponseEntity<>(
+                    Body.create(false),
+                    HttpStatus.OK);
+        }
+        FileUtils.deleteDir(spaceDir);
         return new ResponseEntity<>(
                 Body.create(true),
                 HttpStatus.OK);
@@ -93,7 +99,7 @@ public class StorageController extends AbstractStorageController {
                 .toUriString();
     }
 
-    @PostMapping("/upload/{space}")
+    @PostMapping(ControllerRoutes.UPLOAD_SPACE)
     public UploadFileResponse uploadFile(
             @PathVariable String space,
             @RequestParam("file") MultipartFile file) {
@@ -115,7 +121,7 @@ public class StorageController extends AbstractStorageController {
         }
     }
 
-    @GetMapping("/download/{space}/{file:.+}")
+    @GetMapping(ControllerRoutes.DOWNLOAD_SPACE_FILE)
     public ResponseEntity<Resource> downloadFile(
             @PathVariable String space,
             @PathVariable String file,
@@ -149,18 +155,4 @@ public class StorageController extends AbstractStorageController {
     private static String getSpacePath(final String space) {
         return SPACE_DIR + "/" + space;
     }
-
-    private static void deleteDir(File file) {
-        File[] contents = file.listFiles();
-        if (contents != null) {
-            for (File f : contents) {
-                if (! Files.isSymbolicLink(f.toPath())) {
-                    deleteDir(f);
-                }
-            }
-        }
-        file.delete();
-    }
-
-
 }

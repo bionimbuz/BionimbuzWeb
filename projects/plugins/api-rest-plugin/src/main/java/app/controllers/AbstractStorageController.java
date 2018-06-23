@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,19 +45,20 @@ public abstract class AbstractStorageController extends BaseController {
             @PathVariable(value = "name") final String name) {
         return callImplementedMethod("deleteSpace", version, token, identity, name);
     }
-    @RequestMapping(path = Routes.SPACES_NAME_UPLOAD_FILE, method = RequestMethod.GET)
+    @RequestMapping(path = Routes.SPACES_NAME_FILE_UPLOAD_, method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     private ResponseEntity<Body<PluginStorageFileUploadModel>> getUploadUrlAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
-            @PathVariable(value = "name") final String space,
+            @PathVariable(value = "name") final String name,
             @PathVariable(value = "file") final String file) {
-        return callImplementedMethod("getUploadUrl", version, space, file);
+        return callImplementedMethod("getUploadUrl", version, name, file);
     }
-    @RequestMapping(path = Routes.SPACES_NAME_DOWNLOAD_FILE, method = RequestMethod.GET)
+    @RequestMapping(path = Routes.SPACES_NAME_FILE_DOWNLOAD_, method = RequestMethod.GET)
     private ResponseEntity<Body<PluginStorageFileDownloadModel>> getDownloadUrlAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
-            @PathVariable(value = "name") final String space,
+            @PathVariable(value = "name") final String name,
             @PathVariable(value = "file") final String file) {
-        return callImplementedMethod("getDownloadUrl", version, space, file);
+        return callImplementedMethod("getDownloadUrl", version, name, file);
     }
 
     /*
@@ -72,9 +74,9 @@ public abstract class AbstractStorageController extends BaseController {
             final String identity,
             final String name) throws Exception;
     protected abstract ResponseEntity<Body<PluginStorageFileUploadModel>> getUploadUrl(
-            final String space,
+            final String name,
             final String file) throws Exception;
     protected abstract ResponseEntity<Body<PluginStorageFileDownloadModel>> getDownloadUrl(
-            final String space,
+            final String name,
             final String file) throws Exception;
 }
