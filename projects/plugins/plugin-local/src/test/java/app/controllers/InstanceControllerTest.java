@@ -2,13 +2,12 @@ package app.controllers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,16 +15,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import app.common.Routes;
+import app.client.InstanceApi;
+import app.common.FileUtils;
+import app.common.SystemConstants;
 import app.models.Body;
-import app.models.PluginFirewallModel;
 import app.models.PluginInstanceModel;
 import utils.TestUtils;
 
@@ -36,21 +31,19 @@ public class InstanceControllerTest {
     private static final Integer STARTUP_SCRIPT_APACHE_PORT = 80;
     private static final Integer WAIT_MS_TO_START_INSTANCE = 60 * 1000;
     private static final Integer LENGTH_CREATION = 2;
-    
+
     @Autowired
     private InstanceController controller;
     @Autowired
     private TestRestTemplate restTemplate;
     @Value("${local.server.port}")
-    private int PORT;        
-    
-    private static PluginFirewallModel getApacheFirewallRule() {
-        return new PluginFirewallModel(
-                        PluginFirewallModel.PROTOCOL.tcp, 
-                        STARTUP_SCRIPT_APACHE_PORT, 
-                        new ArrayList<>());
+    private int PORT;
+
+    @Before
+    public void init() {
+        File file = new File(SystemConstants.INSTANCES_DIR);
+        FileUtils.deleteDir(file);
     }
-    
 
     @Test
     public void contexLoads() throws Exception {
@@ -58,158 +51,78 @@ public class InstanceControllerTest {
     }
 
     @Test
-    public void CRUD_Test() {
-        ResponseEntity<Body<PluginInstanceModel>> responseGet = null;        
-        
-        List<PluginInstanceModel> responseList = listAllTest();        
-        List<PluginInstanceModel> newInstances = getInstancesToCreate(LENGTH_CREATION); 
-        for (PluginInstanceModel model : newInstances) {
-            responseGet = getInstanceTest(model);
-            assertThat(responseGet.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        }        
-        
-        List<PluginInstanceModel> createdInstances = createInstancesTest(newInstances);
-        assertThat(createdInstances.size()).isEqualTo(LENGTH_CREATION);        
+    public void CRUD_Test() throws IOException {
 
-        int initialSize = responseList.size();
-        responseList = listAllTest();        
-        assertThat(responseList.size()).isEqualTo(initialSize + LENGTH_CREATION);
-        
-        try {
-            // Wait for instances configuration start
-            Thread.sleep(WAIT_MS_TO_START_INSTANCE);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            assertThat(e).isNull();
+        List<PluginInstanceModel> listToCreate =
+                    getInstancesToCreate(LENGTH_CREATION);
+
+        checkCurrentInstancesSize(0);
+        listToCreate = createInstancesTest(listToCreate);
+        checkGetInstances(listToCreate);
+        checkCurrentInstancesSize(LENGTH_CREATION);
+        deleteInstances(listToCreate);
+        checkCurrentInstancesSize(0);
+    }
+
+    private void deleteInstances(List<PluginInstanceModel> instances) throws IOException {
+
+        InstanceApi api = new InstanceApi(TestUtils.getUrl(PORT));
+        for (PluginInstanceModel pluginInstanceModel : instances) {
+            Body<Boolean> body = api.deleteInstance("", "",
+                    SystemConstants.PLUGIN_ZONE,
+                    pluginInstanceModel.getName());
+            assertThat(body).isNotNull();
+            assertThat(body.getContent()).isTrue();
         }
-        
-        for (PluginInstanceModel model : createdInstances) {
-            responseGet = getInstanceTest(model);            
-            assertThat(responseGet.getStatusCode()).isEqualTo(HttpStatus.OK);
-            assertThat(responseGet.getBody()).isNotNull();            
-            doHttGetInInstancesTest(responseGet.getBody().getContent());
-        }     
-           
-        for (PluginInstanceModel model : createdInstances) {
-            deleteInstanceTest(model);
-        }        
-        
-        for (PluginInstanceModel model : newInstances) {
-            responseGet = getInstanceTest(model);
-            assertThat(responseGet.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        }   
-
-        responseList = listAllTest();        
-        assertThat(responseList.size()).isEqualTo(initialSize);        
     }
-    
-    private void doHttGetInInstancesTest(PluginInstanceModel model) {
-        try {            
-            String url = "http://" + model.getExternalIp() + ":" + STARTUP_SCRIPT_APACHE_PORT;
-            URL obj = new URL(url);
-            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-            con.setRequestMethod("GET");
 
-            int responseCode = con.getResponseCode();
-            assertThat(responseCode).isEqualTo(200);
-            
-            try(BufferedReader in = new BufferedReader(
-                    new InputStreamReader(con.getInputStream()))) {
-                
-                String inputLine;
-                StringBuffer response = new StringBuffer();
-        
-                while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
-                }
-                
-                assertThat(response).isNotBlank();
-            }        
-        } catch (Exception e) {
-            e.printStackTrace();
-            assertThat(e).isNull();
+    private void checkGetInstances(List<PluginInstanceModel> instances) throws IOException {
+
+        InstanceApi api = new InstanceApi(TestUtils.getUrl(PORT));
+        for (PluginInstanceModel pluginInstanceModel : instances) {
+            Body<PluginInstanceModel> body =
+                    api.getInstance("", "",
+                            SystemConstants.PLUGIN_ZONE,
+                            pluginInstanceModel.getName());
+            assertThat(body).isNotNull();
+            assertThat(body.getContent()).isNotNull();
         }
-        
     }
-    
-    private void deleteInstanceTest(PluginInstanceModel model) {
-        
-        HttpEntity<Void> entity = TestUtils.createEntity("");
-        
-        ResponseEntity<Body<Boolean>> response = this.restTemplate
-                .exchange(
-                        Routes.INSTANCES+"/"+model.getZone() + "/"+model.getName(), 
-                        HttpMethod.DELETE, 
-                        entity,
-                        new ParameterizedTypeReference< Body<Boolean> >() {}
-                        );          
-        assertThat(response).isNotNull();    
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
-    
-    private List<PluginInstanceModel> createInstancesTest(List<PluginInstanceModel> instances){
-        HttpEntity<List<PluginInstanceModel>> entity = 
-                TestUtils.createEntity(instances, "");
-        
-        ResponseEntity<Body<List<PluginInstanceModel>>> response = this.restTemplate
-                .exchange(
-                        Routes.INSTANCES, 
-                        HttpMethod.POST, 
-                        entity,
-                        new ParameterizedTypeReference<Body<List<PluginInstanceModel>>>() {});                     
-        assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        
-        return response.getBody().getContent();
-    }
-    
-    private List<PluginInstanceModel> listAllTest() {         
 
-        HttpEntity<Void> entity = TestUtils.createEntity("");
-        
-        ResponseEntity< Body<List<PluginInstanceModel>> > responseList = 
-                this.restTemplate
-                    .exchange(
-                            Routes.INSTANCES, 
-                            HttpMethod.GET, 
-                            entity,
-                            new ParameterizedTypeReference< Body<List<PluginInstanceModel>> >() {});          
-        
-        assertThat(responseList.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(responseList.getBody()).isNotNull();
-        return responseList.getBody().getContent();
-    }        
-    
-    private ResponseEntity<Body<PluginInstanceModel>> getInstanceTest(PluginInstanceModel model) {
-        
-        HttpEntity<Void> entity = TestUtils.createEntity("");
-        
-        ResponseEntity<Body<PluginInstanceModel>> response = 
-                this.restTemplate
-                    .exchange(
-                            Routes.INSTANCES+"/"+model.getZone() + "/"+model.getName(), 
-                            HttpMethod.GET, 
-                            entity,
-                            new ParameterizedTypeReference< Body<PluginInstanceModel> >() {}
-                        );          
-        assertThat(response).isNotNull();  
-        return response;
+    private void checkCurrentInstancesSize(int size) throws IOException {
+
+        InstanceApi api = new InstanceApi(TestUtils.getUrl(PORT));
+        Body<List<PluginInstanceModel>> body =
+                api.listInstances("", "");
+
+        assertThat(body.getContent().size()).isEqualTo(size);
     }
-    
+
+    private List<PluginInstanceModel> createInstancesTest(List<PluginInstanceModel> instances) throws IOException{
+
+        InstanceApi api = new InstanceApi(TestUtils.getUrl(PORT));
+        Body<List<PluginInstanceModel>> body =
+                api.createInstance("", "", instances);
+        assertThat(body).isNotNull();
+        assertThat(body.getContent().size()).isEqualTo(LENGTH_CREATION);
+
+        return body.getContent();
+    }
+
     private List<PluginInstanceModel> getInstancesToCreate(int length) {
         List<PluginInstanceModel> instances = new ArrayList<>();
 
         for(int i=0;i<length;i++) {
             PluginInstanceModel instance = new PluginInstanceModel();
             instance.setImageUrl("");
-            instance.setStartupScript("echo TESTE");
-            instance.setType("");
-            instance.setRegion("");
-            instance.setZone("");
-            
+            instance.setStartupScript("touch file_1 \n\r touch file_2 \r\n");
+            instance.setType(SystemConstants.CLOUD_COMPUTE_TYPE);
+            instance.setRegion(SystemConstants.PLUGIN_REGION);
+            instance.setZone(SystemConstants.PLUGIN_ZONE);
+
             instances.add(instance);
         }
-        
+
         return instances;
     }
 

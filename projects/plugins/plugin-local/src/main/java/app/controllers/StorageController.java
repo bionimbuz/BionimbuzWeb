@@ -22,6 +22,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import app.common.ControllerRoutes;
 import app.common.FileStorageService;
 import app.common.FileUtils;
+import app.common.SystemConstants;
 import app.common.UploadFileResponse;
 import app.models.Body;
 import app.models.PluginStorageFileDownloadModel;
@@ -30,8 +31,6 @@ import app.models.PluginStorageModel;
 
 @RestController
 public class StorageController extends AbstractStorageController {
-
-    private static final String SPACE_DIR = "spaces";
 
     @Override
     protected ResponseEntity<Body<PluginStorageModel>> createSpace(String token,
@@ -153,6 +152,6 @@ public class StorageController extends AbstractStorageController {
     }
 
     private static String getSpacePath(final String space) {
-        return SPACE_DIR + "/" + space;
+        return SystemConstants.SPACES_DIR + space;
     }
 }

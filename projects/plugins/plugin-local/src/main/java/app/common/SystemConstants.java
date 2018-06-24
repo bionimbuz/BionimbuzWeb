@@ -12,5 +12,9 @@ public class SystemConstants {
 
     public static final String SYSTEM_PROPERTY_MEM = "system.mem";
     public static final String SYSTEM_PROPERTY_CPU = "system.cpu";
+    public static final String SYSTEM_PROPERTY_IP = "system.ip";
+
+    public static final String SPACES_DIR = "spaces/";
+    public static final String INSTANCES_DIR = "instances/";
 
 }

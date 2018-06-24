@@ -30,6 +30,7 @@ import org.springframework.util.LinkedMultiValueMap;
 
 import app.client.StorageApi;
 import app.common.FileUtils;
+import app.common.SystemConstants;
 import app.common.UploadFileResponse;
 import app.models.Body;
 import app.models.PluginStorageFileDownloadModel;
@@ -54,7 +55,7 @@ public class StorageControllerTest {
 
     @Before
     public void init() {
-        File file = new File("spaces/" + SPACE_NAME);
+        File file = new File(SystemConstants.SPACES_DIR + SPACE_NAME);
         FileUtils.deleteDir(file);
     }
 

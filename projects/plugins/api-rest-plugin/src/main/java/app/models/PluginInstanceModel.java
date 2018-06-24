@@ -55,11 +55,11 @@ public class PluginInstanceModel extends Body {
         return res;
     }
 
-    protected static String generateNameForId(final Integer id, final String prefix) {
+    public static String generateNameForId(final Integer id, final String prefix) {
         return prefix + "-" + id;
     }
 
-    protected static Integer extractIdFromName(final String name, final String prefix) {
+    public static Integer extractIdFromName(final String name, final String prefix) {
         String [] nameSpplited = name.split(prefix);
         if(nameSpplited.length != 2)
             return -1;
