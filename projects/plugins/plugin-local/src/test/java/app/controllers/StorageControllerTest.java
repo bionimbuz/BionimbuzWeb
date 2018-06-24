@@ -3,7 +3,11 @@ package app.controllers;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +32,7 @@ import app.client.StorageApi;
 import app.common.FileUtils;
 import app.common.UploadFileResponse;
 import app.models.Body;
+import app.models.PluginStorageFileDownloadModel;
 import app.models.PluginStorageFileUploadModel;
 import app.models.PluginStorageModel;
 import utils.TestUtils;
@@ -59,10 +64,11 @@ public class StorageControllerTest {
     }
 
     @Test
-    public void CRUD_Test() throws IOException {
+    public void CRUD_Test() throws IOException, NoSuchAlgorithmException {
         deleteNonExistentSpaceTest();
         createSpaceTest();
         uploadFileTest();
+        downloadFileTest();
         deleteExistentSpaceTest();
     }
 
@@ -132,4 +138,55 @@ public class StorageControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
+    public void downloadFileTest() throws IOException, NoSuchAlgorithmException {
+        StorageApi api = new StorageApi(TestUtils.getUrl(PORT));
+        Body<PluginStorageFileDownloadModel> body =
+                api.getDownloadUrl(SPACE_NAME, TEST_FILE_NAME);
+        assertThat(body).isNotNull();
+
+        PluginStorageFileDownloadModel content =
+                body.getContent();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_OCTET_STREAM));
+
+        HttpEntity<String> entity = new HttpEntity<String>(headers);
+
+        ResponseEntity<byte[]> response = restTemplate.exchange(
+                content.getUrl(),
+                HttpMethod.valueOf(content.getMethod()),
+                entity,
+                byte[].class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        String md5Downloaded = getMD5Hex(response.getBody());
+        File file = new File(TEST_FILE_PATH);
+        String md5Existent =
+                getMD5Hex(readFileContent(file));
+        assertThat(md5Existent).isEqualTo(md5Downloaded);
+    }
+
+    private static String getMD5Hex(final byte[] content) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        md.update(content);
+        byte[] digest = md.digest();
+        return convertByteToHex(digest);
+    }
+
+    private static String convertByteToHex(byte[] byteData) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < byteData.length; i++) {
+            sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+        }
+        return sb.toString();
+    }
+
+    private static byte[] readFileContent(File file) throws IOException {
+        try(FileInputStream fileStream =
+                new FileInputStream(file)){
+            byte[] arr = new byte[(int) file.length()];
+            fileStream.read(arr, 0, arr.length);
+            return arr;
+        }
+    }
 }
