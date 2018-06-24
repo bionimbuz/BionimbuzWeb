@@ -46,10 +46,14 @@ public class DevelopmentStartupJob extends Job {
             return;
         }
 
-        final PluginModel plugin = this.insertPlugin();
-        this.insertImages(plugin);
+        final PluginModel plugin = this.insertGCEPlugin();
+        this.insertGCEImages(plugin);
+
+        final PluginModel pluginLocal = this.insertLocalPlugin();
+        this.insertLocalImages(pluginLocal);
+
         this.insertTestModels(10);
-        this.insertTempPlugins(2);
+//        this.insertTempPlugins(2);
 
         final UserModel userAdmin = UserModel.findByEmail("master@bionimbuz.org.br");
         final UserModel userNormal = this.insertTempUserNormal();
@@ -71,6 +75,8 @@ public class DevelopmentStartupJob extends Job {
         this.insertCredential(plugin, userAdmin);
         this.insertCredential(plugin, userNormal);
         this.insertCredential(plugin, userNormal);
+
+        this.insertLocalCredential(pluginLocal, userAdmin);
 
         this.insertExecutor(plugin);
     }
@@ -101,7 +107,7 @@ public class DevelopmentStartupJob extends Job {
         }
     }
 
-    private void insertImages(final PluginModel plugin) {
+    private void insertGCEImages(final PluginModel plugin) {
         ImageModel image = new ImageModel();
         image.setName("ubuntu-1804-bionic-v20180522");
         image.setUrl("https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1804-bionic-v20180522");
@@ -115,6 +121,15 @@ public class DevelopmentStartupJob extends Job {
         image.save();
 
     }
+
+    private void insertLocalImages(final PluginModel plugin) {
+        ImageModel image = new ImageModel();
+        image.setName("linux-4.13.0-45-generic-amd64");
+        image.setUrl("local-image-url");
+        image.setPlugin(plugin);
+        image.save();
+    }
+
 
     //    private MenuModel insertMenu(
     //            final String name,
@@ -157,7 +172,19 @@ public class DevelopmentStartupJob extends Job {
         model.save();
     }
 
-    private PluginModel insertPlugin() {
+    private void insertLocalCredential(final PluginModel plugin, final UserModel user) {
+        final CredentialModel model = new CredentialModel();
+        final EncryptedFileField data = new EncryptedFileField(new byte[] {});
+        model.setCredentialData(data);
+        model.setCredentialDataType("");
+        model.setEnabled(true);
+        model.setName("Local Machine");
+        model.setPlugin(plugin);
+        model.setUser(user);
+        model.save();
+    }
+
+    private PluginModel insertGCEPlugin() {
         final PluginModel model = new PluginModel();
         model.setAuthType(app.models.PluginInfoModel.AuthenticationType.AUTH_BEARER_TOKEN);
         model.setCloudType("google-compute-engine");
@@ -169,6 +196,22 @@ public class DevelopmentStartupJob extends Job {
         model.setInstanceWriteScope("https://www.googleapis.com/auth/compute");
         model.setStorageReadScope("https://www.googleapis.com/auth/devstorage.read_only");
         model.setStorageWriteScope("https://www.googleapis.com/auth/devstorage.read_write");
+        model.save();
+        return model;
+    }
+
+    private PluginModel insertLocalPlugin() {
+        final PluginModel model = new PluginModel();
+        model.setAuthType(app.models.PluginInfoModel.AuthenticationType.AUTH_SUPER_USER);
+        model.setCloudType("local-machine");
+        model.setEnabled(true);
+        model.setName("Local Machine");
+        model.setPluginVersion("0.1");
+        model.setUrl("http://localhost:8282");
+        model.setInstanceReadScope("");
+        model.setInstanceWriteScope("");
+        model.setStorageReadScope("");
+        model.setStorageWriteScope("");
         model.save();
         return model;
     }
@@ -234,7 +277,7 @@ public class DevelopmentStartupJob extends Job {
                 model.setPluginVersion("v" + i);
                 model.setUrl("http://localhost:" + i);
                 model.save();
-                this.insertImages(model);
+                this.insertGCEImages(model);
             }
         } catch (final Exception e) {
             Logger.error(e.getMessage(), e);

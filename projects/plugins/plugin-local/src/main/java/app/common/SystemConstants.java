@@ -6,6 +6,7 @@ public class SystemConstants {
     public static final String PLUGIN_NAME = "localhost";
     public static final String PLUGIN_REGION = "local-region";
     public static final String PLUGIN_ZONE = "local-zone";
+    public static final String PLUGIN_IMAGE_URL = "local-image-url";
 
     public static final String CLOUD_COMPUTE_TYPE = "local-machine";
     public static final String CLOUD_STORAGE_TYPE = "local-storage";
@@ -14,7 +15,10 @@ public class SystemConstants {
     public static final String SYSTEM_PROPERTY_CPU = "system.cpu";
     public static final String SYSTEM_PROPERTY_IP = "system.ip";
 
+    public static final String SYSTEM_PROPERTY_OS_ARCH = "os.arch";
+    public static final String SYSTEM_PROPERTY_OS_VERSION = "os.version";
+    public static final String SYSTEM_PROPERTY_OS_NAME = "os.name";
+
     public static final String SPACES_DIR = "spaces/";
     public static final String INSTANCES_DIR = "instances/";
-
 }

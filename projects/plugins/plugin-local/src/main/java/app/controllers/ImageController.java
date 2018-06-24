@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import app.common.SystemConstants;
 import app.models.Body;
 import app.models.PluginImageModel;
 
@@ -19,9 +20,9 @@ public class ImageController extends AbstractImageController{
 
     @Override
     protected ResponseEntity<Body<PluginImageModel>> getImage(
-            final String token, final String identity, final String name) throws Exception {        
+            final String token, final String identity, final String name) throws Exception {
         String localImageName = getLocalSOVersion();
-        if(!localImageName.equals(name)) {     
+        if(!localImageName.equals(name)) {
             return new ResponseEntity<>(
                     Body.create(null),
                     HttpStatus.NOT_FOUND);
@@ -42,9 +43,9 @@ public class ImageController extends AbstractImageController{
     }
 
     private String getLocalSOVersion() {
-        String soVersion = System.getProperty("os.name");
-        soVersion += "-" + System.getProperty("os.version");
-        soVersion += "-" + System.getProperty("os.arch");
+        String soVersion = System.getProperty(SystemConstants.SYSTEM_PROPERTY_OS_NAME);
+        soVersion += "-" + System.getProperty(SystemConstants.SYSTEM_PROPERTY_OS_VERSION);
+        soVersion += "-" + System.getProperty(SystemConstants.SYSTEM_PROPERTY_OS_ARCH);
         return soVersion.toLowerCase();
     }
 
@@ -52,6 +53,6 @@ public class ImageController extends AbstractImageController{
         return new PluginImageModel(
                 "",
                 imageName,
-                "");
+                SystemConstants.PLUGIN_IMAGE_URL);
     }
 }

@@ -180,6 +180,7 @@ object.cloudType=Cloud Type
 object.authType=Authentication Type
 object.enabled=Enabled
 AuthenticationType.AUTH_BEARER_TOKEN=Bearer Token
+AuthenticationType.AUTH_SUPER_USER=Super User
 
 # GroupModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -263,6 +264,8 @@ object.credentialUsage=Credential Usage
 object.executor=Executor
 object.executionAfterCreation=Request execution after creation
 object.instanceTypeRegion=Instance Types
+ONLY_SHARED=Only Shared
+ONLY_OWNER=Only Owner
 SHARED_FIRST=Shared First
 OWNER_FIRST=Owner First
 object.typeName=Type

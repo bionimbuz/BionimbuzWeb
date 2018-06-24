@@ -39,7 +39,10 @@ public class InstanceController extends AbstractInstanceController {
             String instanceName =
                     PluginInstanceModel.generateNameForId(
                             newId, GlobalConstants.BNZ_PREFIX);
-            String ip = InetAddress.getLocalHost().getHostAddress();
+
+            String ip = System.getProperty(
+                    SystemConstants.SYSTEM_PROPERTY_IP,
+                    InetAddress.getLocalHost().getHostAddress());
 
             pluginInstanceModel.setId(String.valueOf(newId));
             pluginInstanceModel.setName(instanceName);

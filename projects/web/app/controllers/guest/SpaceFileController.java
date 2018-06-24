@@ -1,10 +1,7 @@
 package controllers.guest;
 
-import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.io.IOUtils;
 
 import app.client.StorageApi;
 import app.common.Authorization;
@@ -105,13 +102,13 @@ public class SpaceFileController extends BaseAdminController {
             DownloadFileInfo res = new DownloadFileInfo();
             for(CredentialModel credential : plugin.getListCredentials()) {
                 try {
-                    StringWriter writer = new StringWriter();
-                    IOUtils.copy(credential.getCredentialData().get(), writer, "UTF-8");
+                    String credentialStr =
+                            credential.getCredentialData().getContentAsString();
 
                     TokenModel token = Authorization.getToken(
                             plugin.getCloudType(),
                             plugin.getStorageWriteScope(),
-                            writer.toString());
+                            credentialStr);
 
                     Body<PluginStorageFileDownloadModel> body =
                             api.getDownloadUrl(space.getName(), virtualName);
@@ -158,13 +155,13 @@ public class SpaceFileController extends BaseAdminController {
             UploadFileInfo res = new UploadFileInfo();
             for(CredentialModel credential : plugin.getListCredentials()) {
                 try {
-                    StringWriter writer = new StringWriter();
-                    IOUtils.copy(credential.getCredentialData().get(), writer, "UTF-8");
+                    String credentialStr =
+                            credential.getCredentialData().getContentAsString();
 
                     TokenModel token = Authorization.getToken(
                             plugin.getCloudType(),
                             plugin.getStorageWriteScope(),
-                            writer.toString());
+                            credentialStr);
 
                     String virtualName = SpaceFileModel.generateVirtualName(fileName);
                     Body<PluginStorageFileUploadModel> body =

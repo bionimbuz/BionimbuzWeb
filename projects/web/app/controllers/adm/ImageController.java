@@ -1,10 +1,7 @@
 package controllers.adm;
 
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.io.IOUtils;
 
 import app.client.ImageApi;
 import app.common.Authorization;
@@ -34,13 +31,12 @@ public class ImageController extends BaseAdminController {
 
             for(CredentialModel credential : plugin.getListCredentials()) {
                 try {
-                    StringWriter writer = new StringWriter();
-                    IOUtils.copy(credential.getCredentialData().get(), writer, "UTF-8");
-
+                    String credentialStr =
+                            credential.getCredentialData().getContentAsString();
                     TokenModel token = Authorization.getToken(
                             plugin.getCloudType(),
                             plugin.getInstanceReadScope(),
-                            writer.toString());
+                            credentialStr);
                     Body<List<PluginImageModel>> body =
                             imageApi.listImages(
                                     token.getToken(),

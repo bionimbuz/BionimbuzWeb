@@ -193,7 +193,7 @@ public class PriceTableUpdaterJob extends Job {
             final PriceTableModel recentPriceTable,
             final PluginPriceModel princingRequested,
             final PluginPriceTableStatusModel princingStatusRequested) {
-        if (recentPriceTable == null) {
+        if (recentPriceTable == null || recentPriceTable.getPriceTableDate() == null) {
             return true;
         }
         if (DateCompareUtil.is(princingRequested.getLastUpdate())

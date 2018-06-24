@@ -1,11 +1,15 @@
 package common.fields;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
+import org.apache.commons.io.IOUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.type.BinaryType;
@@ -13,18 +17,18 @@ import org.hibernate.type.BinaryType;
 import common.security.DesEncrypter;
 import play.Play;
 
-public class EncryptedFileField extends FileField {    
- 
+public class EncryptedFileField extends FileField {
+
     public EncryptedFileField(byte[] file) {
         super(file);
-    }    
+    }
     protected EncryptedFileField(String UUID, String type) {
         super(UUID, type);
     }
-    
+
     /*
-     * Implementations of org.hibernate.usertype.UserType 
-     */    
+     * Implementations of org.hibernate.usertype.UserType
+     */
     @Override
     public Class returnedClass() {
         return EncryptedFileField.class;
@@ -60,7 +64,7 @@ public class EncryptedFileField extends FileField {
             return null;
         }
         return new EncryptedFileField(((EncryptedFileField)o).getFile());
-    }   
+    }
     @Override
     public Serializable disassemble(Object o) throws HibernateException {
         if (o == null) return null;
@@ -71,8 +75,18 @@ public class EncryptedFileField extends FileField {
         if (cached == null) return null;
         return new EncryptedFileField((byte[]) cached);
     }
-    
+
     private String getDESKey() {
         return Play.configuration.getProperty("application.secret.des", "").trim();
     }
+
+    public String getContentAsString() throws IOException {
+        InputStream iStream = get();
+        if(iStream == null)
+            return "";
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(iStream, writer, "UTF-8");
+        return writer.toString();
+    }
+
 }

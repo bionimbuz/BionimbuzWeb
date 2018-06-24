@@ -30,13 +30,12 @@ public class CredentialModel extends GenericModel  {
     private boolean enabled = true;
     @MinSize(3)
     @MaxSize(50)
-    @Required    
-    private String name;
     @Required
+    private String name;
     @FileFieldType("credentialDataType")
-    private EncryptedFileField credentialData;     
+    private EncryptedFileField credentialData;
     @NoBinding
-    private String credentialDataType;    
+    private String credentialDataType;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = true)
     private PluginModel plugin;
@@ -45,18 +44,18 @@ public class CredentialModel extends GenericModel  {
     @JoinColumn(nullable = false)
     private UserModel user;
     @ManyToMany
-    @JoinTable(name = "tb_group_credential", 
-        joinColumns = @JoinColumn(name = "id_credential", referencedColumnName = "id"), 
+    @JoinTable(name = "tb_group_credential",
+        joinColumns = @JoinColumn(name = "id_credential", referencedColumnName = "id"),
         inverseJoinColumns = @JoinColumn(name = "id_group", referencedColumnName = "id"))
     private List<GroupModel> listSharedGroups;
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Constructors
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public CredentialModel() {
         super();
     }
-    
+
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Getters and Setters
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
