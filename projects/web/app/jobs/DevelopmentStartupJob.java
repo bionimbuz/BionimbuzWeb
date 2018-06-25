@@ -39,12 +39,12 @@ public class DevelopmentStartupJob extends Job {
     @Override
     public void doJob() {
 
-        Fixtures.executeSQL(new File("db/init/1.sql"));
-
         // Check if Job has already ran
         if (UserModel.findByEmail("guest@bionimbuz.org.br") != null) {
             return;
         }
+
+        Fixtures.executeSQL(new File("db/init/1.sql"));
 
         final PluginModel plugin = this.insertGCEPlugin();
         this.insertGCEImages(plugin);
@@ -53,7 +53,7 @@ public class DevelopmentStartupJob extends Job {
         this.insertLocalImages(pluginLocal);
 
         this.insertTestModels(10);
-//        this.insertTempPlugins(2);
+        //        this.insertTempPlugins(2);
 
         final UserModel userAdmin = UserModel.findByEmail("master@bionimbuz.org.br");
         final UserModel userNormal = this.insertTempUserNormal();
@@ -84,7 +84,7 @@ public class DevelopmentStartupJob extends Job {
     private void insertExecutor(final PluginModel... plugins) {
         final ExecutorModel executor = new ExecutorModel();
         final List<ImageModel> listImages = new ArrayList<>();
-        for (PluginModel plugin : plugins) {
+        for (final PluginModel plugin : plugins) {
             plugin.refresh();
             listImages.add(
                     plugin.getListImages().get(0));
@@ -125,13 +125,12 @@ public class DevelopmentStartupJob extends Job {
     }
 
     private void insertLocalImages(final PluginModel plugin) {
-        ImageModel image = new ImageModel();
+        final ImageModel image = new ImageModel();
         image.setName("linux-4.13.0-45-generic-amd64");
         image.setUrl("local-image-url");
         image.setPlugin(plugin);
         image.save();
     }
-
 
     //    private MenuModel insertMenu(
     //            final String name,
