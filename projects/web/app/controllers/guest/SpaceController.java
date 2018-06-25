@@ -53,11 +53,11 @@ public class SpaceController extends BaseAdminController {
             object.setPriceTableDate(storageRegionSelected.getPriceTable().getPriceTableDate());
             object.setCreationDate(new Date());
 
-            boolean spaceCreated = false;
+            boolean hasErrors = false;
             if(object.isAlocationAfterCreation()) {
-                spaceCreated = createSpace(object);
+                hasErrors = !createSpace(object);
             }
-            if(spaceCreated) {
+            if(!hasErrors) {
                 object._save();
             } else {
                 validation.addError(OBJECT_NAME, Messages.get("error.space.not.created"));

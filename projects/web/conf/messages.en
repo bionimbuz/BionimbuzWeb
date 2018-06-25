@@ -324,3 +324,9 @@ zoneSelected=Available Zones
 instanceTypeSelected=Available Instance Types
 storageRegionSelected=Available Regions
 download.file=Download File
+download.browser.support=\
+            *Some browsers do not support this direct download, \
+            even by the file size or the browser version. \
+            If that occurs, please access this page again with \
+            another browser, or download from space provider \
+            directly.

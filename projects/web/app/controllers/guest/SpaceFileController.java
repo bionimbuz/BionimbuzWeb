@@ -61,7 +61,7 @@ public class SpaceFileController extends BaseAdminController {
 
         private String url;
         private String method;
-        private String virtualName;
+        private String name;
         private Map<String, String> headers;
 
         public String getUrl() {
@@ -82,21 +82,21 @@ public class SpaceFileController extends BaseAdminController {
         public void setHeaders(Map<String, String> headers) {
             this.headers = headers;
         }
-        public String getVirtualName() {
-            return virtualName;
+        public final String getName() {
+            return name;
         }
-        public void setVirtualName(String virtualName) {
-            this.virtualName = virtualName;
+        public final void setName(String name) {
+            this.name = name;
         }
     }
 
-    public static void getFileLocationToDownload(final Long spaceId, final String virtualName) {
+    public static void getFileLocationToDownload(final Long fileId) {
 
         try {
-            SpaceModel space = SpaceModel.findById(spaceId);
-            if(space == null)
+            SpaceFileModel file = SpaceFileModel.findById(fileId);
+            if(file == null)
                 notFound(Messages.get(I18N.plugin_not_found));
-
+            SpaceModel space = file.getSpace();
             PluginModel plugin = space.getPlugin();
             StorageApi api = new StorageApi(plugin.getUrl());
 
@@ -112,7 +112,7 @@ public class SpaceFileController extends BaseAdminController {
                             credentialStr);
 
                     Body<PluginStorageFileDownloadModel> body =
-                            api.getDownloadUrl(space.getName(), virtualName);
+                            api.getDownloadUrl(space.getName(), file.getVirtualName());
                     PluginStorageFileDownloadModel content =
                             body.getContent();
 
@@ -121,12 +121,14 @@ public class SpaceFileController extends BaseAdminController {
 
                     res.setUrl(content.getUrl());
                     res.setMethod(content.getMethod());
-                    res.setVirtualName(virtualName);
+                    res.setName(file.getName());
 
                     Map<String, String> headers =
                             new HashMap<>();
-                    // TODO: treatment for other authentication types
-                    headers.put("Authorization", "Bearer " + token.getToken());
+                    if(plugin.getAuthType() == AuthenticationType.AUTH_BEARER_TOKEN) {
+                        headers.put("Authorization", "Bearer " + token.getToken());
+                    } else if(plugin.getAuthType() == AuthenticationType.AUTH_SUPER_USER) {
+                    }
                     res.setHeaders(headers);
 
                     break;
