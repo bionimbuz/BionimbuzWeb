@@ -78,15 +78,17 @@ public class DevelopmentStartupJob extends Job {
 
         this.insertLocalCredential(pluginLocal, userAdmin);
 
-        this.insertExecutor(plugin);
+        this.insertExecutor(plugin, pluginLocal);
     }
 
-    private void insertExecutor(final PluginModel plugin) {
+    private void insertExecutor(final PluginModel... plugins) {
         final ExecutorModel executor = new ExecutorModel();
         final List<ImageModel> listImages = new ArrayList<>();
-        plugin.refresh();
-        listImages.add(
-                plugin.getListImages().get(0));
+        for (PluginModel plugin : plugins) {
+            plugin.refresh();
+            listImages.add(
+                    plugin.getListImages().get(0));
+        }
         executor.setName("Apache");
         executor.setStartupScript("apt-get update && apt-get install -y apache2 && hostname > /var/www/index.html");
         executor.setFirewallTcpRules("80,8080");

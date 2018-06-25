@@ -1,11 +1,8 @@
 package common.utils;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.List;
-
-import org.apache.commons.io.IOUtils;
 
 import models.InstanceModel.CredentialUsagePolicy;
 import models.PluginModel;
@@ -58,13 +55,12 @@ public class UserCredentialsReader implements Iterable <String>{
 
         @Override
         public String next() {
-            StringWriter writer = new StringWriter();
             try {
-                IOUtils.copy(it.next().getCredentialData().get(), writer, "UTF-8");
+                return it.next().getCredentialData().getContentAsString();
             } catch (IOException e) {
                 e.printStackTrace();
+                return "";
             }
-            return writer.toString();
         }
     }
 }

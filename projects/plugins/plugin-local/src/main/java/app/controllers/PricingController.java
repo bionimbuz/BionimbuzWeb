@@ -30,7 +30,7 @@ public class PricingController extends AbstractPricingController{
 
         // Fake instance pricing
         final HashMap<String, Double> listRegionPricing = new HashMap<>();
-        listRegionPricing.put(SystemConstants.PLUGIN_ZONE, 0d);
+        listRegionPricing.put(SystemConstants.PLUGIN_REGION, 0d);
         InstanceTypePricing instancePricing =
                 new InstanceTypePricing(
                         InfoController.getHostName(),

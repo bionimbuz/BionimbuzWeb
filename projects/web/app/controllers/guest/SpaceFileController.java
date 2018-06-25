@@ -6,6 +6,7 @@ import java.util.Map;
 import app.client.StorageApi;
 import app.common.Authorization;
 import app.models.Body;
+import app.models.PluginInfoModel.AuthenticationType;
 import app.models.PluginStorageFileDownloadModel;
 import app.models.PluginStorageFileUploadModel;
 import app.models.security.TokenModel;
@@ -178,8 +179,10 @@ public class SpaceFileController extends BaseAdminController {
 
                     Map<String, String> headers =
                             new HashMap<>();
-                    // TODO: treatment for other authentication types
-                    headers.put("Authorization", "Bearer " + token.getToken());
+                    if(plugin.getAuthType() == AuthenticationType.AUTH_BEARER_TOKEN) {
+                        headers.put("Authorization", "Bearer " + token.getToken());
+                    } else if(plugin.getAuthType() == AuthenticationType.AUTH_SUPER_USER) {
+                    }
                     res.setHeaders(headers);
 
                     break;

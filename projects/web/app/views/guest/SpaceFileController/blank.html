@@ -147,17 +147,19 @@ $(function(){
     var uploadRequest = null;
     function uploadFile(uploadInfo, callBack){
 
-        var uploadFileInput = document.getElementById('uploadFileInput').files[0];
+        var uploadFileInput = new FormData($('.submitForm')[0]);
+        uploadFileInput.append('file', $('#uploadFileInput')[0].files[0]);
 
         uploadRequest = $.ajax({
             url: uploadInfo.url,
             type: uploadInfo.method,
             data: uploadFileInput,
+            contentType: false,
             processData: false,
             beforeSend: function (xhr) {
                 Object.entries(uploadInfo.headers).map(([key, value]) => {
                    xhr.setRequestHeader(key, value);
-                })
+                });
             },
             xhr: function() {
                 var jqXHR = null;
