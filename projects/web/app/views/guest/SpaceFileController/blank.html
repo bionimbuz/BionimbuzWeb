@@ -147,8 +147,7 @@ $(function(){
     var uploadRequest = null;
     function uploadFile(uploadInfo, callBack){
 
-        var uploadFileInput = new FormData($('.submitForm')[0]);
-        uploadFileInput.append('file', $('#uploadFileInput')[0].files[0]);
+        var uploadFileInput = document.getElementById('uploadFileInput').files[0];
 
         uploadRequest = $.ajax({
             url: uploadInfo.url,
@@ -171,8 +170,6 @@ $(function(){
                 //Upload progress
                 jqXHR.upload.addEventListener( "progress", updateProgress, false );
 
-                //Download progress
-                //jqXHR.addEventListener( "progress", updateProgress, false );
                 return jqXHR;
             },
         })

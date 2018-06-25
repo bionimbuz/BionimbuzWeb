@@ -1,6 +1,7 @@
 package app.controllers;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,16 +16,14 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import app.common.ControllerRoutes;
 import app.common.FileStorageService;
 import app.common.FileUtils;
 import app.common.SystemConstants;
-import app.common.UploadFileResponse;
 import app.models.Body;
 import app.models.PluginStorageFileDownloadModel;
 import app.models.PluginStorageFileUploadModel;
@@ -106,25 +105,19 @@ public class StorageController extends AbstractStorageController {
 
     @CrossOrigin
     @PostMapping(ControllerRoutes.SPACES_NAME_FILE_UPLOAD)
-    public UploadFileResponse uploadFile(
+    public ResponseEntity<Boolean> uploadFile(
             @PathVariable String name,
             @PathVariable String file_name,
-            @RequestParam("file") MultipartFile file) {
-
+            @RequestBody byte[] body) {
         try {
-            FileStorageService storage =
-                    new FileStorageService(getSpacePath(name));
-
-            String fileName = storage.storeFile(file, file_name);
-
-            return new UploadFileResponse(
-                    fileName,
-                    createDownloadUrl(name, fileName),
-                    file.getContentType(),
-                    file.getSize());
+            File file = new File(getSpacePath(name), file_name);
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                fos.write(body);
+            }
+            return ResponseEntity.ok(true);
         } catch (IOException e) {
             e.printStackTrace();
-            return null;
+            return ResponseEntity.ok(false);
         }
     }
 

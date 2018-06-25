@@ -31,7 +31,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import app.client.StorageApi;
 import app.common.FileUtils;
 import app.common.SystemConstants;
-import app.common.UploadFileResponse;
 import app.models.Body;
 import app.models.PluginStorageFileDownloadModel;
 import app.models.PluginStorageFileUploadModel;
@@ -128,12 +127,12 @@ public class StorageControllerTest {
         HttpEntity<LinkedMultiValueMap<String, Object>> entity =
                 new HttpEntity<LinkedMultiValueMap<String, Object>>(
                             map, headers);
-        ResponseEntity<UploadFileResponse> response = this.restTemplate
+        ResponseEntity<Boolean> response = this.restTemplate
                 .exchange(
                         content.getUrl(),
                         HttpMethod.valueOf(content.getMethod()),
                         entity,
-                        new ParameterizedTypeReference< UploadFileResponse >() {});
+                        new ParameterizedTypeReference< Boolean >() {});
 
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
