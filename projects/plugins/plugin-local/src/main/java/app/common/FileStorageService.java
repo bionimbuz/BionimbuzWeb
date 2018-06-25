@@ -9,7 +9,6 @@ import java.nio.file.StandardCopyOption;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 public class FileStorageService {
@@ -22,12 +21,9 @@ public class FileStorageService {
         Files.createDirectories(this.fileStorageLocation);
     }
 
-    public String storeFile(MultipartFile file) throws IOException {
-        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-        // Copy file to the target location (Replacing existing file with the same name)
+    public String storeFile(MultipartFile file, String fileName) throws IOException {
         Path targetLocation = this.fileStorageLocation.resolve(fileName);
         Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-
         return fileName;
     }
 

@@ -86,34 +86,40 @@ public class StorageController extends AbstractStorageController {
 
     private String createUploadUrl(final String space, final String fileName) {
         return ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/upload/")
-                .path(space+"/")
+                .path("/spaces/")
+                .path(space)
+                .path("/file/")
+                .path(fileName)
+                .path("/upload")
                 .toUriString();
     }
 
     private String createDownloadUrl(final String space, final String fileName) {
         return ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/download/")
-                .path(space+"/")
+                .path("/spaces/")
+                .path(space)
+                .path("/file/")
                 .path(fileName)
+                .path("/download")
                 .toUriString();
     }
 
     @CrossOrigin
-    @PostMapping(ControllerRoutes.UPLOAD_SPACE)
+    @PostMapping(ControllerRoutes.SPACES_NAME_FILE_UPLOAD)
     public UploadFileResponse uploadFile(
-            @PathVariable String space,
+            @PathVariable String name,
+            @PathVariable String file_name,
             @RequestParam("file") MultipartFile file) {
 
         try {
             FileStorageService storage =
-                    new FileStorageService(getSpacePath(space));
+                    new FileStorageService(getSpacePath(name));
 
-            String fileName = storage.storeFile(file);
+            String fileName = storage.storeFile(file, file_name);
 
             return new UploadFileResponse(
                     fileName,
-                    createDownloadUrl(space, fileName),
+                    createDownloadUrl(name, fileName),
                     file.getContentType(),
                     file.getSize());
         } catch (IOException e) {
@@ -123,16 +129,16 @@ public class StorageController extends AbstractStorageController {
     }
 
     @CrossOrigin
-    @GetMapping(ControllerRoutes.DOWNLOAD_SPACE_FILE)
+    @GetMapping(ControllerRoutes.SPACES_NAME_FILE_DOWNLOAD)
     public ResponseEntity<Resource> downloadFile(
-            @PathVariable String space,
-            @PathVariable String file,
+            @PathVariable String name,
+            @PathVariable String file_name,
             HttpServletRequest request) {
         try {
             FileStorageService storage;
-            storage = new FileStorageService(getSpacePath(space));
+            storage = new FileStorageService(getSpacePath(name));
             // Load file as Resource
-            Resource resource = storage.loadFileAsResource(file);
+            Resource resource = storage.loadFileAsResource(file_name);
 
             // Try to determine file's content type
             String contentType = request.getServletContext()
