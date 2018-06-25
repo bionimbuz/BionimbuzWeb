@@ -5,15 +5,15 @@
     margin-right: 0;
     margin-left: 0;
 }
-/* 
+/*
     Sometimes the sub menus get too large for the page and prevent the menu from scrolling, limiting functionality
-    A quick fix is to change .side-menu to 
+    A quick fix is to change .side-menu to
 
     -> position:absolute
-    
+
     and uncomment the code below.
-    You also need to uncomment 
-    
+    You also need to uncomment
+
     -> <div class="absolute-wrapper"> </div> in the html file
 
     you also need to tweek the animation. Just uncomment the code in that section
@@ -29,7 +29,7 @@
     background-color: #f8f8f8;
     border-right: 1px solid #e7e7e7;
 }
-*/        
+*/
 .side-menu {
     position: fixed;
     width: 300px;
@@ -118,6 +118,10 @@
 }
 .side-menu .brand-name-wrapper .navbar-brand {
     display: block;
+}
+.navbar-brand{
+    font-size: 27px;
+    font-weight: bold;
 }
 /* .side-menu #search {
     position: relative;
@@ -235,7 +239,7 @@
 }
 .side-menu-container > .navbar-nav {
     /* Add position:absolute for scrollable menu -> see top comment */
-    
+
     position: fixed;
     left: -300px;
     width: 300px;
@@ -350,12 +354,12 @@
 } */
 .navbar-header {
     /* this is probably redundant */
-    
+
     position: fixed;
     z-index: 3;
     background-color: #f8f8f8;
 }
-/* Dropdown tweek */    
+/* Dropdown tweek */
 .dropdown .panel-body .navbar-nav {
     margin: 0;
 }
