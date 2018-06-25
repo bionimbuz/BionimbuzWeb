@@ -26,7 +26,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.util.LinkedMultiValueMap;
 
 import app.client.StorageApi;
 import app.common.FileUtils;
@@ -117,21 +116,15 @@ public class StorageControllerTest {
         PluginStorageFileUploadModel content =
                 body.getContent();
 
-        LinkedMultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
-
         File file = new File(TEST_FILE_PATH);
-        map.add("file", new FileSystemResource(file));
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-        HttpEntity<LinkedMultiValueMap<String, Object>> entity =
-                new HttpEntity<LinkedMultiValueMap<String, Object>>(
-                            map, headers);
-        ResponseEntity<Boolean> response = this.restTemplate
-                .exchange(
+        HttpEntity<FileSystemResource> requestEntity =
+                    new HttpEntity<>(new FileSystemResource(file));
+        ResponseEntity<Boolean> response =
+                restTemplate.exchange(
                         content.getUrl(),
                         HttpMethod.valueOf(content.getMethod()),
-                        entity,
+                        requestEntity,
                         new ParameterizedTypeReference< Boolean >() {});
 
         assertThat(response).isNotNull();
