@@ -1,8 +1,9 @@
 body {
     background-color: #444;
     background-image: url(../images/background.jpg);
-    background-repeat: repeat;
+    background-repeat: no-repeat;
     background-size: cover;
+    background-position: center center;
 }
 
 .form-signin input[type="text"] {
