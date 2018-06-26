@@ -3,35 +3,33 @@
 #{set title:messages.get('crud.list.title', type.name) /}
 
 <div class="row crud-title">
-    <div class="col-xs-12 col-sm-12 col-md-12">  
-        <h1> &{'crud.list.title', type.name} </h1>
-        <pre> &{'crud.list.title.desc', type.name+'.desc'} </pre>
-    </div>
+    <h1 class="col-xs-12"> &{'crud.list.title', type.name} </h1>
+    <pre class="col-xs-12"> &{'crud.list.title.desc', type.name+'.desc'} </pre>
 </div>
 
 <br>
 
 <div class=row>
 
-    <div class="col-xs-12 col-sm-12 col-md-8 margin-bottom">
+    <div class="col-xs-12 col-sm-12 col-md-7 margin-bottom no-bootstrap-padding">
         #{form action:@list().remove('page'), method:'GET', id:'searchForm', class: 'submitForm'}
             #{if _fields}
                 <input type="hidden" name="searchFields" value="${_fields.toString().substring(1, _fields.toString().length()-1).replace(',', '')}" />
             #{/if}
-            <input type="text" class="form-control btn-buscar" placeholder="&{'crud.search'}" name="search" value="${params.search?.escape()?.raw()}" /> 
+            <input type="text" class="form-control btn-buscar" placeholder="&{'crud.search'}" name="search" value="${params.search?.escape()?.raw()}" />
         #{/form}
         #{if totalCount > 0 && params.search}
             <div class="list-total-count">
                 (<a href="@{list()}">&{'crud.list.totalSize', totalCount}</a>)
             </div>
-        #{/if} 
+        #{/if}
     </div>
-    
-    <div class="row col-xs-12 col-sm-12 col-md-4">    
-        <button class="btn btn-primary margin-bottom col-xs-12 col-sm-12 col-md-4" type="button" onclick="javascript: block('&{'crud.wait'}');">&{'crud.search'}</button>    
-        <button id="btnForceSync" class="btn btn-primary margin-bottom col-xs-12 col-sm-12 col-md-7 pull-right" type="button">&{'price.table.force.sync'}</button>  
+
+    <div class="row col-xs-12 col-sm-12 col-md-4 pull-right no-bootstrap-padding">
+        <button class="btn btn-primary margin-bottom col-xs-12 col-sm-12 col-md-4" type="button" onclick="javascript: block('&{'crud.wait'}');">&{'crud.search'}</button>
+        <button id="btnForceSync" class="btn btn-primary margin-bottom col-xs-12 col-sm-12 col-md-7 pull-right" type="button">&{'price.table.force.sync'}</button>
     </div>
-    
+
 </div>
 
 <br>
@@ -41,7 +39,7 @@
     #{crud.custom 'plugin'}
         ${object.plugin}
     #{/crud.custom}
-    
+
     #{crud.custom 'syncMessage'}
         #{if object.syncStatus.toString() != 'OK'}
             ${object.syncMessage}
@@ -55,25 +53,25 @@
 
 #{set 'moreScripts' }
 <script type="text/javascript">
-$(function(){   
-   
+$(function(){
+
     $('#btnForceSync').click(function(){
-        
-        $('#pleaseWaitDialog').modal(); 
+
+        $('#pleaseWaitDialog').modal();
         var forceSync = #{jsRoute @forceSync() /};
-        
+
         $.ajax({
             url: forceSync.url(),
             type: forceSync.method
            })
-        .done(function(data) { 
-            flashSuccess("&{'price.table.force.success'}");    
+        .done(function(data) {
+            flashSuccess("&{'price.table.force.success'}");
         })
         .fail(function(data) {
             flashError("&{'price.table.force.error'}");
         })
         .always(function() {
-            $('#pleaseWaitDialog').modal('hide');     
+            $('#pleaseWaitDialog').modal('hide');
         });
 
     });

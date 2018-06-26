@@ -3,36 +3,34 @@
 #{set title:messages.get('crud.blank.title', type.modelName) /}
 
 <div class="row crud-title">
-    <div class="col-xs-12 col-sm-12 col-md-12">  
-        <h1> &{'crud.blank.title', type.modelName} </h1>
-        <pre> &{'crud.blank.title.desc', type.modelName} </pre>
-    </div>
+    <h1 class="col-xs-12"> &{'crud.blank.title', type.modelName} </h1>
+    <pre class="col-xs-12"> &{'crud.blank.title.desc', type.modelName} </pre>
 </div>
 
 <br>
 
-<div class="row col-lg-12" >
+<div class="row" >
 #{form action:@create(), enctype:'multipart/form-data', class: 'submitForm'}
-    #{crud.form}    
-        #{crud.custom 'url'}        
-            #{field 'object.url'} 
-                <div class="form-group row ${field.errorClass ? 'has-error' : ''}">                
+    #{crud.form}
+        #{crud.custom 'url'}
+            #{field 'object.url'}
+                <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
                     <label class="col-xs-12 no-bootstrap-padding" for="${field.id}">&{field.name}</label>
                     <div class="row no-bootstrap-padding col-xs-12 col-sm-12 col-md-9">
                         <input class="form-control margin-bottom no-bootstrap-padding col-xs-12" id="${field.id}" name="${field.name}" value="${field.value}"  type="text" />
                         <span class="help-block">*&{'plugin.search.required'}</span>
                         #{ifError field.name}
                             <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
-                        #{/ifError} 
-                        
+                        #{/ifError}
+
                     </div>
-                    <button id="searchPluginButton" class="btn btn-primary pull-right margin-bottom no-bootstrap-padding col-xs-12 col-sm-12 col-md-2" 
-                                type="button">&{'crud.search'}</button>    
-                </div>                
+                    <button id="searchPluginButton" class="btn btn-primary pull-right margin-bottom no-bootstrap-padding col-xs-12 col-sm-12 col-md-2"
+                                type="button">&{'crud.search'}</button>
+                </div>
             #{/field}
         #{/crud.custom}
     #{/crud.form}
-    
+
     <div class="btn-row text-center">
         <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_save">&{'crud.save'}</button>
         <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_saveAndContinue">&{'crud.saveAndContinue'}</button>
@@ -44,8 +42,8 @@
 
 #{set 'moreScripts' }
 <script type="text/javascript">
-$(function(){   
-   
+$(function(){
+
     function clearFields() {
         $('#object_name').val('');
         $('#object_pluginVersion').val('');
@@ -54,30 +52,30 @@ $(function(){
         $('#object_writeScope').val('');
         $('#object_readScope').val('');
     }
-    
+
     $('#object_name').prop('readonly', true);
     $('#object_cloudType').prop('readonly', true);
     $('#object_pluginVersion').prop('readonly', true);
     $('#object_authType').prop('tabindex', -1);
     $('#object_authType').attr('readonly', 'readonly');
-    
+
     $('#object_url').on('input',function(e){
         clearFields();
     });
-    
+
     $('#searchPluginButton').click(function(){
-        
-        $('#pleaseWaitDialog').modal(); 
+
+        $('#pleaseWaitDialog').modal();
         urlValue = $('#object_url').val();
         var searchPlugin = #{jsRoute @searchPlugin() /};
-        
+
         $.ajax({
             url: searchPlugin.url(),
             type: searchPlugin.method,
             data:{ url: urlValue}
            })
-        .done(function(data) { 
-            flashSuccess("&{'plugin.found'}");    
+        .done(function(data) {
+            flashSuccess("&{'plugin.found'}");
             $('#object_name').val(data['name']);
             $('#object_pluginVersion').val(data['pluginVersion']);
             $('#object_cloudType').val(data['cloudType']);
@@ -90,7 +88,7 @@ $(function(){
             flashError(data.responseText);
         })
         .always(function() {
-            $('#pleaseWaitDialog').modal('hide');     
+            $('#pleaseWaitDialog').modal('hide');
         });
 
     });

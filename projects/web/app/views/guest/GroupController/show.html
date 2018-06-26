@@ -6,47 +6,40 @@
 #{set isJoined: userGroup.joined /}
 
 <div class="row crud-title">
-    <div class="">  
-        <div class="col-xs-12 col-sm-12 col-md-12">
-            <div class="row">
-                <h1> &{'crud.show.title', type.modelName} </h1>
-            </div> 
-                        
-            #{if !isJoined}  
-                <pre class="col-xs-12 col-sm-12 col-md-12"> &{'crud.show.title.desc', type.modelName} </pre>  
-            #{/if}
-            #{elseif isOwner}                
-                <pre class="col-xs-12 col-sm-12 col-md-6"> &{'crud.show.title.desc', type.modelName} </pre>  
-                <div class="col-xs-12 col-sm-12 col-md-1" >
-                </div>
-                <div class="col-xs-12 col-sm-12 col-md-5" style="padding: 0px;"> 
-                     <input data-toggle="modal" data-target="#leaveModal" 
-                        class="btn btn-warning margin-bottom col-xs-12 col-sm-12 col-md-5" 
-                        type="button" value="&{'group.leave'}" />   
-                        
-                     <input data-toggle="modal" data-target="#deleteModal" 
-                        class="btn btn-danger margin-bottom col-xs-12 col-sm-12 col-md-6 pull-right" 
-                        type="button" value="&{'crud.delete', type.modelName}" />
-                </div>                    
-            #{/elseif}
-            #{else}
-                <pre class="col-xs-12 col-sm-12 col-md-9" style="margin-right: 20px;"> &{'crud.show.title.desc', type.modelName} </pre>  
-                <input data-toggle="modal" data-target="#leaveModal" 
-                        class="col-xs-12 col-sm-12 col-md-2 btn btn-warning pull-right" 
-                        type="button" value="&{'group.leave'}" />   
-            #{/else}
+    <h1 class="col-xs-12"> &{'crud.show.title', type.modelName} </h1>
+
+    #{if !isJoined}
+        <pre class="col-xs-12 col-sm-12 col-md-12"> &{'crud.show.title.desc', type.modelName} </pre>
+    #{/if}
+    #{elseif isOwner}
+        <pre class="col-xs-12 col-sm-12 col-md-6"> &{'crud.show.title.desc', type.modelName} </pre>
+
+        <div class="col-xs-12 col-sm-12 col-md-5 pull-right" style="padding: 0px;">
+             <input data-toggle="modal" data-target="#leaveModal"
+                class="btn btn-warning margin-bottom col-xs-12 col-sm-12 col-md-5"
+                type="button" value="&{'group.leave'}" />
+
+             <input data-toggle="modal" data-target="#deleteModal"
+                class="btn btn-danger margin-bottom col-xs-12 col-sm-12 col-md-6 pull-right"
+                type="button" value="&{'crud.delete', type.modelName}" />
         </div>
-    </div>
+    #{/elseif}
+    #{else}
+        <pre class="col-xs-12 col-sm-12 col-md-9" style="margin-right: 20px;"> &{'crud.show.title.desc', type.modelName} </pre>
+        <input data-toggle="modal" data-target="#leaveModal"
+                class="col-xs-12 col-sm-12 col-md-2 btn btn-warning pull-right"
+                type="button" value="&{'group.leave'}" />
+    #{/else}
 </div>
 
 <br>
 
-#{if !isJoined}      
-<div class="row col-lg-12" >
-&{'group.join.message'} 
+#{if !isJoined}
+<div class="row" >
+&{'group.join.message'}
 
-#{form action:@join(object._key()), enctype:'multipart/form-data', class: 'submitForm'}    
-    <div class="btn-row text-center">        
+#{form action:@join(object._key()), enctype:'multipart/form-data', class: 'submitForm'}
+    <div class="btn-row text-center">
         <input class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_leave" value="&{'crud.no'}" />
         <input class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_join" value="&{'crud.yes'}" />
         <a href="@{guest.UserGroupController.list()}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>
@@ -57,53 +50,53 @@
 #{/if}
 #{else}
 
-<div class="row col-lg-12" >
+<div class="row" >
 #{form action:@save(object._key()), enctype:'multipart/form-data', class: 'submitForm'}
 
-    #{crud.form} 
-        
-        #{crud.custom 'name'}      
-        
+    #{crud.form}
+
+        #{crud.custom 'name'}
+
             #{field 'object.name'}
                 <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
                     <label for="${field.id}">&{field.name}</label>
                     <input id="${field.id}" class="form-control" ${isOwner ? '' : 'readonly'.raw()} type="text" name="${field.name}" value="${field.value}" />
                     #{ifError field.name}
                         <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
-                    #{/ifError} 
+                    #{/ifError}
                 </div>
-            #{/field}      
-            
+            #{/field}
+
             #{if isOwner}
                 #{field 'object.strUsers'}
                     <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
                         <label for="${field.id}">&{field.name}</label>
                         <input id="${field.id}" class="form-control"  type="text" name="${field.name}" value="${field.value}" />
-                        <span class="help-block">*&{'group.separate.users.email'}</span>                        
+                        <span class="help-block">*&{'group.separate.users.email'}</span>
                         #{ifError field.name}
                             <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
-                        #{/ifError} 
+                        #{/ifError}
                     </div>
-                #{/field}     
-            #{/if}             
-            
+                #{/field}
+            #{/if}
+
             <div class=row>
                 <div id="crudListTable">
-                    <div class="table-responsive"> 
+                    <div class="table-responsive">
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
                                 #{if isOwner}
                                     <th class="checkbox-th">
-                                        &{'group.mark.removal'}     
+                                        &{'group.mark.removal'}
                                     </th>
                                 #{/if}
-                                    <th class="checkbox-th">                                        
-                                    #{if isOwner}                                        
+                                    <th class="checkbox-th">
+                                    #{if isOwner}
                                         &{'group.mark.owner'}
                                     #{/if}
                                     #{else}
-                                        &{'object.owner'}                                        
+                                        &{'object.owner'}
                                     #{/else}
                                     </th>
                                     <th class="checkbox-th">
@@ -114,31 +107,31 @@
                                     </th>
                                 </tr>
                             </thead>
-                            
+
                             #{if !isEmptyGroup}
-                            %{ object.listUserGroups.eachWithIndex() { item, k -> }%                           
-                            
+                            %{ object.listUserGroups.eachWithIndex() { item, k -> }%
+
                                 #{if item.user.id != userGroup.user.id || item.group.id != userGroup.group.id}
                                 <tr>
-                                
+
                                 #{if isOwner}
-                                    <td style="text-align: center;">                                             
-                                        <input type="checkbox" name="object.usersMarkedForExclusion" class="icheck" value="${item.user.id}" />     
+                                    <td style="text-align: center;">
+                                        <input type="checkbox" name="object.usersMarkedForExclusion" class="icheck" value="${item.user.id}" />
                                     </td>
                                 #{/if}
-                                    <td style="text-align: center;">                                             
-                                        <input type="checkbox" name="object.usersMarkedForOwner" class="icheck" value="${item.user.id}" ${item.owner ? 'checked="true" '.raw() : ''} 
-                                            ${isOwner ? '' : 'disabled'.raw()} />     
+                                    <td style="text-align: center;">
+                                        <input type="checkbox" name="object.usersMarkedForOwner" class="icheck" value="${item.user.id}" ${item.owner ? 'checked="true" '.raw() : ''}
+                                            ${isOwner ? '' : 'disabled'.raw()} />
                                     </td>
-                                    <td style="text-align: center;">                                             
-                                        <input type="checkbox" class="icheck" ${item.joined ? 'checked="true" '.raw() : ''} disabled />     
+                                    <td style="text-align: center;">
+                                        <input type="checkbox" class="icheck" ${item.joined ? 'checked="true" '.raw() : ''} disabled />
                                     </td>
-                                    <td>        
+                                    <td>
                                     #{if item.user.name != null && !item.user.name.isEmpty()}
                                         ${item.user.name} (${item.user.email})
-                                    #{/if}    
+                                    #{/if}
                                     #{else}
-                                        ${item.user.email}     
+                                        ${item.user.email}
                                     #{/else}
                                     </td>
                                 </tr>
@@ -147,31 +140,31 @@
                             #{/if}
                             #{else}
                                 <tr>
-                                    <td colspan="4" style="text-align: center;">    
-                                        &{'list.no.results'}                                         
-                                    </td>                                    
+                                    <td colspan="4" style="text-align: center;">
+                                        &{'list.no.results'}
+                                    </td>
                                 </tr>
                             #{/else}
                         </table>
                     </div>
-                </div>   
-            </div>                        
-            
-        #{/crud.custom}           
-    
+                </div>
+            </div>
+
+        #{/crud.custom}
+
     #{/crud.form}
-    
+
     <div class="btn-row text-center">
-        #{if isOwner} 
+        #{if isOwner}
         <input class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_save" value="&{'crud.save', type.modelName}" />
         <input class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_saveAndContinue" value="&{'crud.saveAndContinue', type.modelName}" />
         #{/if}
         <a href="@{guest.UserGroupController.list()}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>
     </div>
-    
+
 #{/form}
 </div>
-          
+
 #{/else}
 
 <div id="deleteModal" class="modal fade">
@@ -186,7 +179,7 @@
                 <p class="text-warning"><small>&{'group.modal.confirm.delete.desc'}</small></p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">&{'modal.button.cancel'}</button>                
+                <button type="button" class="btn btn-default" data-dismiss="modal">&{'modal.button.cancel'}</button>
                 #{form @delete(object._key()), style: 'display:inline;', class: 'submitForm'}
                     <button type="submit" class="btn btn-primary">&{'modal.button.confirm'}</button>
                 #{/form}
@@ -207,7 +200,7 @@
                 <p class="text-warning"><small>&{'group.modal.confirm.leave.desc'}</small></p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">&{'modal.button.cancel'}</button>                
+                <button type="button" class="btn btn-default" data-dismiss="modal">&{'modal.button.cancel'}</button>
                 #{form @leave(object._key()), style: 'display:inline;', class: 'submitForm'}
                     <button type="submit" class="btn btn-primary">&{'modal.button.confirm'}</button>
                 #{/form}

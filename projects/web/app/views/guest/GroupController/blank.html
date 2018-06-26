@@ -3,44 +3,42 @@
 #{set title:messages.get('crud.blank.title', type.modelName) /}
 
 <div class="row crud-title">
-    <div class="col-xs-12 col-sm-12 col-md-12">  
-        <h1> &{'crud.blank.title', type.modelName} </h1>
-        <pre> &{'crud.blank.title.desc', type.modelName} </pre>
-    </div>
+    <h1 class="col-xs-12"> &{'crud.blank.title', type.modelName} </h1>
+    <pre class="col-xs-12"> &{'crud.blank.title.desc', type.modelName} </pre>
 </div>
 
 <br>
 
-<div class="row col-lg-12" >
+<div class="row" >
 #{form action:@create(), enctype:'multipart/form-data', class: 'submitForm'}
 
     #{crud.form }
-        #{crud.custom 'name'}      
-        
+        #{crud.custom 'name'}
+
             #{field 'object.name'}
                 <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
                     <label for="${field.id}">&{field.name}</label>
                     <input id="${field.id}" class="form-control"  type="text" name="${field.name}" value="${field.value}" />
                     #{ifError field.name}
                         <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
-                    #{/ifError} 
+                    #{/ifError}
                 </div>
-            #{/field}       
-                  
+            #{/field}
+
             #{field 'object.strUsers'}
                 <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
                     <label for="${field.id}">&{field.name}</label>
                     <input id="${field.id}" class="form-control"  type="text" name="${field.name}" value="${field.value}" />
-                    <span class="help-block">*&{'group.separate.users.email'}</span>                        
+                    <span class="help-block">*&{'group.separate.users.email'}</span>
                     #{ifError field.name}
                         <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
-                    #{/ifError} 
+                    #{/ifError}
                 </div>
             #{/field}
-            
+
         #{/crud.custom}
     #{/crud.form}
-    
+
     <div class="btn-row text-center">
         <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_save">&{'crud.save'}</button>
         <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_saveAndAddAnother">&{'crud.saveAndAddAnother'}</button>

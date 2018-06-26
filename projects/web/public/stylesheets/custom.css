@@ -158,8 +158,12 @@ table.has-error th {
     padding-left: 0.7em;
 }
 
+h1{
+    padding: 0px !important;
+}
+
 pre {
-     padding: 7px;
+     padding: 7px 0px 7px 0px !important;
 }
 
 .no-bootstrap-padding {
@@ -178,12 +182,12 @@ select[readonly] {
 }
 
 td {
-  word-wrap: break-word;  
+  word-wrap: break-word;
 }
 
 th {
-  white-space: normal !important; 
-  word-wrap: break-word;  
+  white-space: normal !important;
+  word-wrap: break-word;
 }
 
 .ms-list {
@@ -191,7 +195,7 @@ th {
 }
 
 .ms-container {
-    width: auto !important;    
+    width: auto !important;
 }
 
 .has-error .ms-list {
