@@ -36,6 +36,8 @@ public class ApplicationModel extends GenericModel {
     @MaxSize(500)
     @MinSize(3)
     private String startupScript;
+    @MaxSize(10)
+    private String scriptExtension;
     @CheckWith(NetworkPortsCheck.class)
     private String firewallUdpRules;
     @CheckWith(NetworkPortsCheck.class)
@@ -85,6 +87,12 @@ public class ApplicationModel extends GenericModel {
     }
     public void setFirewallTcpRules(String firewallTcpRules) {
         this.firewallTcpRules = firewallTcpRules;
+    }    
+    public String getScriptExtension() {
+        return scriptExtension;
+    }
+    public void setScriptExtension(String scriptExtension) {
+        this.scriptExtension = scriptExtension;
     }
     
     @Override

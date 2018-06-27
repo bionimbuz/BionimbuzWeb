@@ -133,6 +133,7 @@ public class InstanceController extends BaseAdminController {
         res.setType(instance.getTypeName());
         res.setZone(instance.getZoneName());
         res.setStartupScript(instance.getExecutor().getStartupScript());
+        res.setScriptExtension(instance.getExecutor().getScriptExtension());
 
         return res;
     }

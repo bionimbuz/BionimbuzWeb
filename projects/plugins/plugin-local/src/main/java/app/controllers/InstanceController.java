@@ -1,6 +1,12 @@
 package app.controllers;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import app.common.FileUtils;
 import app.common.GlobalConstants;
+import app.common.OsUtil;
 import app.common.SystemConstants;
 import app.models.Body;
 import app.models.PluginInstanceModel;
@@ -20,6 +27,7 @@ import app.models.PluginInstanceModel;
 @RestController
 public class InstanceController extends AbstractInstanceController {
 
+    private static final String STARTUP_SCRIPT_NAME = "startup_script";
     private static Integer instanceIdSequence = 0;
     private static Map<Integer, InstanceProcess> processes = new HashMap<>();
 
@@ -51,19 +59,39 @@ public class InstanceController extends AbstractInstanceController {
             String instancePath =
                     createInstanceDir(instanceName);
 
+            String startupScript = 
+                    generateStartupScript(
+                            instancePath,
+                            pluginInstanceModel.getScriptExtension(),
+                            pluginInstanceModel.getStartupScript());
+            
             Process process = Runtime.getRuntime().exec(
-                    pluginInstanceModel.getStartupScript(),
+                    startupScript,
                     null,
                     new File(instancePath));
 
             InstanceProcess instanceProcess =
-                    new InstanceProcess(process, pluginInstanceModel);
+                    new InstanceProcess(instancePath, process, pluginInstanceModel);
 
             insertInstanceProcess(newId, instanceProcess);
         }
 
         return ResponseEntity.ok(
                 Body.create(listModel));
+    }   
+    
+    protected String generateStartupScript(
+            final String path, 
+            String extension, 
+            final String content) throws IOException { 
+        if(extension == null || extension.trim().isEmpty())
+            extension =  OsUtil.getDefaultScriptExtension();
+        File scriptFile = new File(path, STARTUP_SCRIPT_NAME + "." + extension);
+        String absolutePath = scriptFile.getAbsolutePath();
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(scriptFile))) {      
+            writer.write(content);     
+        }
+        return absolutePath;
     }
 
     @Override
@@ -134,16 +162,24 @@ public class InstanceController extends AbstractInstanceController {
                 Body.create(res));
     }
 
-    private static class InstanceProcess{
+    private static class InstanceProcess implements Runnable{
 
+        private String workingDirPath;
         private Process process;
         private PluginInstanceModel pluginInstance;
 
         public InstanceProcess(
+                String workingDirPath,
                 Process process,
                 PluginInstanceModel pluginInstance) {
+            this.workingDirPath = workingDirPath;
             this.process = process;
-            this.pluginInstance = pluginInstance;
+            this.pluginInstance = pluginInstance;   
+            startWritingStdoutFile();
+        }
+        
+        private void startWritingStdoutFile() {
+            new Thread(this).start();;
         }
 
         public Process getProcess() {
@@ -151,6 +187,28 @@ public class InstanceController extends AbstractInstanceController {
         }
         public PluginInstanceModel getPluginInstance() {
             return pluginInstance;
+        }
+
+        @Override
+        public void run() {
+            File stdoutFile = new File(workingDirPath, "stdout.txt");
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(stdoutFile))) {                
+                InputStream stdout = process.getInputStream ();
+                BufferedReader reader = new BufferedReader (new InputStreamReader(stdout));
+                String line = "";
+                while ((line = reader.readLine ()) != null) {     
+                    writer.write(line);  
+                    writer.newLine();
+                    writer.flush();
+                }
+                writer.write("#############################################################");
+                writer.newLine();
+                writer.write("END OF EXECUTION");
+                writer.newLine();
+                writer.write("#############################################################");
+            } catch (IOException e) {                
+                e.printStackTrace();
+            }
         }
     }
 

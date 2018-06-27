@@ -116,6 +116,11 @@ public class InstanceControllerTest {
             PluginInstanceModel instance = new PluginInstanceModel();
             instance.setImageUrl("");
             instance.setStartupScript("touch file_1 \n\r touch file_2 \r\n");
+            //instance.setStartupScript(""
+            //        + "for /l %%x in (1, 1, 100) do (\n" + 
+            //        "   echo %%x\n" + 
+            //        "   timeout /t 2\n" + 
+            //        ")");
             instance.setType(SystemConstants.CLOUD_COMPUTE_TYPE);
             instance.setRegion(SystemConstants.PLUGIN_REGION);
             instance.setZone(SystemConstants.PLUGIN_ZONE);

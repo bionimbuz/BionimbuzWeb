@@ -18,6 +18,7 @@ public class PluginInstanceModel extends Body {
     private String internalIp = "";
     private String externalIp = "";
     private String startupScript = "";
+    private String scriptExtension = "";
     private String region = "";
     private String zone = "";
     private String imageUrl = "";
@@ -119,6 +120,12 @@ public class PluginInstanceModel extends Body {
     public void setStartupScript(String startupScript) {
         this.startupScript = startupScript;
     }
+    public String getScriptExtension() {
+        return scriptExtension;
+    }
+    public void setScriptExtension(String scriptExtension) {
+        this.scriptExtension = scriptExtension;
+    }    
     public String getZone() {
         return zone;
     }

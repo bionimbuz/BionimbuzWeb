@@ -247,6 +247,8 @@ firewall.separate.ports=Separate values with commas (,) or semicolons (;), ex.: 
 CoordinatorModel=Coordinator
 object.startupScript=Startup Script
 object.listImages=Images
+object.scriptExtension=Script Extension
+obs.scriptExtension=In some cloud plugins, this extension (i.e. *.BAT, *.SH, etc.) is not necessary
 
 # ExecutorModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

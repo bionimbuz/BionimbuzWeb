@@ -16,6 +16,19 @@
 
         #{crud.custom 'firewallTcpRules'}
         #{/crud.custom}
+        
+        #{crud.custom 'scriptExtension'}        
+            #{field 'object.scriptExtension'}
+                <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                    <label for="${field.id}">&{field.name}</label>
+                    <input id="${field.id}" class="form-control"  type="text" name="${field.name}" value="${field.value}" />                    
+                    <span id="helpBlock2" class="help-block">${'obs.scriptExtension'}</span>
+                    #{ifError field.name}
+                        <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                    #{/ifError} 
+                </div>
+            #{/field}
+        #{/crud.custom}
 
         #{crud.custom 'firewallUdpRules'}
             #{field 'object.firewallTcpRules'}
