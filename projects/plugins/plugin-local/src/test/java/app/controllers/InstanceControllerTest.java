@@ -31,6 +31,7 @@ public class InstanceControllerTest {
     private static final Integer STARTUP_SCRIPT_APACHE_PORT = 80;
     private static final Integer WAIT_MS_TO_START_INSTANCE = 60 * 1000;
     private static final Integer LENGTH_CREATION = 2;
+    private static final String INSTANCE_STARTUP_SCRIPT = "apt-get update && apt-get install -y apache2 && hostname > /var/www/index.html";
 
     @Autowired
     private InstanceController controller;
@@ -115,12 +116,7 @@ public class InstanceControllerTest {
         for(int i=0;i<length;i++) {
             PluginInstanceModel instance = new PluginInstanceModel();
             instance.setImageUrl("");
-            instance.setStartupScript("touch file_1 \n\r touch file_2 \r\n");
-            //instance.setStartupScript(""
-            //        + "for /l %%x in (1, 1, 100) do (\n" + 
-            //        "   echo %%x\n" + 
-            //        "   timeout /t 2\n" + 
-            //        ")");
+            instance.setStartupScript(INSTANCE_STARTUP_SCRIPT);
             instance.setType(SystemConstants.CLOUD_COMPUTE_TYPE);
             instance.setRegion(SystemConstants.PLUGIN_REGION);
             instance.setZone(SystemConstants.PLUGIN_ZONE);

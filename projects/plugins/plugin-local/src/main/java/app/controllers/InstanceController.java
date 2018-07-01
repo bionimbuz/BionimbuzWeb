@@ -8,10 +8,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.nio.file.Files;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -59,12 +63,12 @@ public class InstanceController extends AbstractInstanceController {
             String instancePath =
                     createInstanceDir(instanceName);
 
-            String startupScript = 
+            String startupScript =
                     generateStartupScript(
                             instancePath,
                             pluginInstanceModel.getScriptExtension(),
                             pluginInstanceModel.getStartupScript());
-            
+
             Process process = Runtime.getRuntime().exec(
                     startupScript,
                     null,
@@ -78,20 +82,40 @@ public class InstanceController extends AbstractInstanceController {
 
         return ResponseEntity.ok(
                 Body.create(listModel));
-    }   
-    
+    }
+
     protected String generateStartupScript(
-            final String path, 
-            String extension, 
-            final String content) throws IOException { 
+            final String path,
+            String extension,
+            final String content) throws IOException {
         if(extension == null || extension.trim().isEmpty())
             extension =  OsUtil.getDefaultScriptExtension();
         File scriptFile = new File(path, STARTUP_SCRIPT_NAME + "." + extension);
         String absolutePath = scriptFile.getAbsolutePath();
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(scriptFile))) {      
-            writer.write(content);     
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(scriptFile))) {
+            writer.write(content);
+        }
+        if(scriptFile.exists()) {
+            setPermission(scriptFile);
         }
         return absolutePath;
+    }
+
+    private void setPermission(File file) throws IOException{
+        Set<PosixFilePermission> perms = new HashSet<>();
+        perms.add(PosixFilePermission.OWNER_READ);
+        perms.add(PosixFilePermission.OWNER_WRITE);
+        perms.add(PosixFilePermission.OWNER_EXECUTE);
+
+        perms.add(PosixFilePermission.OTHERS_READ);
+        perms.add(PosixFilePermission.OTHERS_WRITE);
+        perms.add(PosixFilePermission.OTHERS_EXECUTE);
+
+        perms.add(PosixFilePermission.GROUP_READ);
+        perms.add(PosixFilePermission.GROUP_WRITE);
+        perms.add(PosixFilePermission.GROUP_EXECUTE);
+
+        Files.setPosixFilePermissions(file.toPath(), perms);
     }
 
     @Override
@@ -174,10 +198,10 @@ public class InstanceController extends AbstractInstanceController {
                 PluginInstanceModel pluginInstance) {
             this.workingDirPath = workingDirPath;
             this.process = process;
-            this.pluginInstance = pluginInstance;   
+            this.pluginInstance = pluginInstance;
             startWritingStdoutFile();
         }
-        
+
         private void startWritingStdoutFile() {
             new Thread(this).start();;
         }
@@ -192,12 +216,12 @@ public class InstanceController extends AbstractInstanceController {
         @Override
         public void run() {
             File stdoutFile = new File(workingDirPath, "stdout.txt");
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(stdoutFile))) {                
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(stdoutFile))) {
                 InputStream stdout = process.getInputStream ();
                 BufferedReader reader = new BufferedReader (new InputStreamReader(stdout));
                 String line = "";
-                while ((line = reader.readLine ()) != null) {     
-                    writer.write(line);  
+                while ((line = reader.readLine ()) != null) {
+                    writer.write(line);
                     writer.newLine();
                     writer.flush();
                 }
@@ -206,7 +230,7 @@ public class InstanceController extends AbstractInstanceController {
                 writer.write("END OF EXECUTION");
                 writer.newLine();
                 writer.write("#############################################################");
-            } catch (IOException e) {                
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
