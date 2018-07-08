@@ -2,6 +2,7 @@
 /.project
 /.settings/
 /eclipse/
+/nbproject/
 /data/
 /tmp/
 /modules

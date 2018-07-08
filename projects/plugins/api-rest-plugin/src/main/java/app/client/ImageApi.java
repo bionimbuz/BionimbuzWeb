@@ -16,14 +16,14 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Path;
 
-public class ImageApi extends PluginApi<HttpMethods> {  
+public class ImageApi extends ClientApiVersioned<HttpMethods> {
 
     public ImageApi (final String url) {
         super(url, HttpMethods.class);
     }
-    
+
     public Body<List<PluginImageModel>> listImages (
-            final String token, 
+            final String token,
             final String identity) throws IOException {
         return getHttpMethods()
                 .listImages(
@@ -31,9 +31,9 @@ public class ImageApi extends PluginApi<HttpMethods> {
                         token, identity)
                 .execute().body();
     }
-    
+
     public Body<PluginImageModel> getImage (
-            final String token, 
+            final String token,
             final String identity,
             final String name) throws IOException {
         return getHttpMethods()
@@ -42,18 +42,18 @@ public class ImageApi extends PluginApi<HttpMethods> {
                         token, identity, name)
                 .execute().body();
     }
-    
+
     protected interface HttpMethods {
         @GET(Routes.IMAGES)
         public Call<Body<List<PluginImageModel>>> listImages(
                 @Header(HttpHeadersCustom.API_VERSION) final String version,
-                @Header(HttpHeaders.AUTHORIZATION) final String token, 
-                @Header(HttpHeadersCustom.AUTHORIZATION_ID) final String identity); 
+                @Header(HttpHeaders.AUTHORIZATION) final String token,
+                @Header(HttpHeadersCustom.AUTHORIZATION_ID) final String identity);
         @GET(Routes.IMAGES_NAME)
         public Call<Body<PluginImageModel>> getImage(
                 @Header(HttpHeadersCustom.API_VERSION) final String version,
-                @Header(HttpHeaders.AUTHORIZATION) final String token, 
+                @Header(HttpHeaders.AUTHORIZATION) final String token,
                 @Header(HttpHeadersCustom.AUTHORIZATION_ID) final String identity,
-                @Path("name") final String name); 
+                @Path("name") final String name);
     }
 }

@@ -2,9 +2,10 @@ package app.models;
 
 import java.util.List;
 
-public class Command {
+public class Command extends Body {
 
     private String commandLine;
+    private String workinDir;
     private String args;
     private String extraArgs;
     private List<String> listInputs;
@@ -42,5 +43,11 @@ public class Command {
     }
     public void setListOutputs(List<String> listOutputs) {
         this.listOutputs = listOutputs;
+    }
+    public final String getWorkinDir() {
+        return workinDir;
+    }
+    public final void setWorkinDir(String workinDir) {
+        this.workinDir = workinDir;
     }
 }

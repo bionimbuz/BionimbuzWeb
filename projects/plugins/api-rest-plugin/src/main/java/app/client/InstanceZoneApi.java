@@ -15,14 +15,14 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 
-public class InstanceZoneApi  extends PluginApi<HttpMethods> {
+public class InstanceZoneApi  extends ClientApiVersioned<HttpMethods> {
 
     public InstanceZoneApi (final String url) {
         super(url, HttpMethods.class);
     }
-    
+
     public Body<List<PluginInstanceZoneModel>> listInstanceZones(
-            final String token, 
+            final String token,
             final String identity) throws IOException
     {
         return getHttpMethods()
@@ -31,12 +31,12 @@ public class InstanceZoneApi  extends PluginApi<HttpMethods> {
                         token, identity)
                 .execute().body();
     }
-    
+
     protected interface HttpMethods {
         @GET(Routes.INSTANCE_ZONES)
         public Call<Body<List<PluginInstanceZoneModel>>> listInstanceZones(
                 @Header(HttpHeadersCustom.API_VERSION) final String version,
-                @Header(HttpHeaders.AUTHORIZATION) final String token, 
-                @Header(HttpHeadersCustom.AUTHORIZATION_ID) final String identity);    
+                @Header(HttpHeaders.AUTHORIZATION) final String token,
+                @Header(HttpHeadersCustom.AUTHORIZATION_ID) final String identity);
     }
 }

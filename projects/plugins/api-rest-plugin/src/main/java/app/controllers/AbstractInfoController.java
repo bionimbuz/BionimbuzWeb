@@ -12,7 +12,7 @@ import app.models.Body;
 import app.models.PluginInfoModel;
 import app.models.PluginInfoModel.AuthenticationType;
 
-public abstract class AbstractInfoController extends BaseController {
+public abstract class AbstractInfoController extends BaseControllerVersioned {
     protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractInfoController.class);
 
     /*

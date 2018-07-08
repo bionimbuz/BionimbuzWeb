@@ -4,4 +4,7 @@
 /.settings/
 /pricing/
 /spaces/
+!/spaces/test/test_input1.txt
+!/spaces/test/test_input2.txt
 /instances/
+!/instances/test/test_script.sh

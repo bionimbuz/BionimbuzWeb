@@ -4,7 +4,8 @@ require:
     - play 1.4.4
     - play -> crud
     - play -> secure
-    - br.unb.cic.bionimbuz -> api-rest-plugin 0.1
+    - br.unb.cic.bionimbuz.commons -> api-commons 0.1
+    - br.unb.cic.bionimbuz.plugins -> api-rest-plugin 0.1
     - com.squareup.retrofit2 -> retrofit 2.3.0
     - com.squareup.retrofit2 -> converter-jackson 2.3.0
     - org.apache.jclouds -> jclouds-all 2.2.0-SNAPSHOT
@@ -12,12 +13,17 @@ require:
         force: true
     - com.google.guava -> guava 18.0
 
-repositories:
-- custom-modules:
+repositories:        
+- api-commons:
+    type:       local
+    artifact:   ${application.path}/../commons/api-commons/target/[module]-[revision].jar
+    contains:
+        - br.unb.cic.bionimbuz.commons -> * 
+- api-rest-plugin:
     type:       local
     artifact:   ${application.path}/../plugins/api-rest-plugin/target/[module]-[revision].jar
     contains:
-        - br.unb.cic.bionimbuz -> *
+        - br.unb.cic.bionimbuz.plugins -> *       
 
 - jclouds:
     type: iBiblio

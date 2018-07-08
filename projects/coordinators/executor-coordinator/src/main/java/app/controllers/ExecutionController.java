@@ -6,12 +6,15 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.common.Routes;
 import app.execution.DownloadJob;
+import app.models.Command;
+import app.models.DownloadStatus;
 
 @RestController
 public class ExecutionController {
@@ -25,8 +28,8 @@ public class ExecutionController {
 
     @RequestMapping(path = Routes.EXECUTION_START, method = RequestMethod.GET)
     public ResponseEntity< Boolean > startExecution(
-//            @RequestBody Command command
-            ) {
+            @RequestBody Command command) {
+
         if(downloadJob != null)
             return ResponseEntity.ok(false);
 
@@ -46,41 +49,5 @@ public class ExecutionController {
                         downloadJob.hasFinished(),
                         downloadJob.hasSuccess()));
     }
-
-    public static class DownloadStatus{
-
-        private boolean finished;
-        private boolean success;
-
-        public DownloadStatus() {
-        }
-
-        public DownloadStatus(boolean finished, boolean success) {
-            this.finished = finished;
-            this.success = success;
-        }
-
-        public boolean isFinished() {
-            return finished;
-        }
-
-        public void setFinished(boolean finished) {
-            this.finished = finished;
-        }
-
-        public boolean isSuccess() {
-            return success;
-        }
-
-        public void setSuccess(boolean success) {
-            this.success = success;
-        }
-
-
-
-
-    }
-
-
 
 }

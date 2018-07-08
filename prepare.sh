@@ -2,6 +2,7 @@
 ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SYSTEM_FOLDER=${ROOT_DIR}/system
 WEB_FOLDER=${ROOT_DIR}/projects/web
+COMMONS_FOLDER=${ROOT_DIR}/projects/commons
 PLUGINS_FOLDER=${ROOT_DIR}/projects/plugins
 COORDINATORS_FOLDER=${ROOT_DIR}/projects/coordinators
 PLAY_FOLDER=${SYSTEM_FOLDER}/playframework
@@ -17,6 +18,7 @@ Where:
     -a[A]           = Prepare all development environment (without IDEs)
     -e[E]           = Prepare Eclipse IDE environment
     -n[N]           = Prepare Netbeans IDE environment
+    -p[P]           = Prepare specific folder project, separated by commas (e.g. \"web,plugins,commons,coordinators\") 
     ";
 }
 
@@ -29,7 +31,7 @@ NeedHelp(){
 # --------------------------------------------------------------------
 [[ $BASH_ARGC ]] || { echo `NeedHelp`; exit 1; }
 
-while getopts "hHaAeEnN" OPC 2>/dev/null
+while getopts "hHaAeEnNp:P:" OPC 2>/dev/null
 do
    case "$OPC" in
       [aA]) PREPARE_ALL="true" ;;
@@ -38,11 +40,12 @@ do
       
       [nN]) PREPARE_NETBEANS="true" ;;
 
+      [pP]) PROJECTS=$OPTARG ;;
+
       [hH]) Help ; exit ;;
       *) NeedHelp ;; 
     esac
 done
-
 
 echo "##################################################"
 echo "####### Preparing development environment"
@@ -85,73 +88,132 @@ if [ ! -z "$PREPARE_ALL" ]; then
     
 fi
 
+##################################################
+
+function prepareProjectsFolder {
+
+    INSTALL=$1
+    PROJECT_FOLDER=$2
+    FOLDER_FILTER=$3
+
+    PREPARE_CMD="mvn clean package -DskipTests"    
+    if $INSTALL ; then
+        PREPARE_CMD="mvn clean install package -DskipTests"
+    fi
+
+    cd ${PROJECT_FOLDER}
+
+    if [ -z "$FOLDER_FILTER" ] ; then
+          $PREPARE_CMD
+    else
+        for d in $FOLDER_FILTER ; do
+
+            echo ""
+            echo "# Project found: $d"
+            echo ""
+            
+            cd $d
+            mvn clean install package -DskipTests
+            cd ..
+        done
+    fi
+}
+
+##################################################
+
+function prepareCommons {
+    echo ""
+    echo "# ======================================="
+    echo "# Preparing commons projects"
+    echo "# ======================================="
+    prepareProjectsFolder true ${COMMONS_FOLDER} "*-commons/"
+}
+
+##################################################
+
+function prepareCoordinators {
+    echo ""
+    echo "# ======================================="
+    echo "# Preparing coordinators projects"
+    echo "# ======================================="
+    prepareProjectsFolder true ${COORDINATORS_FOLDER} "api-*/"
+    prepareProjectsFolder false ${COORDINATORS_FOLDER} "*-coordinator/"
+}
+
+##################################################
+
+function preparePlugins {
+    echo ""
+    echo "# ======================================="
+    echo "# Preparing plugins projects"
+    echo "# ======================================="
+    prepareProjectsFolder true ${PLUGINS_FOLDER} "api-*/"
+    prepareProjectsFolder false ${PLUGINS_FOLDER} "plugin-*/"
+}
+
+##################################################
+
+function prepareWeb {
+    echo ""
+    echo "# ======================================="
+    echo "# Preparing web project"
+    echo "# ======================================="
+
+    cd ${WEB_FOLDER}
+
+    # Use play from path if it was not downloaded before
+    if [ -z `command -v ${PLAY_BIN}` ]; then
+        echo "# Play folder from system not fount, setting default."
+	    PLAY_BIN=play
+    fi	
+
+    export PATH=$PATH:${PLAY_FOLDER}/python
+
+    echo "# Computing dependencies"    
+    ${PLAY_BIN} deps
+
+    if [ ! $PREPARE_ECLIPSE ] && [ ! $PREPARE_NETBEANS ] ; then
+        PREPARE_ECLIPSE=true
+        PREPARE_NETBEANS=true
+    fi
+
+    if [ ! -z "$PREPARE_ECLIPSE" ]; then 
+        echo "# Preparing Eclipse environment"    
+        ${PLAY_BIN} eclipsify
+    fi    
+
+    if [ ! -z "$PREPARE_NETBEANS" ]; then 
+        echo "# Preparing Netbeans environment"    
+        ${PLAY_BIN} netbeansify
+    fi    
+}
+
+##################################################
+
 echo ""
 echo "# ======================================="
-echo "# Preparing coordinators projects"
+echo "# Preparing projects"
 echo "# ======================================="
 
-cd ${COORDINATORS_FOLDER}
+if [ -z "$PROJECTS" ]; then 
+    prepareCommons
+    prepareCoordinators
+    preparePlugins
+    prepareWeb
+else
 
-for d in *-coordinator/ ; do
+    PROJECTS=$(echo $PROJECTS | tr "," "\n")
 
-    echo ""
-    echo "# Project found: $d"
-    echo ""
-    
-    cd $d
-    mvn clean package -DskipTests
-    cd ..
-done
-
-echo ""
-echo "# ======================================="
-echo "# Preparing plugins projects"
-echo "# ======================================="
-
-cd ${PLUGINS_FOLDER}
-
-cd api-*
-mvn clean install package -DskipTests
-cd ..
-
-for d in plugin-*/ ; do
-
-    echo ""
-    echo "# Project found: $d"
-    echo ""
-    
-    cd $d
-    mvn clean package -DskipTests
-    cd ..
-done
-
-echo ""
-echo "# ======================================="
-echo "# Preparing web project"
-echo "# ======================================="
-
-cd ${WEB_FOLDER}
-
-# Use play from path if it was not downloaded before
-if [ -z `command -v ${PLAY_BIN}` ]; then
-    echo "# Play folder from system not fount, setting default."
-	PLAY_BIN=play
-fi	
-
-export PATH=$PATH:${PLAY_FOLDER}/python
-
-echo "# Computing dependencies"    
-${PLAY_BIN} deps
-
-if [ ! -z "$PREPARE_ECLIPSE" ]; then 
-    echo "# Preparing Eclipse environment"    
-    ${PLAY_BIN} eclipsify
-fi    
-
-if [ ! -z "$PREPARE_NETBEANS" ]; then 
-    echo "# Preparing Netbeans environment"    
-    ${PLAY_BIN} netbeansify
-fi    
+    for PROJECT in $PROJECTS
+    do    
+        case "$PROJECT" in
+            commons) prepareCommons ;;     
+            coordinators) prepareCoordinators ;;       
+            plugins) preparePlugins ;;
+            web) prepareWeb ;;         
+        esac
+    done
+fi
 
 cd ${ROOT_DIR}
 

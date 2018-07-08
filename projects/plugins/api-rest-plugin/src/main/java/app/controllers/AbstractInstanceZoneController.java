@@ -16,8 +16,8 @@ import app.common.Routes;
 import app.models.Body;
 import app.models.PluginInstanceZoneModel;
 
-public abstract class AbstractInstanceZoneController extends BaseController {
-    protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractInstanceZoneController.class);  
+public abstract class AbstractInstanceZoneController extends BaseControllerVersioned {
+    protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractInstanceZoneController.class);
 
     /*
      * Action Methods
@@ -25,16 +25,16 @@ public abstract class AbstractInstanceZoneController extends BaseController {
     @RequestMapping(path = Routes.INSTANCE_ZONES, method = RequestMethod.GET)
     private ResponseEntity<Body<List<PluginInstanceZoneModel>>> listInstancesAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
-            @RequestHeader(value=HttpHeaders.AUTHORIZATION) final String token, 
+            @RequestHeader(value=HttpHeaders.AUTHORIZATION) final String token,
             @RequestHeader(value=HttpHeadersCustom.AUTHORIZATION_ID) final String identity) {
-        return callImplementedMethod("listZones", version, token, identity);        
+        return callImplementedMethod("listZones", version, token, identity);
     }
 
     /*
      * Abstract Methods
      */
     protected abstract ResponseEntity<Body<List<PluginInstanceZoneModel>>> listZones(
-            final String token, 
+            final String token,
             final String identity) throws Exception;
 
 }

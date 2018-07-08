@@ -8,36 +8,36 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import app.common.GlobalConstants;
+import app.common.IVersion;
 import app.common.exceptions.VersionException;
 import app.models.Body;
 
-public class BaseController {
-    protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractFirewallController.class);  
-    
-    private static void assertVersionSupported(final String version) throws VersionException {
-        if(version.equals(GlobalConstants.API_VERSION))
+public abstract class BaseController implements IVersion {
+    protected static final Logger LOGGER = LoggerFactory.getLogger(BaseController.class);
+
+    private void assertVersionSupported(final String version) throws VersionException {
+        if(version.equals(getAPIVersion()))
             return;
         throw new VersionException("Resquested plugin version [" + version + "]"
-                + " is different from this plugin version [" + GlobalConstants.API_VERSION + "]");
+                + " is different from this plugin version [" + getAPIVersion() + "]");
     }
 
     protected <T> ResponseEntity< Body<T> > callImplementedMethod(
-            String methodName, 
-            final String version, 
-            Object... objects) {  
+            String methodName,
+            final String version,
+            Object... objects) {
         HttpStatus errorStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         String errorMessage = "";
         try {
-            assertVersionSupported(version);  
-            Class<?> [] classes = getArgsClasses(objects);            
-            Method method = 
+            assertVersionSupported(version);
+            Class<?> [] classes = getArgsClasses(objects);
+            Method method =
                     this.getClass().getDeclaredMethod(methodName, classes);
             method.setAccessible(true);
             @SuppressWarnings("unchecked")
-            ResponseEntity<Body<T>> res = 
+            ResponseEntity<Body<T>> res =
                     (ResponseEntity<Body<T>>) method.invoke(this, objects);
-            return res;           
+            return res;
         } catch (VersionException e) {
             LOGGER.error(e.getMessage(), e);
             errorStatus = HttpStatus.MOVED_PERMANENTLY;
@@ -46,18 +46,18 @@ public class BaseController {
         catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             errorMessage = e.getMessage();
-        }        
+        }
         return ResponseEntity
                 .status(errorStatus)
-                .body(new Body<T>(errorMessage)); 
+                .body(new Body<T>(errorMessage));
     }
-    
+
     private Class<?> [] getArgsClasses(final Object... objects) {
-        Class<?> [] classes = new Class<?>[objects.length];   
+        Class<?> [] classes = new Class<?>[objects.length];
         int i=0;
         for (Object object : objects) {
-            classes[i++] = (object instanceof List) ? 
-                    List.class : object.getClass();   
+            classes[i++] = (object instanceof List) ?
+                    List.class : object.getClass();
         }
         return classes;
     }
