@@ -8,7 +8,7 @@ public class Command extends Body {
     private String workinDir;
     private String args;
     private String extraArgs;
-    private List<String> listInputs;
+    private List<RemoteFileInfo> listInputs;
     private List<String> listOutputs;
 
     public Command() {
@@ -32,10 +32,10 @@ public class Command extends Body {
     public void setExtraArgs(String extraArgs) {
         this.extraArgs = extraArgs;
     }
-    public List<String> getListInputs() {
+    public List<RemoteFileInfo> getListInputs() {
         return listInputs;
     }
-    public void setListInputs(List<String> listInputs) {
+    public void setListInputs(List<RemoteFileInfo> listInputs) {
         this.listInputs = listInputs;
     }
     public List<String> getListOutputs() {

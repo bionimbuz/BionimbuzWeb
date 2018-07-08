@@ -12,6 +12,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import app.client.ExecutionApi;
+import app.models.Body;
+import app.models.Command;
+import utils.TestUtils;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ExecutionControllerTest {
@@ -28,6 +33,20 @@ public class ExecutionControllerTest {
 
 	@Test
 	public void startExecutionTest() throws IOException {
+
+	    Command command = new Command();
+
+	    command.setWorkinDir("../../plugins/plugin-local/instances/test");
+	    command.setCommandLine("test_script.sh");
+
+
+
+        ExecutionApi api = new ExecutionApi(TestUtils.getUrl(PORT));
+
+        Body<Boolean> body = api.postCommand(command);
+
+
+
 	    assertThat(true).isTrue();
 	}
 }

@@ -30,7 +30,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>br.unb.cic.bionimbuz</groupId>
+            <groupId>br.unb.cic.bionimbuz.plugins</groupId>
             <artifactId>api-rest-plugin</artifactId>
             <version>0.1</version>
         </dependency>

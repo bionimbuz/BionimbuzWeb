@@ -19,6 +19,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import app.client.InstanceApi;
 import app.common.FileUtils;
+import app.common.GlobalConstants;
 import app.common.SystemConstants;
 import app.models.Body;
 import app.models.PluginInstanceModel;
@@ -127,4 +128,37 @@ public class InstanceControllerTest {
         return instances;
     }
 
+
+    @Test
+    public void createInstanceBeforeExecution() throws Exception {
+
+        InstanceApi api = new InstanceApi(TestUtils.getUrl(PORT));
+        Body<PluginInstanceModel> body = null;
+        Integer newId = 999;
+        String instanceName =
+                PluginInstanceModel.generateNameForId(
+                        newId, GlobalConstants.BNZ_INSTANCE);
+
+        // Force directory exclusion
+        InstanceController.deleteInstanceDir(instanceName);
+        body = api.getInstance("", "",
+                        SystemConstants.PLUGIN_ZONE,
+                        instanceName);
+        assertThat(body).isNull();
+
+        // Force directory creation
+        InstanceController.createInstanceDir(instanceName);
+        body = api.getInstance("", "",
+                SystemConstants.PLUGIN_ZONE,
+                instanceName);
+        assertThat(body).isNotNull();
+        assertThat(body.getContent()).isNotNull();
+
+        // Force directory exclusion again
+        InstanceController.deleteInstanceDir(instanceName);
+        body = api.getInstance("", "",
+                        SystemConstants.PLUGIN_ZONE,
+                        instanceName);
+        assertThat(body).isNull();
+    }
 }

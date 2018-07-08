@@ -18,7 +18,6 @@ public class ExecutionApi extends ClientApiVersioned<HttpMethods> {
     }
 
     public Body<Boolean> postCommand(
-            final String token,
             final Command command) throws IOException
     {
         return getHttpMethods()
