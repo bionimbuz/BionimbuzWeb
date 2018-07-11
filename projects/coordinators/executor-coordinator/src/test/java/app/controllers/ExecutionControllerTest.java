@@ -28,6 +28,7 @@ public class ExecutionControllerTest {
     private static final String PLUGIN_LOCAL_DIR = "../../plugins/plugin-local/";
     private static final String SPACES_DIR = PLUGIN_LOCAL_DIR + "spaces/";
     private static final String INSTANCES_DIR = PLUGIN_LOCAL_DIR + "instances/";
+    private static final String EXECUTION_DIR = INSTANCES_DIR + "bionimbuz-instance-0/";
 
     @Autowired
     private ExecutionController controller;
@@ -55,8 +56,8 @@ public class ExecutionControllerTest {
         listOutputFiles.add("test_output.txt");
 
 	    Command command = new Command();
-	    command.setWorkinDir(INSTANCES_DIR + "bionimbuz-instance-0/");
-	    command.setCommandLine("test_script.sh {i:1} {i:2} {o:1}");
+	    command.setWorkinDir(EXECUTION_DIR);
+	    command.setCommandLine("test_script.sh {a} {i:1} {i:2} {o:1}");
         command.setListInputs(listInputFiles);
         command.setListOutputs(listOutputFiles);
         command.setArgs("-a -b -c content");
