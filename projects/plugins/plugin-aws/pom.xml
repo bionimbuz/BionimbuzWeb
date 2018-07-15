@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>br.unb.cic.bionimbuz.plugins</groupId>
-    <artifactId>plugin-gcp</artifactId>
-    <name>plugin-gcp</name>
+    <artifactId>plugin-aws</artifactId>
+    <name>plugin-aws</name>
     <version>0.1</version>
 
     <parent>
@@ -35,6 +35,18 @@
             <artifactId>json-path</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- ########## JClouds dependencies  ########## -->
+        <dependency>
+            <groupId>org.apache.jclouds.provider</groupId>
+            <artifactId>aws-ec2</artifactId>
+            <version>${jclouds.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jclouds.provider</groupId>
+            <artifactId>aws-s3</artifactId>
+            <version>${jclouds.version}</version>
+        </dependency>
+        <!-- ##################################################  -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
@@ -45,18 +57,11 @@
             <artifactId>guava</artifactId>
             <version>18.0</version>
         </dependency>
-        <!-- ########## JClouds dependencies  ########## -->
         <dependency>
-            <groupId>org.apache.jclouds.provider</groupId>
-            <artifactId>google-compute-engine</artifactId>
-            <version>${jclouds.version}</version>
+            <groupId>br.unb.cic.bionimbuz.commons</groupId>
+            <artifactId>api-commons</artifactId>
+            <version>0.1</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.jclouds.provider</groupId>
-            <artifactId>google-cloud-storage</artifactId>
-            <version>${jclouds.version}</version>
-        </dependency>
-        <!-- ##################################################  -->
         <dependency>
             <groupId>br.unb.cic.bionimbuz.plugins</groupId>
             <artifactId>api-rest-plugin</artifactId>
@@ -75,16 +80,16 @@
 
     <repositories>
         <repository>
-            <id>jclouds-snapshots</id>
-            <url>https://repository.apache.org/content/repositories/snapshots</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
             <id>spring-releases</id>
             <url>https://repo.spring.io/libs-release</url>
         </repository>
     </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>spring-releases</id>
+            <url>https://repo.spring.io/libs-release</url>
+        </pluginRepository>
+    </pluginRepositories>
 
 </project>
