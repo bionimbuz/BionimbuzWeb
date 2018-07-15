@@ -30,6 +30,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>br.unb.cic.bionimbuz.commons</groupId>
+            <artifactId>api-commons</artifactId>
+            <version>0.1</version>
+        </dependency>
+        <dependency>
             <groupId>br.unb.cic.bionimbuz.plugins</groupId>
             <artifactId>api-rest-plugin</artifactId>
             <version>0.1</version>

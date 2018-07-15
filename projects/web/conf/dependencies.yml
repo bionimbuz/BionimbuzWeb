@@ -8,10 +8,15 @@ require:
     - br.unb.cic.bionimbuz.plugins -> api-rest-plugin 0.1
     - com.squareup.retrofit2 -> retrofit 2.3.0
     - com.squareup.retrofit2 -> converter-jackson 2.3.0
-    - org.apache.jclouds -> jclouds-all 2.2.0-SNAPSHOT
     - com.google.code.gson -> gson 2.5:
         force: true
     - com.google.guava -> guava 18.0
+    
+    - org.apache.jclouds -> jclouds-core 2.2.0-SNAPSHOT
+    - org.apache.jclouds -> oauth 2.2.0-SNAPSHOT
+    - org.apache.jclouds -> aws-ec2 2.2.0-SNAPSHOT
+    - org.apache.jclouds -> googlecloud 2.2.0-SNAPSHOT
+    - org.apache.jclouds -> google-compute-engine 2.2.0-SNAPSHOT
 
 repositories:        
 - api-commons:
