@@ -30,6 +30,7 @@ import app.common.Authorization;
 import app.common.GlobalConstants;
 import app.common.HttpHeadersCustom;
 import app.common.SystemConstants;
+import app.common.supliers.AWSAccessKeyFromContent;
 
 public class TestUtils {
     protected static final Logger LOGGER = LoggerFactory.getLogger(TestUtils.class);
@@ -38,6 +39,14 @@ public class TestUtils {
 
     public static String getUrl(int port) {
         return "http://localhost:"+port;
+    }
+
+    public static Supplier<Credentials> createSupplier() throws Exception {
+        String credentialContent =
+                TestUtils.readFileContent("../../web/conf/credentials/credential_aws2.csv");
+
+        AWSAccessKeyFromContent awsSupplier = new AWSAccessKeyFromContent(credentialContent);
+        return awsSupplier;
     }
 
     public static String readFileContent(final String path) {

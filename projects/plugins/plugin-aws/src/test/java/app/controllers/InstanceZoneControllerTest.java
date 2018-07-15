@@ -15,15 +15,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.google.common.base.Supplier;
 
-import app.client.InstanceRegionApi;
+import app.client.InstanceZoneApi;
 import app.models.Body;
-import app.models.PluginInstanceRegionModel;
 import app.models.PluginInstanceZoneModel;
 import utils.TestUtils;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class InstanceRegionControllerTest {
+public class InstanceZoneControllerTest {
 
     @Autowired
     private InstanceRegionController controller;
@@ -37,33 +36,16 @@ public class InstanceRegionControllerTest {
 
     @Test
     public void list_Test() throws Exception {
-        InstanceRegionApi api = new InstanceRegionApi(TestUtils.getUrl(PORT));
+        InstanceZoneApi api = new InstanceZoneApi(TestUtils.getUrl(PORT));
 
         Supplier<Credentials> awsSupplier = TestUtils.createSupplier();
 
-        Body<List<PluginInstanceRegionModel>> body =
-                api.listInstanceRegions(
+        Body<List<PluginInstanceZoneModel>> body =
+                api.listInstanceZones(
                     awsSupplier.get().credential,
                     awsSupplier.get().identity);
 
         assertThat(body).isNotNull();
         assertThat(body.getContent()).isNotEmpty();
     }
-
-    @Test
-    public void list_filtered_Test() throws Exception {
-        InstanceRegionApi api = new InstanceRegionApi(TestUtils.getUrl(PORT));
-
-        Supplier<Credentials> awsSupplier = TestUtils.createSupplier();
-
-        Body<List<PluginInstanceZoneModel>> body =
-                api.listInstanceRegionsZones(
-                    awsSupplier.get().credential,
-                    awsSupplier.get().identity,
-                    "us-east-1");
-
-        assertThat(body).isNotNull();
-        assertThat(body.getContent()).isNotEmpty();
-    }
-
 }

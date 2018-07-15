@@ -29,11 +29,11 @@ public class InstanceRegionController extends AbstractInstanceRegionController{
     protected ResponseEntity<Body<List<PluginInstanceRegionModel>>> listInstanceRegions(
             final String token,
             final String identity) throws Exception {
-        try(AWSEC2Api googleApi =
+        try(AWSEC2Api awsApi =
                 AWSEC2Utils.createApi(
                         identity,
                         token)) {
-            List<PluginInstanceRegionModel> res = getRegions(googleApi);
+            List<PluginInstanceRegionModel> res = getRegions(awsApi);
             return ResponseEntity.ok(
                     Body.create(res));
         }
@@ -43,11 +43,11 @@ public class InstanceRegionController extends AbstractInstanceRegionController{
             final String token,
             final String identity,
             final String name) throws Exception {
-        try(AWSEC2Api googleApi =
+        try(AWSEC2Api awsApi =
                 AWSEC2Utils.createApi(
                         identity,
                         token)) {
-            List<PluginInstanceZoneModel> res = getRegionZones(googleApi, name);
+            List<PluginInstanceZoneModel> res = getRegionZones(awsApi, name);
             return ResponseEntity.ok(
                     Body.create(res));
         }
@@ -66,8 +66,8 @@ public class InstanceRegionController extends AbstractInstanceRegionController{
                 api.get();
         Map<String, URI> regions =
                 apiZone.describeRegions();
-        for(String key : regions.keySet()) {
-            res.add(new PluginInstanceRegionModel(key));
+        for(String region : regions.keySet()) {
+            res.add(new PluginInstanceRegionModel(region));
         }
         return res;
     }
