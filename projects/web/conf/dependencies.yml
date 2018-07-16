@@ -13,10 +13,10 @@ require:
     - com.google.guava -> guava 18.0
     
     - org.apache.jclouds -> jclouds-core 2.2.0-SNAPSHOT
-    - org.apache.jclouds -> oauth 2.2.0-SNAPSHOT
-    - org.apache.jclouds -> aws-ec2 2.2.0-SNAPSHOT
-    - org.apache.jclouds -> googlecloud 2.2.0-SNAPSHOT
-    - org.apache.jclouds -> google-compute-engine 2.2.0-SNAPSHOT
+    - org.apache.jclouds.api -> oauth 2.2.0-SNAPSHOT
+    - org.apache.jclouds.provider -> aws-ec2 2.2.0-SNAPSHOT
+    - org.apache.jclouds.common -> googlecloud 2.2.0-SNAPSHOT
+    - org.apache.jclouds.provider -> google-compute-engine 2.2.0-SNAPSHOT
 
 repositories:        
 - api-commons:
