@@ -23,6 +23,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.google.common.base.Supplier;
 import com.google.common.io.Files;
+import com.google.gson.GsonBuilder;
 
 import app.common.Authorization;
 import app.common.GlobalConstants;
@@ -134,5 +135,9 @@ public class TestUtils {
                 (SimpleClientHttpRequestFactory) restTemplate.getRequestFactory();
         rf.setReadTimeout(timeout);
         rf.setConnectTimeout(timeout);
+    }
+    
+    public static String getDump(Object o) {
+        return new GsonBuilder().setPrettyPrinting().create().toJson(o);
     }
 }

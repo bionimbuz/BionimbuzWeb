@@ -89,7 +89,7 @@ public class ImageController extends AbstractImageController{
         }        
     }
 
-    private static Image searchFirstImageWithNameFilter(
+    public static Image searchFirstImageWithNameFilter(
             final EC2Api awsApi, 
             final String nameFilter){
         Set<? extends Image> images = 
