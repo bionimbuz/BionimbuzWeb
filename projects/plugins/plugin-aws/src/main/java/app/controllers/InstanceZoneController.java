@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.jclouds.aws.ec2.AWSEC2Api;
+import org.jclouds.ec2.EC2Api;
 import org.jclouds.ec2.domain.AvailabilityZoneInfo;
 import org.jclouds.ec2.features.AvailabilityZoneAndRegionApi;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +28,7 @@ public class InstanceZoneController extends AbstractInstanceZoneController{
     protected ResponseEntity<Body<List<PluginInstanceZoneModel>>> listZones(
             final String token,
             final String identity) throws Exception {
-        try(AWSEC2Api awsApi =
+        try(EC2Api awsApi =
                 AWSEC2Utils.createApi(
                         identity,
                         token)) {
@@ -43,7 +43,7 @@ public class InstanceZoneController extends AbstractInstanceZoneController{
      */
 
     private List<PluginInstanceZoneModel> getZones(
-            final AWSEC2Api awsApi){
+            final EC2Api awsApi){
 
         List<PluginInstanceZoneModel> res = new ArrayList<>();
         Optional<? extends AvailabilityZoneAndRegionApi> api =

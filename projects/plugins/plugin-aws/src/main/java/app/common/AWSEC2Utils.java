@@ -1,12 +1,12 @@
 package app.common;
 
 import org.jclouds.ContextBuilder;
-import org.jclouds.aws.ec2.AWSEC2Api;
 import org.jclouds.compute.ComputeServiceContext;
+import org.jclouds.ec2.EC2Api;
 
 public class AWSEC2Utils {
-
-    public static AWSEC2Api createApi(final String identity, String token) throws Exception {
+    
+    public static ComputeServiceContext createContext(final String identity, String token) throws Exception {
 
         ContextBuilder builder = ContextBuilder
                 .newBuilder(SystemConstants.CLOUD_COMPUTE_TYPE);
@@ -14,9 +14,17 @@ public class AWSEC2Utils {
         ComputeServiceContext context = builder
                 .credentials(identity, token)
                 .buildView(ComputeServiceContext.class);
+        
+        return context;
+    }
 
-        AWSEC2Api googleApi = context
-                .unwrapApi(AWSEC2Api.class);
-        return googleApi;
+    public static EC2Api createApi(final String identity, String token) throws Exception {
+
+        ComputeServiceContext context = 
+                createContext(identity, token);
+
+        EC2Api awsApi = context
+                .unwrapApi(EC2Api.class);
+        return awsApi;
     }
 }
