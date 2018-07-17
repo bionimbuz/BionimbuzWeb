@@ -2,6 +2,7 @@ package app.controllers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jclouds.domain.Credentials;
@@ -15,19 +16,19 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.google.common.base.Supplier;
 
-import app.client.ImageApi;
+import app.client.InstanceApi;
 import app.models.Body;
-import app.models.PluginImageModel;
+import app.models.PluginInstanceModel;
 import utils.TestUtils;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class ImageControllerTest {
-
+public class InstanceControllerTest {
+    
     @Autowired
-    private ImageController controller;
+    private InstanceController controller;
     @Value("${local.server.port}")
-    private int PORT;
+    private int PORT;        
 
     @Test
     public void contexLoads() throws Exception {
@@ -35,34 +36,32 @@ public class ImageControllerTest {
     }
 
     @Test
-    public void imagesTest() throws Exception {        
-
-        ImageApi api = new ImageApi(TestUtils.getUrl(PORT));
-
-        Supplier<Credentials> awsSupplier = TestUtils.createSupplier();
-
-        Body<List<PluginImageModel>> body =
-                api.listImages(
-                    awsSupplier.get().credential,
-                    awsSupplier.get().identity);
+    public void createInstance() throws Exception {
         
-        assertThat(body).isNotNull();
-        assertThat(body.getContent()).isNotEmpty();
-    }
-    
-    @Test
-    public void getTest() throws Exception {        
-
-        ImageApi api = new ImageApi(TestUtils.getUrl(PORT));
+        List<PluginInstanceModel> listInstance = 
+                new ArrayList<>();
+        listInstance.add(getInstancesToCreate());
+        InstanceApi api = new InstanceApi(TestUtils.getUrl(PORT));
 
         Supplier<Credentials> awsSupplier = TestUtils.createSupplier();
 
-        Body<PluginImageModel> body =
-                api.getImage(
+        Body<List<PluginInstanceModel>> body =
+                api.createInstance(
                     awsSupplier.get().credential,
                     awsSupplier.get().identity,
-                    TestUtils.FREE_TIER_IMAGE_NAME);
+                    listInstance);
         
         assertThat(body).isNotNull();
+        assertThat(body.getContent()).isNotEmpty();        
+    }
+    
+    private PluginInstanceModel getInstancesToCreate() {
+        PluginInstanceModel instance = new PluginInstanceModel();
+        instance.setImageUrl(TestUtils.FREE_TIER_IMAGE_NAME);
+        instance.setStartupScript(TestUtils.INSTANCE_STARTUP_SCRIPT);
+        instance.setType(TestUtils.FREE_TIER_INSTANCE_TYPE);
+        instance.setRegion(TestUtils.DEFAULT_REGION);
+        instance.setZone(TestUtils.DEFAULT_ZONE);        
+        return instance;
     }
 }

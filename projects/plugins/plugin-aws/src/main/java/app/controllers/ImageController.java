@@ -51,19 +51,15 @@ public class ImageController extends AbstractImageController{
         try(EC2Api awsApi =
                 AWSEC2Utils.createApi(
                         identity,
-                        token)) {
-            
-            Set<? extends Image> images = 
-                    searchImagesWithNameFilter(
-                            awsApi, "*"+name);
-            
-            if(images.isEmpty()) {
+                        token)) {            
+            Image image = 
+                    searchFirstImageWithNameFilter(
+                            awsApi, "*"+name);            
+            if(image == null) {
                 return new ResponseEntity<>(
                         Body.create(null),
                         HttpStatus.NOT_FOUND);
-            }
-            
-            Image image = images.iterator().next();            
+            }     
             return ResponseEntity.ok(
                     Body.create(createImageModel(image)));                 
         } 
@@ -92,18 +88,27 @@ public class ImageController extends AbstractImageController{
                     Body.create(res));                 
         }        
     }
+
+    private static Image searchFirstImageWithNameFilter(
+            final EC2Api awsApi, 
+            final String nameFilter){
+        Set<? extends Image> images = 
+                searchImagesWithNameFilter(
+                        awsApi, "*"+nameFilter);        
+        if(images.isEmpty()) {
+            return null;
+        }        
+        return images.iterator().next();
+    }            
     
     private static Set<? extends Image> searchImagesWithNameFilter(
             final EC2Api awsApi, 
-            final String nameFilter){
+            final String nameFilter){        
         Optional<? extends AMIApi> apiAMI = 
-                awsApi.getAMIApiForRegion(DEFAULT_IMAGE_REGION);            
-            
-        Set<? extends Image> images = 
-                apiAMI.get().describeImagesInRegionWithFilter(
+                awsApi.getAMIApiForRegion(DEFAULT_IMAGE_REGION);          
+        return apiAMI.get().describeImagesInRegionWithFilter(
                         DEFAULT_IMAGE_REGION, 
-                        createFilter(nameFilter));         
-        return images;
+                        createFilter(nameFilter)); 
     }        
     
     private String getImageName(final String imageName) {

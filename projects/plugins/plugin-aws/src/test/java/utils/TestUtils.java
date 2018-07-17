@@ -15,8 +15,6 @@ import org.jclouds.oauth.v2.AuthorizationApi;
 import org.jclouds.oauth.v2.config.OAuthProperties;
 import org.jclouds.oauth.v2.domain.Claims;
 import org.jclouds.oauth.v2.domain.Token;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -33,8 +31,17 @@ import app.common.SystemConstants;
 import app.common.supliers.AWSAccessKeyFromContent;
 
 public class TestUtils {
-    protected static final Logger LOGGER = LoggerFactory.getLogger(TestUtils.class);
-
+        
+    public static final String FREE_TIER_IMAGE_NAME = "ubuntu-xenial-16.04-amd64-server-20180627";
+    public static final String FREE_TIER_IMAGE_URL = "ubuntu/images/hvm-ssd/" + FREE_TIER_IMAGE_NAME;
+    public static final String FREE_TIER_INSTANCE_TYPE = "t2.micro";    
+    public static final String DEFAULT_REGION = "us-east-1";
+    public static final String DEFAULT_ZONE = "us-east-1a";
+    public static final String INSTANCE_STARTUP_SCRIPT = 
+            "#!/bin/bash \n"
+            + "apt-get update && apt-get install -y apache2 && hostname > /var/www/index.html";
+    
+    
     private static Supplier<Credentials> credentialSupplier;
 
     public static String getUrl(int port) {
