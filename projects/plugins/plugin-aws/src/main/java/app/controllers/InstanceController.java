@@ -1,6 +1,7 @@
 package app.controllers;
 
 import java.util.List;
+import java.util.Set;
 
 import org.jclouds.aws.ec2.options.AWSRunInstancesOptions;
 import org.jclouds.ec2.EC2Api;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.common.AWSEC2Utils;
+import app.common.FirewallUtils;
 import app.models.Body;
 import app.models.PluginInstanceModel;
 
@@ -33,6 +35,9 @@ public class InstanceController extends AbstractInstanceController {
                         token)) {            
             for (PluginInstanceModel instance : listModel) {
                 createInstance(awsApi, instance);
+                if(instance.getId() != null && !instance.getId().isEmpty()) {
+                    FirewallUtils.createRulesForInstance(awsApi, instance);
+                }
             }
             return ResponseEntity.ok(
                     Body.create(listModel));            
@@ -81,14 +86,27 @@ public class InstanceController extends AbstractInstanceController {
                 instance.getZone(), 
                 image.getId(), 
                 1, 1, 
-                AWSRunInstancesOptions.Builder.asType(instance.getType()));   
+                AWSRunInstancesOptions.Builder
+                    .asType(instance.getType())
+                    .withUserData(instance.getStartupScript().getBytes()));   
         
         updateInstanceModel(instance, runningInstance);
+        if(instance.getId() == null || instance.getId().isEmpty())
+            return;
+        
+        Set<? extends Reservation<? extends RunningInstance>> remoteRunningInstance = 
+                instanceApi.describeInstancesInRegion(
+                instance.getRegion(), instance.getId());        
+        updateInstanceModel(
+                instance, 
+                remoteRunningInstance.iterator().next());
     }
     
     private void updateInstanceModel(
             PluginInstanceModel instance, 
-            Reservation<? extends RunningInstance> runningInstance) {       
+            Reservation<? extends RunningInstance> runningInstance) { 
+        if(runningInstance == null)
+            return;
         RunningInstance createdInstance = 
                 runningInstance.iterator().next();
         if(createdInstance == null)

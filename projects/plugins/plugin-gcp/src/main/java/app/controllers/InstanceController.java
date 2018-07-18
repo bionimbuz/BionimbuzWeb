@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import app.common.FirewallUtils;
 import app.common.GlobalConstants;
 import app.common.GoogleComputeEngineUtils;
 import app.common.Pair;
@@ -44,7 +45,7 @@ public class InstanceController extends AbstractInstanceController {
                      identity,
                      token)) {
             final List<PluginInstanceModel> res = listModel;
-            FirewallController.createRulesForInstances(googleApi, listModel);
+            FirewallUtils.createRulesForInstances(googleApi, listModel);
             this.createInstances(googleApi, listModel);
             return ResponseEntity.ok(
                     Body.create(res));

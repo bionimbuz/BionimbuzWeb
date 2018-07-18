@@ -56,12 +56,18 @@ public class InstanceControllerTest {
     }
     
     private PluginInstanceModel getInstancesToCreate() {
+        
+        List<Integer> ports = new ArrayList<>() ;
+        ports.add(80);
+        
         PluginInstanceModel instance = new PluginInstanceModel();
         instance.setImageUrl(TestUtils.FREE_TIER_IMAGE_NAME);
         instance.setStartupScript(TestUtils.INSTANCE_STARTUP_SCRIPT);
         instance.setType(TestUtils.FREE_TIER_INSTANCE_TYPE);
         instance.setRegion(TestUtils.DEFAULT_REGION);
         instance.setZone(TestUtils.DEFAULT_ZONE);        
+        instance.setFirewallTcpPorts(ports);
+        
         return instance;
     }
 }

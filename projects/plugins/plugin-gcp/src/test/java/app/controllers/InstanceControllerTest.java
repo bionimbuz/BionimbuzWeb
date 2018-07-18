@@ -80,29 +80,7 @@ public class InstanceControllerTest {
 
         int initialSize = responseList.size();
         responseList = listAllTest();        
-        assertThat(responseList.size()).isEqualTo(initialSize + LENGTH_CREATION);
-        
-        try {
-            FirewallControllerTest.createRuleTest(getApacheFirewallRule(), restTemplate);
-
-            try {
-                // Wait for instances configuration start
-                Thread.sleep(WAIT_MS_TO_START_INSTANCE);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                assertThat(e).isNull();
-            }
-            
-            for (PluginInstanceModel model : createdInstances) {
-                responseGet = getInstanceTest(model);            
-                assertThat(responseGet.getStatusCode()).isEqualTo(HttpStatus.OK);
-                assertThat(responseGet.getBody()).isNotNull();            
-                doHttGetInInstancesTest(responseGet.getBody().getContent());
-            }
-        }         
-        finally{
-            FirewallControllerTest.deleteRuleTest(getApacheFirewallRule(), restTemplate);                
-        }
+        assertThat(responseList.size()).isEqualTo(initialSize + LENGTH_CREATION);        
            
         for (PluginInstanceModel model : createdInstances) {
             deleteInstanceTest(model);
