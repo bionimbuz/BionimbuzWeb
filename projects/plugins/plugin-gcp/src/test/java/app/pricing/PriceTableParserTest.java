@@ -1,4 +1,4 @@
-package app.common;
+package app.pricing;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
@@ -8,6 +8,7 @@ import java.text.ParseException;
 
 import org.junit.Test;
 
+import app.common.SystemConstants;
 import app.models.PluginPriceModel;
 import app.pricing.PriceTableParser;
 import app.pricing.exceptions.PriceTableDateInvalidException;

@@ -12,6 +12,13 @@ public class InstanceTypePricing {
     public InstanceTypePricing(
             final String name,
             final Short cores,
+            final Double memory) {
+        this(name, cores, memory, new HashMap<String, Double>());
+    }
+    
+    public InstanceTypePricing(
+            final String name,
+            final Short cores,
             final Double memory,
             final HashMap<String, Double> listRegionPricing) {
         this.name = name;
