@@ -3,100 +3,105 @@
 #{set title:messages.get('crud.show.title', type.modelName) /}
 
 <div class="row crud-title">
-    <div class="">  
-        <div class="col-xs-12 col-sm-12 col-md-12">
-            <div class="row">
-                <h1> &{'crud.show.title', type.modelName} </h1>
-            </div>
-            
-            <div class="row">
-                <pre class="col-xs-12 col-sm-12 col-md-9"> &{'crud.show.title.desc', type.modelName} </pre>            
-                <input data-toggle="modal" data-target="#deleteModal" class="col-xs-12 col-sm-12 col-md-2 btn btn-danger pull-right" type="button" value="&{'crud.delete', type.modelName}" />
-            </div>
-        </div>
-    </div>
+    <h1 class="col-xs-12"> &{'crud.show.title', type.modelName} </h1>
+    <pre class="col-xs-12 col-sm-12 col-md-9"> &{'crud.show.title.desc', type.modelName} </pre>
+    <input data-toggle="modal" data-target="#deleteModal"
+        class="col-xs-12 col-sm-12 col-md-2 btn btn-danger pull-right" type="button" value="&{'crud.delete', type.modelName}" />
 </div>
 
 <br>
 
-<div class="row col-lg-12" >
+<div class="row" >
 #{form action:@save(object._key()), enctype:'multipart/form-data', class: 'submitForm'}
 
-    #{crud.form}        
-         
-        #{crud.custom 'firewallTcpRules'}                             
-        #{/crud.custom}  
+    #{crud.form}
+
+        #{crud.custom 'firewallTcpRules'}
+        #{/crud.custom}
         
-        #{crud.custom 'firewallUdpRules'}        
+        #{crud.custom 'scriptExtension'}        
+            #{field 'object.scriptExtension'}
+                <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                    <label for="${field.id}">&{field.name}</label>
+                    <input id="${field.id}" class="form-control"  type="text" name="${field.name}" value="${field.value}" />                    
+                    <span id="helpBlock2" class="help-block">*&{'obs.scriptExtension'}</span>
+                    #{ifError field.name}
+                        <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                    #{/ifError} 
+                </div>
+            #{/field}
+        #{/crud.custom}
+        
+        #{crud.custom 'firewallUdpRules'}
             #{field 'object.firewallTcpRules'}
             <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
                 <label for="${field.id}">&{field.name}</label>
                 <input id="${field.id}" class="form-control"  type="text" name="${field.name}" value="${field.value}" />
-                <span class="help-block">*&{'firewall.separate.ports'}</span>     
+                <span class="help-block">*&{'firewall.separate.ports'}</span>
                 #{ifError field.name}
                     <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
-                #{/ifError} 
+                #{/ifError}
             </div>
-            #{/field}          
+            #{/field}
             #{field 'object.firewallUdpRules'}
             <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
                 <label for="${field.id}">&{field.name}</label>
                 <input id="${field.id}" class="form-control"  type="text" name="${field.name}" value="${field.value}" />
-                <span class="help-block">*&{'firewall.separate.ports'}</span>     
+                <span class="help-block">*&{'firewall.separate.ports'}</span>
                 #{ifError field.name}
                     <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
-                #{/ifError} 
+                #{/ifError}
             </div>
-            #{/field}                 
-        #{/crud.custom}  
-        
+            #{/field}
+        #{/crud.custom}
+
         #{crud.custom 'listImages'}
-            
+
             #{field 'object.listImages'}
-                    
+
             <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
                 <div class="div-label">
                     <label for="${field.id}">
                         &{field.name}
                     </label>
                     <a class="check-all ${field.id}_class_all_"></a>
-                </div>        
-        
-                <select id="${field.id}" name="${field.name}.id" multiple='multiple'>                
-                %{                        
-                        for(plugin in models.PluginModel.findAll()) 
-                        {                        
-                }%                        
-                            <optgroup class="items-group" label='${plugin.name}'>                        
-                %{                            
-                            for(image in plugin.listImages) 
-                            {                        
+                </div>
+
+                <select id="${field.id}" name="${field.name}.id" multiple='multiple'>
+                %{
+                        for(plugin in models.PluginModel.findAll())
+                        {
+                }%
+                            <optgroup class="items-group" label='${plugin.name}'>
+                %{
+                            for(image in plugin.listImages)
+                            {
                                 selected = (object.listImages != null && object.listImages.contains(image));
                 }%
-                                <option value='${image.id}' ${selected ? 'selected' : ''} >${image.name}</option>                       
+                                <option value='${image.id}' ${selected ? 'selected' : ''} >${image.name}</option>
                 %{
                             }
                 }%
-                            </optgroup>     
+                            </optgroup>
                 %{
                         }
                 }%
-                </select>     
-                
+                </select>
+
                 #{ifError field.name}
                     <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
-                #{/ifError}  
-            </div>  
-               
+                #{/ifError}
+            </div>
+
             #{/field}
-            
-        #{/crud.custom}  
-        
+
+        #{/crud.custom}
+
     #{/crud.form}
-    
-    <div class="btn-row text-center">        
+
+    <div class="btn-row text-center">
         <input class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_save" value="&{'crud.save', type.modelName}" />
-        <a href="@{list()}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>     
+        <a href="@{list()}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>
     </div>
 #{/form}
 </div>
@@ -113,7 +118,7 @@
                 <p class="text-warning"><small>&{'modal.confirm.delete.desc'}</small></p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">&{'modal.button.cancel'}</button>                
+                <button type="button" class="btn btn-default" data-dismiss="modal">&{'modal.button.cancel'}</button>
                 #{form @delete(object._key()), style: 'display:inline;', class: 'submitForm'}
                     <button type="submit" class="btn btn-primary">&{'modal.button.confirm'}</button>
                 #{/form}
@@ -127,44 +132,44 @@
 <script type="text/javascript">
 
     function disableItensFromSelectedGroup(){
-        
-        optgroups = $('.items-group');        
+
+        optgroups = $('.items-group');
         $('.items-group').each(function() {
             $optgroup = $(this);
             $options = $optgroup.children('option');
-            hasSelected = false;   
+            hasSelected = false;
             // Check group selection
             $options.each(function(){
                 hasSelected = this.selected;
                 if(hasSelected) {
                     return false;
                 }
-            });                     
-            
+            });
+
             // Enable all if group have no selected item
             if(!hasSelected) {
-                $options.each(function(){                
+                $options.each(function(){
                     this.disabled = false;
-                });  
+                });
                 return false;
             }
-            
+
             // Disable other itens if has group selection
-            $options.each(function(){                
+            $options.each(function(){
                 if(!this.selected) {
                     this.disabled = true;
                 }
-            });  
-        });     
-        
+            });
+        });
+
         $('#object_listImages').multiSelect('refresh');
     }
-    
-    $(function(){            
+
+    $(function(){
         disableItensFromSelectedGroup();
     });
 
-    $('#object_listImages').multiSelect({ 
+    $('#object_listImages').multiSelect({
         selectableOptgroup: false,
         afterSelect: disableItensFromSelectedGroup,
         afterDeselect: disableItensFromSelectedGroup

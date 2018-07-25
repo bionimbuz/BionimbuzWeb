@@ -3,28 +3,20 @@
 #{set title:messages.get('crud.show.title', type.modelName) /}
 
 <div class="row crud-title">
-    <div class="">  
-        <div class="col-xs-12 col-sm-12 col-md-12">
-            <div class="row">
-                <h1> &{'crud.show.title', type.modelName} </h1>
-            </div>
-            
-            <div class="row">
-                <pre class="col-xs-12 col-sm-12 col-md-9"> &{'crud.show.title.desc', type.modelName} </pre>            
-                <input data-toggle="modal" data-target="#deleteModal" class="col-xs-12 col-sm-12 col-md-2 btn btn-danger pull-right" type="button" value="&{'crud.delete', type.modelName}" />
-            </div>
-        </div>
-    </div>
+    <h1 class="col-xs-12"> &{'crud.show.title', type.modelName} </h1>
+    <pre class="col-xs-12 col-sm-12 col-md-9"> &{'crud.show.title.desc', type.modelName} </pre>
+    <input data-toggle="modal" data-target="#deleteModal"
+        class="col-xs-12 col-sm-12 col-md-2 btn btn-danger pull-right" type="button" value="&{'crud.delete', type.modelName}" />
 </div>
 
 <br>
 
-<div class="row col-lg-12" >
+<div class="row" >
 #{form action:@save(object._key()), enctype:'multipart/form-data', class: 'submitForm'}
 
-    #{crud.form}        
-        #{crud.custom 'url'}   
-            #{field 'object.url'}    
+    #{crud.form}
+        #{crud.custom 'url'}
+            #{field 'object.url'}
             <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
                 <label for="${field.id}">&{'object.name'}</label>
                 <div class="nav-container">
@@ -38,15 +30,15 @@
                 #{/ifError}
             </div>
             #{/field}
-            
+
         #{/crud.custom}
-        
+
     #{/crud.form}
-    
-    <div class="btn-row text-center">        
+
+    <div class="btn-row text-center">
         <input class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_save" value="&{'crud.save', type.modelName}" />
         <input class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_saveAndContinue" value="&{'crud.saveAndContinue', type.modelName}" />
-        <a href="@{list()}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>     
+        <a href="@{list()}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>
     </div>
 #{/form}
 </div>
@@ -63,7 +55,7 @@
                 <p class="text-warning"><small>&{'modal.confirm.delete.desc'}</small></p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">&{'modal.button.cancel'}</button>                
+                <button type="button" class="btn btn-default" data-dismiss="modal">&{'modal.button.cancel'}</button>
                 #{form @delete(object._key()), style: 'display:inline;', class: 'submitForm'}
                     <button type="submit" class="btn btn-primary">&{'modal.button.confirm'}</button>
                 #{/form}
@@ -74,7 +66,7 @@
 
 #{set 'moreScripts' }
 <script type="text/javascript">
-$(function(){      
+$(function(){
 
     function addItem(content, value, selected) {
         if(value == null)
@@ -85,7 +77,7 @@ $(function(){
             +(selected ? 'selected' : '') + ' >'
             +content+'</option>');
     }
-    
+
     function clearOptions() {
         $("#object_url").empty();
         addItem("&{'crud.none'}");
@@ -98,29 +90,29 @@ $(function(){
         if(urlValue == ""){
             content = "";
         }
-        $("#object_name").val(content);    
+        $("#object_name").val(content);
     });
-    
+
     function fillImages() {
 
         clearOptions();
-        
+
         showPleaseWait();
-        
+
         urlValue = $('#object_plugin').val();
         var search = #{jsRoute @searchImages() /};
         if(urlValue == ""){
-            hidePleaseWait(); 
+            hidePleaseWait();
             return;
         }
-        
+
         $.ajax({
             url: search.url(),
             type: search.method,
             data:{ pluginId: urlValue}
            })
-        .done(function(data) { 
-            for(var i in data) {  
+        .done(function(data) {
+            for(var i in data) {
                 var selected = "${object.name}" == data[i]['name'];
                 addItem(
                     data[i]['name'],
@@ -132,14 +124,14 @@ $(function(){
             flashError(data.responseText);
         })
         .always(function() {
-            hidePleaseWait(); 
+            hidePleaseWait();
         });
     }
-    
+
     #{if object.plugin != null}
         fillImages();
     #{/if}
-    
+
     $('#object_plugin').change(fillImages);
 });
 </script>

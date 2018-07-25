@@ -9,8 +9,8 @@ import app.models.PluginInfoModel;
 import retrofit2.Call;
 import retrofit2.http.GET;
 
-public class InfoApi extends PluginApi<HttpMethods> {
-    
+public class InfoApi extends ClientApiVersioned<HttpMethods> {
+
     public InfoApi (final String url) {
         super(url, HttpMethods.class);
     }
@@ -21,7 +21,7 @@ public class InfoApi extends PluginApi<HttpMethods> {
                 .getInfo()
                 .execute().body();
     }
-    
+
     protected interface HttpMethods {
         @GET(Routes.INFO)
         public Call< Body<PluginInfoModel> > getInfo();

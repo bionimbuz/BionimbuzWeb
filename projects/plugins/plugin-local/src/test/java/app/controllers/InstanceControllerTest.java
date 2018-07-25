@@ -19,6 +19,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import app.client.InstanceApi;
 import app.common.FileUtils;
+import app.common.GlobalConstants;
 import app.common.SystemConstants;
 import app.models.Body;
 import app.models.PluginInstanceModel;
@@ -31,6 +32,7 @@ public class InstanceControllerTest {
     private static final Integer STARTUP_SCRIPT_APACHE_PORT = 80;
     private static final Integer WAIT_MS_TO_START_INSTANCE = 60 * 1000;
     private static final Integer LENGTH_CREATION = 2;
+    private static final String INSTANCE_STARTUP_SCRIPT = "apt-get update && apt-get install -y apache2 && hostname > /var/www/index.html";
 
     @Autowired
     private InstanceController controller;
@@ -115,7 +117,7 @@ public class InstanceControllerTest {
         for(int i=0;i<length;i++) {
             PluginInstanceModel instance = new PluginInstanceModel();
             instance.setImageUrl("");
-            instance.setStartupScript("touch file_1 \n\r touch file_2 \r\n");
+            instance.setStartupScript(INSTANCE_STARTUP_SCRIPT);
             instance.setType(SystemConstants.CLOUD_COMPUTE_TYPE);
             instance.setRegion(SystemConstants.PLUGIN_REGION);
             instance.setZone(SystemConstants.PLUGIN_ZONE);
@@ -126,4 +128,37 @@ public class InstanceControllerTest {
         return instances;
     }
 
+
+    @Test
+    public void createInstanceBeforeExecution() throws Exception {
+
+        InstanceApi api = new InstanceApi(TestUtils.getUrl(PORT));
+        Body<PluginInstanceModel> body = null;
+        Integer newId = 999;
+        String instanceName =
+                PluginInstanceModel.generateNameForId(
+                        newId, GlobalConstants.BNZ_INSTANCE);
+
+        // Force directory exclusion
+        InstanceController.deleteInstanceDir(instanceName);
+        body = api.getInstance("", "",
+                        SystemConstants.PLUGIN_ZONE,
+                        instanceName);
+        assertThat(body).isNull();
+
+        // Force directory creation
+        InstanceController.createInstanceDir(instanceName);
+        body = api.getInstance("", "",
+                SystemConstants.PLUGIN_ZONE,
+                instanceName);
+        assertThat(body).isNotNull();
+        assertThat(body.getContent()).isNotNull();
+
+        // Force directory exclusion again
+        InstanceController.deleteInstanceDir(instanceName);
+        body = api.getInstance("", "",
+                        SystemConstants.PLUGIN_ZONE,
+                        instanceName);
+        assertThat(body).isNull();
+    }
 }

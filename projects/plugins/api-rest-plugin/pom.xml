@@ -3,7 +3,7 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>br.unb.cic.bionimbuz</groupId>
+    <groupId>br.unb.cic.bionimbuz.plugins</groupId>
     <artifactId>api-rest-plugin</artifactId>
     <name>api-rest-plugin</name>
     <version>0.1</version>
@@ -16,6 +16,7 @@
 
     <properties>
         <java.version>1.8</java.version>
+        <jclouds.version>2.2.0-SNAPSHOT</jclouds.version>
     </properties>
 
     <dependencies>
@@ -33,11 +34,35 @@
             <artifactId>json-path</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- ########## JClouds dependencies  ########## -->
         <dependency>
             <groupId>org.apache.jclouds</groupId>
-            <artifactId>jclouds-all</artifactId>
-            <version>2.2.0-SNAPSHOT</version>
+            <artifactId>jclouds-core</artifactId>
+            <version>${jclouds.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.jclouds.api</groupId>
+            <artifactId>oauth</artifactId>
+            <version>${jclouds.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jclouds.provider</groupId>
+            <artifactId>aws-ec2</artifactId>
+            <version>${jclouds.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jclouds.common</groupId>
+            <artifactId>googlecloud</artifactId>
+            <version>${jclouds.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jclouds.provider</groupId>
+            <artifactId>google-compute-engine</artifactId>
+            <version>${jclouds.version}</version>
+        </dependency>
+        <!-- ##################################################  -->
+
         <dependency>
             <groupId>com.squareup.retrofit2</groupId>
             <artifactId>retrofit</artifactId>
@@ -57,6 +82,11 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>18.0</version>
+        </dependency>
+        <dependency>
+            <groupId>br.unb.cic.bionimbuz.commons</groupId>
+            <artifactId>api-commons</artifactId>
+            <version>0.1</version>
         </dependency>
     </dependencies>
 

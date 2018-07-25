@@ -3,23 +3,15 @@
 #{set title:messages.get('crud.show.title', type.modelName) /}
 
 <div class="row crud-title">
-    <div class="">
-        <div class="col-xs-12 col-sm-12 col-md-12">
-            <div class="row">
-                <h1> &{'crud.show.title', type.modelName} </h1>
-            </div>
-
-            <div class="row">
-                <pre class="col-xs-12 col-sm-12 col-md-9"> &{'crud.show.title.desc', type.modelName} </pre>
-                <input data-toggle="modal" data-target="#deleteModal" class="col-xs-12 col-sm-12 col-md-2 btn btn-danger pull-right" type="button" value="&{'crud.delete', type.modelName}" />
-            </div>
-        </div>
-    </div>
+    <h1 class="col-xs-12"> &{'crud.show.title', type.modelName} </h1>
+    <pre class="col-xs-12 col-sm-12 col-md-9"> &{'crud.show.title.desc', type.modelName} </pre>
+    <input data-toggle="modal" data-target="#deleteModal"
+        class="col-xs-12 col-sm-12 col-md-2 btn btn-danger pull-right" type="button" value="&{'crud.delete', type.modelName}" />
 </div>
 
 <br>
 
-<div class="row col-lg-12" >
+<div class="row" >
 #{form action:@save(object._key()), enctype:'multipart/form-data', class: 'submitForm'}
 
     #{crud.form}

@@ -9,6 +9,7 @@ import app.models.Body;
 import app.models.PluginInfoModel.AuthenticationType;
 import app.models.PluginStorageFileDownloadModel;
 import app.models.PluginStorageFileUploadModel;
+import app.models.RemoteFileInfo;
 import app.models.security.TokenModel;
 import common.constants.I18N;
 import controllers.CRUD.For;
@@ -24,72 +25,6 @@ import play.i18n.Messages;
 @Check("/list/space/files")
 public class SpaceFileController extends BaseAdminController {
 
-    public static class UploadFileInfo {
-
-        private String url;
-        private String method;
-        private String virtualName;
-        private Map<String, String> headers;
-
-        public String getUrl() {
-            return url;
-        }
-        public void setUrl(String url) {
-            this.url = url;
-        }
-        public String getMethod() {
-            return method;
-        }
-        public void setMethod(String method) {
-            this.method = method;
-        }
-        public Map<String, String> getHeaders() {
-            return headers;
-        }
-        public void setHeaders(Map<String, String> headers) {
-            this.headers = headers;
-        }
-        public String getVirtualName() {
-            return virtualName;
-        }
-        public void setVirtualName(String virtualName) {
-            this.virtualName = virtualName;
-        }
-    }
-
-    public static class DownloadFileInfo {
-
-        private String url;
-        private String method;
-        private String name;
-        private Map<String, String> headers;
-
-        public String getUrl() {
-            return url;
-        }
-        public void setUrl(String url) {
-            this.url = url;
-        }
-        public String getMethod() {
-            return method;
-        }
-        public void setMethod(String method) {
-            this.method = method;
-        }
-        public Map<String, String> getHeaders() {
-            return headers;
-        }
-        public void setHeaders(Map<String, String> headers) {
-            this.headers = headers;
-        }
-        public final String getName() {
-            return name;
-        }
-        public final void setName(String name) {
-            this.name = name;
-        }
-    }
-
     public static void getFileLocationToDownload(final Long fileId) {
 
         try {
@@ -100,7 +35,7 @@ public class SpaceFileController extends BaseAdminController {
             PluginModel plugin = space.getPlugin();
             StorageApi api = new StorageApi(plugin.getUrl());
 
-            DownloadFileInfo res = new DownloadFileInfo();
+            RemoteFileInfo res = new RemoteFileInfo();
             for(CredentialModel credential : plugin.getListCredentials()) {
                 try {
                     String credentialStr =
@@ -155,7 +90,7 @@ public class SpaceFileController extends BaseAdminController {
             PluginModel plugin = space.getPlugin();
             StorageApi api = new StorageApi(plugin.getUrl());
 
-            UploadFileInfo res = new UploadFileInfo();
+            RemoteFileInfo res = new RemoteFileInfo();
             for(CredentialModel credential : plugin.getListCredentials()) {
                 try {
                     String credentialStr =
@@ -177,7 +112,7 @@ public class SpaceFileController extends BaseAdminController {
 
                     res.setUrl(content.getUrl());
                     res.setMethod(content.getMethod());
-                    res.setVirtualName(virtualName);
+                    res.setName(virtualName);
 
                     Map<String, String> headers =
                             new HashMap<>();

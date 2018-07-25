@@ -1,7 +1,6 @@
 
-    
+
 <div class=row>
-    <div class="col-lg-12">  
         <div id="crudListPagination">
             <p>
                 &{'crud.list.size', _caller.count}
@@ -16,7 +15,7 @@
         limit = (_limit != null ? _limit : 10)
         start = _caller.page - (int)(limit/2) + (limit % 2 ? 0 : 1)
         end = _caller.page + (int)(limit/2)
-    
+
         if(start < 1){
             extra = 1 - start
             end = (end + extra < nbPages ? end + extra : nbPages)
@@ -33,7 +32,7 @@
         #{if value}
             #{set url: url.add(item, value)/}
         #{/if}
-    #{/list}    
+    #{/list}
             <ul class="pagination pull-right">
                 #{if _caller.page != start}
                     <li class="${ (_caller.page > start) ? '' : 'disabled' }">
@@ -51,12 +50,12 @@
                     #{/if}
                     #{else}
                         <li>
-                            #{a url.add('page', i).add('search', _caller.params.search).add('orderBy', _caller.orderBy).add('order', _caller.order)}${i}#{/a}   
+                            #{a url.add('page', i).add('search', _caller.params.search).add('orderBy', _caller.orderBy).add('order', _caller.order)}${i}#{/a}
                         </li>
                     #{/else}
                 %{ } }%
                 #{if _caller.page != end}
-                    <li class="${ _caller.page < nbPages ? '' : 'disabled' }">     
+                    <li class="${ _caller.page < nbPages ? '' : 'disabled' }">
                         #{a url.add('page', _caller.page+1).add('search', _caller.params.search).add('orderBy', _caller.orderBy).add('order', _caller.order)}›#{/a}
                     </li>
                     <li class="${ _caller.page < end ? '' : 'disabled' }">
@@ -64,13 +63,12 @@
                     </li>
                 #{/if}
             </ul>
-    
-    
+
+
 #{/if}
 
         </div>
-    </div>
-</div>    
+</div>
 
 
 

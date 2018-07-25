@@ -18,7 +18,7 @@ import app.models.Body;
 import app.models.PluginInstanceRegionModel;
 import app.models.PluginInstanceZoneModel;
 
-public abstract class AbstractInstanceRegionController extends BaseController {
+public abstract class AbstractInstanceRegionController extends BaseControllerVersioned {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractInstanceRegionController.class);
 

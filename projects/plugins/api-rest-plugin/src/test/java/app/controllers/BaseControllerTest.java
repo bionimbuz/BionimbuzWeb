@@ -21,9 +21,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import app.common.GlobalConstants;
 import app.common.HttpHeadersCustom;
 import app.common.Routes;
-import app.controllers.mocks.FirewallControllerMock;
-import app.models.Body;
-import app.models.PluginFirewallModel;
 import app.utils.TestUtils;
 
 @RunWith(SpringRunner.class)
@@ -31,62 +28,10 @@ import app.utils.TestUtils;
 public class BaseControllerTest {    
     
     @Autowired
-    private FirewallControllerMock controller;
-    @Autowired
     private TestRestTemplate restTemplate;
     @Value("${local.server.port}")
     private int PORT;
-
-    
-    @Test
-    public void contexLoads() throws Exception {
-        assertThat(controller).isNotNull();
-    }
-
-    @Test
-    public void returningContentTest() throws Exception {
-        TestUtils.setTimeout(restTemplate.getRestTemplate(), 20000000);
-        try { // Returning with Error and Body defining a Model
-            ResponseEntity< Body<PluginFirewallModel> > res = this.restTemplate
-                    .exchange(
-                            FirewallControllerMock.RETURN_GET + "/"
-                                    + HttpStatus.MOVED_PERMANENTLY,
-                            HttpMethod.GET, null,
-                            new ParameterizedTypeReference< Body<PluginFirewallModel> >() {
-                            });
-            assertThat(res.getStatusCode()).isEqualTo(HttpStatus.MOVED_PERMANENTLY);
-            assertThat(res.getBody()).isNotNull();
-            
-            Body<PluginFirewallModel> body = res.getBody();            
-            assertThat(body.getMessage()).isNotEmpty();
-            assertThat(body.getContent()).isNull();        
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            assertThat(e).isNull();
-        }  
-        
-        try { // Returning Ok and Body defining a Model
-            ResponseEntity< Body<PluginFirewallModel> > res = this.restTemplate
-                    .exchange(
-                            FirewallControllerMock.RETURN_GET + "/"
-                                    + HttpStatus.OK,
-                            HttpMethod.GET, null,
-                            new ParameterizedTypeReference< Body<PluginFirewallModel> >() {
-                            });
-            assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
-            assertThat(res.getBody()).isNotNull();
-            
-            Body<PluginFirewallModel> body = res.getBody();            
-            assertThat(body.getMessage()).isEqualTo(Body.OK);
-            assertThat(body.getContent()).isNotNull();        
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            assertThat(e).isNull();
-        } 
-    }
-          
+  
     @Test
     public void versionErrorTest() throws Exception {
         TestUtils.setTimeout(restTemplate.getRestTemplate(), 20000000);

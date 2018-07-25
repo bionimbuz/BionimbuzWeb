@@ -3,20 +3,18 @@
 #{set title:messages.get('crud.blank.title', type.modelName) /}
 
 <div class="row crud-title">
-    <div class="col-xs-12 col-sm-12 col-md-12">  
-        <h1> &{'crud.blank.title', type.modelName} </h1>
-        <pre> &{'crud.blank.title.desc', type.modelName} </pre>
-    </div>
+    <h1 class="col-xs-12"> &{'crud.blank.title', type.modelName} </h1>
+    <pre class="col-xs-12"> &{'crud.blank.title.desc', type.modelName} </pre>
 </div>
 
 <br>
 
-<div class="row col-lg-12" >
+<div class="row" >
 #{form action:@create(), enctype:'multipart/form-data', class: 'submitForm'}
 
-    #{crud.form}        
-        #{crud.custom 'url'}   
-            #{field 'object.url'}    
+    #{crud.form}
+        #{crud.custom 'url'}
+            #{field 'object.url'}
             <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
                 <label for="${field.id}">&{'object.name'}</label>
                 <div class="nav-container">
@@ -30,11 +28,11 @@
                 #{/ifError}
             </div>
             #{/field}
-            
+
         #{/crud.custom}
-        
+
     #{/crud.form}
-    
+
     <div class="btn-row text-center">
         <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_save">&{'crud.save'}</button>
         <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_saveAndContinue">&{'crud.saveAndContinue'}</button>
@@ -47,7 +45,7 @@
 
 #{set 'moreScripts' }
 <script type="text/javascript">
-$(function(){      
+$(function(){
 
     function addItem(content, value) {
         if(value == null)
@@ -55,7 +53,7 @@ $(function(){
         $("#object_url").append(
                 '<option value="'+value+'">'+content+'</option>');
     }
-    
+
     function clearOptions() {
         $("#object_url").empty();
         addItem("&{'crud.none'}");
@@ -68,29 +66,29 @@ $(function(){
         if(urlValue == ""){
             content = "";
         }
-        $("#object_name").val(content);    
+        $("#object_name").val(content);
     });
-    
+
     function fillImages() {
 
         clearOptions();
-        
+
         showPleaseWait();
-        
+
         urlValue = $('#object_plugin').val();
         var search = #{jsRoute @searchImages() /};
         if(urlValue == ""){
-            hidePleaseWait(); 
+            hidePleaseWait();
             return;
         }
-        
+
         $.ajax({
             url: search.url(),
             type: search.method,
             data:{ pluginId: urlValue}
            })
-        .done(function(data) { 
-            for(var i in data) {                
+        .done(function(data) {
+            for(var i in data) {
                 addItem(
                     data[i]['name'],
                     data[i]['url']);
@@ -100,14 +98,14 @@ $(function(){
             flashError(data.responseText);
         })
         .always(function() {
-            hidePleaseWait(); 
+            hidePleaseWait();
         });
     }
-    
+
     #{if object.plugin != null}
         fillImages();
     #{/if}
-    
+
     $('#object_plugin').change(fillImages);
 });
 </script>

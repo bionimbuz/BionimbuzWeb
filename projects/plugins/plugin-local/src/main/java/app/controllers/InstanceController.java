@@ -1,11 +1,21 @@
 package app.controllers;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.nio.file.Files;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import app.common.FileUtils;
 import app.common.GlobalConstants;
+import app.common.OsUtil;
 import app.common.SystemConstants;
 import app.models.Body;
 import app.models.PluginInstanceModel;
@@ -20,6 +31,7 @@ import app.models.PluginInstanceModel;
 @RestController
 public class InstanceController extends AbstractInstanceController {
 
+    private static final String STARTUP_SCRIPT_NAME = "startup_script";
     private static Integer instanceIdSequence = 0;
     private static Map<Integer, InstanceProcess> processes = new HashMap<>();
 
@@ -33,33 +45,40 @@ public class InstanceController extends AbstractInstanceController {
             final String identity,
             final List<PluginInstanceModel> listModel) throws Exception {
 
+        checkOphanInstances();
+
         for (PluginInstanceModel pluginInstanceModel : listModel) {
 
-            Integer newId = getNextInstanceId();
-            String instanceName =
-                    PluginInstanceModel.generateNameForId(
-                            newId, GlobalConstants.BNZ_PREFIX);
+            String instanceName = getNewName();
+            Integer id = PluginInstanceModel.extractIdFromName(
+                            instanceName, GlobalConstants.BNZ_INSTANCE);
 
             String ip = System.getProperty(
                     SystemConstants.SYSTEM_PROPERTY_IP,
                     InetAddress.getLocalHost().getHostAddress());
 
-            pluginInstanceModel.setId(String.valueOf(newId));
+            pluginInstanceModel.setId(String.valueOf(id));
             pluginInstanceModel.setName(instanceName);
             pluginInstanceModel.setExternalIp(ip);
 
             String instancePath =
                     createInstanceDir(instanceName);
 
+            String startupScript =
+                    generateStartupScript(
+                            instancePath,
+                            pluginInstanceModel.getScriptExtension(),
+                            pluginInstanceModel.getStartupScript());
+
             Process process = Runtime.getRuntime().exec(
-                    pluginInstanceModel.getStartupScript(),
+                    startupScript,
                     null,
                     new File(instancePath));
 
             InstanceProcess instanceProcess =
-                    new InstanceProcess(process, pluginInstanceModel);
+                    new InstanceProcess(instancePath, process, pluginInstanceModel);
 
-            insertInstanceProcess(newId, instanceProcess);
+            insertInstanceProcess(id, instanceProcess);
         }
 
         return ResponseEntity.ok(
@@ -72,6 +91,9 @@ public class InstanceController extends AbstractInstanceController {
             final String identity,
             final String zone,
             final String name) throws Exception {
+
+        checkOphanInstances();
+
         if(!SystemConstants.PLUGIN_ZONE.equals(zone)) {
             return new ResponseEntity<>(
                     Body.create(null),
@@ -80,7 +102,7 @@ public class InstanceController extends AbstractInstanceController {
 
         Integer instanceId =
                 PluginInstanceModel.extractIdFromName(
-                        name, GlobalConstants.BNZ_PREFIX);
+                        name, GlobalConstants.BNZ_INSTANCE);
 
         InstanceProcess instanceProcess =
                 getInstanceProcess(instanceId);
@@ -101,11 +123,13 @@ public class InstanceController extends AbstractInstanceController {
             final String zone,
             final String name) throws Exception {
 
+        checkOphanInstances();
+
         deleteInstanceDir(name);
 
         Integer instanceId =
                 PluginInstanceModel.extractIdFromName(
-                        name, GlobalConstants.BNZ_PREFIX);
+                        name, GlobalConstants.BNZ_INSTANCE);
 
         if(!existsInstanceProcess(instanceId)) {
             return new ResponseEntity<>(
@@ -125,6 +149,8 @@ public class InstanceController extends AbstractInstanceController {
             final String token,
             final String identity) throws Exception {
 
+        checkOphanInstances();
+
         List<PluginInstanceModel> res = new ArrayList<>();
         for (Map.Entry<Integer, InstanceProcess> entry : processes.entrySet()) {
             res.add(entry.getValue().getPluginInstance());
@@ -134,16 +160,24 @@ public class InstanceController extends AbstractInstanceController {
                 Body.create(res));
     }
 
-    private static class InstanceProcess{
+    private static class InstanceProcess implements Runnable{
 
+        private String workingDirPath;
         private Process process;
         private PluginInstanceModel pluginInstance;
 
         public InstanceProcess(
+                String workingDirPath,
                 Process process,
                 PluginInstanceModel pluginInstance) {
+            this.workingDirPath = workingDirPath;
             this.process = process;
             this.pluginInstance = pluginInstance;
+            startWritingStdoutFile();
+        }
+
+        private void startWritingStdoutFile() {
+            new Thread(this).start();;
         }
 
         public Process getProcess() {
@@ -152,6 +186,145 @@ public class InstanceController extends AbstractInstanceController {
         public PluginInstanceModel getPluginInstance() {
             return pluginInstance;
         }
+
+        @Override
+        public void run() {
+            File stdoutFile = new File(workingDirPath, "stdout.txt");
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(stdoutFile))) {
+                InputStream stdout = process.getInputStream ();
+                BufferedReader reader = new BufferedReader (new InputStreamReader(stdout));
+                String line = "";
+                while ((line = reader.readLine ()) != null) {
+                    writer.write(line);
+                    writer.newLine();
+                    writer.flush();
+                }
+                writer.write("#############################################################");
+                writer.newLine();
+                writer.write("END OF EXECUTION");
+                writer.newLine();
+                writer.write("#############################################################");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private synchronized void checkOphanInstances() throws Exception {
+        File instancesDir = new File(SystemConstants.INSTANCES_DIR);
+        if(!instancesDir.exists()) {
+            return;
+        }
+
+        // Insert process in memory that only exists your directory
+        for (File file : instancesDir.listFiles()) {
+            if (!file.isDirectory())
+                continue;
+            String instanceName = file.getName();
+            Integer instanceId =
+                    PluginInstanceModel.extractIdFromName(
+                            instanceName, GlobalConstants.BNZ_INSTANCE);
+            if(!existsInstanceProcess(instanceId)) {
+                insertFakeProcess(instanceId);
+            }
+        }
+
+        // Removes from memory process that dont have a directory
+        List<Integer> idsToRemove = new ArrayList<>();
+        String instanceName = "";
+        for (Integer id : processes.keySet()){
+            instanceName =
+                    PluginInstanceModel.generateNameForId(
+                            id, GlobalConstants.BNZ_INSTANCE);
+            String instancePath =
+                    getInstancePath(instanceName);
+            File instaceDir = new File(instancePath);
+            if(!instaceDir.exists()) {
+                idsToRemove.add(id);
+            }
+        }
+        for(Integer id : idsToRemove) {
+            removeInstanceProcess(id);
+        }
+    }
+
+    private String getNewName() throws Exception {
+
+        String instanceName = "";
+        while(true) {
+            Integer newId = getNextInstanceId();
+            instanceName =
+                    PluginInstanceModel.generateNameForId(
+                            newId, GlobalConstants.BNZ_INSTANCE);
+            String instancePath =
+                    getInstancePath(instanceName);
+            File instanceDir = new File(instancePath);
+            if(!instanceDir.exists())
+                break;
+        }
+        return instanceName;
+    }
+
+    protected String generateStartupScript(
+            final String path,
+            String extension,
+            final String content) throws IOException {
+        if(extension == null || extension.trim().isEmpty())
+            extension =  OsUtil.getDefaultScriptExtension();
+        File scriptFile = new File(path, STARTUP_SCRIPT_NAME + "." + extension);
+        String absolutePath = scriptFile.getAbsolutePath();
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(scriptFile))) {
+            writer.write(content);
+        }
+        if(scriptFile.exists()) {
+            setPermission(scriptFile);
+        }
+        return absolutePath;
+    }
+
+    private void setPermission(File file) throws IOException{
+        Set<PosixFilePermission> perms = new HashSet<>();
+        perms.add(PosixFilePermission.OWNER_READ);
+        perms.add(PosixFilePermission.OWNER_WRITE);
+        perms.add(PosixFilePermission.OWNER_EXECUTE);
+
+        perms.add(PosixFilePermission.OTHERS_READ);
+        perms.add(PosixFilePermission.OTHERS_WRITE);
+        perms.add(PosixFilePermission.OTHERS_EXECUTE);
+
+        perms.add(PosixFilePermission.GROUP_READ);
+        perms.add(PosixFilePermission.GROUP_WRITE);
+        perms.add(PosixFilePermission.GROUP_EXECUTE);
+
+        Files.setPosixFilePermissions(file.toPath(), perms);
+    }
+
+    private void insertFakeProcess(Integer id) throws Exception{
+
+        PluginInstanceModel pluginInstanceModel =
+                new PluginInstanceModel();
+        String instanceName =
+                PluginInstanceModel.generateNameForId(
+                        id, GlobalConstants.BNZ_INSTANCE);
+        String ip = System.getProperty(
+                SystemConstants.SYSTEM_PROPERTY_IP,
+                InetAddress.getLocalHost().getHostAddress());
+        String instancePath =
+                getInstancePath(instanceName);
+
+        pluginInstanceModel.setId(String.valueOf(id));
+        pluginInstanceModel.setName(instanceName);
+        pluginInstanceModel.setExternalIp(ip);
+        pluginInstanceModel.setStartupScript("echo");
+        Process process = Runtime.getRuntime().exec(
+                pluginInstanceModel.getStartupScript(),
+                null,
+                new File(instancePath));
+
+        InstanceProcess instanceProcess =
+                new InstanceProcess(instancePath, process, pluginInstanceModel);
+
+        insertInstanceProcess(id, instanceProcess);
     }
 
     private static String getInstancePath(final String instance) {
@@ -162,7 +335,7 @@ public class InstanceController extends AbstractInstanceController {
         return ++instanceIdSequence;
     }
 
-    private static String createInstanceDir(String name) {
+    public static String createInstanceDir(String name) {
 
         String instancePath =
                 getInstancePath(name);
@@ -172,7 +345,7 @@ public class InstanceController extends AbstractInstanceController {
         return instancePath;
     }
 
-    private static void deleteInstanceDir(String name) {
+    public static void deleteInstanceDir(String name) {
         String instancePath =
                 getInstancePath(name);
         File dir = new File(instancePath);

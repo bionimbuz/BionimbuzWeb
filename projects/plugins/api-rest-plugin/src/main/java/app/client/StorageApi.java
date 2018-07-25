@@ -19,7 +19,7 @@ import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
-public class StorageApi  extends PluginApi<HttpMethods> {
+public class StorageApi  extends ClientApiVersioned<HttpMethods> {
 
     public StorageApi (final String url) {
         super(url, HttpMethods.class);

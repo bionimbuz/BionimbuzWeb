@@ -22,7 +22,7 @@ import app.models.PluginStorageFileDownloadModel;
 import app.models.PluginStorageFileUploadModel;
 import app.models.PluginStorageModel;
 
-public abstract class AbstractStorageController extends BaseController {
+public abstract class AbstractStorageController extends BaseControllerVersioned {
     protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractStorageController.class);
 
     /*

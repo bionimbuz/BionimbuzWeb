@@ -5,6 +5,7 @@ import java.time.ZonedDateTime;
 import java.util.Properties;
 
 import org.jclouds.ContextBuilder;
+import org.jclouds.aws.ec2.AWSEC2ProviderMetadata;
 import org.jclouds.domain.Credentials;
 import org.jclouds.googlecloud.GoogleCredentialsFromJson;
 import org.jclouds.googlecomputeengine.GoogleComputeEngineApiMetadata;
@@ -15,11 +16,13 @@ import org.jclouds.oauth.v2.domain.Token;
 
 import com.google.common.base.Supplier;
 
+import app.common.supliers.AWSAccessKeyFromContent;
 import app.models.security.TokenModel;
 
 public class Authorization {
 
     public static final String CLOUD_TYPE_GCE = "google-compute-engine";
+    public static final String CLOUD_TYPE_AWS_EC2 = "ec2-aws";
     public static final String CLOUD_TYPE_LOCAL = "local-machine";
 
     public static AuthorizationApi createApi(
@@ -33,21 +36,25 @@ public class Authorization {
         return oauth;
     }
 
-    private static Supplier<Credentials> getCredentialSuplier(
+    protected static Supplier<Credentials> getCredentialSuplier(
             final String cloudType,
-            final String credentialContent) {
+            final String credentialContent) throws Exception {
         // TODO: to remove this dependency
         if(cloudType == CLOUD_TYPE_GCE) {
             return new GoogleCredentialsFromJson(credentialContent);
+        } else if(cloudType == CLOUD_TYPE_AWS_EC2) {
+            return new AWSAccessKeyFromContent(credentialContent);
         }
         return null;
     }
 
-    private static Properties getProperties(
+    protected static Properties getProperties(
             final String cloudType) {
         // TODO: to remove this dependency
         if(cloudType == CLOUD_TYPE_GCE) {
             return GoogleComputeEngineApiMetadata.defaultProperties();
+        } else if(cloudType == CLOUD_TYPE_AWS_EC2) {
+            return AWSEC2ProviderMetadata.defaultProperties();
         }
         return null;
     }

@@ -91,6 +91,7 @@ public class DevelopmentStartupJob extends Job {
         }
         executor.setName("Apache");
         executor.setStartupScript("apt-get update && apt-get install -y apache2 && hostname > /var/www/index.html");
+        executor.setScriptExtension("sh");
         executor.setFirewallTcpRules("80,8080");
         executor.setListImages(listImages);
         executor.save();

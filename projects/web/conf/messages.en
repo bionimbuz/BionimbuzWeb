@@ -100,6 +100,8 @@ datetimepicker.tooltip.next.century=Next century
 application.title=BioNimbuZ
 application.description=Cloud Federation Platform
 application.unknow.error.synchronizing.process=The server encountered an error! Check your credentials file.
+application.welcome=Welcome to BioNimbuZ!
+application.welcome.content=Select the menus available to start navigation.
 
 # Controllers
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -108,6 +110,7 @@ PluginController=Plugins
 PluginController.desc=Cloud plugins registered
 
 PriceTableController=Price Tables
+PriceTableController.desc=Prices tables available for plugins
 
 CredentialController=Credentials
 CredentialController.desc=Cloud credentials associated to the plugins
@@ -116,6 +119,7 @@ VwCredentialController=&{CredentialController}
 VwCredentialController.desc=&{CredentialController.desc}
 
 UserGroupController=Groups
+UserGroupController.desc=User groups for resource sharing
 
 ImageController=Images
 ImageController.desc=Images for cloud instances creation
@@ -123,16 +127,22 @@ ImageController.desc=Images for cloud instances creation
 ApplicationController=Applications
 
 CoordinatorController=Coordinators
+CoordinatorController.desc=Coordinators of executors
 
 ExecutorController=Executors
+ExecutorController.desc=Executors of applications
 
 InstanceController=Instances
+InstanceController.desc=Machine instances created
 
 SpaceController=Spaces
+SpaceController.desc=Spaces to upload/download files
 
 SpaceFileController=Space Files
+SpaceFileController.desc=Files available in spaces
 
 SettingController=Settings
+SettingController.desc=Platform general settings
 
 # Menus
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -237,6 +247,8 @@ firewall.separate.ports=Separate values with commas (,) or semicolons (;), ex.: 
 CoordinatorModel=Coordinator
 object.startupScript=Startup Script
 object.listImages=Images
+object.scriptExtension=Script Extension
+obs.scriptExtension=In some cloud plugins, this extension (i.e. *.BAT, *.SH, etc.) is not necessary
 
 # ExecutorModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -3,39 +3,32 @@
 #{set title:messages.get('crud.show.title', type.modelName) /}
 
 <div class="row crud-title">
-    <div class="">  
-        <div class="col-xs-12 col-sm-12 col-md-12">
-            <div class="row">
-                <h1> &{'crud.show.title', type.modelName} </h1>
-            </div>
-            
-            <pre class="col-xs-12"> &{'crud.show.title.desc', type.modelName} </pre>            
-        </div>
-    </div>
+    <h1 class="col-xs-12"> &{'crud.show.title', type.modelName} </h1>
+    <pre class="col-xs-12"> &{'crud.show.title.desc', type.modelName} </pre>
 </div>
 
 <br>
 
-<div class="row col-lg-12" >
+<div class="row" >
 #{form action:@save(object._key()), enctype:'multipart/form-data', class: 'submitForm'}
 
     #{crud.form}
-        
-        #{crud.custom 'settingName'}        
+
+        #{crud.custom 'settingName'}
             #{field 'object.settingName'}
                 <div class="form-group row">
                     <label style="font-size: 20px;" for="${field.id}">&{field.value}</label>
                 </div>
-            #{/field}            
-        #{/crud.custom}        
-        
-        #{crud.custom 'settingValue'}      
-         
+            #{/field}
+        #{/crud.custom}
+
+        #{crud.custom 'settingValue'}
+
             #{field 'object.settingValue'}
-            
-                #{set settingType: object.settingType.toString() /}            
+
+                #{set settingType: object.settingType.toString() /}
                 <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
-                
+
                 #{if settingType == 'NUMBER'}
                     <label for="${field.id}">&{field.name}</label>
                     <input id="${field.id}" class="form-control" type="number" name="${field.name}" value="${field.value}" />
@@ -59,23 +52,23 @@
                         </span>
                     </div>
                 #{/elseif}
-                
+
                 #{ifError field.name}
                     <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
-                #{/ifError} 
-                
+                #{/ifError}
+
                 </div>
-            
-            #{/field}   
-                     
+
+            #{/field}
+
         #{/crud.custom}
-    
+
     #{/crud.form}
-    
-    <div class="btn-row text-center">        
+
+    <div class="btn-row text-center">
         <input class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_save" value="&{'crud.save', type.modelName}" />
         <input class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_saveAndContinue" value="&{'crud.saveAndContinue', type.modelName}" />
-        <a href="@{list()}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>     
+        <a href="@{list()}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>
     </div>
 #{/form}
 </div>
