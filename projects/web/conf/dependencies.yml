@@ -4,6 +4,8 @@ require:
     - play 1.4.4
     - play -> crud
     - play -> secure
+    - local.provided -> ft-module latest.integration
+#    - local.provided -> ft-coordinator latest.integration
     - br.unb.cic.bionimbuz -> api-rest-plugin 0.1
     - com.squareup.retrofit2 -> retrofit 2.3.0
     - com.squareup.retrofit2 -> converter-jackson 2.3.0
@@ -18,7 +20,12 @@ repositories:
     artifact:   ${application.path}/../plugins/api-rest-plugin/target/[module]-[revision].jar
     contains:
         - br.unb.cic.bionimbuz -> *
-
+- localhost:
+    type:       local
+    artifact:   ${application.path}/lib/[module]-[revision].jar
+    contains:
+        - local.provided -> *
+        
 - jclouds:
     type: iBiblio
     root: "https://repository.apache.org/content/repositories/snapshots/"

@@ -6,3 +6,5 @@
 /tmp/
 /modules
 *.DS_Store
+/logs/
+/ft4j-aux-path/
