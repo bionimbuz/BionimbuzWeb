@@ -15,9 +15,8 @@ import app.models.Timeout;
 import app.services.BootstrapService;
 import play.Logger;
 import play.jobs.Job;
-import play.jobs.OnApplicationStart;
 
-@OnApplicationStart
+// @OnApplicationStart
 public class FaultToleranceConfigurationJob extends Job {
 
     private static final String RUNTIME_MODULE_ID = ManagementFactory.getRuntimeMXBean().getName();
