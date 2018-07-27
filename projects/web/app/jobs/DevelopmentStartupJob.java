@@ -26,6 +26,7 @@ import models.TestRelationModel;
 import models.UserGroupModel;
 import models.UserModel;
 import play.Logger;
+import play.Play;
 import play.jobs.Job;
 import play.jobs.OnApplicationStart;
 import play.test.Fixtures;
@@ -38,6 +39,10 @@ public class DevelopmentStartupJob extends Job {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @Override
     public void doJob() {
+
+        if (Play.mode.isProd()) {
+            return;
+        }
 
         // Check if Job has already ran
         if (UserModel.findByEmail("guest@bionimbuz.org.br") != null) {
@@ -81,7 +86,7 @@ public class DevelopmentStartupJob extends Job {
         this.insertExecutor(plugin, pluginLocal);
     }
 
-    private void insertExecutor(final PluginModel... plugins) {
+    private static void insertExecutor(final PluginModel... plugins) {
         final ExecutorModel executor = new ExecutorModel();
         final List<ImageModel> listImages = new ArrayList<>();
         for (final PluginModel plugin : plugins) {
@@ -97,7 +102,7 @@ public class DevelopmentStartupJob extends Job {
         executor.save();
     }
 
-    private void insertTempGroup(final String name, final UserModel... users) {
+    private static void insertTempGroup(final String name, final UserModel... users) {
         final GroupModel group = new GroupModel();
         group.setName(name);
         group.save();
@@ -110,7 +115,7 @@ public class DevelopmentStartupJob extends Job {
         }
     }
 
-    private void insertGCEImages(final PluginModel plugin) {
+    private static void insertGCEImages(final PluginModel plugin) {
         ImageModel image = new ImageModel();
         image.setName("ubuntu-1804-bionic-v20180522");
         image.setUrl("https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1804-bionic-v20180522");
@@ -125,7 +130,7 @@ public class DevelopmentStartupJob extends Job {
 
     }
 
-    private void insertLocalImages(final PluginModel plugin) {
+    private static void insertLocalImages(final PluginModel plugin) {
         final ImageModel image = new ImageModel();
         image.setName("linux-4.13.0-45-generic-amd64");
         image.setUrl("local-image-url");
@@ -162,7 +167,7 @@ public class DevelopmentStartupJob extends Job {
     //        return menu;
     //    }
 
-    private void insertCredential(final PluginModel plugin, final UserModel user) {
+    private static void insertCredential(final PluginModel plugin, final UserModel user) {
         final CredentialModel model = new CredentialModel();
         final EncryptedFileField data = new EncryptedFileField(readCredential().getBytes());
         model.setCredentialData(data);
@@ -174,7 +179,7 @@ public class DevelopmentStartupJob extends Job {
         model.save();
     }
 
-    private void insertLocalCredential(final PluginModel plugin, final UserModel user) {
+    private static void insertLocalCredential(final PluginModel plugin, final UserModel user) {
         final CredentialModel model = new CredentialModel();
         final EncryptedFileField data = new EncryptedFileField(new byte[] {});
         model.setCredentialData(data);
@@ -186,7 +191,7 @@ public class DevelopmentStartupJob extends Job {
         model.save();
     }
 
-    private PluginModel insertGCEPlugin() {
+    private static PluginModel insertGCEPlugin() {
         final PluginModel model = new PluginModel();
         model.setAuthType(app.models.PluginInfoModel.AuthenticationType.AUTH_BEARER_TOKEN);
         model.setCloudType("google-compute-engine");
@@ -202,7 +207,7 @@ public class DevelopmentStartupJob extends Job {
         return model;
     }
 
-    private PluginModel insertLocalPlugin() {
+    private static PluginModel insertLocalPlugin() {
         final PluginModel model = new PluginModel();
         model.setAuthType(app.models.PluginInfoModel.AuthenticationType.AUTH_SUPER_USER);
         model.setCloudType("local-machine");
@@ -263,28 +268,28 @@ public class DevelopmentStartupJob extends Job {
         }
     }
 
-    private String getLoremIpsum() {
+    private static String getLoremIpsum() {
         return "Lorem ipsum dolor sit amet, consectetur adipiscing elit, " + "sed do eiusmod tempor incididunt ut labore et dolore " + "magna aliqua. Ut enim ad minim veniam, quis nostrud "
                 + "exercitation ullamco laboris nisi ut aliquip ex ea commodo " + "consequat. Duis aute irure dolor in reprehenderit in "
                 + "voluptate velit esse cillum dolore eu fugiat nulla pariatur. " + "Excepteur sint occaecat cupidatat non proident, sunt in "
                 + "culpa qui officia deserunt mollit anim id est laborum.";
     }
 
-    private void insertTempPlugins(final int lenght) {
-        try {
-            for (int i = 1; i <= lenght; i++) {
-                final PluginModel model = new PluginModel();
-                model.setCloudType("cloud " + i);
-                model.setName("name " + i);
-                model.setPluginVersion("v" + i);
-                model.setUrl("http://localhost:" + i);
-                model.save();
-                this.insertGCEImages(model);
-            }
-        } catch (final Exception e) {
-            Logger.error(e.getMessage(), e);
-        }
-    }
+    //    private void insertTempPlugins(final int lenght) {
+    //        try {
+    //            for (int i = 1; i <= lenght; i++) {
+    //                final PluginModel model = new PluginModel();
+    //                model.setCloudType("cloud " + i);
+    //                model.setName("name " + i);
+    //                model.setPluginVersion("v" + i);
+    //                model.setUrl("http://localhost:" + i);
+    //                model.save();
+    //                this.insertGCEImages(model);
+    //            }
+    //        } catch (final Exception e) {
+    //            Logger.error(e.getMessage(), e);
+    //        }
+    //    }
 
     //    private UserModel insertTempUserAdmin() {
     //        try {
@@ -309,7 +314,7 @@ public class DevelopmentStartupJob extends Job {
     //        }
     //    }
 
-    private UserModel insertTempUserNormal() {
+    private static UserModel insertTempUserNormal() {
         try {
             UserModel user = UserModel.findByEmail("guest@bionimbuz.org.br");
             if (user != null) {
