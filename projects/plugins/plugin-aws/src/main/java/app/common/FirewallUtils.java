@@ -40,14 +40,20 @@ public class FirewallUtils {
             final IpProtocol protocol, 
             final List<Integer> ports) {
         if(ports == null)
-            return;
-        for(Integer port : ports) {       
-            api.authorizeSecurityGroupIngressInRegion(
-                    region, 
-                    DEFAULT_GROUP_NAME, 
-                    protocol, 
-                    port, port,
-                    DEFAULT_CIDR_IP);
+            return;        
+        
+        for(Integer port : ports) {  
+            try {            
+                api.authorizeSecurityGroupIngressInRegion(
+                        region, 
+                        DEFAULT_GROUP_NAME, 
+                        protocol, 
+                        port, port,
+                        DEFAULT_CIDR_IP);
+            } catch(final Exception e) {
+                e.printStackTrace();
+            }
+            
         }
     }
 }

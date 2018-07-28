@@ -36,7 +36,11 @@ public class InstanceController extends AbstractInstanceController {
             for (PluginInstanceModel instance : listModel) {
                 createInstance(awsApi, instance);
                 if(instance.getId() != null && !instance.getId().isEmpty()) {
-                    FirewallUtils.createRulesForInstance(awsApi, instance);
+                    try {
+                        FirewallUtils.createRulesForInstance(awsApi, instance);
+                    } catch(final Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
             return ResponseEntity.ok(

@@ -4,7 +4,8 @@ public class PluginInfoModel extends Body {
 
     public static enum AuthenticationType {
         AUTH_SUPER_USER,
-        AUTH_BEARER_TOKEN
+        AUTH_BEARER_TOKEN,
+        AUTH_AWS
     }
 
     private String name;

@@ -191,6 +191,7 @@ object.authType=Authentication Type
 object.enabled=Enabled
 AuthenticationType.AUTH_BEARER_TOKEN=Bearer Token
 AuthenticationType.AUTH_SUPER_USER=Super User
+AuthenticationType.AUTH_AWS=Amazon AWS
 
 # GroupModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

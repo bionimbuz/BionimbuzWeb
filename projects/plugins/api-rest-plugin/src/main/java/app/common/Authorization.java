@@ -22,7 +22,7 @@ import app.models.security.TokenModel;
 public class Authorization {
 
     public static final String CLOUD_TYPE_GCE = "google-compute-engine";
-    public static final String CLOUD_TYPE_AWS_EC2 = "ec2-aws";
+    public static final String CLOUD_TYPE_AWS_EC2 = "aws-ec2";
     public static final String CLOUD_TYPE_LOCAL = "local-machine";
 
     public static AuthorizationApi createApi(
@@ -72,6 +72,12 @@ public class Authorization {
         Properties properties = getProperties(cloudType);
         Supplier<Credentials> credentialSuplier =
                 getCredentialSuplier(cloudType, credentialContent);
+        
+        if(cloudType.equals(CLOUD_TYPE_AWS_EC2)) {
+            return new TokenModel(
+                    credentialSuplier.get().credential,
+                    credentialSuplier.get().identity);
+        }
 
         final String aud = properties.getProperty(OAuthProperties.AUDIENCE);
         int now = (int)ZonedDateTime.now(ZoneOffset.UTC).toEpochSecond();

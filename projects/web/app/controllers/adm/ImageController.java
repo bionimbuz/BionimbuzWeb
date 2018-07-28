@@ -41,7 +41,7 @@ public class ImageController extends BaseAdminController {
                             imageApi.listImages(
                                     token.getToken(),
                                     token.getIdentity());
-                    if(body.getContent() == null || body.getContent().isEmpty())
+                    if(body == null || body.getContent() == null || body.getContent().isEmpty())
                         continue;
                     for(PluginImageModel image : body.getContent()) {
                         listModels.add(new ImageModel(
