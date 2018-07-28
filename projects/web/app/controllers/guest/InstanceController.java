@@ -131,6 +131,7 @@ public class InstanceController extends BaseAdminController {
                         executor.getFirewallTcpRules()));
         res.setMachineType(instance.getTypeName());
         res.setType(instance.getTypeName());
+        res.setRegion(instance.getRegionName());
         res.setZone(instance.getZoneName());
         res.setStartupScript(instance.getExecutor().getStartupScript());
         res.setScriptExtension(instance.getExecutor().getScriptExtension());

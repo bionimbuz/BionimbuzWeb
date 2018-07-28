@@ -46,8 +46,11 @@ public class DevelopmentStartupJob extends Job {
 
         Fixtures.executeSQL(new File("db/init/1.sql"));
 
-        final PluginModel plugin = this.insertGCEPlugin();
-        this.insertGCEImages(plugin);
+        final PluginModel pluginGCE = this.insertGCEPlugin();
+        this.insertGCEImages(pluginGCE);
+        
+        final PluginModel pluginAWS = this.insertAWSPlugin();
+        this.insertAWSImages(pluginAWS);
 
         final PluginModel pluginLocal = this.insertLocalPlugin();
         this.insertLocalImages(pluginLocal);
@@ -72,13 +75,16 @@ public class DevelopmentStartupJob extends Job {
         this.insertTempGroup(
                 "Normal Group",
                 userNormal);
-        this.insertCredential(plugin, userAdmin);
-        this.insertCredential(plugin, userNormal);
-        this.insertCredential(plugin, userNormal);
+        this.insertGCECredential(pluginGCE, userAdmin);
+        this.insertGCECredential(pluginGCE, userNormal);
+        this.insertGCECredential(pluginGCE, userNormal);
+
+        this.insertAWSCredential(pluginAWS, userAdmin);
+        this.insertAWSCredential(pluginAWS, userNormal);
 
         this.insertLocalCredential(pluginLocal, userAdmin);
 
-        this.insertExecutor(plugin, pluginLocal);
+        this.insertExecutor(pluginGCE, pluginAWS, pluginLocal);
     }
 
     private void insertExecutor(final PluginModel... plugins) {
@@ -90,7 +96,9 @@ public class DevelopmentStartupJob extends Job {
                     plugin.getListImages().get(0));
         }
         executor.setName("Apache");
-        executor.setStartupScript("apt-get update && apt-get install -y apache2 && hostname > /var/www/index.html");
+        executor.setStartupScript(
+                "#!/bin/bash \n"
+                + "apt-get update && apt-get install -y apache2 && hostname > /var/www/index.html");
         executor.setScriptExtension("sh");
         executor.setFirewallTcpRules("80,8080");
         executor.setListImages(listImages);
@@ -122,7 +130,14 @@ public class DevelopmentStartupJob extends Job {
         image.setUrl("https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1204-precise-v20141028");
         image.setPlugin(plugin);
         image.save();
-
+    }
+    
+    private void insertAWSImages(final PluginModel plugin) {
+        ImageModel image = new ImageModel();
+        image.setName("ubuntu-xenial-16.04-amd64-server-20180627");
+        image.setUrl("ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-20180627");
+        image.setPlugin(plugin);
+        image.save();
     }
 
     private void insertLocalImages(final PluginModel plugin) {
@@ -133,42 +148,27 @@ public class DevelopmentStartupJob extends Job {
         image.save();
     }
 
-    //    private MenuModel insertMenu(
-    //            final String name,
-    //            final String iconClass,
-    //            final String path,
-    //            final short order,
-    //            final MenuModel parentMenu,
-    //            final RoleType... roleTypes) {
-    //
-    //        final MenuModel menu = new MenuModel();
-    //        menu.setName(name);
-    //        menu.setMenuOrder(order);
-    //        menu.setIconClass(iconClass);
-    //        menu.setPath(path);
-    //        menu.setParentMenu(parentMenu);
-    //        menu.save();
-    //
-    //        for (final RoleType roleType : roleTypes) {
-    //            final RoleModel role = RoleModel.findById(roleType);
-    //            List<MenuModel> menus = role.getListMenus();
-    //            if (menus == null) {
-    //                menus = new ArrayList<>();
-    //            }
-    //            menus.add(menu);
-    //            role.setListMenus(menus);
-    //        }
-    //
-    //        return menu;
-    //    }
-
-    private void insertCredential(final PluginModel plugin, final UserModel user) {
+    private void insertGCECredential(final PluginModel plugin, final UserModel user) {
         final CredentialModel model = new CredentialModel();
-        final EncryptedFileField data = new EncryptedFileField(readCredential().getBytes());
+        final EncryptedFileField data = new EncryptedFileField(
+                readCredential("credential.gce.file", "conf/credentials/credentials-gcp.json").getBytes());
         model.setCredentialData(data);
         model.setCredentialDataType("application/json");
         model.setEnabled(true);
         model.setName("Credential Google");
+        model.setPlugin(plugin);
+        model.setUser(user);
+        model.save();
+    }
+    
+    private void insertAWSCredential(final PluginModel plugin, final UserModel user) {
+        final CredentialModel model = new CredentialModel();
+        final EncryptedFileField data = new EncryptedFileField(
+                readCredential("credential.aws.file", "conf/credentials/credentials-aws.csv").getBytes());
+        model.setCredentialData(data);
+        model.setCredentialDataType("text/csv");
+        model.setEnabled(true);
+        model.setName("Credential AWS");
         model.setPlugin(plugin);
         model.setUser(user);
         model.save();
@@ -198,6 +198,22 @@ public class DevelopmentStartupJob extends Job {
         model.setInstanceWriteScope("https://www.googleapis.com/auth/compute");
         model.setStorageReadScope("https://www.googleapis.com/auth/devstorage.read_only");
         model.setStorageWriteScope("https://www.googleapis.com/auth/devstorage.read_write");
+        model.save();
+        return model;
+    }
+    
+    private PluginModel insertAWSPlugin() {
+        final PluginModel model = new PluginModel();
+        model.setAuthType(app.models.PluginInfoModel.AuthenticationType.AUTH_AWS);
+        model.setCloudType("aws-ec2");
+        model.setEnabled(true);
+        model.setName("Amazon Web Services");
+        model.setPluginVersion("0.1");
+        model.setUrl("http://localhost:8484");
+        model.setInstanceReadScope("");
+        model.setInstanceWriteScope("");
+        model.setStorageReadScope("");
+        model.setStorageWriteScope("");
         model.save();
         return model;
     }
@@ -332,11 +348,11 @@ public class DevelopmentStartupJob extends Job {
         }
     }
 
-    private static String readCredential() {
+    private static String readCredential(final String property, final String defaultPath) {
         String fileContents = null;
         try {
             fileContents = Files.toString(
-                    new File(System.getProperty("credential.file", "conf/credentials/credentials-gcp.json")),
+                    new File(System.getProperty(property, defaultPath)),
                     Charset.defaultCharset());
         } catch (final IOException e) {
             e.printStackTrace();
