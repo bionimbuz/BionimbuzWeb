@@ -41,11 +41,6 @@
             <artifactId>aws-ec2</artifactId>
             <version>${jclouds.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.jclouds.provider</groupId>
-            <artifactId>aws-s3</artifactId>
-            <version>${jclouds.version}</version>
-        </dependency>
         <!-- ##################################################  -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
