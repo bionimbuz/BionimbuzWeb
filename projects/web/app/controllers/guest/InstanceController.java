@@ -4,12 +4,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import app.client.InstanceApi;
-import app.client.InstanceRegionApi;
+import app.client.ComputingApi;
 import app.common.Authorization;
 import app.models.Body;
-import app.models.PluginInstanceModel;
-import app.models.PluginInstanceZoneModel;
+import app.models.PluginComputingInstanceModel;
+import app.models.PluginComputingZoneModel;
 import app.models.security.TokenModel;
 import common.constants.I18N;
 import common.utils.StringUtils;
@@ -116,7 +115,7 @@ public class InstanceController extends BaseAdminController {
         final InstanceModel object = InstanceModel.findById(id);
         notFoundIfNull(object);
         try {
-            InstanceApi api = new InstanceApi(object.getPlugin().getUrl());
+            ComputingApi api = new ComputingApi(object.getPlugin().getUrl());
             
             UserCredentialsReader credentialReader =
                     new UserCredentialsReader(
@@ -159,9 +158,9 @@ public class InstanceController extends BaseAdminController {
         redirect(request.controller + ".list");
     }
 
-    private static PluginInstanceModel createPluginInstance(InstanceModel instance){
+    private static PluginComputingInstanceModel createPluginInstance(InstanceModel instance){
 
-        PluginInstanceModel res = new PluginInstanceModel();
+        PluginComputingInstanceModel res = new PluginComputingInstanceModel();
 
         for(ImageModel image : instance.getExecutor().getListImages()) {
             if(image.getPlugin().getId() != instance.getPlugin().getId()) {
@@ -190,9 +189,9 @@ public class InstanceController extends BaseAdminController {
 
     private static void executeInstance(InstanceModel instance) {
 
-        InstanceApi api = new InstanceApi(instance.getPlugin().getUrl());
-        List<PluginInstanceModel> instancesToCreate = new ArrayList();
-        PluginInstanceModel instanceToCreate =
+        ComputingApi api = new ComputingApi(instance.getPlugin().getUrl());
+        List<PluginComputingInstanceModel> instancesToCreate = new ArrayList();
+        PluginComputingInstanceModel instanceToCreate =
                 createPluginInstance(instance);
         instancesToCreate.add(instanceToCreate);
 
@@ -210,8 +209,8 @@ public class InstanceController extends BaseAdminController {
                             instance.getPlugin().getInstanceWriteScope(),
                             credential);
 
-                Body<List<PluginInstanceModel>> body =
-                        api.createInstance(
+                Body<List<PluginComputingInstanceModel>> body =
+                        api.createInstances(
                                 token.getToken(),
                                 token.getIdentity(),
                                 instancesToCreate);
@@ -219,7 +218,7 @@ public class InstanceController extends BaseAdminController {
                     continue;
                 }
 
-                PluginInstanceModel instanceCreated =
+                PluginComputingInstanceModel instanceCreated =
                         body.getContent().get(0);
 
                 instance.setCloudInstanceName(instanceCreated.getName());
@@ -257,7 +256,7 @@ public class InstanceController extends BaseAdminController {
 
     private static List<String> getZones(final PluginModel plugin, final RegionModel region) {
         List<String> res = new ArrayList<>();
-        InstanceRegionApi api = new InstanceRegionApi(plugin.getUrl());
+        ComputingApi api = new ComputingApi(plugin.getUrl());
         UserCredentialsReader credentialReader =
                 new UserCredentialsReader(plugin);
         try {
@@ -269,15 +268,15 @@ public class InstanceController extends BaseAdminController {
                             plugin.getInstanceReadScope(),
                             credential);
 
-                Body<List<PluginInstanceZoneModel>> body =
-                        api.listInstanceRegionsZones(
+                Body<List<PluginComputingZoneModel>> body =
+                        api.listRegionZones(
                                 token.getToken(),
                                 token.getIdentity(),
                                 region.getName());
                 if(body.getContent() == null || body.getContent().isEmpty()) {
                     continue;
                 }
-                for(PluginInstanceZoneModel zone : body.getContent()) {
+                for(PluginComputingZoneModel zone : body.getContent()) {
                     res.add(zone.getName());
                 }
                 return res;
