@@ -95,6 +95,7 @@ public class ComputingControllerTest {
         ComputingApi api = new ComputingApi(TestUtils.getUrl(PORT));
         for (PluginComputingInstanceModel pluginInstanceModel : instances) {
             Body<Boolean> body = api.deleteInstance("", "",
+                    SystemConstants.PLUGIN_REGION,
                     SystemConstants.PLUGIN_ZONE,
                     pluginInstanceModel.getName());
             assertThat(body).isNotNull();
@@ -108,6 +109,7 @@ public class ComputingControllerTest {
         for (PluginComputingInstanceModel pluginInstanceModel : instances) {
             Body<PluginComputingInstanceModel> body =
                     api.getInstance("", "",
+                            SystemConstants.PLUGIN_REGION,
                             SystemConstants.PLUGIN_ZONE,
                             pluginInstanceModel.getName());
             assertThat(body).isNotNull();
@@ -166,13 +168,15 @@ public class ComputingControllerTest {
         // Force directory exclusion
         ComputingController.deleteInstanceDir(instanceName);
         body = api.getInstance("", "",
-                        SystemConstants.PLUGIN_ZONE,
-                        instanceName);
+                SystemConstants.PLUGIN_REGION,
+                SystemConstants.PLUGIN_ZONE,
+                instanceName);
         assertThat(body).isNull();
 
         // Force directory creation
         ComputingController.createInstanceDir(instanceName);
         body = api.getInstance("", "",
+                SystemConstants.PLUGIN_REGION,
                 SystemConstants.PLUGIN_ZONE,
                 instanceName);
         assertThat(body).isNotNull();
@@ -181,8 +185,9 @@ public class ComputingControllerTest {
         // Force directory exclusion again
         ComputingController.deleteInstanceDir(instanceName);
         body = api.getInstance("", "",
-                        SystemConstants.PLUGIN_ZONE,
-                        instanceName);
+                SystemConstants.PLUGIN_REGION,
+                SystemConstants.PLUGIN_ZONE,
+                instanceName);
         assertThat(body).isNull();
     }
 }
