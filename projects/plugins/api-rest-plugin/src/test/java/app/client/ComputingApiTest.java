@@ -20,7 +20,7 @@ import app.models.PluginComputingInstanceModel;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class InstanceApiTest {
+public class ComputingApiTest {
     
     @Autowired
     private ComputingControllerMock controller;
@@ -58,12 +58,14 @@ public class InstanceApiTest {
         PluginComputingInstanceModel model = createModel();  
         String nameCreated = model.getName();
         String zoneCreated = model.getZone();
+        String regionCreated = model.getZone();
         
         Body<PluginComputingInstanceModel> body = 
                 instanceApi.getInstance(
-                        "fake-token", "fake-identity", zoneCreated, nameCreated);
+                        "fake-token", "fake-identity", regionCreated, zoneCreated, nameCreated);
         assertThat(body.getContent().getName()).isEqualTo(nameCreated);
         assertThat(body.getContent().getZone()).isEqualTo(zoneCreated);
+        assertThat(body.getContent().getRegion()).isEqualTo(regionCreated);
     }
     
     @Test
@@ -72,10 +74,11 @@ public class InstanceApiTest {
         PluginComputingInstanceModel model = createModel();  
         String nameCreated = model.getName();
         String zoneCreated = model.getZone();
+        String regionCreated = model.getZone();
         
         Body<Boolean> body = 
                 instanceApi.deleteInstance(
-                        "fake-token", "fake-identity", zoneCreated, nameCreated);
+                        "fake-token", "fake-identity", regionCreated, zoneCreated, nameCreated);
         assertThat(body.getMessage()).isEqualTo(Body.OK);
     }      
 
@@ -105,6 +108,7 @@ public class InstanceApiTest {
         PluginComputingInstanceModel model = new PluginComputingInstanceModel();
         model.setName("instance-name");
         model.setZone("instance-zone");
+        model.setRegion("instance-region");
         return model;
     }
 }
