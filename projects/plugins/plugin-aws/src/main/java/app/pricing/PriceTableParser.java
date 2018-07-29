@@ -49,7 +49,7 @@ public class PriceTableParser {
     private static final String VAL_COMPUTE_INSTANCE = "Compute Instance";
     private static final String TAG_PRODUCT_FAMILY = "productFamily";
     private static final String TAG_FORMAT_VERSION = "formatVersion";
-    private static final String TAG_UPDATED = "publicationDate";
+    private static final String TAG_PUBLICATION_DATE = "publicationDate";
     private static final String TAG_PRODUCTS = "products";
     private static final String TAG_TERMS = "terms";
     private static final String YYYY_MM_DD = "yyyy-MM-dd";
@@ -109,7 +109,7 @@ public class PriceTableParser {
                     if(!value.equals(expectedVersion)) {
                         throw new PriceTableVersionException(value, expectedVersion);
                     }
-                } else if(TAG_UPDATED.equals(name)){
+                } else if(TAG_PUBLICATION_DATE.equals(name)){
                     jsonParser.nextToken();
                     DateFormat df = new SimpleDateFormat(
                             YYYY_MM_DD, Locale.ENGLISH);

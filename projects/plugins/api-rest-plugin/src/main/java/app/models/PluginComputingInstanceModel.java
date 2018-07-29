@@ -9,7 +9,7 @@ import java.util.TreeSet;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class PluginInstanceModel extends Body {
+public class PluginComputingInstanceModel extends Body {
 
     private String id = "";
     private String name = "";
@@ -26,11 +26,11 @@ public class PluginInstanceModel extends Body {
     private List<Integer> firewallUdpPorts;
     private List<Integer> firewallTcpPorts;
 
-    public PluginInstanceModel() {
+    public PluginComputingInstanceModel() {
         super();
     }
 
-    public PluginInstanceModel(
+    public PluginComputingInstanceModel(
             String id,
             String name,
             String machineType,
@@ -43,7 +43,7 @@ public class PluginInstanceModel extends Body {
     }
 
     public static List<String> generateUniqueNames(
-            List<PluginInstanceModel> currentZones, int size, final String prefix) {
+            List<PluginComputingInstanceModel> currentZones, int size, final String prefix) {
 
         List<String> res = new ArrayList<>();
         Set<Integer> setOfNameIds = getSetOfCurrentIds(currentZones, prefix);
@@ -67,9 +67,9 @@ public class PluginInstanceModel extends Body {
         return Integer.parseInt(nameSpplited[1].replaceAll("-", ""));
     }
 
-    protected static Set<Integer> getSetOfCurrentIds(final List<PluginInstanceModel> currentInstances, final String prefix) {
+    protected static Set<Integer> getSetOfCurrentIds(final List<PluginComputingInstanceModel> currentInstances, final String prefix) {
         Set<Integer> ids = new TreeSet<>();
-        for (PluginInstanceModel instanceModel : currentInstances) {
+        for (PluginComputingInstanceModel instanceModel : currentInstances) {
             Integer id = extractIdFromName(instanceModel.getName(), prefix);
             if(id >= 0) {
                 ids.add(id);

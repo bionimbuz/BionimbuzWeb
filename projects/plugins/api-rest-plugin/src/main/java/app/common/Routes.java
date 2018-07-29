@@ -25,37 +25,44 @@ public class Routes {
      * AbstractPricingController
      */
     public static final String PRICING = "/pricing";
-    public static final String PRICING_STATUS = "/pricing/status";
+    public static final String PRICING_STATUS = PRICING+"/status";
 
     /*
-     * AbstractInstanceController
+     * AbstractComputingController
      */
+    public static final String COMPUTING = "/computing";
+    public static final String REGIONS = "/regions";
+    public static final String ZONES = "/zones";
     public static final String INSTANCES = "/instances";
-    public static final String INSTANCES_ZONE_NAME = Routes.INSTANCES + "/{zone}" + "/{name}";
-    public static final String INSTANCES_ZONE_NAME_ = Routes.INSTANCES + "/{zone:.+}" + "/{name:.+}";
-
-    /*
-     * AbstractInstanceZoneController
-     */
-    public static final String INSTANCE_ZONES = "/instance/zones";
-
-    /*
-     * AbstractInstanceRegionController
-     */
-    public static final String INSTANCE_REGIONS = "/instance/regions";
-    public static final String INSTANCE_REGIONS_ZONES = "/instance/regions/{name}/zones";
-    public static final String INSTANCE_REGIONS_ZONES_ = "/instance/regions/{name:.+}/zones";
+    
+    public static final String COMPUTING_INSTANCES = COMPUTING + INSTANCES;
+    public static final String COMPUTING_REGIONS_ZONES_INSTANCES_NAME = 
+            COMPUTING + REGIONS + "/{region}" + ZONES + "/{zone}" + INSTANCES + "/{name}";
+    public static final String COMPUTING_REGIONS_ZONES_INSTANCES_NAME_ = 
+            COMPUTING + REGIONS + "/{region.+}" + ZONES + "/{zone.+}" + INSTANCES + "/{name.+}";
+    public static final String COMPUTING_REGIONS = COMPUTING + REGIONS;
+    public static final String COMPUTING_REGIONS_ZONES = COMPUTING + REGIONS + "/{name}" + ZONES;
+    public static final String COMPUTING_REGIONS_ZONES_ = COMPUTING + REGIONS + "{name:.+}" + ZONES;
 
     /*
      * AbstractStorageController
      */
+    public static final String STORAGE = "/storage";
     public static final String SPACES = "/spaces";
-    public static final String SPACES_NAME = "/spaces/{name}";
-    public static final String SPACES_NAME_ = "/spaces/{name:.+}";
-    public static final String SPACES_NAME_FILE_UPLOAD = "/spaces/{name}/file/{file}/upload/url";
-    public static final String SPACES_NAME_FILE_UPLOAD_ = "/spaces/{name:.+}/file/{file:.+}/upload/url";
-    public static final String SPACES_NAME_FILE_DOWNLOAD = "/spaces/{name}/file/{file}/download/url";
-    public static final String SPACES_NAME_FILE_DOWNLOAD_ = "/spaces/{name:.+}/file/{file:.+}/download/url";
+    public static final String FILES = "/files";
+    public static final String DOWNLOAD_URL = "/download/url";
+    public static final String UPLOAD_URL = "/upload/url";
+    public static final String STORAGE_SPACES = STORAGE + SPACES;
+    public static final String SPACES_NAME = STORAGE_SPACES + "/{name}";
+    public static final String SPACES_NAME_ = STORAGE_SPACES + "/{name:.+}";
+    public static final String SPACES_NAME_FILE_UPLOAD = 
+            STORAGE_SPACES + "/{name}" + FILES + "/{file}" + UPLOAD_URL;
+    public static final String SPACES_NAME_FILE_UPLOAD_ = 
+            STORAGE_SPACES + "/{name:.+}" + FILES + "/{file:.+}" + UPLOAD_URL;
+    public static final String SPACES_NAME_FILE_DOWNLOAD = 
+            STORAGE_SPACES + "/{name}" + FILES + "/{file}" + DOWNLOAD_URL;
+    public static final String SPACES_NAME_FILE_DOWNLOAD_ = 
+            STORAGE_SPACES + "/{name:.+}" + FILES + "/{file:.+}" + DOWNLOAD_URL;
 
     /*
      * StatusController

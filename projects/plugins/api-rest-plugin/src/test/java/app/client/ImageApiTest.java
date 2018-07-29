@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import app.controllers.mocks.InstanceControllerMock;
+import app.controllers.mocks.ComputingControllerMock;
 import app.models.Body;
 import app.models.PluginImageModel;
 
@@ -21,7 +21,7 @@ import app.models.PluginImageModel;
 public class ImageApiTest {
     
     @Autowired
-    private InstanceControllerMock controller;
+    private ComputingControllerMock controller;
     @Value("${local.server.port}")
     private int PORT = 0;
     

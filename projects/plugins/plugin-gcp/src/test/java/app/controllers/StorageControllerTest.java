@@ -57,7 +57,7 @@ public class StorageControllerTest {
 
         ResponseEntity<Body<PluginStorageModel>> response = this.restTemplate
                 .exchange(
-                        Routes.SPACES,
+                        Routes.STORAGE_SPACES,
                         HttpMethod.POST,
                         entity,
                         new ParameterizedTypeReference<Body<PluginStorageModel>>() {});
@@ -72,7 +72,7 @@ public class StorageControllerTest {
         ResponseEntity<Body<Boolean>> response =
                 restTemplate
                     .exchange(
-                            Routes.SPACES+"/"+BUCKET_NAME,
+                            Routes.STORAGE_SPACES+"/"+BUCKET_NAME,
                             HttpMethod.DELETE,
                             entity,
                             new ParameterizedTypeReference< Body<Boolean> >() {});

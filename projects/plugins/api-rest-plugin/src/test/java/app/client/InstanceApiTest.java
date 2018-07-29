@@ -14,16 +14,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import app.controllers.mocks.InstanceControllerMock;
+import app.controllers.mocks.ComputingControllerMock;
 import app.models.Body;
-import app.models.PluginInstanceModel;
+import app.models.PluginComputingInstanceModel;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class InstanceApiTest {
     
     @Autowired
-    private InstanceControllerMock controller;
+    private ComputingControllerMock controller;
     @Value("${local.server.port}")
     private int PORT = 0;
     
@@ -34,15 +34,15 @@ public class InstanceApiTest {
         
     @Test
     public void createTest() throws Exception {
-        InstanceApi instanceApi = new InstanceApi(getUrl());
-        List<PluginInstanceModel> listModel = createListModel();  
+        ComputingApi instanceApi = new ComputingApi(getUrl());
+        List<PluginComputingInstanceModel> listModel = createListModel();  
         
-        Body<List<PluginInstanceModel>> body = 
-                instanceApi.createInstance(
+        Body<List<PluginComputingInstanceModel>> body = 
+                instanceApi.createInstances(
                         "fake-token", "fake-identity", listModel);
-        List<PluginInstanceModel> listModelCreated = body.getContent();
+        List<PluginComputingInstanceModel> listModelCreated = body.getContent();
         
-        Iterator<PluginInstanceModel> 
+        Iterator<PluginComputingInstanceModel> 
             iteratorNew = listModel.iterator(),
             iteratorCreated = listModelCreated.iterator();
         
@@ -54,12 +54,12 @@ public class InstanceApiTest {
     
     @Test
     public void getTest() throws Exception {
-        InstanceApi instanceApi = new InstanceApi(getUrl());
-        PluginInstanceModel model = createModel();  
+        ComputingApi instanceApi = new ComputingApi(getUrl());
+        PluginComputingInstanceModel model = createModel();  
         String nameCreated = model.getName();
         String zoneCreated = model.getZone();
         
-        Body<PluginInstanceModel> body = 
+        Body<PluginComputingInstanceModel> body = 
                 instanceApi.getInstance(
                         "fake-token", "fake-identity", zoneCreated, nameCreated);
         assertThat(body.getContent().getName()).isEqualTo(nameCreated);
@@ -68,8 +68,8 @@ public class InstanceApiTest {
     
     @Test
     public void deleteTest() throws Exception {
-        InstanceApi instanceApi = new InstanceApi(getUrl());
-        PluginInstanceModel model = createModel();  
+        ComputingApi instanceApi = new ComputingApi(getUrl());
+        PluginComputingInstanceModel model = createModel();  
         String nameCreated = model.getName();
         String zoneCreated = model.getZone();
         
@@ -81,8 +81,8 @@ public class InstanceApiTest {
 
     @Test
     public void listTest() throws Exception {
-        InstanceApi instanceApi = new InstanceApi(getUrl());
-        Body<List<PluginInstanceModel>> body = 
+        ComputingApi instanceApi = new ComputingApi(getUrl());
+        Body<List<PluginComputingInstanceModel>> body = 
                 instanceApi.listInstances(
                         "fake-token", "fake-identity");
         assertThat(body.getMessage()).isEqualTo(Body.OK);
@@ -94,15 +94,15 @@ public class InstanceApiTest {
         return "http://localhost:"+PORT;
     }
     
-    private static List<PluginInstanceModel> createListModel(){
-        List<PluginInstanceModel> listModel = new ArrayList<>();
+    private static List<PluginComputingInstanceModel> createListModel(){
+        List<PluginComputingInstanceModel> listModel = new ArrayList<>();
         listModel.add(createModel());
         listModel.add(createModel());
         return listModel;
     }
     
-    private static PluginInstanceModel createModel() {
-        PluginInstanceModel model = new PluginInstanceModel();
+    private static PluginComputingInstanceModel createModel() {
+        PluginComputingInstanceModel model = new PluginComputingInstanceModel();
         model.setName("instance-name");
         model.setZone("instance-zone");
         return model;

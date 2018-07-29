@@ -110,6 +110,55 @@ public class InstanceController extends BaseAdminController {
         redirect(request.controller + ".show", object._key());
     }
 
+    public static void delete(final Long id) throws Exception {
+        final CustomObjectType type = CustomObjectType.get(getControllerClass());
+        notFoundIfNull(type);
+        final InstanceModel object = InstanceModel.findById(id);
+        notFoundIfNull(object);
+        try {
+            InstanceApi api = new InstanceApi(object.getPlugin().getUrl());
+            
+            UserCredentialsReader credentialReader =
+                    new UserCredentialsReader(
+                            object.getPlugin(),
+                            object.getCredentialUsage());
+
+            try {
+                for(String credential : credentialReader) {
+
+                    TokenModel token;
+                        token = Authorization.getToken(
+                                object.getPlugin().getCloudType(),
+                                object.getPlugin().getInstanceWriteScope(),
+                                credential);
+
+                    Body<Boolean> body =
+                            api.deleteInstance(
+                                    token.getToken(),
+                                    token.getIdentity(),
+                                    object.getZoneName(),
+                                    object.getCloudInstanceName());
+                    
+                    if(body.getContent() == null || 
+                            !body.getContent()) {
+                        continue;
+                    }
+                    break;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }           
+            
+            
+            object._delete();
+        } catch (final Exception e) {
+            flash.error(Messages.get("crud.delete.error", type.modelName));
+            redirect(request.controller + ".show", object._key());
+        }
+        flash.success(Messages.get("crud.deleted", type.modelName));
+        redirect(request.controller + ".list");
+    }
+
     private static PluginInstanceModel createPluginInstance(InstanceModel instance){
 
         PluginInstanceModel res = new PluginInstanceModel();
@@ -131,6 +180,7 @@ public class InstanceController extends BaseAdminController {
                         executor.getFirewallTcpRules()));
         res.setMachineType(instance.getTypeName());
         res.setType(instance.getTypeName());
+        res.setRegion(instance.getRegionName());
         res.setZone(instance.getZoneName());
         res.setStartupScript(instance.getExecutor().getStartupScript());
         res.setScriptExtension(instance.getExecutor().getScriptExtension());
