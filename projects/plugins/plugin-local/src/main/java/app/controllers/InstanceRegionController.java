@@ -36,7 +36,7 @@ public class InstanceRegionController extends AbstractInstanceRegionController{
             final String name) throws Exception {        
         if(SystemConstants.PLUGIN_REGION.equals(name)) {
             List<PluginInstanceZoneModel> res = new ArrayList<>();
-            res.add(InstanceZoneController.createZoneModel());
+            res.add(createZoneModel());
             return ResponseEntity.ok(
                     Body.create(res));
         }
@@ -47,5 +47,10 @@ public class InstanceRegionController extends AbstractInstanceRegionController{
     private PluginInstanceRegionModel createRegionModel() {
         return new PluginInstanceRegionModel(
                         SystemConstants.PLUGIN_REGION);
+    }
+
+    public static PluginInstanceZoneModel createZoneModel() {
+        return new PluginInstanceZoneModel(
+                        SystemConstants.PLUGIN_ZONE);
     }
 }
