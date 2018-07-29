@@ -10,10 +10,13 @@ import org.jclouds.aws.ec2.options.AWSRunInstancesOptions;
 import org.jclouds.ec2.EC2Api;
 import org.jclouds.ec2.domain.AvailabilityZoneInfo;
 import org.jclouds.ec2.domain.Image;
+import org.jclouds.ec2.domain.InstanceState;
+import org.jclouds.ec2.domain.InstanceStateChange;
 import org.jclouds.ec2.domain.Reservation;
 import org.jclouds.ec2.domain.RunningInstance;
 import org.jclouds.ec2.features.AvailabilityZoneAndRegionApi;
 import org.jclouds.ec2.features.InstanceApi;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -55,7 +58,32 @@ public class ComputingController extends AbstractComputingController {
             return ResponseEntity.ok(
                     Body.create(listModel));            
         }
-    }       
+    }     
+
+    @Override
+    protected ResponseEntity<Body<Boolean>> deleteInstance(
+            final String token,
+            final String identity,
+            final String region,
+            final String zone,
+            final String name) throws Exception {
+        
+        try(EC2Api awsApi =
+                AWSEC2Utils.createApi(
+                        identity,
+                        token)) {            
+            InstanceApi instanceApi =
+                    awsApi.getInstanceApi().get();
+            Set<? extends InstanceStateChange> instanceStateSet = 
+                    instanceApi.terminateInstancesInRegion(region, name);            
+            InstanceStateChange instanceStateChange = 
+                    instanceStateSet.iterator().next();            
+            InstanceState state = 
+                    instanceStateChange.getCurrentState();            
+            return ResponseEntity.ok(
+                    Body.create(state == InstanceState.TERMINATED));            
+        }
+    }  
 
     @Override
     protected ResponseEntity<Body<PluginComputingInstanceModel>> getInstance(
@@ -65,18 +93,28 @@ public class ComputingController extends AbstractComputingController {
             final String zone,
             final String name) throws Exception {
 
-        return null;
-    }
+        try(EC2Api awsApi =
+                AWSEC2Utils.createApi(
+                        identity,
+                        token)) {
+            InstanceApi instanceApi =
+                    awsApi.getInstanceApi().get();            
 
-    @Override
-    protected ResponseEntity<Body<Boolean>> deleteInstance(
-            final String token,
-            final String identity,
-            final String region,
-            final String zone,
-            final String name) throws Exception {
-
-        return null;
+            Set<? extends Reservation<? extends RunningInstance>> reservationSet = 
+                    instanceApi.describeInstancesInRegion(region, name);
+            Reservation<? extends RunningInstance> runningInstance = 
+                    reservationSet.iterator().next();            
+            if(runningInstance == null) {
+                return new ResponseEntity<>(
+                        Body.create(null),
+                        HttpStatus.NOT_FOUND);
+            }
+            
+            PluginComputingInstanceModel instance = new PluginComputingInstanceModel();
+            updateInstanceModel(instance, runningInstance);
+            return ResponseEntity.ok(
+                    Body.create(instance));   
+        }
     }
 
     @Override
@@ -84,7 +122,27 @@ public class ComputingController extends AbstractComputingController {
             final String token,
             final String identity) throws Exception {
 
-        return null;
+        try(EC2Api awsApi =
+                AWSEC2Utils.createApi(
+                        identity,
+                        token)) {
+            List<PluginComputingInstanceModel> res = new ArrayList<>();
+            InstanceApi instanceApi =
+                    awsApi.getInstanceApi().get();  
+            List<PluginComputingRegionModel> regions = getRegions(awsApi);
+            for (PluginComputingRegionModel region : regions) {
+                Set<? extends Reservation<? extends RunningInstance>> reservationSet = 
+                        instanceApi.describeInstancesInRegion(region.getName());
+                for (Reservation<? extends RunningInstance> runningInstance : reservationSet) {
+                    PluginComputingInstanceModel instance = new PluginComputingInstanceModel();
+                    updateInstanceModel(instance, runningInstance);
+                    res.add(instance);
+                }
+            }
+
+            return ResponseEntity.ok(
+                    Body.create(res));  
+        }
     }
     
     @Override

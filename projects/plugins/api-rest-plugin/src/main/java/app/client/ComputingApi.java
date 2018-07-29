@@ -41,26 +41,28 @@ public class ComputingApi  extends ClientApiVersioned<HttpMethods> {
     public Body<PluginComputingInstanceModel> getInstance(
             final String token,
             final String identity,
+            final String region,
             final String zone,
             final String name) throws IOException
     {
         return getHttpMethods()
                 .getInstance(
                         GlobalConstants.API_VERSION,
-                        token, identity, zone, name)
+                        token, identity, region, zone, name)
                 .execute().body();
     }
 
     public Body<Boolean> deleteInstance(
             final String token,
             final String identity,
+            final String region,
             final String zone,
             final String name) throws IOException
     {
         return getHttpMethods()
                 .deleteInstance(
                         GlobalConstants.API_VERSION,
-                        token, identity, zone, name)
+                        token, identity, region, zone, name)
                 .execute().body();
     }
 
@@ -110,6 +112,7 @@ public class ComputingApi  extends ClientApiVersioned<HttpMethods> {
                 @Header(HttpHeadersCustom.API_VERSION) final String version,
                 @Header(HttpHeaders.AUTHORIZATION) final String token,
                 @Header(HttpHeadersCustom.AUTHORIZATION_ID) final String identity,
+                @Path("region") final String region,
                 @Path("zone") final String zone,
                 @Path("name") final String name);
         @DELETE(Routes.COMPUTING_REGIONS_ZONES_INSTANCES_NAME)
@@ -117,6 +120,7 @@ public class ComputingApi  extends ClientApiVersioned<HttpMethods> {
                 @Header(HttpHeadersCustom.API_VERSION) final String version,
                 @Header(HttpHeaders.AUTHORIZATION) final String token,
                 @Header(HttpHeadersCustom.AUTHORIZATION_ID) final String identity,
+                @Path("region") final String region,
                 @Path("zone") final String zone,
                 @Path("name") final String name);
         @GET(Routes.COMPUTING_INSTANCES)

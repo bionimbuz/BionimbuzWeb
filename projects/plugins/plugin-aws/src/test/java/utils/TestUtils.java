@@ -51,7 +51,7 @@ public class TestUtils {
 
     public static Supplier<Credentials> createSupplier() throws Exception {
         String credentialContent =
-                TestUtils.readFileContent("../../web/conf/credentials/credential_aws2.csv");
+                TestUtils.readFileContent("../../web/conf/credentials/credentials-aws.csv");
 
         AWSAccessKeyFromContent awsSupplier = new AWSAccessKeyFromContent(credentialContent);
         return awsSupplier;
