@@ -36,7 +36,31 @@ public class InstanceControllerTest {
     }
 
     @Test
-    public void createInstance() throws Exception {
+    public void CRUD_Test() throws Exception {
+        List<PluginInstanceModel> instances =
+                createInstances();        
+        for (PluginInstanceModel instance : instances) {
+            deleteInstances(instance);
+        }
+    }
+    
+    public void deleteInstances(PluginInstanceModel instance) throws Exception {
+        
+        Supplier<Credentials> awsSupplier = TestUtils.createSupplier();
+        InstanceApi api = new InstanceApi(TestUtils.getUrl(PORT));
+
+        Body<Boolean> body =
+                api.deleteInstance(
+                    awsSupplier.get().credential,
+                    awsSupplier.get().identity,
+                    TestUtils.DEFAULT_ZONE, 
+                    instance.getName());
+
+        assertThat(body).isNotNull();
+        assertThat(body.getContent()).isTrue();         
+    }
+    
+    public List<PluginInstanceModel> createInstances() throws Exception {
         
         List<PluginInstanceModel> listInstance = 
                 new ArrayList<>();
@@ -52,7 +76,9 @@ public class InstanceControllerTest {
                     listInstance);
         
         assertThat(body).isNotNull();
-        assertThat(body.getContent()).isNotEmpty();        
+        assertThat(body.getContent()).isNotEmpty();    
+        
+        return body.getContent();
     }
     
     private PluginInstanceModel getInstancesToCreate() {
