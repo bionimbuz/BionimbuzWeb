@@ -43,7 +43,7 @@ public abstract class AbstractComputingController extends BaseControllerVersione
             @PathVariable(value = "region") final String region,
             @PathVariable(value = "zone") final String zone,
             @PathVariable(value = "name") final String name) {
-        return callImplementedMethod("getInstance", version, token, identity, zone, name);
+        return callImplementedMethod("getInstance", version, token, identity, region, zone, name);
     }
     @RequestMapping(path = Routes.COMPUTING_REGIONS_ZONES_INSTANCES_NAME_, method = RequestMethod.DELETE)
     private ResponseEntity<Body<Boolean>> deleteInstanceAction(
@@ -53,7 +53,7 @@ public abstract class AbstractComputingController extends BaseControllerVersione
             @PathVariable(value = "region") final String region,
             @PathVariable(value = "zone") final String zone,
             @PathVariable(value = "name") final String name) {
-        return callImplementedMethod("deleteInstance", version, token, identity, zone, name);
+        return callImplementedMethod("deleteInstance", version, token, identity, region, zone, name);
     }
     @RequestMapping(path = Routes.COMPUTING_INSTANCES, method = RequestMethod.GET)
     private ResponseEntity<Body<List<PluginComputingInstanceModel>>> listInstancesAction(
