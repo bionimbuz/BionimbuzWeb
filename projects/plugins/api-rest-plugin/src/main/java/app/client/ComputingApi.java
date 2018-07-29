@@ -5,12 +5,14 @@ import java.util.List;
 
 import com.google.common.net.HttpHeaders;
 
-import app.client.InstanceApi.HttpMethods;
+import app.client.ComputingApi.HttpMethods;
 import app.common.GlobalConstants;
 import app.common.HttpHeadersCustom;
 import app.common.Routes;
 import app.models.Body;
-import app.models.PluginInstanceModel;
+import app.models.PluginComputingInstanceModel;
+import app.models.PluginComputingRegionModel;
+import app.models.PluginComputingZoneModel;
 import retrofit2.Call;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
@@ -18,25 +20,25 @@ import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
-public class InstanceApi  extends ClientApiVersioned<HttpMethods> {
+public class ComputingApi  extends ClientApiVersioned<HttpMethods> {
 
-    public InstanceApi (final String url) {
+    public ComputingApi (final String url) {
         super(url, HttpMethods.class);
     }
 
-    public Body<List<PluginInstanceModel>> createInstance(
+    public Body<List<PluginComputingInstanceModel>> createInstances(
             final String token,
             final String identity,
-            List<PluginInstanceModel> listModel) throws IOException
+            List<PluginComputingInstanceModel> listModel) throws IOException
     {
         return getHttpMethods()
-                .createInstance(
+                .createInstances(
                         GlobalConstants.API_VERSION,
                         token, identity, listModel)
                 .execute().body();
     }
 
-    public Body<PluginInstanceModel> getInstance(
+    public Body<PluginComputingInstanceModel> getInstance(
             final String token,
             final String identity,
             final String zone,
@@ -62,7 +64,7 @@ public class InstanceApi  extends ClientApiVersioned<HttpMethods> {
                 .execute().body();
     }
 
-    public Body<List<PluginInstanceModel>> listInstances(
+    public Body<List<PluginComputingInstanceModel>> listInstances(
             final String token,
             final String identity) throws IOException
     {
@@ -73,31 +75,65 @@ public class InstanceApi  extends ClientApiVersioned<HttpMethods> {
                 .execute().body();
     }
 
+    public Body<List<PluginComputingRegionModel>> listRegions(
+            final String token,
+            final String identity) throws IOException
+    {
+        return getHttpMethods()
+                .listRegions(
+                        GlobalConstants.API_VERSION,
+                        token, identity)
+                .execute().body();
+    }
+
+    public Body<List<PluginComputingZoneModel>> listRegionZones(
+            final String token,
+            final String identity,
+            final String name) throws IOException
+    {
+        return getHttpMethods()
+                .listRegionZones(
+                        GlobalConstants.API_VERSION,
+                        token, identity, name)
+                .execute().body();
+    }
+    
     protected interface HttpMethods {
-        @POST(Routes.INSTANCES)
-        public Call<Body<List<PluginInstanceModel>>> createInstance(
+        @POST(Routes.COMPUTING_INSTANCES)
+        public Call<Body<List<PluginComputingInstanceModel>>> createInstances(
                 @Header(HttpHeadersCustom.API_VERSION) final String version,
                 @Header(HttpHeaders.AUTHORIZATION) final String token,
                 @Header(HttpHeadersCustom.AUTHORIZATION_ID) final String identity,
-                @retrofit2.http.Body List<PluginInstanceModel> listModel);
-        @GET(Routes.INSTANCES_ZONE_NAME)
-        public Call<Body<PluginInstanceModel>> getInstance(
+                @retrofit2.http.Body List<PluginComputingInstanceModel> listModel);
+        @GET(Routes.COMPUTING_REGIONS_ZONES_INSTANCES_NAME)
+        public Call<Body<PluginComputingInstanceModel>> getInstance(
                 @Header(HttpHeadersCustom.API_VERSION) final String version,
                 @Header(HttpHeaders.AUTHORIZATION) final String token,
                 @Header(HttpHeadersCustom.AUTHORIZATION_ID) final String identity,
                 @Path("zone") final String zone,
                 @Path("name") final String name);
-        @DELETE(Routes.INSTANCES_ZONE_NAME)
+        @DELETE(Routes.COMPUTING_REGIONS_ZONES_INSTANCES_NAME)
         public Call<Body<Boolean>> deleteInstance(
                 @Header(HttpHeadersCustom.API_VERSION) final String version,
                 @Header(HttpHeaders.AUTHORIZATION) final String token,
                 @Header(HttpHeadersCustom.AUTHORIZATION_ID) final String identity,
                 @Path("zone") final String zone,
                 @Path("name") final String name);
-        @GET(Routes.INSTANCES)
-        public Call<Body<List<PluginInstanceModel>>> listInstances(
+        @GET(Routes.COMPUTING_INSTANCES)
+        public Call<Body<List<PluginComputingInstanceModel>>> listInstances(
+                @Header(HttpHeadersCustom.API_VERSION) final String version,
+                @Header(HttpHeaders.AUTHORIZATION) final String token,
+                @Header(HttpHeadersCustom.AUTHORIZATION_ID) final String identity);        
+        @GET(Routes.COMPUTING_REGIONS)
+        public Call<Body<List<PluginComputingRegionModel>>> listRegions(
                 @Header(HttpHeadersCustom.API_VERSION) final String version,
                 @Header(HttpHeaders.AUTHORIZATION) final String token,
                 @Header(HttpHeadersCustom.AUTHORIZATION_ID) final String identity);
+        @GET(Routes.COMPUTING_REGIONS_ZONES)
+        public Call<Body<List<PluginComputingZoneModel>>> listRegionZones(
+                @Header(HttpHeadersCustom.API_VERSION) final String version,
+                @Header(HttpHeaders.AUTHORIZATION) final String token,
+                @Header(HttpHeadersCustom.AUTHORIZATION_ID) final String identity,
+                @Path("name") final String name);
     }
 }

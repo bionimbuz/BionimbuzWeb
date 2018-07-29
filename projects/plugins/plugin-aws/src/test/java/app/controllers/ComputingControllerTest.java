@@ -16,17 +16,19 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.google.common.base.Supplier;
 
-import app.client.InstanceApi;
+import app.client.ComputingApi;
 import app.models.Body;
-import app.models.PluginInstanceModel;
+import app.models.PluginComputingInstanceModel;
+import app.models.PluginComputingRegionModel;
+import app.models.PluginComputingZoneModel;
 import utils.TestUtils;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class InstanceControllerTest {
+public class ComputingControllerTest {
     
     @Autowired
-    private InstanceController controller;
+    private ComputingController controller;
     @Value("${local.server.port}")
     private int PORT;        
 
@@ -37,17 +39,48 @@ public class InstanceControllerTest {
 
     @Test
     public void CRUD_Test() throws Exception {
-        List<PluginInstanceModel> instances =
+        List<PluginComputingInstanceModel> instances =
                 createInstances();        
-        for (PluginInstanceModel instance : instances) {
+        for (PluginComputingInstanceModel instance : instances) {
             deleteInstances(instance);
         }
     }
+
+    @Test
+    public void list_Regions_Test() throws Exception {
+        ComputingApi api = new ComputingApi(TestUtils.getUrl(PORT));
+
+        Supplier<Credentials> awsSupplier = TestUtils.createSupplier();
+
+        Body<List<PluginComputingRegionModel>> body =
+                api.listRegions(
+                    awsSupplier.get().credential,
+                    awsSupplier.get().identity);
+
+        assertThat(body).isNotNull();
+        assertThat(body.getContent()).isNotEmpty();
+    }
+
+    @Test
+    public void list_Region_Zones_Test() throws Exception {
+        ComputingApi api = new ComputingApi(TestUtils.getUrl(PORT));
+
+        Supplier<Credentials> awsSupplier = TestUtils.createSupplier();
+
+        Body<List<PluginComputingZoneModel>> body =
+                api.listRegionZones(
+                    awsSupplier.get().credential,
+                    awsSupplier.get().identity,
+                    "us-east-1");
+
+        assertThat(body).isNotNull();
+        assertThat(body.getContent()).isNotEmpty();
+    }
     
-    public void deleteInstances(PluginInstanceModel instance) throws Exception {
+    public void deleteInstances(PluginComputingInstanceModel instance) throws Exception {
         
         Supplier<Credentials> awsSupplier = TestUtils.createSupplier();
-        InstanceApi api = new InstanceApi(TestUtils.getUrl(PORT));
+        ComputingApi api = new ComputingApi(TestUtils.getUrl(PORT));
 
         Body<Boolean> body =
                 api.deleteInstance(
@@ -60,17 +93,17 @@ public class InstanceControllerTest {
         assertThat(body.getContent()).isTrue();         
     }
     
-    public List<PluginInstanceModel> createInstances() throws Exception {
+    public List<PluginComputingInstanceModel> createInstances() throws Exception {
         
-        List<PluginInstanceModel> listInstance = 
+        List<PluginComputingInstanceModel> listInstance = 
                 new ArrayList<>();
         listInstance.add(getInstancesToCreate());
-        InstanceApi api = new InstanceApi(TestUtils.getUrl(PORT));
+        ComputingApi api = new ComputingApi(TestUtils.getUrl(PORT));
 
         Supplier<Credentials> awsSupplier = TestUtils.createSupplier();
 
-        Body<List<PluginInstanceModel>> body =
-                api.createInstance(
+        Body<List<PluginComputingInstanceModel>> body =
+                api.createInstances(
                     awsSupplier.get().credential,
                     awsSupplier.get().identity,
                     listInstance);
@@ -81,12 +114,12 @@ public class InstanceControllerTest {
         return body.getContent();
     }
     
-    private PluginInstanceModel getInstancesToCreate() {
+    private PluginComputingInstanceModel getInstancesToCreate() {
         
         List<Integer> ports = new ArrayList<>() ;
         ports.add(80);
         
-        PluginInstanceModel instance = new PluginInstanceModel();
+        PluginComputingInstanceModel instance = new PluginComputingInstanceModel();
         instance.setImageUrl(TestUtils.FREE_TIER_IMAGE_NAME);
         instance.setStartupScript(TestUtils.INSTANCE_STARTUP_SCRIPT);
         instance.setType(TestUtils.FREE_TIER_INSTANCE_TYPE);

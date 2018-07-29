@@ -26,13 +26,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import app.common.Routes;
 import app.common.SystemConstants;
 import app.models.Body;
-import app.models.PluginFirewallModel;
-import app.models.PluginInstanceModel;
+import app.models.PluginComputingInstanceModel;
+import app.models.PluginComputingRegionModel;
 import utils.TestUtils;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class InstanceControllerTest {
+public class ComputingControllerTest {
 
     private static final String INSTANCE_ZONE = "us-east1-b";
     private static final String INSTANCE_REGION = "us-east1";
@@ -45,19 +45,11 @@ public class InstanceControllerTest {
     private static final Integer LENGTH_CREATION = 2;
     
     @Autowired
-    private InstanceController controller;
+    private ComputingController controller;
     @Autowired
     private TestRestTemplate restTemplate;
     @Value("${local.server.port}")
     private int PORT;        
-    
-    private static PluginFirewallModel getApacheFirewallRule() {
-        return new PluginFirewallModel(
-                        PluginFirewallModel.PROTOCOL.tcp, 
-                        STARTUP_SCRIPT_APACHE_PORT, 
-                        new ArrayList<>());
-    }
-    
 
     @Test
     public void contexLoads() throws Exception {
@@ -66,27 +58,27 @@ public class InstanceControllerTest {
 
     @Test
     public void CRUD_Test() {
-        ResponseEntity<Body<PluginInstanceModel>> responseGet = null;        
+        ResponseEntity<Body<PluginComputingInstanceModel>> responseGet = null;        
         
-        List<PluginInstanceModel> responseList = listAllTest();        
-        List<PluginInstanceModel> newInstances = getInstancesToCreate(LENGTH_CREATION); 
-        for (PluginInstanceModel model : newInstances) {
+        List<PluginComputingInstanceModel> responseList = listAllTest();        
+        List<PluginComputingInstanceModel> newInstances = getInstancesToCreate(LENGTH_CREATION); 
+        for (PluginComputingInstanceModel model : newInstances) {
             responseGet = getInstanceTest(model);
             assertThat(responseGet.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         }        
         
-        List<PluginInstanceModel> createdInstances = createInstancesTest(newInstances);
+        List<PluginComputingInstanceModel> createdInstances = createInstancesTest(newInstances);
         assertThat(createdInstances.size()).isEqualTo(LENGTH_CREATION);        
 
         int initialSize = responseList.size();
         responseList = listAllTest();        
         assertThat(responseList.size()).isEqualTo(initialSize + LENGTH_CREATION);        
            
-        for (PluginInstanceModel model : createdInstances) {
+        for (PluginComputingInstanceModel model : createdInstances) {
             deleteInstanceTest(model);
         }        
         
-        for (PluginInstanceModel model : newInstances) {
+        for (PluginComputingInstanceModel model : newInstances) {
             responseGet = getInstanceTest(model);
             assertThat(responseGet.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         }   
@@ -95,7 +87,24 @@ public class InstanceControllerTest {
         assertThat(responseList.size()).isEqualTo(initialSize);        
     }
     
-    private void doHttGetInInstancesTest(PluginInstanceModel model) {
+    @Test
+    public void list_Regions_Test() {        
+        TestUtils.setTimeout(restTemplate.getRestTemplate(), 0);
+        HttpEntity<Void> entity = TestUtils.createEntity(SystemConstants.PLUGIN_COMPUTE_READ_SCOPE);
+    
+        ResponseEntity< Body<List<PluginComputingRegionModel>> > responseList = 
+                this.restTemplate
+                    .exchange(
+                            Routes.COMPUTING_REGIONS,
+                            HttpMethod.GET, 
+                            entity,
+                            new ParameterizedTypeReference< Body<List<PluginComputingRegionModel>> >() {});          
+        
+        assertThat(responseList.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseList.getBody()).isNotNull();
+    }
+    
+    private void doHttGetInInstancesTest(PluginComputingInstanceModel model) {
         try {            
             String url = "http://" + model.getExternalIp() + ":" + STARTUP_SCRIPT_APACHE_PORT;
             URL obj = new URL(url);
@@ -124,13 +133,13 @@ public class InstanceControllerTest {
         
     }
     
-    private void deleteInstanceTest(PluginInstanceModel model) {
+    private void deleteInstanceTest(PluginComputingInstanceModel model) {
         
         HttpEntity<Void> entity = TestUtils.createEntity(SystemConstants.PLUGIN_COMPUTE_WRITE_SCOPE);
         
         ResponseEntity<Body<Boolean>> response = this.restTemplate
                 .exchange(
-                        Routes.INSTANCES+"/"+model.getZone() + "/"+model.getName(), 
+                        Routes.COMPUTING_INSTANCES+"/"+model.getZone() + "/"+model.getName(), 
                         HttpMethod.DELETE, 
                         entity,
                         new ParameterizedTypeReference< Body<Boolean> >() {}
@@ -139,60 +148,60 @@ public class InstanceControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
     
-    private List<PluginInstanceModel> createInstancesTest(List<PluginInstanceModel> instances){
-        HttpEntity<List<PluginInstanceModel>> entity = 
+    private List<PluginComputingInstanceModel> createInstancesTest(List<PluginComputingInstanceModel> instances){
+        HttpEntity<List<PluginComputingInstanceModel>> entity = 
                 TestUtils.createEntity(instances, SystemConstants.PLUGIN_COMPUTE_WRITE_SCOPE);
         
-        ResponseEntity<Body<List<PluginInstanceModel>>> response = this.restTemplate
+        ResponseEntity<Body<List<PluginComputingInstanceModel>>> response = this.restTemplate
                 .exchange(
-                        Routes.INSTANCES, 
+                        Routes.COMPUTING_INSTANCES, 
                         HttpMethod.POST, 
                         entity,
-                        new ParameterizedTypeReference<Body<List<PluginInstanceModel>>>() {});                     
+                        new ParameterizedTypeReference<Body<List<PluginComputingInstanceModel>>>() {});                     
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         
         return response.getBody().getContent();
     }
     
-    private List<PluginInstanceModel> listAllTest() {         
+    private List<PluginComputingInstanceModel> listAllTest() {         
 
         HttpEntity<Void> entity = TestUtils.createEntity(SystemConstants.PLUGIN_COMPUTE_READ_SCOPE);
         
-        ResponseEntity< Body<List<PluginInstanceModel>> > responseList = 
+        ResponseEntity< Body<List<PluginComputingInstanceModel>> > responseList = 
                 this.restTemplate
                     .exchange(
-                            Routes.INSTANCES, 
+                            Routes.COMPUTING_INSTANCES, 
                             HttpMethod.GET, 
                             entity,
-                            new ParameterizedTypeReference< Body<List<PluginInstanceModel>> >() {});          
+                            new ParameterizedTypeReference< Body<List<PluginComputingInstanceModel>> >() {});          
         
         assertThat(responseList.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseList.getBody()).isNotNull();
         return responseList.getBody().getContent();
     }        
     
-    private ResponseEntity<Body<PluginInstanceModel>> getInstanceTest(PluginInstanceModel model) {
+    private ResponseEntity<Body<PluginComputingInstanceModel>> getInstanceTest(PluginComputingInstanceModel model) {
         
         HttpEntity<Void> entity = TestUtils.createEntity(SystemConstants.PLUGIN_COMPUTE_READ_SCOPE);
         
-        ResponseEntity<Body<PluginInstanceModel>> response = 
+        ResponseEntity<Body<PluginComputingInstanceModel>> response = 
                 this.restTemplate
                     .exchange(
-                            Routes.INSTANCES+"/"+model.getZone() + "/"+model.getName(), 
+                            Routes.COMPUTING_INSTANCES+"/"+model.getZone() + "/"+model.getName(), 
                             HttpMethod.GET, 
                             entity,
-                            new ParameterizedTypeReference< Body<PluginInstanceModel> >() {}
+                            new ParameterizedTypeReference< Body<PluginComputingInstanceModel> >() {}
                         );          
         assertThat(response).isNotNull();  
         return response;
     }
     
-    private List<PluginInstanceModel> getInstancesToCreate(int length) {
-        List<PluginInstanceModel> instances = new ArrayList<>();
+    private List<PluginComputingInstanceModel> getInstancesToCreate(int length) {
+        List<PluginComputingInstanceModel> instances = new ArrayList<>();
 
         for(int i=0;i<length;i++) {
-            PluginInstanceModel instance = new PluginInstanceModel();
+            PluginComputingInstanceModel instance = new PluginComputingInstanceModel();
             instance.setImageUrl(INSTANCE_IMAGE_URL);
             instance.setStartupScript(INSTANCE_STARTUP_SCRIPT);
             instance.setType(INSTANCE_TYPE);

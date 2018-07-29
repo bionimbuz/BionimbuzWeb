@@ -10,7 +10,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
-public class InstanceModelTest extends PluginInstanceModel {
+public class InstanceModelTest extends PluginComputingInstanceModel {
     
     @Test
     public void uniqueIdGeneration() throws Exception {  
@@ -19,7 +19,7 @@ public class InstanceModelTest extends PluginInstanceModel {
         int instancesLen = 10;        
         final String PREFIX = "bnz-inst";
         
-        List<PluginInstanceModel> lstInstancesZones = 
+        List<PluginComputingInstanceModel> lstInstancesZones = 
                 generateRandomListZone(PREFIX, instancesLen);  
         Set<Integer> currentIds = 
                 getSetOfCurrentIds(lstInstancesZones, PREFIX); 
@@ -47,13 +47,13 @@ public class InstanceModelTest extends PluginInstanceModel {
     private boolean isMutualExcluded(final Set<Integer> currentIds, List<String> namesList, String prefix) {
         
         for (Integer id : currentIds) {
-            String name = PluginInstanceModel.generateNameForId(id, prefix);
+            String name = PluginComputingInstanceModel.generateNameForId(id, prefix);
             if(namesList.contains(name))
                 return false; 
         }
         
         for (String name : namesList) {
-            Integer id = PluginInstanceModel.extractIdFromName(name, prefix);
+            Integer id = PluginComputingInstanceModel.extractIdFromName(name, prefix);
             if(currentIds.contains(id))
                 return false;            
         }
@@ -61,20 +61,20 @@ public class InstanceModelTest extends PluginInstanceModel {
         return true;        
     }
     
-    private List<PluginInstanceModel> generateRandomListZone(String instancePrefix, int instSize) {
+    private List<PluginComputingInstanceModel> generateRandomListZone(String instancePrefix, int instSize) {
 
         Set<Integer> currentIds = new HashSet<>();
         Random rand = new Random();
 
-        List<PluginInstanceModel> lstInstances = new ArrayList<>();
+        List<PluginComputingInstanceModel> lstInstances = new ArrayList<>();
         String instanceType = "type";
 
         for(int j = 0; j < instSize; j++) {
             Integer id = generateUniqueId(currentIds, rand);
             currentIds.add(id);
-            PluginInstanceModel instance = 
-                    new PluginInstanceModel(
-                            String.valueOf(j), PluginInstanceModel.generateNameForId(id, instancePrefix), 
+            PluginComputingInstanceModel instance = 
+                    new PluginComputingInstanceModel(
+                            String.valueOf(j), PluginComputingInstanceModel.generateNameForId(id, instancePrefix), 
                             instanceType, 
                             null);
             

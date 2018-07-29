@@ -42,7 +42,7 @@ public class BaseControllerTest {
         ResponseEntity<?> responseList = 
                 this.restTemplate
                     .exchange(
-                            Routes.FIREWALLS, 
+                            Routes.IMAGES, 
                             HttpMethod.GET, 
                             entity,
                             new ParameterizedTypeReference<Object>() {});      
@@ -54,7 +54,7 @@ public class BaseControllerTest {
         responseList = 
                 this.restTemplate
                     .exchange(
-                            Routes.FIREWALLS, 
+                            Routes.IMAGES, 
                             HttpMethod.GET, 
                             entity,
                             new ParameterizedTypeReference< String >() {});          

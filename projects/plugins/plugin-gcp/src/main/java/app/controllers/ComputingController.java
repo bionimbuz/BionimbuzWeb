@@ -12,8 +12,10 @@ import org.jclouds.googlecomputeengine.domain.Instance.NetworkInterface;
 import org.jclouds.googlecomputeengine.domain.Instance.NetworkInterface.AccessConfig;
 import org.jclouds.googlecomputeengine.domain.NewInstance;
 import org.jclouds.googlecomputeengine.domain.Operation;
+import org.jclouds.googlecomputeengine.domain.Region;
 import org.jclouds.googlecomputeengine.domain.Zone;
 import org.jclouds.googlecomputeengine.features.InstanceApi;
+import org.jclouds.googlecomputeengine.features.RegionApi;
 import org.jclouds.googlecomputeengine.features.ZoneApi;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,10 +26,12 @@ import app.common.GlobalConstants;
 import app.common.GoogleComputeEngineUtils;
 import app.common.Pair;
 import app.models.Body;
-import app.models.PluginInstanceModel;
+import app.models.PluginComputingInstanceModel;
+import app.models.PluginComputingRegionModel;
+import app.models.PluginComputingZoneModel;
 
 @RestController
-public class InstanceController extends AbstractInstanceController {
+public class ComputingController extends AbstractComputingController {
 
     private static final int CREATION_ATTEMPTS = 3;
 
@@ -36,15 +40,15 @@ public class InstanceController extends AbstractInstanceController {
      */
 
     @Override
-    protected ResponseEntity<Body<List<PluginInstanceModel>>> createInstance(
+    protected ResponseEntity<Body<List<PluginComputingInstanceModel>>> createInstances(
             final String token,
             final String identity,
-            final List<PluginInstanceModel> listModel) throws Exception {
+            final List<PluginComputingInstanceModel> listModel) throws Exception {
         try (
              GoogleComputeEngineApi googleApi = GoogleComputeEngineUtils.createApi(
                      identity,
                      token)) {
-            final List<PluginInstanceModel> res = listModel;
+            final List<PluginComputingInstanceModel> res = listModel;
             FirewallUtils.createRulesForInstances(googleApi, listModel);
             this.createInstances(googleApi, listModel);
             return ResponseEntity.ok(
@@ -53,9 +57,10 @@ public class InstanceController extends AbstractInstanceController {
     }
 
     @Override
-    protected ResponseEntity<Body<PluginInstanceModel>> getInstance(
+    protected ResponseEntity<Body<PluginComputingInstanceModel>> getInstance(
             final String token,
             final String identity,
+            final String region,
             final String zone,
             final String name) throws Exception {
         try (
@@ -70,7 +75,7 @@ public class InstanceController extends AbstractInstanceController {
                         HttpStatus.NOT_FOUND);
             }
 
-            final PluginInstanceModel model = new PluginInstanceModel();
+            final PluginComputingInstanceModel model = new PluginComputingInstanceModel();
             this.updateInstanceModel(instance, model);
             return ResponseEntity.ok(
                     Body.create(model));
@@ -81,6 +86,7 @@ public class InstanceController extends AbstractInstanceController {
     protected ResponseEntity<Body<Boolean>> deleteInstance(
             final String token,
             final String identity,
+            final String region,
             final String zone,
             final String name) throws Exception {
         try (
@@ -99,14 +105,43 @@ public class InstanceController extends AbstractInstanceController {
     }
 
     @Override
-    protected ResponseEntity<Body<List<PluginInstanceModel>>> listInstances(
+    protected ResponseEntity<Body<List<PluginComputingInstanceModel>>> listInstances(
             final String token,
             final String identity) throws Exception {
         try (
              GoogleComputeEngineApi googleApi = GoogleComputeEngineUtils.createApi(
                      identity,
                      token)) {
-            final List<PluginInstanceModel> res = this.getInstances(googleApi);
+            final List<PluginComputingInstanceModel> res = this.getInstances(googleApi);
+            return ResponseEntity.ok(
+                    Body.create(res));
+        }
+    }
+    
+    @Override
+    protected ResponseEntity<Body<List<PluginComputingRegionModel>>> listRegions(
+            final String token, 
+            final String identity) throws Exception {          
+        try(GoogleComputeEngineApi googleApi = 
+                GoogleComputeEngineUtils.createApi(
+                        identity, 
+                        token)) { 
+            List<PluginComputingRegionModel> res = getRegions(googleApi);     
+            return ResponseEntity.ok(
+                    Body.create(res));
+        }
+    }
+    
+    @Override
+    protected ResponseEntity<Body<List<PluginComputingZoneModel>>> listRegionZones(
+            final String token, 
+            final String identity,
+            final String name) throws Exception {          
+        try(GoogleComputeEngineApi googleApi = 
+                GoogleComputeEngineUtils.createApi(
+                        identity, 
+                        token)) { 
+            List<PluginComputingZoneModel> res = getRegionZones(googleApi, name);     
             return ResponseEntity.ok(
                     Body.create(res));
         }
@@ -116,15 +151,15 @@ public class InstanceController extends AbstractInstanceController {
      * Specific Class Methods
      */
 
-    private List<PluginInstanceModel> getInstances(final GoogleComputeEngineApi googleApi) {
+    private List<PluginComputingInstanceModel> getInstances(final GoogleComputeEngineApi googleApi) {
 
-        final List<PluginInstanceModel> res = new ArrayList<>();
+        final List<PluginComputingInstanceModel> res = new ArrayList<>();
         final ZoneApi zoneApi = googleApi.zones();
         final Iterator<ListPage<Zone>> listPages = zoneApi.list();
         while (listPages.hasNext()) {
             final ListPage<Zone> zones = listPages.next();
             for (final Zone zone : zones) {
-                final List<PluginInstanceModel> instances = this.getInstanceListForZone(googleApi, zone.name());
+                final List<PluginComputingInstanceModel> instances = this.getInstanceListForZone(googleApi, zone.name());
                 if (!instances.isEmpty()) {
                     res.addAll(instances);
                 }
@@ -134,17 +169,17 @@ public class InstanceController extends AbstractInstanceController {
         return res;
     }
 
-    private List<PluginInstanceModel> getInstanceListForZone(
+    private List<PluginComputingInstanceModel> getInstanceListForZone(
             final GoogleComputeEngineApi googleApi,
             final String zone) {
 
-        final List<PluginInstanceModel> res = new ArrayList<>();
+        final List<PluginComputingInstanceModel> res = new ArrayList<>();
         final InstanceApi instanceApi = googleApi.instancesInZone(zone);
         final Iterator<ListPage<Instance>> listPages = instanceApi.list();
         while (listPages.hasNext()) {
             final ListPage<Instance> instances = listPages.next();
             for (final Instance instance : instances) {
-                final PluginInstanceModel model = new PluginInstanceModel();
+                final PluginComputingInstanceModel model = new PluginComputingInstanceModel();
                 if (this.updateInstanceModel(instance, model)) {
                     res.add(model);
                 }
@@ -154,7 +189,7 @@ public class InstanceController extends AbstractInstanceController {
         return res;
     }
 
-    private boolean updateInstanceModel(final Instance instance, final PluginInstanceModel model) {
+    private boolean updateInstanceModel(final Instance instance, final PluginComputingInstanceModel model) {
 
         if (!instance.name().startsWith(GlobalConstants.BNZ_INSTANCE)) {
             return false;
@@ -188,28 +223,28 @@ public class InstanceController extends AbstractInstanceController {
 
     protected void createInstances(
             final GoogleComputeEngineApi googleApi,
-            final List<PluginInstanceModel> instances) throws Exception {
+            final List<PluginComputingInstanceModel> instances) throws Exception {
 
         try {
-            final List<Pair<PluginInstanceModel, Operation>> operations = new ArrayList<>();
-            for (final PluginInstanceModel instance : instances) {
+            final List<Pair<PluginComputingInstanceModel, Operation>> operations = new ArrayList<>();
+            for (final PluginComputingInstanceModel instance : instances) {
                 operations.add(new Pair<>(instance, null));
             }
 
-            final Iterator<Pair<PluginInstanceModel, Operation>> itOperations = operations.iterator();
+            final Iterator<Pair<PluginComputingInstanceModel, Operation>> itOperations = operations.iterator();
             int instancesToCreate = instances.size();
             int attempts = CREATION_ATTEMPTS; // For concurrent users       
             while ((attempts-- > 0) && (instancesToCreate > 0)) {
-                PluginInstanceModel model;
+                PluginComputingInstanceModel model;
                 Operation operation;
-                final List<String> newNames = PluginInstanceModel.generateUniqueNames(
+                final List<String> newNames = PluginComputingInstanceModel.generateUniqueNames(
                         this.getInstances(googleApi),
                         instancesToCreate,
                         GlobalConstants.BNZ_INSTANCE);
                 final Iterator<String> itNames = newNames.iterator();
 
                 while (itOperations.hasNext() && itNames.hasNext()) {
-                    final Pair<PluginInstanceModel, Operation> modelOperation = itOperations.next();
+                    final Pair<PluginComputingInstanceModel, Operation> modelOperation = itOperations.next();
                     model = modelOperation.getLeft();
                     if (!model.getName().isEmpty()) {
                         continue;
@@ -220,7 +255,7 @@ public class InstanceController extends AbstractInstanceController {
                 }
 
                 instancesToCreate = 0;
-                for (final Pair<PluginInstanceModel, Operation> modelOperation : operations) {
+                for (final Pair<PluginComputingInstanceModel, Operation> modelOperation : operations) {
                     model = modelOperation.getLeft();
                     operation = modelOperation.getRight();
                     try {
@@ -238,7 +273,7 @@ public class InstanceController extends AbstractInstanceController {
             }
 
             // Update instance informations (external and internal IP, etc.)
-            for (final PluginInstanceModel model : instances) {
+            for (final PluginComputingInstanceModel model : instances) {
                 final InstanceApi instanceApi = googleApi.instancesInZone(model.getZone());
                 final Instance instance = instanceApi.get(model.getName());
                 if (instance == null) {
@@ -255,9 +290,9 @@ public class InstanceController extends AbstractInstanceController {
 
     private void deleteInstances(
             final GoogleComputeEngineApi googleApi,
-            final List<PluginInstanceModel> instances) {
+            final List<PluginComputingInstanceModel> instances) {
 
-        for (final PluginInstanceModel instance : instances) {
+        for (final PluginComputingInstanceModel instance : instances) {
             if (instance.getName().isEmpty()) {
                 continue;
             }
@@ -267,7 +302,7 @@ public class InstanceController extends AbstractInstanceController {
 
     private Operation createInstance(
             final GoogleComputeEngineApi googleApi,
-            final PluginInstanceModel instance)
+            final PluginComputingInstanceModel instance)
             throws Exception {
 
         final URI machineTypeURL = googleApi
@@ -297,7 +332,7 @@ public class InstanceController extends AbstractInstanceController {
 
     private boolean deleteInstance(
             final GoogleComputeEngineApi googleApi,
-            final PluginInstanceModel instance) {
+            final PluginComputingInstanceModel instance) {
         return this.deleteInstance(googleApi, instance.getZone(), instance.getName());
     }
 
@@ -314,5 +349,38 @@ public class InstanceController extends AbstractInstanceController {
         final Operation operation = instanceApi.delete(name);
         GoogleComputeEngineUtils.waitOperation(googleApi, operation);
         return true;
+    }
+    
+    private List<PluginComputingRegionModel> getRegions(final GoogleComputeEngineApi googleApi){
+        
+        List<PluginComputingRegionModel> res = new ArrayList<>();        
+        RegionApi api = googleApi.regions();
+        Iterator<ListPage<Region>> listPages = api.list();
+        while (listPages.hasNext()) {
+            ListPage<Region> regions = listPages.next();
+            for (Region region : regions) {      
+                res.add(new PluginComputingRegionModel(region.name()));
+            }
+        }        
+        
+        return res;        
+    }
+    
+    private List<PluginComputingZoneModel> getRegionZones(
+            final GoogleComputeEngineApi googleApi,
+            final String name){
+        
+        List<PluginComputingZoneModel> res = new ArrayList<>();        
+        ZoneApi api = googleApi.zones();
+        Iterator<ListPage<Zone>> listPages = api.list();
+        while (listPages.hasNext()) {
+            ListPage<Zone> zones = listPages.next();
+            for (Zone zone : zones) {     
+                if(zone.name().startsWith(name)){
+                    res.add(new PluginComputingZoneModel(zone.name()));
+                }
+            }
+        }       
+        return res;            
     }
 }

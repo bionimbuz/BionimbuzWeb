@@ -17,7 +17,7 @@ import com.google.common.net.HttpHeaders;
 import app.common.HttpHeadersCustom;
 import app.common.Routes;
 import app.models.Body;
-import app.models.PluginInstanceModel;
+import app.models.PluginComputingInstanceModel;
 import app.models.PluginStorageFileDownloadModel;
 import app.models.PluginStorageFileUploadModel;
 import app.models.PluginStorageModel;
@@ -29,8 +29,8 @@ public abstract class AbstractStorageController extends BaseControllerVersioned 
      * Action Methods
      */
 
-    @RequestMapping(path = Routes.SPACES, method = RequestMethod.POST)
-    private ResponseEntity<Body<List<PluginInstanceModel>>> createSpaceAction(
+    @RequestMapping(path = Routes.STORAGE_SPACES, method = RequestMethod.POST)
+    private ResponseEntity<Body<List<PluginComputingInstanceModel>>> createSpaceAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
             @RequestHeader(value=HttpHeaders.AUTHORIZATION) final String token,
             @RequestHeader(value=HttpHeadersCustom.AUTHORIZATION_ID) final String identity,
