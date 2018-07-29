@@ -86,6 +86,7 @@ public class ComputingControllerTest {
                 api.deleteInstance(
                     awsSupplier.get().credential,
                     awsSupplier.get().identity,
+                    TestUtils.DEFAULT_REGION,
                     TestUtils.DEFAULT_ZONE, 
                     instance.getName());
 
