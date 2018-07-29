@@ -14,65 +14,70 @@ import org.jclouds.googlecomputeengine.options.FirewallOptions;
 
 import com.google.common.collect.ImmutableList;
 
-import app.models.PluginFirewallModel;
-import app.models.PluginFirewallModel.PROTOCOL;
-import app.models.PluginInstanceModel;
+import app.models.PluginComputingInstanceModel;
 
 public class FirewallUtils {  
+    
+    public static enum PROTOCOL {
+        tcp,
+        udp
+    }
 
-    public static void createRulesForInstances(GoogleComputeEngineApi googleApi, final List<PluginInstanceModel> instances) throws Exception {        
-        PluginFirewallModel firewall;
+    public static void createRulesForInstances(GoogleComputeEngineApi googleApi, final List<PluginComputingInstanceModel> instances) throws Exception {        
         // TODO: implement range list 
         List<String> range = new ArrayList<>();
         
         // First, TCP ports
         Set<Integer> ports = new TreeSet<>();        
-        for(PluginInstanceModel instance : instances) {
+        for(PluginComputingInstanceModel instance : instances) {
             ports.addAll(instance.getFirewallTcpPorts());
         }
         for(Integer port : ports) {
-            firewall = new PluginFirewallModel(PROTOCOL.tcp, port, range);
-            replaceFirewallRule(googleApi, firewall);
+            replaceFirewallRule(googleApi, PROTOCOL.tcp, port, range);
         }
         
         // Second, UDP ports
         ports = new TreeSet<>();        
-        for(PluginInstanceModel instance : instances) {
+        for(PluginComputingInstanceModel instance : instances) {
             ports.addAll(instance.getFirewallUdpPorts());
         }
         for(Integer port : ports) {
-            firewall = new PluginFirewallModel(PROTOCOL.udp, port, range);
-            replaceFirewallRule(googleApi, firewall);
+            replaceFirewallRule(googleApi, PROTOCOL.udp, port, range);
         }
     }
     
     public static void replaceFirewallRule(
             GoogleComputeEngineApi googleApi, 
-            PluginFirewallModel firewallRule
-                ) throws Exception {
+            PROTOCOL protocol,
+            Integer port,
+            List<String> range) throws Exception {
 
         URI networkURL = GoogleComputeEngineUtils.assertDefaultNetwork(googleApi);
 
         Firewall.Rule rule = Firewall.Rule.create(
-                firewallRule.getProtocol().toString(), 
-                ImmutableList.of(String.valueOf(firewallRule.getPort())));
+                protocol.toString(), 
+                ImmutableList.of(String.valueOf(port)));
         
         FirewallOptions options = new FirewallOptions()
                 .addAllowedRule(rule)
-                .sourceRanges(firewallRule.getLstRanges());
+                .sourceRanges(range);
         
         FirewallApi firewallApi = googleApi.firewalls();
-                
+
+        String name = generateName(protocol, port);
         Operation operation;        
-        Firewall firewall = firewallApi.get(
-                firewallRule.getName());
+        Firewall firewall = firewallApi.get(name);
         if(firewall != null) {        
             operation = firewallApi.update(
-                    firewallRule.getName(), options);
+                    name, options);
         } else {        
             operation = firewallApi.createInNetwork(
-                            firewallRule.getName(), networkURL, options);  
+                    name, networkURL, options);  
         }
         GoogleComputeEngineUtils.waitOperation(googleApi, operation);
+    }    
+    
+    public static String generateName(PROTOCOL protocol, Integer port) {
+        return GlobalConstants.BNZ_FIREWALL + "-" + protocol + "-" + String.valueOf(port); 
     }    
 }

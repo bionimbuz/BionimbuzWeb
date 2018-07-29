@@ -26,10 +26,12 @@ import app.common.GlobalConstants;
 import app.common.OsUtil;
 import app.common.SystemConstants;
 import app.models.Body;
-import app.models.PluginInstanceModel;
+import app.models.PluginComputingInstanceModel;
+import app.models.PluginComputingRegionModel;
+import app.models.PluginComputingZoneModel;
 
 @RestController
-public class InstanceController extends AbstractInstanceController {
+public class ComputingController extends AbstractComputingController {
 
     private static final String STARTUP_SCRIPT_NAME = "startup_script";
     private static Integer instanceIdSequence = 0;
@@ -40,17 +42,17 @@ public class InstanceController extends AbstractInstanceController {
      */
 
     @Override
-    protected ResponseEntity<Body<List<PluginInstanceModel>>> createInstance(
+    protected ResponseEntity<Body<List<PluginComputingInstanceModel>>> createInstances(
             final String token,
             final String identity,
-            final List<PluginInstanceModel> listModel) throws Exception {
+            final List<PluginComputingInstanceModel> listModel) throws Exception {
 
         checkOphanInstances();
 
-        for (PluginInstanceModel pluginInstanceModel : listModel) {
+        for (PluginComputingInstanceModel pluginInstanceModel : listModel) {
 
             String instanceName = getNewName();
-            Integer id = PluginInstanceModel.extractIdFromName(
+            Integer id = PluginComputingInstanceModel.extractIdFromName(
                             instanceName, GlobalConstants.BNZ_INSTANCE);
 
             String ip = System.getProperty(
@@ -86,9 +88,10 @@ public class InstanceController extends AbstractInstanceController {
     }
 
     @Override
-    protected ResponseEntity<Body<PluginInstanceModel>> getInstance(
+    protected ResponseEntity<Body<PluginComputingInstanceModel>> getInstance(
             final String token,
             final String identity,
+            final String region,
             final String zone,
             final String name) throws Exception {
 
@@ -101,7 +104,7 @@ public class InstanceController extends AbstractInstanceController {
         }
 
         Integer instanceId =
-                PluginInstanceModel.extractIdFromName(
+                PluginComputingInstanceModel.extractIdFromName(
                         name, GlobalConstants.BNZ_INSTANCE);
 
         InstanceProcess instanceProcess =
@@ -120,6 +123,7 @@ public class InstanceController extends AbstractInstanceController {
     protected ResponseEntity<Body<Boolean>> deleteInstance(
             final String token,
             final String identity,
+            final String region,
             final String zone,
             final String name) throws Exception {
 
@@ -128,7 +132,7 @@ public class InstanceController extends AbstractInstanceController {
         deleteInstanceDir(name);
 
         Integer instanceId =
-                PluginInstanceModel.extractIdFromName(
+                PluginComputingInstanceModel.extractIdFromName(
                         name, GlobalConstants.BNZ_INSTANCE);
 
         if(!existsInstanceProcess(instanceId)) {
@@ -145,13 +149,13 @@ public class InstanceController extends AbstractInstanceController {
     }
 
     @Override
-    protected ResponseEntity<Body<List<PluginInstanceModel>>> listInstances(
+    protected ResponseEntity<Body<List<PluginComputingInstanceModel>>> listInstances(
             final String token,
             final String identity) throws Exception {
 
         checkOphanInstances();
 
-        List<PluginInstanceModel> res = new ArrayList<>();
+        List<PluginComputingInstanceModel> res = new ArrayList<>();
         for (Map.Entry<Integer, InstanceProcess> entry : processes.entrySet()) {
             res.add(entry.getValue().getPluginInstance());
         }
@@ -160,16 +164,55 @@ public class InstanceController extends AbstractInstanceController {
                 Body.create(res));
     }
 
+    /*
+     * Overwritten Methods
+     */
+    @Override
+    protected ResponseEntity<Body<List<PluginComputingRegionModel>>> listRegions(
+            final String token,
+            final String identity) throws Exception {
+
+        List<PluginComputingRegionModel> res = new ArrayList<>();
+        res.add(createRegionModel());
+        return ResponseEntity.ok(
+                Body.create(res));
+    }
+    
+    @Override
+    protected ResponseEntity<Body<List<PluginComputingZoneModel>>> listRegionZones(
+            final String token,
+            final String identity,
+            final String name) throws Exception {        
+        if(SystemConstants.PLUGIN_REGION.equals(name)) {
+            List<PluginComputingZoneModel> res = new ArrayList<>();
+            res.add(createZoneModel());
+            return ResponseEntity.ok(
+                    Body.create(res));
+        }
+        return new ResponseEntity<>(
+                HttpStatus.NOT_FOUND);
+    }
+
+    private PluginComputingRegionModel createRegionModel() {
+        return new PluginComputingRegionModel(
+                        SystemConstants.PLUGIN_REGION);
+    }
+
+    public static PluginComputingZoneModel createZoneModel() {
+        return new PluginComputingZoneModel(
+                        SystemConstants.PLUGIN_ZONE);
+    }
+
     private static class InstanceProcess implements Runnable{
 
         private String workingDirPath;
         private Process process;
-        private PluginInstanceModel pluginInstance;
+        private PluginComputingInstanceModel pluginInstance;
 
         public InstanceProcess(
                 String workingDirPath,
                 Process process,
-                PluginInstanceModel pluginInstance) {
+                PluginComputingInstanceModel pluginInstance) {
             this.workingDirPath = workingDirPath;
             this.process = process;
             this.pluginInstance = pluginInstance;
@@ -183,7 +226,7 @@ public class InstanceController extends AbstractInstanceController {
         public Process getProcess() {
             return process;
         }
-        public PluginInstanceModel getPluginInstance() {
+        public PluginComputingInstanceModel getPluginInstance() {
             return pluginInstance;
         }
 
@@ -222,7 +265,7 @@ public class InstanceController extends AbstractInstanceController {
                 continue;
             String instanceName = file.getName();
             Integer instanceId =
-                    PluginInstanceModel.extractIdFromName(
+                    PluginComputingInstanceModel.extractIdFromName(
                             instanceName, GlobalConstants.BNZ_INSTANCE);
             if(!existsInstanceProcess(instanceId)) {
                 insertFakeProcess(instanceId);
@@ -234,7 +277,7 @@ public class InstanceController extends AbstractInstanceController {
         String instanceName = "";
         for (Integer id : processes.keySet()){
             instanceName =
-                    PluginInstanceModel.generateNameForId(
+                    PluginComputingInstanceModel.generateNameForId(
                             id, GlobalConstants.BNZ_INSTANCE);
             String instancePath =
                     getInstancePath(instanceName);
@@ -254,7 +297,7 @@ public class InstanceController extends AbstractInstanceController {
         while(true) {
             Integer newId = getNextInstanceId();
             instanceName =
-                    PluginInstanceModel.generateNameForId(
+                    PluginComputingInstanceModel.generateNameForId(
                             newId, GlobalConstants.BNZ_INSTANCE);
             String instancePath =
                     getInstancePath(instanceName);
@@ -301,10 +344,10 @@ public class InstanceController extends AbstractInstanceController {
 
     private void insertFakeProcess(Integer id) throws Exception{
 
-        PluginInstanceModel pluginInstanceModel =
-                new PluginInstanceModel();
+        PluginComputingInstanceModel pluginInstanceModel =
+                new PluginComputingInstanceModel();
         String instanceName =
-                PluginInstanceModel.generateNameForId(
+                PluginComputingInstanceModel.generateNameForId(
                         id, GlobalConstants.BNZ_INSTANCE);
         String ip = System.getProperty(
                 SystemConstants.SYSTEM_PROPERTY_IP,
