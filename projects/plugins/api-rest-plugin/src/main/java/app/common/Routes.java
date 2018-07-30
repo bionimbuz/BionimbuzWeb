@@ -32,10 +32,10 @@ public class Routes {
     public static final String COMPUTING_REGIONS_ZONES_INSTANCES_NAME = 
             COMPUTING + REGIONS + "/{region}" + ZONES + "/{zone}" + INSTANCES + "/{name}";
     public static final String COMPUTING_REGIONS_ZONES_INSTANCES_NAME_ = 
-            COMPUTING + REGIONS + "/{region.+}" + ZONES + "/{zone.+}" + INSTANCES + "/{name.+}";
+            COMPUTING + REGIONS + "/{region:.+}" + ZONES + "/{zone:.+}" + INSTANCES + "/{name:.+}";
     public static final String COMPUTING_REGIONS = COMPUTING + REGIONS;
     public static final String COMPUTING_REGIONS_ZONES = COMPUTING + REGIONS + "/{name}" + ZONES;
-    public static final String COMPUTING_REGIONS_ZONES_ = COMPUTING + REGIONS + "{name:.+}" + ZONES;
+    public static final String COMPUTING_REGIONS_ZONES_ = COMPUTING + REGIONS + "/{name:.+}" + ZONES;
 
     /*
      * AbstractStorageController

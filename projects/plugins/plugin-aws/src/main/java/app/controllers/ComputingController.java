@@ -79,9 +79,17 @@ public class ComputingController extends AbstractComputingController {
             InstanceStateChange instanceStateChange = 
                     instanceStateSet.iterator().next();            
             InstanceState state = 
-                    instanceStateChange.getCurrentState();            
+                    instanceStateChange.getCurrentState();           
+            
+            boolean terminated = 
+                    state == InstanceState.TERMINATED 
+                    || state == InstanceState.SHUTTING_DOWN 
+                    || state == InstanceState.STOPPING 
+                    || state == InstanceState.STOPPED 
+                    || state == InstanceState.SHUTTING_DOWN;
+            
             return ResponseEntity.ok(
-                    Body.create(state == InstanceState.TERMINATED));            
+                    Body.create(terminated));            
         }
     }  
 

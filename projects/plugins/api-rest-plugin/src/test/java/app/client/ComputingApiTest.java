@@ -58,7 +58,7 @@ public class ComputingApiTest {
         PluginComputingInstanceModel model = createModel();  
         String nameCreated = model.getName();
         String zoneCreated = model.getZone();
-        String regionCreated = model.getZone();
+        String regionCreated = model.getRegion();
         
         Body<PluginComputingInstanceModel> body = 
                 instanceApi.getInstance(
