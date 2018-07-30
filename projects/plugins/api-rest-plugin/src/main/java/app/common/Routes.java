@@ -8,18 +8,11 @@ public class Routes {
     public static final String INFO = "/info";
 
     /*
-     * AbstractNetworkController
-     */
-    public static final String FIREWALLS = "/firewalls";
-    public static final String FIREWALLS_NAME = Routes.FIREWALLS + "/{name}";
-    public static final String FIREWALLS_NAME_ = Routes.FIREWALLS + "/{name:.+}";
-
-    /*
      * AbstractImageController
      */
     public static final String IMAGES = "/images";
-    public static final String IMAGES_NAME = Routes.IMAGES + "/{name}";
-    public static final String IMAGES_NAME_ = Routes.IMAGES + "/{name:.+}";
+    public static final String IMAGES_NAME = IMAGES+"/{name}";
+    public static final String IMAGES_NAME_ = IMAGES+"/{name:.+}";
 
     /*
      * AbstractPricingController
@@ -52,6 +45,7 @@ public class Routes {
     public static final String FILES = "/files";
     public static final String DOWNLOAD_URL = "/download/url";
     public static final String UPLOAD_URL = "/upload/url";
+    
     public static final String STORAGE_SPACES = STORAGE + SPACES;
     public static final String SPACES_NAME = STORAGE_SPACES + "/{name}";
     public static final String SPACES_NAME_ = STORAGE_SPACES + "/{name:.+}";
