@@ -22,7 +22,8 @@ import play.jobs.OnApplicationStart;
 public class FaultToleranceConfigurationJob extends Job {
 
     private static final String RUNTIME_MODULE_ID = ManagementFactory.getRuntimeMXBean().getName();
-    private final static String STARTUP_COMMAND = "/Volumes/Data/developer/servers/play-1.4.4/play-1.4.4 start " + System.getProperty("user.dir");
+    //    private final static String STARTUP_COMMAND = "/Volumes/Data/developer/servers/play-1.4.4/play-1.4.4 start " + System.getProperty("user.dir");
+    private static final String STARTUP_COMMAND = "java -jar C:/Users/jeffe/developer/servers/play-1.4.4/play-1.4.4 start " + System.getProperty("user.dir");
     private static final String STARTUP_COORDINATOR_COMMAND = "java -jar ./conf/fault-tolerance/ft-coordinator-0.0.1-exec.jar --server.port=7775";
     private static final String FAILED_TO_START_FAULT_TOLERANCE_MODULE = "Failed to start FaultToleranceModule!";
     private static final long HEARTBEAT_TIME = 1L;
