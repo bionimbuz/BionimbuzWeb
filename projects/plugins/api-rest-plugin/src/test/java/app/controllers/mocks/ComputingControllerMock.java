@@ -27,6 +27,7 @@ public class ComputingControllerMock extends AbstractComputingController {
             String identity, String region, String zone, String name) throws Exception {        
         PluginComputingInstanceModel model = new PluginComputingInstanceModel();
         model.setZone(zone);
+        model.setRegion(region);
         model.setName(name);
         return ResponseEntity.ok().body(
                 Body.create(Body.OK, model));

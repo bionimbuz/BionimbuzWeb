@@ -135,6 +135,7 @@ public class InstanceController extends BaseAdminController {
                             api.deleteInstance(
                                     token.getToken(),
                                     token.getIdentity(),
+                                    object.getRegionName(),
                                     object.getZoneName(),
                                     object.getCloudInstanceName());
                     
