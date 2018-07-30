@@ -21,7 +21,7 @@ public class InfoController extends AbstractInfoController {
     }
     @Override
     protected AuthenticationType getAuthenticationType() {
-        return AuthenticationType.AUTH_BEARER_TOKEN;
+        return AuthenticationType.AUTH_AWS;
     }
     @Override
     protected String getName() {

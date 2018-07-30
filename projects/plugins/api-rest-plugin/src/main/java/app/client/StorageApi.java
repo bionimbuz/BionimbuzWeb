@@ -70,7 +70,7 @@ public class StorageApi  extends ClientApiVersioned<HttpMethods> {
     }
 
     protected interface HttpMethods {
-        @POST(Routes.SPACES)
+        @POST(Routes.STORAGE_SPACES)
         public Call<Body<PluginStorageModel>> createSpace(
                 @Header(HttpHeadersCustom.API_VERSION) final String version,
                 @Header(HttpHeaders.AUTHORIZATION) final String token,

@@ -6,7 +6,7 @@ import org.jclouds.ec2.EC2Api;
 import org.jclouds.ec2.features.SecurityGroupApi;
 import org.jclouds.net.domain.IpProtocol;
 
-import app.models.PluginInstanceModel;
+import app.models.PluginComputingInstanceModel;
 
 public class FirewallUtils {  
     
@@ -17,7 +17,7 @@ public class FirewallUtils {
     
     public static void createRulesForInstance(
             final EC2Api awsApi,
-            final PluginInstanceModel instance) throws Exception {      
+            final PluginComputingInstanceModel instance) throws Exception {      
         
         SecurityGroupApi api = 
                 awsApi.getSecurityGroupApiForRegion(instance.getRegion()).get();        
@@ -40,14 +40,20 @@ public class FirewallUtils {
             final IpProtocol protocol, 
             final List<Integer> ports) {
         if(ports == null)
-            return;
-        for(Integer port : ports) {       
-            api.authorizeSecurityGroupIngressInRegion(
-                    region, 
-                    DEFAULT_GROUP_NAME, 
-                    protocol, 
-                    port, port,
-                    DEFAULT_CIDR_IP);
+            return;        
+        
+        for(Integer port : ports) {  
+            try {            
+                api.authorizeSecurityGroupIngressInRegion(
+                        region, 
+                        DEFAULT_GROUP_NAME, 
+                        protocol, 
+                        port, port,
+                        DEFAULT_CIDR_IP);
+            } catch(final Exception e) {
+                e.printStackTrace();
+            }
+            
         }
     }
 }

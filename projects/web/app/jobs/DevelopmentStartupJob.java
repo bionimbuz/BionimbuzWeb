@@ -51,8 +51,11 @@ public class DevelopmentStartupJob extends Job {
 
         Fixtures.executeSQL(new File("db/init/1.sql"));
 
-        final PluginModel plugin = this.insertGCEPlugin();
-        this.insertGCEImages(plugin);
+        final PluginModel pluginGCE = this.insertGCEPlugin();
+        this.insertGCEImages(pluginGCE);
+        
+        final PluginModel pluginAWS = this.insertAWSPlugin();
+        this.insertAWSImages(pluginAWS);
 
         final PluginModel pluginLocal = this.insertLocalPlugin();
         this.insertLocalImages(pluginLocal);
@@ -77,16 +80,19 @@ public class DevelopmentStartupJob extends Job {
         this.insertTempGroup(
                 "Normal Group",
                 userNormal);
-        this.insertCredential(plugin, userAdmin);
-        this.insertCredential(plugin, userNormal);
-        this.insertCredential(plugin, userNormal);
+        this.insertGCECredential(pluginGCE, userAdmin);
+        this.insertGCECredential(pluginGCE, userNormal);
+        this.insertGCECredential(pluginGCE, userNormal);
+
+        this.insertAWSCredential(pluginAWS, userAdmin);
+        this.insertAWSCredential(pluginAWS, userNormal);
 
         this.insertLocalCredential(pluginLocal, userAdmin);
 
-        this.insertExecutor(plugin, pluginLocal);
+        this.insertExecutor(pluginGCE, pluginAWS, pluginLocal);
     }
 
-    private static void insertExecutor(final PluginModel... plugins) {
+    private void insertExecutor(final PluginModel... plugins) {
         final ExecutorModel executor = new ExecutorModel();
         final List<ImageModel> listImages = new ArrayList<>();
         for (final PluginModel plugin : plugins) {
@@ -95,14 +101,16 @@ public class DevelopmentStartupJob extends Job {
                     plugin.getListImages().get(0));
         }
         executor.setName("Apache");
-        executor.setStartupScript("apt-get update && apt-get install -y apache2 && hostname > /var/www/index.html");
+        executor.setStartupScript(
+                "#!/bin/bash \n"
+                + "apt-get update && apt-get install -y apache2 && hostname > /var/www/index.html");
         executor.setScriptExtension("sh");
         executor.setFirewallTcpRules("80,8080");
         executor.setListImages(listImages);
         executor.save();
     }
 
-    private static void insertTempGroup(final String name, final UserModel... users) {
+    private void insertTempGroup(final String name, final UserModel... users) {
         final GroupModel group = new GroupModel();
         group.setName(name);
         group.save();
@@ -115,7 +123,7 @@ public class DevelopmentStartupJob extends Job {
         }
     }
 
-    private static void insertGCEImages(final PluginModel plugin) {
+    private void insertGCEImages(final PluginModel plugin) {
         ImageModel image = new ImageModel();
         image.setName("ubuntu-1804-bionic-v20180522");
         image.setUrl("https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1804-bionic-v20180522");
@@ -127,10 +135,17 @@ public class DevelopmentStartupJob extends Job {
         image.setUrl("https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1204-precise-v20141028");
         image.setPlugin(plugin);
         image.save();
-
+    }
+    
+    private void insertAWSImages(final PluginModel plugin) {
+        ImageModel image = new ImageModel();
+        image.setName("ubuntu-xenial-16.04-amd64-server-20180627");
+        image.setUrl("ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-20180627");
+        image.setPlugin(plugin);
+        image.save();
     }
 
-    private static void insertLocalImages(final PluginModel plugin) {
+    private void insertLocalImages(final PluginModel plugin) {
         final ImageModel image = new ImageModel();
         image.setName("linux-4.13.0-45-generic-amd64");
         image.setUrl("local-image-url");
@@ -138,38 +153,10 @@ public class DevelopmentStartupJob extends Job {
         image.save();
     }
 
-    //    private MenuModel insertMenu(
-    //            final String name,
-    //            final String iconClass,
-    //            final String path,
-    //            final short order,
-    //            final MenuModel parentMenu,
-    //            final RoleType... roleTypes) {
-    //
-    //        final MenuModel menu = new MenuModel();
-    //        menu.setName(name);
-    //        menu.setMenuOrder(order);
-    //        menu.setIconClass(iconClass);
-    //        menu.setPath(path);
-    //        menu.setParentMenu(parentMenu);
-    //        menu.save();
-    //
-    //        for (final RoleType roleType : roleTypes) {
-    //            final RoleModel role = RoleModel.findById(roleType);
-    //            List<MenuModel> menus = role.getListMenus();
-    //            if (menus == null) {
-    //                menus = new ArrayList<>();
-    //            }
-    //            menus.add(menu);
-    //            role.setListMenus(menus);
-    //        }
-    //
-    //        return menu;
-    //    }
-
-    private static void insertCredential(final PluginModel plugin, final UserModel user) {
+    private void insertGCECredential(final PluginModel plugin, final UserModel user) {
         final CredentialModel model = new CredentialModel();
-        final EncryptedFileField data = new EncryptedFileField(readCredential().getBytes());
+        final EncryptedFileField data = new EncryptedFileField(
+                readCredential("credential.gce.file", "conf/credentials/credentials-gcp.json").getBytes());
         model.setCredentialData(data);
         model.setCredentialDataType("application/json");
         model.setEnabled(true);
@@ -178,8 +165,21 @@ public class DevelopmentStartupJob extends Job {
         model.setUser(user);
         model.save();
     }
+    
+    private void insertAWSCredential(final PluginModel plugin, final UserModel user) {
+        final CredentialModel model = new CredentialModel();
+        final EncryptedFileField data = new EncryptedFileField(
+                readCredential("credential.aws.file", "conf/credentials/credentials-aws.csv").getBytes());
+        model.setCredentialData(data);
+        model.setCredentialDataType("text/csv");
+        model.setEnabled(true);
+        model.setName("Credential AWS");
+        model.setPlugin(plugin);
+        model.setUser(user);
+        model.save();
+    }
 
-    private static void insertLocalCredential(final PluginModel plugin, final UserModel user) {
+    private void insertLocalCredential(final PluginModel plugin, final UserModel user) {
         final CredentialModel model = new CredentialModel();
         final EncryptedFileField data = new EncryptedFileField(new byte[] {});
         model.setCredentialData(data);
@@ -191,7 +191,7 @@ public class DevelopmentStartupJob extends Job {
         model.save();
     }
 
-    private static PluginModel insertGCEPlugin() {
+    private PluginModel insertGCEPlugin() {
         final PluginModel model = new PluginModel();
         model.setAuthType(app.models.PluginInfoModel.AuthenticationType.AUTH_BEARER_TOKEN);
         model.setCloudType("google-compute-engine");
@@ -206,8 +206,24 @@ public class DevelopmentStartupJob extends Job {
         model.save();
         return model;
     }
+    
+    private PluginModel insertAWSPlugin() {
+        final PluginModel model = new PluginModel();
+        model.setAuthType(app.models.PluginInfoModel.AuthenticationType.AUTH_AWS);
+        model.setCloudType("aws-ec2");
+        model.setEnabled(true);
+        model.setName("Amazon Web Services");
+        model.setPluginVersion("0.1");
+        model.setUrl("http://localhost:8484");
+        model.setInstanceReadScope("");
+        model.setInstanceWriteScope("");
+        model.setStorageReadScope("");
+        model.setStorageWriteScope("");
+        model.save();
+        return model;
+    }
 
-    private static PluginModel insertLocalPlugin() {
+    private PluginModel insertLocalPlugin() {
         final PluginModel model = new PluginModel();
         model.setAuthType(app.models.PluginInfoModel.AuthenticationType.AUTH_SUPER_USER);
         model.setCloudType("local-machine");
@@ -268,28 +284,28 @@ public class DevelopmentStartupJob extends Job {
         }
     }
 
-    private static String getLoremIpsum() {
+    private String getLoremIpsum() {
         return "Lorem ipsum dolor sit amet, consectetur adipiscing elit, " + "sed do eiusmod tempor incididunt ut labore et dolore " + "magna aliqua. Ut enim ad minim veniam, quis nostrud "
                 + "exercitation ullamco laboris nisi ut aliquip ex ea commodo " + "consequat. Duis aute irure dolor in reprehenderit in "
                 + "voluptate velit esse cillum dolore eu fugiat nulla pariatur. " + "Excepteur sint occaecat cupidatat non proident, sunt in "
                 + "culpa qui officia deserunt mollit anim id est laborum.";
     }
 
-    //    private void insertTempPlugins(final int lenght) {
-    //        try {
-    //            for (int i = 1; i <= lenght; i++) {
-    //                final PluginModel model = new PluginModel();
-    //                model.setCloudType("cloud " + i);
-    //                model.setName("name " + i);
-    //                model.setPluginVersion("v" + i);
-    //                model.setUrl("http://localhost:" + i);
-    //                model.save();
-    //                this.insertGCEImages(model);
-    //            }
-    //        } catch (final Exception e) {
-    //            Logger.error(e.getMessage(), e);
-    //        }
-    //    }
+    private void insertTempPlugins(final int lenght) {
+        try {
+            for (int i = 1; i <= lenght; i++) {
+                final PluginModel model = new PluginModel();
+                model.setCloudType("cloud " + i);
+                model.setName("name " + i);
+                model.setPluginVersion("v" + i);
+                model.setUrl("http://localhost:" + i);
+                model.save();
+                this.insertGCEImages(model);
+            }
+        } catch (final Exception e) {
+            Logger.error(e.getMessage(), e);
+        }
+    }
 
     //    private UserModel insertTempUserAdmin() {
     //        try {
@@ -314,7 +330,7 @@ public class DevelopmentStartupJob extends Job {
     //        }
     //    }
 
-    private static UserModel insertTempUserNormal() {
+    private UserModel insertTempUserNormal() {
         try {
             UserModel user = UserModel.findByEmail("guest@bionimbuz.org.br");
             if (user != null) {
@@ -337,11 +353,11 @@ public class DevelopmentStartupJob extends Job {
         }
     }
 
-    private static String readCredential() {
+    private static String readCredential(final String property, final String defaultPath) {
         String fileContents = null;
         try {
             fileContents = Files.toString(
-                    new File(System.getProperty("credential.file", "conf/credentials/credentials-gcp.json")),
+                    new File(System.getProperty(property, defaultPath)),
                     Charset.defaultCharset());
         } catch (final IOException e) {
             e.printStackTrace();

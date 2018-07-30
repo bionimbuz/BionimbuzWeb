@@ -1,6 +1,8 @@
 package app.controllers;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -83,6 +85,13 @@ public class ImageController extends AbstractImageController{
             for (Image image : images) {
                 res.add(createImageModel(image));
             }
+            
+            Collections.sort(res, new Comparator<PluginImageModel>(){
+                @Override
+                public int compare(PluginImageModel o1, PluginImageModel o2) {
+                    return o1.getName().compareTo(o2.getName());
+                }
+            });
 
             return ResponseEntity.ok(
                     Body.create(res));                 
