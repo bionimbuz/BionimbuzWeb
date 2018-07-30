@@ -24,7 +24,7 @@ import app.services.BootstrapService;
 
 @SpringBootApplication
 @EnableScheduling
-public class Application {
+public class ApplicationGCP {
 
     private static final String APPLICATION_STARTUP_TIME = "Application startup time: ";
     private static final Instant START = Instant.now();
