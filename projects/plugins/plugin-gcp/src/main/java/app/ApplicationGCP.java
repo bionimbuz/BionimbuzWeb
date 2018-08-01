@@ -38,7 +38,7 @@ public class ApplicationGCP {
     private static final long HEARTBEAT_TIME = 3L;
 
     public static void main(final String[] args) {
-        SpringApplication.run(Application.class, args);
+        SpringApplication.run(ApplicationGCP.class, args);
     }
 
     @EventListener(ApplicationReadyEvent.class)

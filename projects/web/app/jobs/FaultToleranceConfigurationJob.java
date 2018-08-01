@@ -34,8 +34,8 @@ public class FaultToleranceConfigurationJob extends Job {
     @Override
     public void doJob() {
 
-        startFaultToleranceModule();
-        new FaultInjectionMTBFThread().start();
+        //        startFaultToleranceModule();
+        //        new FaultInjectionMTBFThread().start();
     }
 
     private static void startFaultToleranceModule() {
