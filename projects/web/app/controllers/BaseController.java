@@ -38,6 +38,10 @@ public class BaseController extends CRUD {
         renderArgs.put("type", type);
     }
 
+    public static void imalive() {
+        renderJSON(true);
+    }
+
     public static void index() {
         if (getControllerClass() == CRUD.class) {
             forbidden();
@@ -45,7 +49,7 @@ public class BaseController extends CRUD {
         render("CRUD/index.html");
     }
 
-    public static void list(int page, String search, String searchFields, String orderBy, String order) {
+    public static void list(int page, final String search, final String searchFields, final String orderBy, final String order) {
         final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);
         if (page < 1) {
@@ -61,7 +65,7 @@ public class BaseController extends CRUD {
         }
     }
 
-    public static void show(String id) throws Exception {
+    public static void show(final String id) throws Exception {
         final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);
         final Model object = type.findById(id);
@@ -73,9 +77,8 @@ public class BaseController extends CRUD {
             render("CRUD/show.html", type, object);
         }
     }
-    
 
-    public static void save(String id) throws Exception {
+    public static void save(final String id) throws Exception {
         final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);
         final Model object = type.findById(id);
@@ -142,7 +145,7 @@ public class BaseController extends CRUD {
         redirect(request.controller + ".show", object._key());
     }
 
-    public static void delete(String id) throws Exception {
+    public static void delete(final String id) throws Exception {
         final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);
         final Model object = type.findById(id);
@@ -158,7 +161,7 @@ public class BaseController extends CRUD {
     }
 
     @SuppressWarnings("deprecation")
-    public static void attachment(String id, String field) throws Exception {
+    public static void attachment(final String id, final String field) throws Exception {
         final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);
         final Model object = type.findById(id);
@@ -172,11 +175,10 @@ public class BaseController extends CRUD {
             if (attachment == null || !attachment.exists()) {
                 notFound();
             }
-            if(att instanceof FileField) {
-                response.contentType = ((FileField)att).getType();
-                renderBinary(attachment.get(), ((FileField)att).getFileName(), attachment.length());
-            }
-            else {
+            if (att instanceof FileField) {
+                response.contentType = ((FileField) att).getType();
+                renderBinary(attachment.get(), ((FileField) att).getFileName(), attachment.length());
+            } else {
                 response.contentType = attachment.type();
                 renderBinary(attachment.get(), attachment.length());
             }
@@ -190,73 +192,76 @@ public class BaseController extends CRUD {
             renderBinary(attachment.get(), attachment.filename);
         }
         notFound();
-    }    
+    }
 
-    protected static void bindFileFieldsMetadata(Model object) throws Exception {
-        Class<?> c = object.getClass();
-        for (Field field : c.getDeclaredFields()) {
+    protected static void bindFileFieldsMetadata(final Model object) throws Exception {
+        final Class<?> c = object.getClass();
+        for (final Field field : c.getDeclaredFields()) {
             if (!FileField.class.isAssignableFrom(field.getType())) {
                 continue;
             }
-            
+
             field.setAccessible(true);
-            FileField fileField = (FileField)field.get(object);
-            if(fileField == null) {
+            final FileField fileField = (FileField) field.get(object);
+            if (fileField == null) {
                 continue;
             }
-            FileFieldName fieldName = field.getAnnotation(FileFieldName.class);            
-            if(fieldName != null && fileField.getFileName() != null) {
-                Field reflectField = object.getClass().getDeclaredField(fieldName.value());
-                if(reflectField != null) {
+            final FileFieldName fieldName = field.getAnnotation(FileFieldName.class);
+            if (fieldName != null && fileField.getFileName() != null) {
+                final Field reflectField = object.getClass().getDeclaredField(fieldName.value());
+                if (reflectField != null) {
                     reflectField.setAccessible(true);
                     reflectField.set(object, fileField.getFileName());
                 }
             }
-            FileFieldType fieldType = field.getAnnotation(FileFieldType.class);
-            if(fieldType != null && fileField.getType() != null) {
-                Field reflectField = object.getClass().getDeclaredField(fieldType.value());
-                if(reflectField != null) {
+            final FileFieldType fieldType = field.getAnnotation(FileFieldType.class);
+            if (fieldType != null && fileField.getType() != null) {
+                final Field reflectField = object.getClass().getDeclaredField(fieldType.value());
+                if (reflectField != null) {
                     reflectField.setAccessible(true);
                     reflectField.set(object, fileField.getType());
                 }
             }
         }
     }
-    
-    protected static void unbindFileFieldsMetadata(Model object) throws Exception {
-        Class<?> c = object.getClass();
-        for (Field field : c.getDeclaredFields()) {
+
+    protected static void unbindFileFieldsMetadata(final Model object) throws Exception {
+        final Class<?> c = object.getClass();
+        for (final Field field : c.getDeclaredFields()) {
             if (!FileField.class.isAssignableFrom(field.getType())) {
                 continue;
-            }            
+            }
             field.setAccessible(true);
-            FileField fileField = (FileField)field.get(object);
-            if(fileField == null)
+            final FileField fileField = (FileField) field.get(object);
+            if (fileField == null) {
                 continue;
-            FileFieldName fieldName = field.getAnnotation(FileFieldName.class);            
-            if(fieldName != null) {
-                Field reflectField = object.getClass().getDeclaredField(fieldName.value());
-                if(reflectField != null) {
+            }
+            final FileFieldName fieldName = field.getAnnotation(FileFieldName.class);
+            if (fieldName != null) {
+                final Field reflectField = object.getClass().getDeclaredField(fieldName.value());
+                if (reflectField != null) {
                     reflectField.setAccessible(true);
-                    String value = (String)reflectField.get(object);
-                    if(value != null)
+                    final String value = (String) reflectField.get(object);
+                    if (value != null) {
                         fileField.setFileName(value);
+                    }
                 }
             }
-            FileFieldType fieldType = field.getAnnotation(FileFieldType.class);
-            if(fieldType != null) {
-                Field reflectField = object.getClass().getDeclaredField(fieldType.value());
-                if(reflectField != null) {
+            final FileFieldType fieldType = field.getAnnotation(FileFieldType.class);
+            if (fieldType != null) {
+                final Field reflectField = object.getClass().getDeclaredField(fieldType.value());
+                if (reflectField != null) {
                     reflectField.setAccessible(true);
-                    String value = (String)reflectField.get(object);
-                    if(value != null)
+                    final String value = (String) reflectField.get(object);
+                    if (value != null) {
                         fileField.setType(value);
+                    }
                 }
             }
         }
     }
-    
-    protected static ObjectType createObjectType(Class<? extends Model> entityClass) {
+
+    protected static ObjectType createObjectType(final Class<? extends Model> entityClass) {
         return new CustomObjectType(entityClass);
     }
 
@@ -269,7 +274,7 @@ public class BaseController extends CRUD {
             super(modelClass);
         }
 
-        public static CustomObjectType get(Class<? extends Controller> controllerClass) {
+        public static CustomObjectType get(final Class<? extends Controller> controllerClass) {
 
             return (CustomObjectType) ObjectType.get(controllerClass);
         }

@@ -2,6 +2,7 @@ package models;
 
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -21,10 +22,10 @@ import play.db.jpa.GenericModel;
 
 @Entity
 @Inheritance
-@DiscriminatorColumn(name="type")
+@DiscriminatorColumn(name = "type")
 @Table(name = "tb_application")
 public class ApplicationModel extends GenericModel {
-    
+
     @Id
     @GeneratedValue
     private Long id;
@@ -33,8 +34,9 @@ public class ApplicationModel extends GenericModel {
     @MinSize(3)
     private String name;
     @Required
-    @MaxSize(500)
+    @MaxSize(5000)
     @MinSize(3)
+    @Column(length = 5000)
     private String startupScript;
     @MaxSize(10)
     private String scriptExtension;
@@ -53,51 +55,67 @@ public class ApplicationModel extends GenericModel {
     // Getters and Setters
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public Long getId() {
-        return id;
+        return this.id;
     }
+
     public void setId(final Long id) {
         this.id = id;
     }
+
     public String getName() {
-        return name;
+        return this.name;
     }
+
     public void setName(final String name) {
         this.name = name;
     }
+
     public String getStartupScript() {
-        return startupScript;
+        return this.startupScript;
     }
-    public void setStartupScript(String startupScript) {
-    	this.startupScript = startupScript;
-        if(startupScript != null && !startupScript.isEmpty()) {
-        	this.startupScript = startupScript.replace("\r", "");    		
+
+    public void setStartupScript(final String startupScript) {
+        this.startupScript = startupScript;
+        if (startupScript != null && !startupScript.isEmpty()) {
+            this.startupScript = startupScript.replace("\r", "");
         }
     }
+
     public List<ImageModel> getListImages() {
-        return listImages;
+        return this.listImages;
     }
-    public void setListImages(List<ImageModel> listImages) {
+
+    public void setListImages(final List<ImageModel> listImages) {
         this.listImages = listImages;
-    }    
-    public String getFirewallUdpRules() {
-        return firewallUdpRules;
     }
-    public void setFirewallUdpRules(String firewallUdpRules) {
+
+    public String getFirewallUdpRules() {
+        return this.firewallUdpRules;
+    }
+
+    public void setFirewallUdpRules(final String firewallUdpRules) {
         this.firewallUdpRules = firewallUdpRules;
     }
+
     public String getFirewallTcpRules() {
-        return firewallTcpRules;
+        return this.firewallTcpRules;
     }
-    public void setFirewallTcpRules(String firewallTcpRules) {
+
+    public void setFirewallTcpRules(final String firewallTcpRules) {
         this.firewallTcpRules = firewallTcpRules;
-    }    
-    public String getScriptExtension() {
-        return scriptExtension;
     }
-    public void setScriptExtension(String scriptExtension) {
+
+    public String getScriptExtension() {
+        return this.scriptExtension;
+    }
+
+    public void setScriptExtension(final String scriptExtension) {
         this.scriptExtension = scriptExtension;
     }
-    
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // * @see play.db.jpa.JPABase#toString()
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @Override
     public String toString() {
         return this.name;
