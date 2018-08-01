@@ -68,7 +68,10 @@ public class ApplicationModel extends GenericModel {
         return startupScript;
     }
     public void setStartupScript(String startupScript) {
-        this.startupScript = startupScript;
+    	this.startupScript = startupScript;
+        if(startupScript != null && !startupScript.isEmpty()) {
+        	this.startupScript = startupScript.replace("\r", "");    		
+        }
     }
     public List<ImageModel> getListImages() {
         return listImages;
