@@ -8,6 +8,8 @@ import java.util.List;
 import common.binders.FileFieldName;
 import common.binders.FileFieldType;
 import common.fields.FileField;
+import jobs.FaultToleranceConfigurationJob.FaultInjectionMTBFThread;
+import play.Logger;
 import play.data.binding.Binder;
 import play.data.validation.Validation;
 import play.db.Model;
@@ -40,6 +42,14 @@ public class BaseController extends CRUD {
 
     public static void imalive() {
         renderJSON(true);
+    }
+
+    public static void startFaultInjection() {
+
+        Logger.info("Starting fault injection thread");
+        final FaultInjectionMTBFThread thread = new FaultInjectionMTBFThread();
+        thread.start();
+        renderText("Fault Injection Thread status: running: " + thread.isAlive());
     }
 
     public static void index() {

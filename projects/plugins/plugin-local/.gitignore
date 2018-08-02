@@ -4,6 +4,7 @@
 /.settings/
 /pricing/
 /spaces/
+*.DS_Store
 !/spaces/test/test_input1.txt
 !/spaces/test/test_input2.txt
 /instances/

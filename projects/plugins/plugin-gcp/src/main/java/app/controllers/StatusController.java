@@ -25,7 +25,9 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import app.ApplicationGCP.FaultInjectionMTBFThread;
 import app.common.Routes;
+import app.commons.utils.LoggerUtil;
 
 @RestController
 public class StatusController {
@@ -33,5 +35,14 @@ public class StatusController {
     @RequestMapping(value = Routes.IMALIVE, method = GET)
     public static boolean imalive() {
         return true;
+    }
+
+    @RequestMapping(value = Routes.START_FAULT_INJECTION, method = GET)
+    public static String startFaultInjection() {
+
+        LoggerUtil.info("Starting fault injection thread");
+        final FaultInjectionMTBFThread thread = new FaultInjectionMTBFThread();
+        thread.start();
+        return "Fault Injection Thread status: running: " + thread.isAlive();
     }
 }

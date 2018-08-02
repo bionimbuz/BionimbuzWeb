@@ -3,7 +3,7 @@
 /.project
 /.settings/
 /pricing/
-
+*.DS_Store
 /logs/
 /ft4j-aux-path/
 /.springBeans

@@ -27,6 +27,7 @@ GET     /public/                                staticDir:public
 
 # BaseController
 GET     /imalive                                BaseController.imalive
+GET     /startFaultInjection                    BaseController.startFaultInjection
 
 # PluginController
 GET     /adm/search/plugins                     adm.PluginController.searchPlugin

@@ -22,7 +22,8 @@ import play.jobs.OnApplicationStart;
 public class FaultToleranceConfigurationJob extends Job {
 
     private static final String RUNTIME_MODULE_ID = ManagementFactory.getRuntimeMXBean().getName();
-    private final static String STARTUP_COMMAND = "/Volumes/Data/developer/servers/play-1.4.4/play-1.4.4 start " + System.getProperty("user.dir");
+    private final static String STARTUP_COMMAND = "/home/play-1.4.4/play-1.4.4 start " + System.getProperty("user.dir");
+    //    private final static String STARTUP_COMMAND = "/Volumes/Data/developer/servers/play-1.4.4/play-1.4.4 start " + System.getProperty("user.dir");
     //    private static final String STARTUP_COMMAND = "java -jar C:/Users/jeffe/developer/servers/play-1.4.4/play-1.4.4 start " + System.getProperty("user.dir");
     private static final String STARTUP_COORDINATOR_COMMAND = "java -jar ./conf/fault-tolerance/ft-coordinator-0.0.1-exec.jar --server.port=7775";
     private static final String FAILED_TO_START_FAULT_TOLERANCE_MODULE = "Failed to start FaultToleranceModule!";
@@ -35,7 +36,6 @@ public class FaultToleranceConfigurationJob extends Job {
     public void doJob() {
 
         startFaultToleranceModule();
-        new FaultInjectionMTBFThread().start();
     }
 
     private static void startFaultToleranceModule() {
@@ -57,8 +57,8 @@ public class FaultToleranceConfigurationJob extends Job {
     private static SoftwareRejuvenation bindSoftwareRejuvenation() {
 
         final Long rejuvanationTimeout = 60 * 60 * 24L; // 24 HOURS
-        final int maxAllowedCpuUsage = 97;
-        final int maxAllowedMemoryUsage = 97;
+        final int maxAllowedCpuUsage = 100;
+        final int maxAllowedMemoryUsage = 100;
         final Timeout timeout = new Timeout(rejuvanationTimeout, DEFAULT_TIME_UNIT);
         return new SoftwareRejuvenation(timeout, maxAllowedCpuUsage, maxAllowedMemoryUsage);
     }
@@ -72,7 +72,7 @@ public class FaultToleranceConfigurationJob extends Job {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Inner classes to fault injection
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    private static class FaultInjectionMTBFThread extends Thread {
+    public static class FaultInjectionMTBFThread extends Thread {
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // * @see java.lang.Thread#run()
