@@ -5,8 +5,8 @@ require:
     - play -> crud
     - play -> secure
     - local.provided -> ft-module latest.integration
-    - br.unb.cic.bionimbuz.commons -> api-commons 0.1
-    - br.unb.cic.bionimbuz.plugins -> api-rest-plugin 0.1
+    - local.provided -> api-commons latest.integration
+    - local.provided -> api-rest-plugin latest.integration
     - com.squareup.retrofit2 -> retrofit 2.3.0
     - com.squareup.retrofit2 -> converter-jackson 2.3.0
     - com.google.code.gson -> gson 2.5:
@@ -20,27 +20,17 @@ require:
     - org.apache.jclouds.provider -> google-compute-engine 2.2.0-SNAPSHOT
     
 repositories:        
-- api-commons:
-    type:       local
-    artifact:   ${application.path}/../commons/api-commons/target/[module]-[revision].jar
-    contains:
-        - br.unb.cic.bionimbuz.commons -> * 
-- api-rest-plugin:
-    type:       local
-    artifact:   ${application.path}/../plugins/api-rest-plugin/target/[module]-[revision].jar
-    contains:
-        - br.unb.cic.bionimbuz.plugins -> *
-- localhost:
-    type:       local
-    artifact:   ${application.path}/lib/[module]-[revision].jar
-    contains:
-        - local.provided -> *
-- jclouds:
-    type: iBiblio
-    root: "https://repository.apache.org/content/repositories/snapshots/"
-    contains:
-        - org.apache.jclouds -> *
-        - org.apache.jclouds.api -> *
-        - org.apache.jclouds.provider -> *
-        - org.apache.jclouds.driver -> *
-        - org.apache.jclouds.common -> *
+    - localhost:
+        type:       local
+        artifact:   ${application.path}/lib/[module]-[revision].jar
+        contains:
+            - local.provided -> *
+    - jclouds:
+        type: iBiblio
+        root: "https://repository.apache.org/content/repositories/snapshots/"
+        contains:
+            - org.apache.jclouds -> *
+            - org.apache.jclouds.api -> *
+            - org.apache.jclouds.provider -> *
+            - org.apache.jclouds.driver -> *
+            - org.apache.jclouds.common -> *

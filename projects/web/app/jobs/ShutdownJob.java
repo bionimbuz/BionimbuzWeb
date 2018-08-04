@@ -9,9 +9,9 @@ import app.services.BootstrapService;
 import play.Logger;
 import play.db.jpa.NoTransaction;
 import play.jobs.Job;
-import play.jobs.OnApplicationStop;
 
-@OnApplicationStop
+// THIS NOT WORK
+// @OnApplicationStop
 public class ShutdownJob extends Job {
 
     @Override

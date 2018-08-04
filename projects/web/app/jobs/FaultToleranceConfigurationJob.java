@@ -7,6 +7,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import app.FaultToleranceModule;
+import app.commons.enums.SystemEnums.Priority;
 import app.commons.exceptions.SystemException;
 import app.commons.utils.LoggerUtil;
 import app.models.AttemptsNumber;
@@ -22,7 +23,7 @@ import play.jobs.OnApplicationStart;
 public class FaultToleranceConfigurationJob extends Job {
 
     private static final String RUNTIME_MODULE_ID = ManagementFactory.getRuntimeMXBean().getName();
-    private final static String STARTUP_COMMAND = "/home/play-1.4.4/play-1.4.4 start " + System.getProperty("user.dir");
+    private final static String STARTUP_COMMAND = "/home/play-1.4.4/play start " + System.getProperty("user.dir");
     //    private final static String STARTUP_COMMAND = "/Volumes/Data/developer/servers/play-1.4.4/play-1.4.4 start " + System.getProperty("user.dir");
     //    private static final String STARTUP_COMMAND = "java -jar C:/Users/jeffe/developer/servers/play-1.4.4/play-1.4.4 start " + System.getProperty("user.dir");
     private static final String STARTUP_COORDINATOR_COMMAND = "java -jar ./conf/fault-tolerance/ft-coordinator-0.0.1-exec.jar --server.port=7775";
@@ -60,13 +61,13 @@ public class FaultToleranceConfigurationJob extends Job {
         final int maxAllowedCpuUsage = 100;
         final int maxAllowedMemoryUsage = 100;
         final Timeout timeout = new Timeout(rejuvanationTimeout, DEFAULT_TIME_UNIT);
-        return new SoftwareRejuvenation(timeout, maxAllowedCpuUsage, maxAllowedMemoryUsage);
+        return new SoftwareRejuvenation(timeout, maxAllowedCpuUsage, maxAllowedMemoryUsage, Priority.NORM_PRIORITY);
     }
 
     private static Retry bindRetry() {
 
         final Timeout timeout = new Timeout(1L, DEFAULT_TIME_UNIT);
-        return new Retry(timeout, new AttemptsNumber(1L));
+        return new Retry(timeout, new AttemptsNumber(1L), Priority.MAX_PRIORITY);
     }
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

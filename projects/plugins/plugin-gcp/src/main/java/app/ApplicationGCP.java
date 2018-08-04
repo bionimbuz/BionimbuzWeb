@@ -40,6 +40,7 @@ public class ApplicationGCP {
     //    private static final String STARTUP_COORDINATOR_COMMAND = "java -jar C:/Users/jeffe/developer/projects/java/BionimbuzWeb/projects/web/conf/fault-tolerance/ft-coordinator-0.0.1-exec.jar --server.port=7777";
 
     public static void main(final String[] args) {
+
         SpringApplication.run(ApplicationGCP.class, args);
     }
 
