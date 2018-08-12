@@ -1,6 +1,6 @@
 package app.models;
 
-public class PluginInfoModel extends Body {
+public class PluginInfoModel extends Body<PluginInfoModel> {
 
     public static enum AuthenticationType {
         AUTH_SUPER_USER,

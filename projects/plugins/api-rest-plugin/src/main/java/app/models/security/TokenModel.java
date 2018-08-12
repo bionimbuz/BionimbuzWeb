@@ -2,7 +2,8 @@ package app.models.security;
 
 import app.models.Body;
 
-public class TokenModel extends Body {
+public class TokenModel extends Body<TokenModel> {
+    
     private String token;
     private String identity;
     

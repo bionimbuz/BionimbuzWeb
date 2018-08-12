@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import app.client.ComputingApi;
@@ -31,15 +30,11 @@ import utils.TestUtils;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ComputingControllerTest {
 
-    private static final Integer STARTUP_SCRIPT_APACHE_PORT = 80;
-    private static final Integer WAIT_MS_TO_START_INSTANCE = 60 * 1000;
     private static final Integer LENGTH_CREATION = 2;
     private static final String INSTANCE_STARTUP_SCRIPT = "apt-get update && apt-get install -y apache2 && hostname > /var/www/index.html";
 
     @Autowired
     private ComputingController controller;
-    @Autowired
-    private TestRestTemplate restTemplate;
     @Value("${local.server.port}")
     private int PORT;
 

@@ -2,7 +2,7 @@ package app.models;
 
 import java.util.List;
 
-public class Command extends Body {
+public class Command extends Body<Command> {
 
     private String commandLine;
     private String workinDir;

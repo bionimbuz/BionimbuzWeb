@@ -1,6 +1,6 @@
 package app.models;
 
-public class PluginStorageModel extends Body {
+public class PluginStorageModel extends Body<PluginStorageModel> {
 
     private String name = "";
     private String region = "";

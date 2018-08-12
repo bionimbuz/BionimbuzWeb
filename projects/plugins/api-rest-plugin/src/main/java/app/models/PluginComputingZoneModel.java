@@ -1,6 +1,6 @@
 package app.models;
 
-public class PluginComputingZoneModel extends Body {
+public class PluginComputingZoneModel extends Body<PluginComputingZoneModel> {
     
     private String name;
         

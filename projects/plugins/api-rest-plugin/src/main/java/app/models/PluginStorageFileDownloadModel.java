@@ -1,6 +1,6 @@
 package app.models;
 
-public class PluginStorageFileDownloadModel extends Body {
+public class PluginStorageFileDownloadModel extends Body<PluginStorageFileDownloadModel> {
 
     private String fileName = "";
     private String spaceName = "";

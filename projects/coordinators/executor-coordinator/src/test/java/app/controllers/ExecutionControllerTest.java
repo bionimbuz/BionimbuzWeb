@@ -62,10 +62,13 @@ public class ExecutionControllerTest {
         command.setListOutputs(listOutputFiles);
         command.setArgs("-a -b -c content");
 
-        Body<Boolean> body = api.postCommand(command);
-
+        Body<Boolean> body = api.startExecution(command);
 	    assertThat(body).isNotNull();
 	    assertThat(body.getContent()).isTrue();
+	    
+        body = api.startExecution(command);
+        assertThat(body).isNotNull();
+        assertThat(body.getContent()).isFalse();
 	}
 
     private RemoteFileInfo createRemoteFileInfo(

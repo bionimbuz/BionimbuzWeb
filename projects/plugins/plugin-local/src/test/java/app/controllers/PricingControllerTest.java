@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import app.client.PricingApi;
@@ -30,8 +29,6 @@ public class PricingControllerTest {
 
     @Autowired
     private PricingController controller;
-    @Autowired
-    private TestRestTemplate restTemplate;
     @Value("${local.server.port}")
     private int PORT;
 

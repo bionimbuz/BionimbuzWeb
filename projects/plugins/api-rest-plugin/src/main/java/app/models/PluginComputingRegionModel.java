@@ -1,6 +1,6 @@
 package app.models;
 
-public class PluginComputingRegionModel extends Body {
+public class PluginComputingRegionModel extends Body<PluginComputingRegionModel> {
     
     private String name;
         

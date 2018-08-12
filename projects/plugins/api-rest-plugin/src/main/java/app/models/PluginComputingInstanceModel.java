@@ -9,7 +9,7 @@ import java.util.TreeSet;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class PluginComputingInstanceModel extends Body {
+public class PluginComputingInstanceModel extends Body<PluginComputingInstanceModel> {
 
     private String id = "";
     private String name = "";

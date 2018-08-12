@@ -1,6 +1,6 @@
 package app.models;
 
-public class PluginImageModel extends Body {
+public class PluginImageModel extends Body<PluginImageModel> {
 
     private String id; 
     private String name; 

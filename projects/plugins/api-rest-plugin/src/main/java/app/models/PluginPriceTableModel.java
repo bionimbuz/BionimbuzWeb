@@ -1,6 +1,6 @@
 package app.models;
 
-public class PluginPriceTableModel extends Body {
+public class PluginPriceTableModel extends Body<PluginPriceTableModel> {
 
     private PluginPriceTableStatusModel status;       
     private PluginPriceModel price;

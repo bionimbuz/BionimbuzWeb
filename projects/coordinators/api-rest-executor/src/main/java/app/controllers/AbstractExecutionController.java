@@ -12,6 +12,8 @@ import app.common.HttpHeadersCustom;
 import app.common.Routes;
 import app.models.Body;
 import app.models.Command;
+import app.models.ExecutionStatus;
+import app.models.STATUS;
 
 public abstract class AbstractExecutionController extends BaseControllerVersioned {
     protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractExecutionController.class);
@@ -20,20 +22,35 @@ public abstract class AbstractExecutionController extends BaseControllerVersione
      * Action Methods
      */
 
-    @RequestMapping(path = Routes.INSTANCES, method = RequestMethod.POST)
-    private ResponseEntity<Body<Boolean>> postCommandAction(
+    @RequestMapping(path = Routes.EXECUTION_START, method = RequestMethod.POST)
+    private ResponseEntity<Body<Boolean>> startExecutionAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
             @RequestBody final Command command
             ) {
-        return callImplementedMethod("postCommand", version, command);
+        return callImplementedMethod("startExecution", version, command);
+    }
+    @RequestMapping(path = Routes.EXECUTION_STATUS, method = RequestMethod.GET)
+    private ResponseEntity<Body<ExecutionStatus>> getExecutionStatusAction(
+            @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version
+            ) {
+        return callImplementedMethod("getExecutionStatus", version);
+    }
+    @RequestMapping(path = Routes.STATUS, method = RequestMethod.GET)
+    private ResponseEntity<Body<STATUS>> getStatusAction(
+            @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version
+            ) {
+        return callImplementedMethod("getStatus", version);
     }
 
     /*
      * Abstract Methods
      */
 
-    protected abstract ResponseEntity<Body<Boolean>> postCommand(
-            final String token,
+    protected abstract ResponseEntity<Body<Boolean>> startExecution(
             final Command command) throws Exception;
+    protected abstract ResponseEntity<Body<ExecutionStatus>> getExecutionStatus()
+            throws Exception;
+    protected abstract ResponseEntity<Body<STATUS>> getStatus()
+            throws Exception;
 
 }

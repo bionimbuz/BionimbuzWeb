@@ -6,7 +6,7 @@ import java.util.HashMap;
 import app.models.pricing.InstanceTypePricing;
 import app.models.pricing.StoragePricing;
 
-public class PluginPriceModel extends Body {
+public class PluginPriceModel extends Body<PluginPriceModel> {
 
     private Date lastUpdate;
     private HashMap<String, InstanceTypePricing> listInstancePricing;

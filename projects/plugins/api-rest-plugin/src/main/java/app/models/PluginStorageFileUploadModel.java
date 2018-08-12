@@ -1,6 +1,6 @@
 package app.models;
 
-public class PluginStorageFileUploadModel extends Body {
+public class PluginStorageFileUploadModel extends Body<PluginStorageFileUploadModel> {
 
     private String fileName = "";
     private String spaceName = "";
