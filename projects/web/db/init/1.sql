@@ -2,11 +2,9 @@
 -- # --- !Ups
 
 -- TB_SETTING
-INSERT INTO tb_setting (settingName, settingValue, defaultValue, minSize, maxSize, settingType, required) VALUES
-     ('setting_number_temp',    '1',                '',                '0',     '100',      'NUMBER',   TRUE)
-    ,('setting_decimal_temp',   '1.1',              '',              '1.0',     '10.5',     'DECIMAL',  FALSE)
-    ,('setting_string_temp',    'test',             '',                '3',     '50',       'STRING',   TRUE)
-    ,('setting_date_temp',      '2018-01-01 11:11', '', '2015-01-01 00:00',     '',         'DATE',     FALSE)
+INSERT INTO tb_setting 
+     (settingName,            settingValue,             defaultValue,             minSize, maxSize, settingType, required) VALUES
+     ('setting_external_url', 'http://127.0.0.1:9000',  'http://127.0.0.1:9000',  '15',    '100',   'STRING',    TRUE)
 ;
 
 -- TB_ROLE

@@ -172,10 +172,7 @@ object.defaultValue=Default Value
 
 # These translations below tags will be the ones
 # used to store settings in database as KEYs
-setting_number_temp=Number Field
-setting_decimal_temp=Decimal Field
-setting_string_temp=String Field
-setting_date_temp=Date Field
+setting_external_url=External URL
 
 # PluginModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

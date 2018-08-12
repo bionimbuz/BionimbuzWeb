@@ -17,10 +17,7 @@ public class SettingModel extends GenericModel {
     private static final String STRING_FORMAT = "";  
     
     public static enum Name {
-        setting_number_temp,
-        setting_decimal_temp,
-        setting_string_temp,
-        setting_date_temp
+        setting_external_url
     }
     
     public static enum Type {

@@ -11,6 +11,7 @@ require:
     - com.google.code.gson -> gson 2.5:
         force: true
     - com.google.guava -> guava 18.0
+    - io.jsonwebtoken -> jjwt 0.9.1
     
     - org.apache.jclouds -> jclouds-core 2.2.0-SNAPSHOT
     - org.apache.jclouds.api -> oauth 2.2.0-SNAPSHOT
