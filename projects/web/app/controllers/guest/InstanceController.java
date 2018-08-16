@@ -26,6 +26,7 @@ import models.InstanceTypeRegionModel;
 import models.PluginModel;
 import models.RegionModel;
 import models.RegionModel.Region;
+import play.Logger;
 import play.data.binding.Binder;
 import play.data.validation.Validation;
 import play.exceptions.TemplateNotFoundException;
@@ -146,9 +147,8 @@ public class InstanceController extends BaseAdminController {
                     break;
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Logger.warn(e, "Operation cannot be completed with credential [%s]", e.getMessage());     
             }           
-            
             
             object._delete();
         } catch (final Exception e) {
@@ -228,7 +228,7 @@ public class InstanceController extends BaseAdminController {
                 break;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.warn(e, "Operation cannot be completed with credential [%s]", e.getMessage());     
         }
     }
 
@@ -247,11 +247,11 @@ public class InstanceController extends BaseAdminController {
         try {
             List<Region> listRegions = getInstanceRegions(pluginId);
             if(listRegions == null)
-                notFound(Messages.get(I18N.plugin_not_found));
+                notFound(Messages.get(I18N.not_found));
             renderJSON(listRegions);
         } catch (Exception e) {
-            e.printStackTrace();
-            notFound(Messages.get(I18N.plugin_not_found));
+            Logger.error(e, "Error searching regions [%s]", e.getMessage());
+            notFound(Messages.get(I18N.not_found));
         }
     }
 
@@ -284,7 +284,7 @@ public class InstanceController extends BaseAdminController {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.error(e, "Error searching zones [%s]", e.getMessage());
         }
         return null;
     }
@@ -318,11 +318,11 @@ public class InstanceController extends BaseAdminController {
             InstanceTypeZone instanceTypeZoneModel =
                     getInstanceTypesZones(pluginId, regionId);
             if(instanceTypeZoneModel == null)
-                notFound(Messages.get(I18N.plugin_not_found));
+                notFound(Messages.get(I18N.not_found));
             renderJSON(instanceTypeZoneModel);
         } catch (Exception e) {
-            e.printStackTrace();
-            notFound(Messages.get(I18N.plugin_not_found));
+            Logger.error(e, "Error searching instance type zones [%s]", e.getMessage());
+            notFound(Messages.get(I18N.not_found));
         }
     }
 }

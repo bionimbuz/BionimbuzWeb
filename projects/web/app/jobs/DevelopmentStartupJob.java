@@ -275,7 +275,7 @@ public class DevelopmentStartupJob extends Job {
 
             date = new Date();
         } catch (final Exception e) {
-            Logger.error(e.getMessage(), e);
+            Logger.error(e, e.getMessage());
         }
     }
 
@@ -298,7 +298,7 @@ public class DevelopmentStartupJob extends Job {
                 this.insertGCEImages(model);
             }
         } catch (final Exception e) {
-            Logger.error(e.getMessage(), e);
+            Logger.error(e, e.getMessage());
         }
     }
 
@@ -343,7 +343,7 @@ public class DevelopmentStartupJob extends Job {
             user.save();
             return user;
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
-            Logger.error(e.getMessage(), e);
+            Logger.error(e, e.getMessage());
             return null;
         }
     }

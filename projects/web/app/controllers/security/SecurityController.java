@@ -32,7 +32,7 @@ public class SecurityController extends Secure.Security {
             return true;  
             
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
-            Logger.error(e.getMessage(), e);
+            Logger.error(e, e.getMessage());
             return false;  
         }        
     }

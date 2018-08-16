@@ -177,6 +177,7 @@ setting_external_url=External URL
 # PluginModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 PluginModel=Plugin
+not.found=Not found.
 plugin.not.found=The Plugin URL cannot be found.
 plugin.found=Plugin URL found.
 plugin.search.required=You must Search URL before saving

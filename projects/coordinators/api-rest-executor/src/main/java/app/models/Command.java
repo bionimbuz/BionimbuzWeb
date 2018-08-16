@@ -10,7 +10,8 @@ public class Command extends Body<Command> {
     private String extraArgs;
     private List<RemoteFileInfo> listInputs;
     private List<String> listOutputs;
-
+    private SecureFileAccess secureFileAccess;
+    
     public Command() {
     }
 
@@ -49,5 +50,11 @@ public class Command extends Body<Command> {
     }
     public final void setWorkinDir(String workinDir) {
         this.workinDir = workinDir;
+    }
+    public final SecureFileAccess getSecureFileAccess() {
+        return secureFileAccess;
+    }
+    public final void setSecureFileAccess(SecureFileAccess secureFileAccess) {
+        this.secureFileAccess = secureFileAccess;
     }
 }

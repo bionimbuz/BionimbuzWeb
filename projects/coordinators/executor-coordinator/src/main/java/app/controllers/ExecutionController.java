@@ -21,7 +21,7 @@ public class ExecutionController extends AbstractExecutionController {
      */
     
     @Override
-    protected ResponseEntity<Body<Boolean>> startExecution(Command command)
+    protected ResponseEntity<Body<Boolean>> startExecution(final Command command)
             throws Exception {
         if(ExecutorJob.isInitialized()) {
             return ResponseEntity.ok(

@@ -1,4 +1,4 @@
-package common.security;
+package app.security;
 
 
 import java.sql.Date;
@@ -9,36 +9,29 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
-import play.Play;
-import play.libs.Time;
 
-public class ExternalAccessSecurity {
+public class AccessSecurity {
 
-    private static String EXPIRATION_TIME_CONF = Play.configuration.getProperty("application.token.maxAge");
-    private static String SECRET = Play.secretKey;
-    private static final String TOKEN_PREFIX = "Bearer ";
-    private static final String HEADER_STRING = "Authorization";
+    public static final String TOKEN_PREFIX = "Bearer ";
+    public static final String HEADER_STRING = "Authorization";
     
+    private String secret;
     private IIdentityChecker checker;
     
-    public interface IIdentityChecker {
-        boolean check(final String identity);
+    public AccessSecurity(final String secret) {
+        this(secret, null);
     }
     
-    public ExternalAccessSecurity() {
-        this(null);
-    }
-    
-    public ExternalAccessSecurity(final IIdentityChecker checker) {
+    public AccessSecurity(final String secret, final IIdentityChecker checker) {
+        this.secret = secret;
         this.checker = checker;
     }
         
-    public String getToken(final String identity) {
-        long EXPIRATION_TIME = (Time.parseDuration(EXPIRATION_TIME_CONF) * 1000l);        
+    public String generateToken(final String identity, long expiration) { 
         String JWT = Jwts.builder()
                 .setSubject(identity)
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(SignatureAlgorithm.HS256, SECRET)
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();        
         return JWT;        
     }
@@ -53,15 +46,20 @@ public class ExternalAccessSecurity {
         if (token == null) {
             return null;
         }
-        
-        return Jwts.parser()
-                .setSigningKey(SECRET)
+
+        String identity = Jwts.parser()
+                .setSigningKey(secret)
                 .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
                 .getBody()
                 .getSubject();
+
+        if(!checkIdentity(identity))
+            return null; 
+        
+        return identity;
     }
     
-    public String refreshToken(final String token) throws 
+    public String refreshToken(final String token, long expiration) throws 
         UnsupportedJwtException, 
         MalformedJwtException, 
         SignatureException, 
@@ -73,14 +71,17 @@ public class ExternalAccessSecurity {
         
         String identity = "";
         try {
-            identity = checkToken(token);            
+            // No problems detected with token, 
+            // it cannot be refreshed until reaching
+            // expiration date
+            identity = checkToken(token);  
+            return token.replace(TOKEN_PREFIX, "");
         } catch (ExpiredJwtException e) {
-            identity = e.getClaims().getSubject();
+            identity = e.getClaims().getSubject();            
+            if(!checkIdentity(identity))
+                return null;        
+            return generateToken(identity, expiration);
         }
-        
-        if(!checkIdentity(identity))
-            return null;        
-        return getToken(identity);
     }
     
     private boolean checkIdentity(final String identity) {

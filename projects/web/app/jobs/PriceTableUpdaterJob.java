@@ -25,6 +25,7 @@ import models.PriceTableModel;
 import models.PriceTableModel.SyncStatus;
 import models.RegionModel;
 import models.StorageRegionModel;
+import play.Logger;
 import play.i18n.Messages;
 import play.jobs.Every;
 import play.jobs.Job;
@@ -72,7 +73,7 @@ public class PriceTableUpdaterJob extends Job {
                 processPriceTable(now, princingRequested, statusRequested, plugin);
             }
         } catch (final Exception e) {
-            e.printStackTrace();
+            Logger.error(e, "Price table for plugin [%s] cannot be retrieved [%s]", plugin.getName(), e.getMessage());                
             String message = e.getMessage() == null && e.getCause() != null ? e.getCause().getMessage() : null;
             message = StringUtils.isNotEmpty(message) ? message : Messages.get("application.unknow.error.synchronizing.process");
             updateOrCreatePriceTableStatus(

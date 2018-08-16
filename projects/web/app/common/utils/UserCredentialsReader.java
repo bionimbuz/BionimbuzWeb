@@ -7,6 +7,7 @@ import java.util.List;
 import models.InstanceModel.CredentialUsagePolicy;
 import models.PluginModel;
 import models.VwCredentialModel;
+import play.Logger;
 
 public class UserCredentialsReader implements Iterable <String>{
 
@@ -58,7 +59,7 @@ public class UserCredentialsReader implements Iterable <String>{
             try {
                 return it.next().getCredentialData().getContentAsString();
             } catch (IOException e) {
-                e.printStackTrace();
+                Logger.error(e, "Error reading credential [%s]", e.getMessage());
                 return "";
             }
         }

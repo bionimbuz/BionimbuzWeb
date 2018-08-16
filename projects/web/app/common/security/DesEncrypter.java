@@ -14,6 +14,8 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import play.Logger;
+
 public class DesEncrypter {
     
     private static String ENCRYPT_TYPE = "DES/CBC/PKCS5Padding";
@@ -61,7 +63,7 @@ public class DesEncrypter {
             encrypt(input, output);                          
             return output.toByteArray();
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.error(e, e.getMessage());
             return null;
         }        
     }
@@ -74,7 +76,7 @@ public class DesEncrypter {
             decrypt(input, output);                          
             return output.toByteArray();            
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.error(e, e.getMessage());
             return null;
         }
     }   

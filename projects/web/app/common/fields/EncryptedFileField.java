@@ -15,6 +15,7 @@ import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.type.BinaryType;
 
 import common.security.DesEncrypter;
+import play.Logger;
 import play.Play;
 
 public class EncryptedFileField extends FileField {
@@ -40,7 +41,7 @@ public class EncryptedFileField extends FileField {
             DesEncrypter cript = new DesEncrypter(getDESKey());
             return new EncryptedFileField(cript.decryptBytes(val));
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.error(e, e.getMessage());
             return null;
         }
     }
@@ -55,7 +56,7 @@ public class EncryptedFileField extends FileField {
                 ps.setNull(i, Types.LONGVARBINARY);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.error(e, e.getMessage());
         }
     }
     @Override

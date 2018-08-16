@@ -7,6 +7,7 @@ import common.constants.I18N;
 import controllers.CRUD.For;
 import controllers.Check;
 import models.PluginModel;
+import play.Logger;
 import play.i18n.Messages;
 
 @For(PluginModel.class)
@@ -31,8 +32,8 @@ public class PluginController extends BaseAdminController {
             model.setStorageWriteScope(info.getStorageWriteScope());
             renderJSON(model);
         } catch (Exception e) {
-            e.printStackTrace();
-            notFound(Messages.get(I18N.plugin_not_found));
+            Logger.error(e, "Error synchronizing with plugin [%s]", e.getMessage());
+            notFound(Messages.get(I18N.not_found));
         }
     }
 }

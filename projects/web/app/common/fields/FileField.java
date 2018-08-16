@@ -16,6 +16,7 @@ import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.type.BinaryType;
 import org.hibernate.usertype.UserType;
 
+import play.Logger;
 import play.db.Model;
 
 public class FileField implements Model.BinaryField, UserType {
@@ -54,7 +55,7 @@ public class FileField implements Model.BinaryField, UserType {
                 file = output.toByteArray();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.error(e, e.getMessage());
         }
     }    
     @Override

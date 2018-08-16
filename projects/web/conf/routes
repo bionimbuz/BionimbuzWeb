@@ -105,6 +105,11 @@ DELETE  /space/files/{id}                       guest.SpaceFileController.delete
 GET     /space/files                            guest.SpaceFileController.blank
 POST    /space/files                            guest.SpaceFileController.create
 
+# SecureFileAccessController
+GET     /secure/file/download                   guest.SecureFileAccessController.download
+GET     /secure/file/upload                     guest.SecureFileAccessController.upload
+GET     /secure/file/refresh                    guest.SecureFileAccessController.refreshToken
+
 # InstanceController
 GET     /search/instance/types/zones            guest.InstanceController.searchInstanceTypesZones
 GET     /search/instance/regions                guest.InstanceController.searchRegions

@@ -19,6 +19,7 @@ import models.PluginModel;
 import models.SpaceModel;
 import models.StorageRegionModel;
 import models.StorageRegionModel.StorageRegion;
+import play.Logger;
 import play.data.binding.Binder;
 import play.data.validation.Validation;
 import play.exceptions.TemplateNotFoundException;
@@ -86,11 +87,11 @@ public class SpaceController extends BaseAdminController {
             List<StorageRegion> listStorageRegions =
                     getStorageRegions(pluginId);
             if(listStorageRegions == null)
-                notFound(Messages.get(I18N.plugin_not_found));
+                notFound(Messages.get(I18N.not_found));
             renderJSON(listStorageRegions);
         } catch (Exception e) {
-            e.printStackTrace();
-            notFound(Messages.get(I18N.plugin_not_found));
+            Logger.error(e, "Error searching storage [%s]", e.getMessage());
+            notFound(Messages.get(I18N.not_found));
         }
     }
 
@@ -145,7 +146,7 @@ public class SpaceController extends BaseAdminController {
 
                 return true;
             } catch (Exception e) {
-                e.printStackTrace();
+                Logger.warn(e, "Operation cannot be completed with credential [%s]", e.getMessage());
             }
         }
         return false;
