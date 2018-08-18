@@ -84,9 +84,9 @@ public class ExecutorJob {
         public Core(Command command) {
             this.command = command;
             this.downloadStatus = new RemoteFileProcessingStatus(
-                    command.getListInputs().size());
+                    command.getListRemoteFileInputPaths().size());
             this.uploadStatus = new RemoteFileProcessingStatus(
-                    command.getListOutputs().size());
+                    command.getListRemoteFileOutputPaths().size());
             this.executionStatus = new ExecutionStatus(
                     downloadStatus, uploadStatus);
         }
@@ -147,7 +147,7 @@ public class ExecutorJob {
             DownloaderJob downloadJob = new DownloaderJob(
                     this,
                     downloadStatus,
-                    command.getListInputs(),
+                    command.getListRemoteFileInputPaths(),
                     INPUTS_FOLDER);
             downloadJob.start();
         }        

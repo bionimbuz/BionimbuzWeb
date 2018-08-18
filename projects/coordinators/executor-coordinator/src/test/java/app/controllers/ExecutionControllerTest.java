@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Test;
@@ -18,7 +17,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import app.client.ExecutionApi;
 import app.models.Body;
 import app.models.Command;
-import app.models.RemoteFileInfo;
 import utils.TestUtils;
 
 @RunWith(SpringRunner.class)
@@ -45,21 +43,22 @@ public class ExecutionControllerTest {
 
         ExecutionApi api = new ExecutionApi(TestUtils.getUrl(PORT));
 
-	    List<RemoteFileInfo> listInputFiles =
+	    List<String> listInputFiles =
 	            new ArrayList<>();
         listInputFiles.add(
-                createRemoteFileInfo("GET", "test", "test_input1.txt"));
+                "http://localhost:8282/spaces/"+"test"+"/file/"+"test_input1.txt"+"/download");
         listInputFiles.add(
-                createRemoteFileInfo("GET", "test", "test_input2.txt"));
+                "http://localhost:8282/spaces/"+"test"+"/file/"+"test_input2.txt"+"/download");
 
         List<String> listOutputFiles = new ArrayList<>();
-        listOutputFiles.add("test_output.txt");
+        listOutputFiles.add(
+                "http://localhost:8282/spaces/"+"test"+"/file/"+"test_output.txt"+"/upload");
 
 	    Command command = new Command();
 	    command.setWorkinDir(EXECUTION_DIR);
 	    command.setCommandLine("test_script.sh {a} {i:1} {i:2} {o:1}");
-        command.setListInputs(listInputFiles);
-        command.setListOutputs(listOutputFiles);
+        command.setListRemoteFileInputPaths(listInputFiles);
+        command.setListRemoteFileOutputPaths(listOutputFiles);
         command.setArgs("-a -b -c content");
 
         Body<Boolean> body = api.startExecution(command);
@@ -71,16 +70,9 @@ public class ExecutionControllerTest {
         assertThat(body.getContent()).isFalse();
 	}
 
-    private RemoteFileInfo createRemoteFileInfo(
-            final String method,
+    private String createRemoteFileInfoUrl(
             final String space,
             final String fileName) {
-        RemoteFileInfo inputFile;
-        inputFile = new RemoteFileInfo();
-	    inputFile.setMethod(method);
-	    inputFile.setName(fileName);
-	    inputFile.setHeaders(new HashMap<String, String>());
-	    inputFile.setUrl("http://localhost:8282/spaces/"+space+"/file/"+fileName+"/download");
-	    return inputFile;
+	    return "http://localhost:8282/spaces/"+space+"/file/"+fileName+"/download";
     }
 }

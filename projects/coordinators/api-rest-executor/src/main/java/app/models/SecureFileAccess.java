@@ -2,40 +2,24 @@ package app.models;
 
 public class SecureFileAccess {
 
-    private String serverBaseUrl;
-    private String refreshTokenPath;
     private String token;    
-    private String downloadUrl;
-    private String uploadUrl;    
+    private String refreshTokenUrl;
     
-    public final String getServerBaseUrl() {
-        return serverBaseUrl;
+    public SecureFileAccess(String token, String refreshTokenURl) {
+        this.token = token;
+        this.refreshTokenUrl = refreshTokenURl;
     }
-    public final void setServerBaseUrl(String serverBaseUrl) {
-        this.serverBaseUrl = serverBaseUrl;
-    }
+    
     public final String getToken() {
         return token;
     }
     public final void setToken(String token) {
         this.token = token;
     }
-    public final String getDownloadUrl() {
-        return downloadUrl;
+    public final String getRefreshTokenUrl() {
+        return refreshTokenUrl;
     }
-    public final void setDownloadUrl(String downloadUrl) {
-        this.downloadUrl = downloadUrl;
-    }
-    public final String getUploadUrl() {
-        return uploadUrl;
-    }
-    public final void setUploadUrl(String uploadUrl) {
-        this.uploadUrl = uploadUrl;
-    }
-    public final String getRefreshTokenPath() {
-        return refreshTokenPath;
-    }
-    public final void setRefreshTokenPath(String refreshTokenPath) {
-        this.refreshTokenPath = refreshTokenPath;
-    }
+    public final void setRefreshTokenUrl(String refreshTokenURl) {
+        this.refreshTokenUrl = refreshTokenURl;
+    }    
 }

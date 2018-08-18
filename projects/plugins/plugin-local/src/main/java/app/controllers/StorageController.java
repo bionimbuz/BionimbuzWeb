@@ -22,8 +22,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import app.common.ControllerRoutes;
 import app.common.FileStorageService;
-import app.common.FileUtils;
 import app.common.SystemConstants;
+import app.common.utils.FileUtils;
 import app.models.Body;
 import app.models.PluginStorageFileDownloadModel;
 import app.models.PluginStorageFileUploadModel;

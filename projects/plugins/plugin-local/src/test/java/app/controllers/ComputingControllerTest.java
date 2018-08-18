@@ -17,9 +17,9 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import app.client.ComputingApi;
-import app.common.FileUtils;
 import app.common.GlobalConstants;
 import app.common.SystemConstants;
+import app.common.utils.FileUtils;
 import app.models.Body;
 import app.models.PluginComputingInstanceModel;
 import app.models.PluginComputingRegionModel;

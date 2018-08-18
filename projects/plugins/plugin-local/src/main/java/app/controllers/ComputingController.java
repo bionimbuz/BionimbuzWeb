@@ -21,10 +21,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import app.common.FileUtils;
 import app.common.GlobalConstants;
 import app.common.OsUtil;
 import app.common.SystemConstants;
+import app.common.utils.FileUtils;
 import app.models.Body;
 import app.models.PluginComputingInstanceModel;
 import app.models.PluginComputingRegionModel;

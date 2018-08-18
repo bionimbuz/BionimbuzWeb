@@ -4,6 +4,7 @@ package app.security;
 import java.sql.Date;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -16,24 +17,38 @@ public class AccessSecurity {
     public static final String HEADER_STRING = "Authorization";
     
     private String secret;
+    private Long expiration = 0l;
     private IIdentityChecker checker;
     
     public AccessSecurity(final String secret) {
-        this(secret, null);
+        this(secret, 0, null);
+    }
+    
+    public AccessSecurity(final String secret, long expiration) {
+        this(secret, expiration, null);
     }
     
     public AccessSecurity(final String secret, final IIdentityChecker checker) {
+        this(secret, 0, checker);
+    }
+    
+    public AccessSecurity(final String secret, long expiration, final IIdentityChecker checker) {
         this.secret = secret;
+        if(expiration > 0)
+            this.expiration = expiration;
         this.checker = checker;
     }
         
-    public String generateToken(final String identity, long expiration) { 
-        String JWT = Jwts.builder()
-                .setSubject(identity)
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+    public String generateToken(final String identity) { 
+        JwtBuilder builder = Jwts.builder()
+                .setSubject(identity);
+        if(expiration > 0) {
+            builder.setExpiration(new Date(System.currentTimeMillis() + expiration));
+        }
+        
+        return builder
                 .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();        
-        return JWT;        
     }
     
     public String checkToken(final String token) throws 
@@ -59,7 +74,7 @@ public class AccessSecurity {
         return identity;
     }
     
-    public String refreshToken(final String token, long expiration) throws 
+    public String refreshToken(final String token) throws 
         UnsupportedJwtException, 
         MalformedJwtException, 
         SignatureException, 
@@ -80,7 +95,7 @@ public class AccessSecurity {
             identity = e.getClaims().getSubject();            
             if(!checkIdentity(identity))
                 return null;        
-            return generateToken(identity, expiration);
+            return generateToken(identity);
         }
     }
     
@@ -89,5 +104,4 @@ public class AccessSecurity {
             return true;
         return checker.check(identity);
     }
-    
 }

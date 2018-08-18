@@ -13,6 +13,7 @@ import javax.persistence.Table;
 
 import play.data.binding.NoBinding;
 import play.data.validation.Required;
+import play.data.validation.Unique;
 import play.db.jpa.GenericModel;
 
 @Entity
@@ -29,6 +30,8 @@ public class InstanceModel extends GenericModel {
     @Id
     @GeneratedValue
     private Long id;
+    @Unique
+    private String instanceIdentity;
     @Required
     @ManyToOne(fetch = FetchType.LAZY)
     private ExecutorModel executor;

@@ -32,12 +32,12 @@ public class DownloaderJob {
     public DownloaderJob(
             final IExecution executor,
             final RemoteFileProcessingStatus downloadStatus,
-            List<RemoteFileInfo> lstDownloadFileInfo, 
-            String outputDir) {        
+            final List<String> listRemoteFileInputPaths,
+            final String outputDir) {        
         job = new Thread(new Core(
                 executor,
                 downloadStatus,
-                lstDownloadFileInfo,
+                listRemoteFileInputPaths,
                 outputDir));        
     }
     
@@ -55,8 +55,9 @@ public class DownloaderJob {
     
     private static class Core implements Runnable, IDownload {
 
-        final IExecution executor;
-        final RemoteFileProcessingStatus downloadStatus;
+        private IExecution executor;
+        private RemoteFileProcessingStatus downloadStatus;
+        private List<String> listRemoteFileInputPaths;
         private ExecutorService threadPool;
         private String outputDir;
         private List<Downloader> downloadJobs = new ArrayList<>();        
@@ -64,16 +65,18 @@ public class DownloaderJob {
         public Core(
                 final IExecution executor,
                 final RemoteFileProcessingStatus downloadStatus,
-                List<RemoteFileInfo> lstDownloadFileInfo, 
-                String outputDir) {
+                final List<String> listRemoteFileInputPaths,
+                final String outputDir) {
             this.executor = executor;
+            this.listRemoteFileInputPaths = listRemoteFileInputPaths;
             this.downloadStatus = downloadStatus;
             this.outputDir = outputDir;
             this.threadPool = Executors.newFixedThreadPool(MAX_SIMULTANEOUS_DOWNLOADS);
-            for(int i = 0; i<lstDownloadFileInfo.size(); i++) {
-                RemoteFileInfo fileInfo = lstDownloadFileInfo.get(i);
+            
+            for(int i = 0; i<listRemoteFileInputPaths.size(); i++) {
+                String filePath = listRemoteFileInputPaths.get(i);
                 this.downloadJobs.add(
-                    new Downloader(this, fileInfo, outputDir, INPUT_PREFIX + i));
+                    new Downloader(this, filePath, outputDir, INPUT_PREFIX + i));
             }
         }
         
@@ -114,18 +117,18 @@ public class DownloaderJob {
     private static class Downloader implements Runnable {
 
         private IDownload callback;
-        private RemoteFileInfo fileInfo;
+        private String filePath;
         private String outputDir;
         private String fileName;
 
         public Downloader(
                 final IDownload callback, 
-                final RemoteFileInfo fileInfo, 
+                final String filePath,
                 final String outputDir, 
                 final String fileName) {
             
             this.callback = callback;
-            this.fileInfo = fileInfo;
+            this.filePath = filePath;
             this.outputDir = outputDir;
             this.fileName = fileName;
         }
@@ -134,12 +137,16 @@ public class DownloaderJob {
         public void run() {
             try {
                 LOGGER.info("######### Downloading: " + fileName);
+                RemoteFileInfo fileInfo =
+                        RemoteFileInfoAccess.get().getRemoteFileInfo(filePath);                
                 URL website = new URL(fileInfo.getUrl());                
                 HttpURLConnection conn = (HttpURLConnection) website.openConnection();
                 conn.setRequestMethod(fileInfo.getMethod().toString());   
-                for (Map.Entry<String, String> entry : fileInfo.getHeaders().entrySet()) {
-                    conn.setRequestProperty(entry.getKey(), entry.getValue());
-                }                
+                if(fileInfo.getHeaders() != null) {
+                    for (Map.Entry<String, String> entry : fileInfo.getHeaders().entrySet()) {
+                        conn.setRequestProperty(entry.getKey(), entry.getValue());
+                    }                
+                }
                 try(ReadableByteChannel rbc = Channels.newChannel(conn.getInputStream());
                     FileOutputStream fos = new FileOutputStream(new File(outputDir, fileName))) {
                     fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);

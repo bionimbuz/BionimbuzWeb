@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.execution.ExecutorJob;
+import app.execution.RemoteFileInfoAccess;
 import app.models.Body;
 import app.models.Command;
 import app.models.ExecutionStatus;
@@ -27,6 +28,7 @@ public class ExecutionController extends AbstractExecutionController {
             return ResponseEntity.ok(
                     Body.create(false));
         }
+        RemoteFileInfoAccess.init(command.getSecureFileAccess());
         ExecutorJob.init(command);
         return ResponseEntity.ok(
                 Body.create(true));

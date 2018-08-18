@@ -1,8 +1,8 @@
 package controllers.guest;
 
+import app.common.utils.StringUtils;
 import app.models.RemoteFileInfo;
 import app.security.AccessSecurity;
-import common.utils.StringUtils;
 import play.Logger;
 import play.Play;
 import play.libs.Time;
@@ -12,13 +12,13 @@ import play.mvc.Http.Header;
 
 public class SecureFileAccessController extends Controller {
 
-    private static AccessSecurity ACCESS_CHECKER = 
-            new AccessSecurity(Play.secretKey);
-    private static final String CONNECTED_IDENTITY = "connectedIdentity";
+    private static AccessSecurity ACCESS_CHECKER;
     private static long EXPIRATION_TIME = 0;
+    private static final String CONNECTED_IDENTITY = "connectedIdentity";
     static {
         String EXPIRATION_TIME_CONF = Play.configuration.getProperty("application.token.maxAge", "0s");
         EXPIRATION_TIME = (Time.parseDuration(EXPIRATION_TIME_CONF) * 1000l);    
+        ACCESS_CHECKER = new AccessSecurity(Play.secretKey, EXPIRATION_TIME);
     }
 
     /*
@@ -43,7 +43,7 @@ public class SecureFileAccessController extends Controller {
      * Actions
      */
     
-    public static void download() throws Exception {    
+    public static void download(final Long id) throws Exception {    
         RemoteFileInfo fileInfo = new RemoteFileInfo();
         
         fileInfo.setMethod("GET");
@@ -53,7 +53,7 @@ public class SecureFileAccessController extends Controller {
         renderJSON(fileInfo);
     }
     
-    public static void upload() {   
+    public static void upload(final Long id) {   
         RemoteFileInfo fileInfo = new RemoteFileInfo();
         
         fileInfo.setMethod("POST");
@@ -68,7 +68,7 @@ public class SecureFileAccessController extends Controller {
         try {         
             token = getToken();   
             String refreshedToken = 
-                    ACCESS_CHECKER.refreshToken(token, EXPIRATION_TIME);            
+                    ACCESS_CHECKER.refreshToken(token);            
             renderText(refreshedToken);
         } catch(Exception e) {
             Logger.warn(e, "Unauthorized access attempt with token [%s] error [%s]", token, e.getMessage());

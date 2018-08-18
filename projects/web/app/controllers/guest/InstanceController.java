@@ -6,12 +6,13 @@ import java.util.List;
 
 import app.client.ComputingApi;
 import app.common.Authorization;
+import app.common.utils.StringUtils;
 import app.models.Body;
 import app.models.PluginComputingInstanceModel;
 import app.models.PluginComputingZoneModel;
 import app.models.security.TokenModel;
 import common.constants.I18N;
-import common.utils.StringUtils;
+import common.constants.SystemConstants;
 import common.utils.UserCredentialsReader;
 import controllers.CRUD.For;
 import controllers.Check;
@@ -174,10 +175,12 @@ public class InstanceController extends BaseAdminController {
         ExecutorModel executor = instance.getExecutor();
         res.setFirewallUdpPorts(
                 StringUtils.splitToIntList(
-                        executor.getFirewallUdpRules()));
+                        executor.getFirewallUdpRules(),
+                        SystemConstants.SPLIT_EXP_COMMA));
         res.setFirewallTcpPorts(
                 StringUtils.splitToIntList(
-                        executor.getFirewallTcpRules()));
+                        executor.getFirewallTcpRules(),
+                        SystemConstants.SPLIT_EXP_COMMA));
         res.setMachineType(instance.getTypeName());
         res.setType(instance.getTypeName());
         res.setRegion(instance.getRegionName());

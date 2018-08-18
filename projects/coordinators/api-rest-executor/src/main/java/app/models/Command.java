@@ -8,8 +8,8 @@ public class Command extends Body<Command> {
     private String workinDir;
     private String args;
     private String extraArgs;
-    private List<RemoteFileInfo> listInputs;
-    private List<String> listOutputs;
+    private List<String> listRemoteFileInputPaths;
+    private List<String> listRemoteFileOutputPaths;
     private SecureFileAccess secureFileAccess;
     
     public Command() {
@@ -33,17 +33,19 @@ public class Command extends Body<Command> {
     public void setExtraArgs(String extraArgs) {
         this.extraArgs = extraArgs;
     }
-    public List<RemoteFileInfo> getListInputs() {
-        return listInputs;
+    public final List<String> getListRemoteFileInputPaths() {
+        return listRemoteFileInputPaths;
     }
-    public void setListInputs(List<RemoteFileInfo> listInputs) {
-        this.listInputs = listInputs;
+    public final void setListRemoteFileInputPaths(
+            List<String> listRemoteFileInputPaths) {
+        this.listRemoteFileInputPaths = listRemoteFileInputPaths;
     }
-    public List<String> getListOutputs() {
-        return listOutputs;
+    public final List<String> getListRemoteFileOutputPaths() {
+        return listRemoteFileOutputPaths;
     }
-    public void setListOutputs(List<String> listOutputs) {
-        this.listOutputs = listOutputs;
+    public final void setListRemoteFileOutputPaths(
+            List<String> listRemoteFileOutputPaths) {
+        this.listRemoteFileOutputPaths = listRemoteFileOutputPaths;
     }
     public final String getWorkinDir() {
         return workinDir;

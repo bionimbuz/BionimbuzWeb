@@ -106,8 +106,8 @@ GET     /space/files                            guest.SpaceFileController.blank
 POST    /space/files                            guest.SpaceFileController.create
 
 # SecureFileAccessController
-GET     /secure/file/download                   guest.SecureFileAccessController.download
-GET     /secure/file/upload                     guest.SecureFileAccessController.upload
+GET     /secure/file/download/{id}              guest.SecureFileAccessController.download
+GET     /secure/file/upload/{id}                guest.SecureFileAccessController.upload
 GET     /secure/file/refresh                    guest.SecureFileAccessController.refreshToken
 
 # InstanceController

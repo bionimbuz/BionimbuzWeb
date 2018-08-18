@@ -28,8 +28,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import app.client.StorageApi;
-import app.common.FileUtils;
 import app.common.SystemConstants;
+import app.common.utils.FileUtils;
 import app.models.Body;
 import app.models.PluginStorageFileDownloadModel;
 import app.models.PluginStorageFileUploadModel;

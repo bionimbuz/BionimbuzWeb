@@ -1,19 +1,16 @@
-package common.utils;
+package app.common.utils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import common.constants.SystemConstants;
-
 public class StringUtils {
 
-    public static List<Integer> splitToIntList(final String value){
-        List<Integer> res = new ArrayList();
+    public static List<Integer> splitToIntList(final String value, final String separator){
+        List<Integer> res = new ArrayList<>();
         if(value == null || value.trim().isEmpty())
             return res;        
         String [] ports = 
-                value.trim().split(
-                        SystemConstants.SPLIT_EXP_COMMA);  
+                value.trim().split(separator);  
         for(String strPort : ports) {
             res.add(Integer.parseInt(strPort));
         }
