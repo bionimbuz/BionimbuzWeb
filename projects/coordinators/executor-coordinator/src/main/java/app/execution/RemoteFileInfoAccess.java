@@ -45,14 +45,14 @@ public class RemoteFileInfoAccess {
             throws SingletonAlreadyInitializedException {
         if(inst != null) {
             throw new SingletonAlreadyInitializedException(
-                    ExecutorJob.class);
+                    ApplicationExecutionJob.class);
         }
     }
     private static void assertInitialized()
             throws SingletonNotInitializedException {
         if(inst == null) {
             throw new SingletonNotInitializedException(
-                    ExecutorJob.class);
+                    ApplicationExecutionJob.class);
         }
     }
     

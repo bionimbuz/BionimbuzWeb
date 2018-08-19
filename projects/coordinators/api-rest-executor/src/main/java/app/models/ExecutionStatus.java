@@ -27,28 +27,28 @@ public class ExecutionStatus extends Body<ExecutionStatus> {
         this.hasError = false;
     }
     
-    public final RemoteFileProcessingStatus getDownloadStatus() {
+    public RemoteFileProcessingStatus getDownloadStatus() {
         return downloadStatus;
     }
-    public final RemoteFileProcessingStatus getUploadStatus() {
+    public RemoteFileProcessingStatus getUploadStatus() {
         return uploadStatus;
     }
-    public final EXECUTION_PHASE getPhase() {
+    public EXECUTION_PHASE getPhase() {
         return phase;
     }
-    public final void setPhase(EXECUTION_PHASE phase) {
+    public void setPhase(final EXECUTION_PHASE phase) {
         this.phase = phase;
     }
-    public final String getErrorMessage() {
+    public String getErrorMessage() {
         return errorMessage;
     }
-    public final void setErrorMessage(String errorMessage) {
+    public void setErrorMessage(final String errorMessage) {
         this.errorMessage = errorMessage;
     }
-    public final boolean isHasError() {
+    public boolean isHasError() {
         return hasError;
     }
-    public final void setHasError(boolean hasError) {
+    public void setHasError(boolean hasError) {
         this.hasError = hasError;
     }
 }

@@ -30,7 +30,7 @@ public class DownloaderJob {
     private Thread job;
 
     public DownloaderJob(
-            final IExecution executor,
+            final IApplicationExecution executor,
             final RemoteFileProcessingStatus downloadStatus,
             final List<String> listRemoteFileInputPaths,
             final String outputDir) {        
@@ -55,20 +55,18 @@ public class DownloaderJob {
     
     private static class Core implements Runnable, IDownload {
 
-        private IExecution executor;
+        private IApplicationExecution executor;
         private RemoteFileProcessingStatus downloadStatus;
-        private List<String> listRemoteFileInputPaths;
         private ExecutorService threadPool;
         private String outputDir;
         private List<Downloader> downloadJobs = new ArrayList<>();        
 
         public Core(
-                final IExecution executor,
+                final IApplicationExecution executor,
                 final RemoteFileProcessingStatus downloadStatus,
                 final List<String> listRemoteFileInputPaths,
                 final String outputDir) {
             this.executor = executor;
-            this.listRemoteFileInputPaths = listRemoteFileInputPaths;
             this.downloadStatus = downloadStatus;
             this.outputDir = outputDir;
             this.threadPool = Executors.newFixedThreadPool(MAX_SIMULTANEOUS_DOWNLOADS);
@@ -89,7 +87,8 @@ public class DownloaderJob {
                 }
                 threadPool.shutdown();
                 threadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
-                
+                executor.onSuccess(
+                        EXECUTION_PHASE.DOWNLOADING);
             } catch (Exception e) {
                 executor.onError(
                         EXECUTION_PHASE.DOWNLOADING, 

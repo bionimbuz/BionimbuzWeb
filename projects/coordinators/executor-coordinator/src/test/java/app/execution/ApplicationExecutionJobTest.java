@@ -4,8 +4,6 @@ import static app.common.SystemConstants.INPUTS_FOLDER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,20 +17,22 @@ import org.springframework.test.context.junit4.SpringRunner;
 import app.common.utils.FileUtils;
 import app.controllers.mocks.FileInfoControllerMock;
 import app.exceptions.SingletonAlreadyInitializedException;
+import app.exceptions.SingletonNotInitializedException;
+import app.models.Command;
+import app.models.ExecutionStatus;
 import app.models.ExecutionStatus.EXECUTION_PHASE;
-import app.models.RemoteFileProcessingStatus;
 import app.models.SecureFileAccess;
 import utils.TestUtils;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class DownloaderJobTest implements IApplicationExecution{
+public class ApplicationExecutionJobTest {
 
     @Value("${local.server.port}")
     private int PORT;
     @Autowired
     private FileInfoControllerMock controller;
-    
+
     @Before
     public void init() {
         File file = new File(INPUTS_FOLDER);
@@ -40,45 +40,31 @@ public class DownloaderJobTest implements IApplicationExecution{
     }
 
     @Test
-    public void test() throws SingletonAlreadyInitializedException, InterruptedException {
+    public void test() throws SingletonAlreadyInitializedException, InterruptedException, SingletonNotInitializedException {
 
         assertThat((new File(INPUTS_FOLDER).exists())).isFalse();
         
         String token = FileInfoControllerMock.generateToken("1@machine", 2*1000l);        
-        String baseUrl = TestUtils.getUrl(PORT);        
+        String baseUrl = TestUtils.getUrl(PORT);   
+        
         SecureFileAccess secureFileAccess = 
-                TestUtils.generateSecureFileAccess(token, baseUrl);        
-        RemoteFileInfoAccess.init(secureFileAccess);
+                TestUtils.generateSecureFileAccess(baseUrl, token);   
+        Command command = 
+                TestUtils.generateCommand(baseUrl, secureFileAccess);     
         
-        List<String> inputs = new ArrayList<>();
-        inputs.add(baseUrl + FileInfoControllerMock.webDownloadUrl.replace("{id}", "1"));
-        inputs.add(baseUrl + FileInfoControllerMock.webDownloadUrl.replace("{id}", "2"));
+        RemoteFileInfoAccess.init(command.getSecureFileAccess());
+        ApplicationExecutionJob.init(command);
         
-        RemoteFileProcessingStatus status = 
-                new RemoteFileProcessingStatus(inputs.size());
-        DownloaderJob downloader = new DownloaderJob(
-                this,
-                status,
-                inputs,
-                INPUTS_FOLDER);
+        // Wait for complete execution        
+        Thread.sleep(30*1000);
         
-        downloader.start();
-        
-        // Wait for downloads
-        Thread.sleep(10*1000);
+        ExecutionStatus status = 
+                ApplicationExecutionJob.get().getExecutionStatus();     
+
+        assertThat(status.getPhase()).isEqualTo(EXECUTION_PHASE.FINISHED);
         
         assertThat((new File(INPUTS_FOLDER, "f0").exists())).isTrue();
         assertThat((new File(INPUTS_FOLDER, "f1").exists())).isTrue();
-    }
-    
-    @Override
-    public void onError(EXECUTION_PHASE phase, String message) {
-        System.out.println("#### Error: " + message);
-        assertThat(message).isNull();
-    }
-
-    @Override
-    public void onSuccess(EXECUTION_PHASE phase) {
     }    
 }
 

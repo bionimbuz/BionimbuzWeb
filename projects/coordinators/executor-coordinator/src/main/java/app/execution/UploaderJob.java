@@ -5,12 +5,12 @@ import org.slf4j.LoggerFactory;
 
 import app.models.ExecutionStatus.EXECUTION_PHASE;
 
-public class ExecutorJob {
-    protected static final Logger LOGGER = LoggerFactory.getLogger(ExecutorJob.class);
+public class UploaderJob {
+    protected static final Logger LOGGER = LoggerFactory.getLogger(UploaderJob.class);
     
     private Thread job;
 
-    public ExecutorJob(
+    public UploaderJob(
             final IApplicationExecution executor) {        
         job = new Thread(new Core(executor));        
     }
@@ -34,7 +34,9 @@ public class ExecutorJob {
         @Override
         public void run() {
             executor.onSuccess(
-                    EXECUTION_PHASE.EXECUTING);
-        }       
-    }    
+                    EXECUTION_PHASE.UPLOADING);
+        }
+       
+    }
+    
 }
