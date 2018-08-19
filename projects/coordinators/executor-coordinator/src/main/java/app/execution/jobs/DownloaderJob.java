@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.common.Pair;
+import app.common.SystemConstants;
 import app.common.utils.StringUtils;
 import app.execution.IApplicationExecution;
 import app.execution.RemoteFileInfoAccess;
@@ -123,7 +124,6 @@ public class DownloaderJob {
         private String filePath;
         private String outputDir;
         private String fileName;
-        private static final char DOT = '.';
 
         public Downloader(
                 final IDownload callback, 
@@ -137,8 +137,8 @@ public class DownloaderJob {
             this.fileName = fileName;
             String extension = filePathWithExtension.getRight();
             if(!StringUtils.isEmpty(extension)){
-                if(extension.charAt(0) != DOT) {
-                    this.fileName += DOT;
+                if(extension.charAt(0) != SystemConstants.DOT) {
+                    this.fileName += SystemConstants.DOT;
                 }
                 this.fileName += filePathWithExtension.getRight();
             }

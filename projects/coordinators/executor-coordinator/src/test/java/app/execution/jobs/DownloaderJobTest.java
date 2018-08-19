@@ -1,10 +1,9 @@
-package app.execution;
+package app.execution.jobs;
 
 import static app.common.SystemConstants.INPUTS_FOLDER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
@@ -20,7 +19,8 @@ import app.common.Pair;
 import app.common.utils.FileUtils;
 import app.controllers.mocks.FileInfoControllerMock;
 import app.exceptions.SingletonAlreadyInitializedException;
-import app.execution.jobs.DownloaderJob;
+import app.execution.IApplicationExecution;
+import app.execution.RemoteFileInfoAccess;
 import app.models.ExecutionStatus.EXECUTION_PHASE;
 import app.models.RemoteFileProcessingStatus;
 import app.models.SecureFileAccess;
@@ -52,9 +52,7 @@ public class DownloaderJobTest implements IApplicationExecution{
                 TestUtils.generateSecureFileAccess(baseUrl, token);        
         RemoteFileInfoAccess.init(secureFileAccess);
 
-        List<Pair<String, String>> inputs = new ArrayList<>();
-        inputs.add(new Pair(baseUrl + FileInfoControllerMock.webDownloadUrl.replace("{id}", "1"), "txt"));
-        inputs.add(new Pair(baseUrl + FileInfoControllerMock.webDownloadUrl.replace("{id}", "2"), "txt"));        
+        List<Pair<String, String>> inputs = TestUtils.generateInputs(baseUrl);        
         
         RemoteFileProcessingStatus status = 
                 new RemoteFileProcessingStatus(inputs.size());

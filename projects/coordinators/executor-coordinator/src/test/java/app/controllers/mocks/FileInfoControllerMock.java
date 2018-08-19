@@ -36,7 +36,8 @@ public class FileInfoControllerMock {
     static {
         file.put(1l, "test_input1.txt");
         file.put(2l, "test_input2.txt");
-        file.put(3l, "test_output.txt");
+        file.put(3l, "test_output1.txt");
+        file.put(4l, "test_output2.txt");
     }
     
     public static String generateToken(final String identity, final Long expirationTime) {

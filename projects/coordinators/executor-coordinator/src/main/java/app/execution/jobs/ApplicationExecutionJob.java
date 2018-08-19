@@ -156,7 +156,8 @@ public class ApplicationExecutionJob {
         
         private void startExecutionPhase() {
             ExecutorJob job = new ExecutorJob(
-                    this);
+                    this,
+                    command);
             job.start();
         }
         

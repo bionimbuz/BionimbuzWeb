@@ -1,4 +1,4 @@
-package app.execution;
+package app.execution.jobs;
 
 import static app.common.SystemConstants.INPUTS_FOLDER;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,6 +18,7 @@ import app.common.utils.FileUtils;
 import app.controllers.mocks.FileInfoControllerMock;
 import app.exceptions.SingletonAlreadyInitializedException;
 import app.exceptions.SingletonNotInitializedException;
+import app.execution.RemoteFileInfoAccess;
 import app.execution.jobs.ApplicationExecutionJob;
 import app.models.Command;
 import app.models.ExecutionStatus;
