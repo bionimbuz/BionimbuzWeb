@@ -1,4 +1,4 @@
-package app.execution;
+package app.execution.jobs;
 
 import static app.common.SystemConstants.INPUT_PREFIX;
 import static app.common.SystemConstants.MAX_SIMULTANEOUS_DOWNLOADS;
@@ -20,6 +20,10 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import app.common.Pair;
+import app.common.utils.StringUtils;
+import app.execution.IApplicationExecution;
+import app.execution.RemoteFileInfoAccess;
 import app.models.ExecutionStatus.EXECUTION_PHASE;
 import app.models.RemoteFileInfo;
 import app.models.RemoteFileProcessingStatus;
@@ -32,12 +36,12 @@ public class DownloaderJob {
     public DownloaderJob(
             final IApplicationExecution executor,
             final RemoteFileProcessingStatus downloadStatus,
-            final List<String> listRemoteFileInputPaths,
+            final List<Pair<String, String>> listRemoteFilePathsWithExtension,
             final String outputDir) {        
         job = new Thread(new Core(
                 executor,
                 downloadStatus,
-                listRemoteFileInputPaths,
+                listRemoteFilePathsWithExtension,
                 outputDir));        
     }
     
@@ -59,22 +63,22 @@ public class DownloaderJob {
         private RemoteFileProcessingStatus downloadStatus;
         private ExecutorService threadPool;
         private String outputDir;
-        private List<Downloader> downloadJobs = new ArrayList<>();        
+        private List<Downloader> downloadJobs = new ArrayList<>();     
 
         public Core(
                 final IApplicationExecution executor,
                 final RemoteFileProcessingStatus downloadStatus,
-                final List<String> listRemoteFileInputPaths,
+                final List<Pair<String, String>>  listRemoteFilePathsWithExtension,
                 final String outputDir) {
             this.executor = executor;
             this.downloadStatus = downloadStatus;
             this.outputDir = outputDir;
             this.threadPool = Executors.newFixedThreadPool(MAX_SIMULTANEOUS_DOWNLOADS);
             
-            for(int i = 0; i<listRemoteFileInputPaths.size(); i++) {
-                String filePath = listRemoteFileInputPaths.get(i);
+            for(int i = 0; i<listRemoteFilePathsWithExtension.size(); i++) {
+                Pair<String, String> fileWithExtension = listRemoteFilePathsWithExtension.get(i);
                 this.downloadJobs.add(
-                    new Downloader(this, filePath, outputDir, INPUT_PREFIX + i));
+                    new Downloader(this, fileWithExtension, outputDir, INPUT_PREFIX + i));
             }
         }
         
@@ -119,17 +123,25 @@ public class DownloaderJob {
         private String filePath;
         private String outputDir;
         private String fileName;
+        private static final char DOT = '.';
 
         public Downloader(
                 final IDownload callback, 
-                final String filePath,
+                final Pair<String, String> filePathWithExtension,
                 final String outputDir, 
                 final String fileName) {
             
             this.callback = callback;
-            this.filePath = filePath;
+            this.filePath = filePathWithExtension.getLeft();
             this.outputDir = outputDir;
             this.fileName = fileName;
+            String extension = filePathWithExtension.getRight();
+            if(!StringUtils.isEmpty(extension)){
+                if(extension.charAt(0) != DOT) {
+                    this.fileName += DOT;
+                }
+                this.fileName += filePathWithExtension.getRight();
+            }
         }
 
         @Override

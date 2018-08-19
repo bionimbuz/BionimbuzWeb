@@ -1,9 +1,10 @@
-package app.execution;
+package app.execution.jobs;
 
 import static app.common.SystemConstants.INPUTS_FOLDER;
 
 import app.exceptions.SingletonAlreadyInitializedException;
 import app.exceptions.SingletonNotInitializedException;
+import app.execution.IApplicationExecution;
 import app.models.Command;
 import app.models.ExecutionStatus;
 import app.models.ExecutionStatus.EXECUTION_PHASE;
@@ -85,9 +86,9 @@ public class ApplicationExecutionJob {
         public Core(final Command command) {
             this.command = command;
             this.downloadStatus = new RemoteFileProcessingStatus(
-                    command.getListRemoteFileInputPaths().size());
+                    command.getListInputPathsWithExtension().size());
             this.uploadStatus = new RemoteFileProcessingStatus(
-                    command.getListRemoteFileOutputPaths().size());
+                    command.getListOutputPathsWithExtension().size());
             this.executionStatus = new ExecutionStatus(
                     downloadStatus, uploadStatus);
         }
@@ -148,7 +149,7 @@ public class ApplicationExecutionJob {
             DownloaderJob job = new DownloaderJob(
                     this,
                     downloadStatus,
-                    command.getListRemoteFileInputPaths(),
+                    command.getListInputPathsWithExtension(),
                     INPUTS_FOLDER);
             job.start();
         }        

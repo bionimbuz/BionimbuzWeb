@@ -6,8 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import app.execution.ApplicationExecutionJob;
 import app.execution.RemoteFileInfoAccess;
+import app.execution.jobs.ApplicationExecutionJob;
 import app.models.Body;
 import app.models.Command;
 import app.models.ExecutionStatus;

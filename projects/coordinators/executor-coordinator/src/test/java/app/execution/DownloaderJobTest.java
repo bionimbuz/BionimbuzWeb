@@ -16,9 +16,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import app.common.Pair;
 import app.common.utils.FileUtils;
 import app.controllers.mocks.FileInfoControllerMock;
 import app.exceptions.SingletonAlreadyInitializedException;
+import app.execution.jobs.DownloaderJob;
 import app.models.ExecutionStatus.EXECUTION_PHASE;
 import app.models.RemoteFileProcessingStatus;
 import app.models.SecureFileAccess;
@@ -47,12 +49,12 @@ public class DownloaderJobTest implements IApplicationExecution{
         String token = FileInfoControllerMock.generateToken("1@machine", 2*1000l);        
         String baseUrl = TestUtils.getUrl(PORT);        
         SecureFileAccess secureFileAccess = 
-                TestUtils.generateSecureFileAccess(token, baseUrl);        
+                TestUtils.generateSecureFileAccess(baseUrl, token);        
         RemoteFileInfoAccess.init(secureFileAccess);
-        
-        List<String> inputs = new ArrayList<>();
-        inputs.add(baseUrl + FileInfoControllerMock.webDownloadUrl.replace("{id}", "1"));
-        inputs.add(baseUrl + FileInfoControllerMock.webDownloadUrl.replace("{id}", "2"));
+
+        List<Pair<String, String>> inputs = new ArrayList<>();
+        inputs.add(new Pair(baseUrl + FileInfoControllerMock.webDownloadUrl.replace("{id}", "1"), "txt"));
+        inputs.add(new Pair(baseUrl + FileInfoControllerMock.webDownloadUrl.replace("{id}", "2"), "txt"));        
         
         RemoteFileProcessingStatus status = 
                 new RemoteFileProcessingStatus(inputs.size());
@@ -67,8 +69,8 @@ public class DownloaderJobTest implements IApplicationExecution{
         // Wait for downloads
         Thread.sleep(10*1000);
         
-        assertThat((new File(INPUTS_FOLDER, "f0").exists())).isTrue();
-        assertThat((new File(INPUTS_FOLDER, "f1").exists())).isTrue();
+        assertThat((new File(INPUTS_FOLDER, "i0.txt").exists())).isTrue();
+        assertThat((new File(INPUTS_FOLDER, "i1.txt").exists())).isTrue();
     }
     
     @Override

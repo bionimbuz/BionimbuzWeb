@@ -1,16 +1,17 @@
-package app.execution;
+package app.execution.jobs;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import app.execution.IApplicationExecution;
 import app.models.ExecutionStatus.EXECUTION_PHASE;
 
-public class UploaderJob {
-    protected static final Logger LOGGER = LoggerFactory.getLogger(UploaderJob.class);
+public class ExecutorJob {
+    protected static final Logger LOGGER = LoggerFactory.getLogger(ExecutorJob.class);
     
     private Thread job;
 
-    public UploaderJob(
+    public ExecutorJob(
             final IApplicationExecution executor) {        
         job = new Thread(new Core(executor));        
     }
@@ -34,9 +35,7 @@ public class UploaderJob {
         @Override
         public void run() {
             executor.onSuccess(
-                    EXECUTION_PHASE.UPLOADING);
-        }
-       
-    }
-    
+                    EXECUTION_PHASE.EXECUTING);
+        }       
+    }    
 }

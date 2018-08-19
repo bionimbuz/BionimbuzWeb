@@ -2,14 +2,16 @@ package app.models;
 
 import java.util.List;
 
+import app.common.Pair;
+
 public class Command extends Body<Command> {
 
     private String commandLine;
     private String workinDir;
     private String args;
     private String extraArgs;
-    private List<String> listRemoteFileInputPaths;
-    private List<String> listRemoteFileOutputPaths;
+    private List<Pair<String, String>> listInputPathsWithExtension;
+    private List<Pair<String, String>> listOutputPathsWithExtension;
     private SecureFileAccess secureFileAccess;
     
     public Command() {
@@ -33,20 +35,6 @@ public class Command extends Body<Command> {
     public void setExtraArgs(String extraArgs) {
         this.extraArgs = extraArgs;
     }
-    public final List<String> getListRemoteFileInputPaths() {
-        return listRemoteFileInputPaths;
-    }
-    public final void setListRemoteFileInputPaths(
-            List<String> listRemoteFileInputPaths) {
-        this.listRemoteFileInputPaths = listRemoteFileInputPaths;
-    }
-    public final List<String> getListRemoteFileOutputPaths() {
-        return listRemoteFileOutputPaths;
-    }
-    public final void setListRemoteFileOutputPaths(
-            List<String> listRemoteFileOutputPaths) {
-        this.listRemoteFileOutputPaths = listRemoteFileOutputPaths;
-    }
     public final String getWorkinDir() {
         return workinDir;
     }
@@ -58,5 +46,19 @@ public class Command extends Body<Command> {
     }
     public final void setSecureFileAccess(SecureFileAccess secureFileAccess) {
         this.secureFileAccess = secureFileAccess;
+    }
+    public final List<Pair<String, String>> getListInputPathsWithExtension() {
+        return listInputPathsWithExtension;
+    }
+    public final void setListInputPathsWithExtension(
+            List<Pair<String, String>> listInputPathsWithExtension) {
+        this.listInputPathsWithExtension = listInputPathsWithExtension;
+    }
+    public final List<Pair<String, String>> getListOutputPathsWithExtension() {
+        return listOutputPathsWithExtension;
+    }
+    public final void setListOutputPathsWithExtension(
+            List<Pair<String, String>> listOutputPathsWithExtension) {
+        this.listOutputPathsWithExtension = listOutputPathsWithExtension;
     }
 }

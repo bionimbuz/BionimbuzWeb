@@ -18,6 +18,7 @@ import app.common.utils.FileUtils;
 import app.controllers.mocks.FileInfoControllerMock;
 import app.exceptions.SingletonAlreadyInitializedException;
 import app.exceptions.SingletonNotInitializedException;
+import app.execution.jobs.ApplicationExecutionJob;
 import app.models.Command;
 import app.models.ExecutionStatus;
 import app.models.ExecutionStatus.EXECUTION_PHASE;
@@ -56,15 +57,15 @@ public class ApplicationExecutionJobTest {
         ApplicationExecutionJob.init(command);
         
         // Wait for complete execution        
-        Thread.sleep(30*1000);
+        Thread.sleep(10*1000);
         
         ExecutionStatus status = 
                 ApplicationExecutionJob.get().getExecutionStatus();     
 
         assertThat(status.getPhase()).isEqualTo(EXECUTION_PHASE.FINISHED);
         
-        assertThat((new File(INPUTS_FOLDER, "f0").exists())).isTrue();
-        assertThat((new File(INPUTS_FOLDER, "f1").exists())).isTrue();
+        assertThat((new File(INPUTS_FOLDER, "i0.txt").exists())).isTrue();
+        assertThat((new File(INPUTS_FOLDER, "i1.txt").exists())).isTrue();
     }    
 }
 
