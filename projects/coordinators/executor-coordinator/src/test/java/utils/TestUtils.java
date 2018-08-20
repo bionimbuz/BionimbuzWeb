@@ -1,6 +1,5 @@
 package utils;
 
-import static app.common.SystemConstants.INPUTS_FOLDER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
@@ -38,6 +37,10 @@ public class TestUtils {
                 baseUrl + FileInfoControllerMock.webRefreshTokenUrl);
         return secureFileAccess;
     }    
+
+    private static final String getAbsoluteCurrentDir() {
+        return System.getProperty("user.dir") + "/";        
+    }
     
     public static Command generateCommand(
             final String baseUrl,
@@ -47,8 +50,7 @@ public class TestUtils {
         List<Pair<String, String>> outputs = generateOutputs(baseUrl);
         
         Command command = new Command();
-        command.setWorkinDir("./");
-        command.setCommandLine("./application.sh {i} {i} {i} {o} {o} {o}");
+        command.setCommandLine(getAbsoluteCurrentDir() + "test/resources/application.sh {i} {i} {i} {o} {o} {o}");
         command.setListInputPathsWithExtension(inputs);
         command.setListOutputPathsWithExtension(outputs);
         command.setArgs("-a -b -c content");
@@ -72,12 +74,12 @@ public class TestUtils {
         return outputs;
     }
     
-    public static void createInputFile(String fileName, String fileContent)  {
-        File file = new File(INPUTS_FOLDER, fileName);
+    public static void createFile(String fileName, String fileContent, String dir)  {
+        File file = new File(dir, fileName);
         if(file.exists()) {
             file.delete();
         }
-        try(PrintWriter writer = new PrintWriter(INPUTS_FOLDER + fileName, "UTF-8")){
+        try(PrintWriter writer = new PrintWriter(dir + fileName, "UTF-8")){
             writer.println(fileContent);
         } catch (FileNotFoundException | UnsupportedEncodingException e) {
             assertThat(e).isNull();

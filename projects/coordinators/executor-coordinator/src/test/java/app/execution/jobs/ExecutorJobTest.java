@@ -26,7 +26,7 @@ import utils.TestUtils;
 public class ExecutorJobTest implements IApplicationExecution{
 
     @Value("${local.server.port}")
-    private int PORT;
+    private int PORT;    
     
     @Before
     public void init() {
@@ -38,8 +38,8 @@ public class ExecutorJobTest implements IApplicationExecution{
         FileUtils.deleteDir(dir);
         dir.mkdir();
         
-        TestUtils.createInputFile("i0.txt", "input file 0");
-        TestUtils.createInputFile("i1.txt", "input file 1");        
+        TestUtils.createFile("i0.txt", "input file 0", INPUTS_FOLDER);
+        TestUtils.createFile("i1.txt", "input file 1", INPUTS_FOLDER);        
     }
 
     @Test

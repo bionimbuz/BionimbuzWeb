@@ -11,6 +11,7 @@ import static app.common.SystemConstants.OUTPUT_PREFIX;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -45,26 +46,31 @@ public class ExecutorJob {
 
         private IApplicationExecution executor;   
         private Command command;
-
+        private List<String> outputFiles = new ArrayList<>();
+        
         public Core(
                 final IApplicationExecution executor,
                 final Command command) {
             this.executor = executor;
             this.command = command;
         }
-        
+                
         @Override
         public void run() {            
             try {
+                createOutDir();
                 String lineCommand = generateLinecommand();                
-                Process process = Runtime.getRuntime().exec(
-                        lineCommand,
-                        null,
-                        new File(command.getWorkinDir()));
+                Process process = 
+                        Runtime.getRuntime().exec(lineCommand);
                 
                 if(process.waitFor() == 0) {
-                    executor.onSuccess(
-                            EXECUTION_PHASE.EXECUTING);
+                    if(allOutputFilesGenerated()) {
+                        executor.onSuccess(
+                                EXECUTION_PHASE.EXECUTING);                        
+                    } else {
+                        executor.onError(
+                                EXECUTION_PHASE.EXECUTING, "Some of output files was not generated");
+                    }
                     return;                    
                 }
                 
@@ -85,6 +91,24 @@ public class ExecutorJob {
             }            
         }
 
+        private boolean createOutDir() {
+            File dir = new File(OUTPUTS_FOLDER);
+            if (dir.exists()) {
+                return true;
+            }
+            return dir.mkdir();
+        }    
+
+        private boolean allOutputFilesGenerated() {
+            File file;            
+            for (String outputFile : outputFiles) {
+                file = new File(outputFile);
+                if(!file.exists()) 
+                    return false;
+            }
+            return true;
+        }
+        
         private String generateLinecommand() {
             String lineCommand = 
                     updateLineCommandWithFiles(
@@ -107,10 +131,10 @@ public class ExecutorJob {
 
         private String updateLineCommandArgs(String lineCommand) {
             String res = lineCommand;
-            if(!StringUtils.isEmpty(command.getExtraArgs())){
+            if(!StringUtils.isEmpty(command.getArgs())){
                 res = res.replaceFirst(
                         ARGS_LINE_CMD_REGEX, 
-                        command.getExtraArgs());
+                        command.getArgs());
             }            
             res = res.replaceAll(
                     ARGS_LINE_CMD_REGEX, 
@@ -118,27 +142,36 @@ public class ExecutorJob {
             return lineCommand;
         }     
         
+        private String generateFilePath(
+                final String dir, 
+                final String prefix,
+                final int id,
+                final String extension) {
+            StringBuilder fileName = new StringBuilder();
+            fileName.append(dir);
+            fileName.append(prefix);
+            fileName.append(id);      
+            if(!StringUtils.isEmpty(extension)){
+                if(extension.charAt(0) != SystemConstants.DOT) {
+                    fileName.append(SystemConstants.DOT);
+                }
+                fileName.append(extension);
+            } 
+            return fileName.toString();
+        }
+        
         private String updateLineCommandWithFiles(
                 final String lineCommand,
                 final String dir,
                 final String filePrefix,
                 final List<Pair<String, String>> lintFileExtensions,
                 final String replacement) {   
-            String res = lineCommand;
-            StringBuilder fileName;            
-            for(int i=0; i<lintFileExtensions.size(); i++) {
-                fileName = new StringBuilder();
-                fileName.append(dir);
-                fileName.append(filePrefix);
-                fileName.append(i);                
-                String extension = lintFileExtensions.get(i).getRight();
-                if(!StringUtils.isEmpty(extension)){
-                    if(extension.charAt(0) != SystemConstants.DOT) {
-                        fileName.append(SystemConstants.DOT);
-                    }
-                    fileName.append(extension);
-                }               
-                res = res.replaceFirst(replacement, fileName.toString());
+            String res = lineCommand;          
+            for(int i=0; i<lintFileExtensions.size(); i++) {          
+                String extension = lintFileExtensions.get(i).getRight();                
+                String fileName = generateFilePath(dir, filePrefix, i, extension);    
+                outputFiles.add(fileName);
+                res = res.replaceFirst(replacement, fileName);
             }
             res = res.replaceAll(replacement, "");
             

@@ -1,5 +1,4 @@
 package app.execution.jobs;
-
 import static app.common.SystemConstants.INPUTS_FOLDER;
 import static org.assertj.core.api.Assertions.assertThat;
 

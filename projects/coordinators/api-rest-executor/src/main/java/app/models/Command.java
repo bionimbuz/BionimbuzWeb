@@ -7,9 +7,7 @@ import app.common.Pair;
 public class Command extends Body<Command> {
 
     private String commandLine;
-    private String workinDir;
     private String args;
-    private String extraArgs;
     private List<Pair<String, String>> listInputPathsWithExtension;
     private List<Pair<String, String>> listOutputPathsWithExtension;
     private SecureFileAccess secureFileAccess;
@@ -28,18 +26,6 @@ public class Command extends Body<Command> {
     }
     public void setArgs(String args) {
         this.args = args;
-    }
-    public String getExtraArgs() {
-        return extraArgs;
-    }
-    public void setExtraArgs(String extraArgs) {
-        this.extraArgs = extraArgs;
-    }
-    public final String getWorkinDir() {
-        return workinDir;
-    }
-    public final void setWorkinDir(String workinDir) {
-        this.workinDir = workinDir;
     }
     public final SecureFileAccess getSecureFileAccess() {
         return secureFileAccess;

@@ -1,6 +1,6 @@
 package app.execution.jobs;
-
 import static app.common.SystemConstants.INPUTS_FOLDER;
+import static app.common.SystemConstants.OUTPUTS_FOLDER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
@@ -19,7 +19,6 @@ import app.controllers.mocks.FileInfoControllerMock;
 import app.exceptions.SingletonAlreadyInitializedException;
 import app.exceptions.SingletonNotInitializedException;
 import app.execution.RemoteFileInfoAccess;
-import app.execution.jobs.ApplicationExecutionJob;
 import app.models.Command;
 import app.models.ExecutionStatus;
 import app.models.ExecutionStatus.EXECUTION_PHASE;
@@ -34,10 +33,12 @@ public class ApplicationExecutionJobTest {
     private int PORT;
     @Autowired
     private FileInfoControllerMock controller;
-
+    
     @Before
     public void init() {
         File file = new File(INPUTS_FOLDER);
+        FileUtils.deleteDir(file);
+        file = new File(OUTPUTS_FOLDER);
         FileUtils.deleteDir(file);
     }
 
@@ -45,6 +46,7 @@ public class ApplicationExecutionJobTest {
     public void test() throws SingletonAlreadyInitializedException, InterruptedException, SingletonNotInitializedException {
 
         assertThat((new File(INPUTS_FOLDER).exists())).isFalse();
+        assertThat((new File(OUTPUTS_FOLDER).exists())).isFalse();
         
         String token = FileInfoControllerMock.generateToken("1@machine", 2*1000l);        
         String baseUrl = TestUtils.getUrl(PORT);   
@@ -67,6 +69,8 @@ public class ApplicationExecutionJobTest {
         
         assertThat((new File(INPUTS_FOLDER, "i0.txt").exists())).isTrue();
         assertThat((new File(INPUTS_FOLDER, "i1.txt").exists())).isTrue();
+        assertThat((new File(OUTPUTS_FOLDER, "o0.txt").exists())).isTrue();
+        assertThat((new File(OUTPUTS_FOLDER, "o1.txt").exists())).isTrue();
     }    
 }
 

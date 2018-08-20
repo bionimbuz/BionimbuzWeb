@@ -14,5 +14,5 @@ public class SystemConstants {
     
     public static final int MAX_SIMULTANEOUS_DOWNLOADS = 4;    
 
-    public static final char DOT = '.';
+    public static final char DOT = '.';    
 }
