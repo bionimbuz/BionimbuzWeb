@@ -17,8 +17,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import app.common.LineCmdUtils;
 import app.common.Pair;
-import app.common.SystemConstants;
 import app.common.utils.StringUtils;
 import app.execution.IApplicationExecution;
 import app.models.Command;
@@ -140,25 +140,7 @@ public class ExecutorJob {
                     ARGS_LINE_CMD_REGEX, 
                     "");
             return lineCommand;
-        }     
-        
-        private String generateFilePath(
-                final String dir, 
-                final String prefix,
-                final int id,
-                final String extension) {
-            StringBuilder fileName = new StringBuilder();
-            fileName.append(dir);
-            fileName.append(prefix);
-            fileName.append(id);      
-            if(!StringUtils.isEmpty(extension)){
-                if(extension.charAt(0) != SystemConstants.DOT) {
-                    fileName.append(SystemConstants.DOT);
-                }
-                fileName.append(extension);
-            } 
-            return fileName.toString();
-        }
+        }    
         
         private String updateLineCommandWithFiles(
                 final String lineCommand,
@@ -169,7 +151,7 @@ public class ExecutorJob {
             String res = lineCommand;          
             for(int i=0; i<lintFileExtensions.size(); i++) {          
                 String extension = lintFileExtensions.get(i).getRight();                
-                String fileName = generateFilePath(dir, filePrefix, i, extension);    
+                String fileName = LineCmdUtils.generateFilePath(dir, filePrefix, i, extension);    
                 outputFiles.add(fileName);
                 res = res.replaceFirst(replacement, fileName);
             }

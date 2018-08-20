@@ -1,5 +1,6 @@
 package app.execution.jobs;
 import static app.common.SystemConstants.INPUTS_FOLDER;
+import static app.common.SystemConstants.OUTPUTS_FOLDER;
 
 import app.exceptions.SingletonAlreadyInitializedException;
 import app.exceptions.SingletonNotInitializedException;
@@ -162,7 +163,10 @@ public class ApplicationExecutionJob {
         
         private void startUploadPhase() {
             UploaderJob job = new UploaderJob(
-                    this);
+                    this,
+                    uploadStatus,
+                    command.getListOutputPathsWithExtension(),
+                    OUTPUTS_FOLDER);
             job.start();
         }
     }

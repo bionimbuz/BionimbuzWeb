@@ -29,6 +29,12 @@ import utils.TestUtils;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ApplicationExecutionJobTest {
 
+    private static final String PLUGIN_LOCAL_DIR = "../../plugins/plugin-local/";
+    private static final String SPACES_DIR = PLUGIN_LOCAL_DIR + "spaces/";
+    private static final String TEST_SPACE = SPACES_DIR + "test/";
+    private static final String outputFile0 = FileInfoControllerMock.getFileNameById(3);
+    private static final String outputFile1 = FileInfoControllerMock.getFileNameById(4);
+    
     @Value("${local.server.port}")
     private int PORT;
     @Autowired
@@ -40,6 +46,15 @@ public class ApplicationExecutionJobTest {
         FileUtils.deleteDir(file);
         file = new File(OUTPUTS_FOLDER);
         FileUtils.deleteDir(file);
+        
+        file = new File(TEST_SPACE, outputFile0);
+        if(file.exists()) {
+            file.delete();
+        }
+        file = new File(TEST_SPACE, outputFile1);
+        if(file.exists()) {
+            file.delete();
+        }
     }
 
     @Test
@@ -47,6 +62,8 @@ public class ApplicationExecutionJobTest {
 
         assertThat((new File(INPUTS_FOLDER).exists())).isFalse();
         assertThat((new File(OUTPUTS_FOLDER).exists())).isFalse();
+        assertThat((new File(TEST_SPACE, outputFile0).exists())).isFalse();
+        assertThat((new File(TEST_SPACE, outputFile1).exists())).isFalse();
         
         String token = FileInfoControllerMock.generateToken("1@machine", 2*1000l);        
         String baseUrl = TestUtils.getUrl(PORT);   
@@ -71,6 +88,8 @@ public class ApplicationExecutionJobTest {
         assertThat((new File(INPUTS_FOLDER, "i1.txt").exists())).isTrue();
         assertThat((new File(OUTPUTS_FOLDER, "o0.txt").exists())).isTrue();
         assertThat((new File(OUTPUTS_FOLDER, "o1.txt").exists())).isTrue();
+        assertThat((new File(TEST_SPACE, outputFile0).exists())).isTrue();
+        assertThat((new File(TEST_SPACE, outputFile1).exists())).isTrue();
     }    
 }
 

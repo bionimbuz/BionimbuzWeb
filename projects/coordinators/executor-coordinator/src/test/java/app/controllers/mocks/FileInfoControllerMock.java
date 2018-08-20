@@ -29,7 +29,7 @@ public class FileInfoControllerMock {
     
     private static final String pluginLocalBaseUrl = "http://localhost:8282";
     private String localFileDownloadPath = pluginLocalBaseUrl+"/spaces/%s/file/%s/download";
-    private String localFileUploadPath = pluginLocalBaseUrl + "/spaces/%s/file/%s/download";
+    private String localFileUploadPath = pluginLocalBaseUrl + "/spaces/%s/file/%s/upload";
     private static HashMap<Long, String> file = new HashMap<>();
     private String localFileSpace = "test";
     
@@ -38,6 +38,10 @@ public class FileInfoControllerMock {
         file.put(2l, "test_input2.txt");
         file.put(3l, "test_output1.txt");
         file.put(4l, "test_output2.txt");
+    }
+    
+    public static String getFileNameById(long id) {
+        return file.get(id);        
     }
     
     public static String generateToken(final String identity, final Long expirationTime) {
