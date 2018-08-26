@@ -19,6 +19,7 @@ import models.PluginModel;
 import models.SpaceModel;
 import models.StorageRegionModel;
 import models.StorageRegionModel.StorageRegion;
+import models.UserModel;
 import play.Logger;
 import play.data.binding.Binder;
 import play.data.validation.Validation;
@@ -29,16 +30,47 @@ import play.i18n.Messages;
 @Check("/list/spaces")
 public class SpaceController extends BaseAdminController {
 
+    private static final String OBJECT_LISTSHAREDGROUPS_ID = "object.listSharedGroups.id";
     private static final String STORAGE_REGION_SELECTED = "storageRegionSelected";
     private static final String OBJECT_NAME = "object.name";
     private static final String STORAGE_REGION_SELECTED_ID = STORAGE_REGION_SELECTED + ".id";
 
+    public static void save(Long id) throws Exception {
+        final CustomObjectType type = CustomObjectType.get(getControllerClass());
+        notFoundIfNull(type);
+        final SpaceModel object = SpaceModel.findById(id);
+        notFoundIfNull(object);
+        // Treatment for multiselect empty
+        if(params.get(OBJECT_LISTSHAREDGROUPS_ID) == null) {
+            params.put(OBJECT_LISTSHAREDGROUPS_ID, "");
+        }
+        final SpaceModel tempObject = new SpaceModel();
+        Binder.bindBean(params.getRootParamNode(), "object", tempObject);
+        object.setListSharedGroups(tempObject.getListSharedGroups());
+        validation.valid(object);
+        if (Validation.hasErrors()) {
+            renderArgs.put("error", Messages.get("crud.hasErrors"));
+            try {
+                render(request.controller.replace(".", "/") + "/show.html", type, object);
+            } catch (final TemplateNotFoundException e) {
+                render("CRUD/show.html", type, object);
+            }
+        }
+        object._save();
+        flash.success(Messages.get("crud.saved", type.modelName));
+        if (params.get("_save") != null) {
+            redirect(VwSpaceController.ACTION_LIST);
+        }
+        redirect(request.controller + ".show", object._key());
+    }
     public static void create(
             StorageRegionModel storageRegionSelected) throws Exception {
         final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);
 
         final SpaceModel object = new SpaceModel();
+        UserModel currentUser = BaseAdminController.getConnectedUser();
+        object.setUser(currentUser);        
         Binder.bindBean(params.getRootParamNode(), "object", object);
         validation.valid(object);
         String regionId = params.get(STORAGE_REGION_SELECTED_ID);

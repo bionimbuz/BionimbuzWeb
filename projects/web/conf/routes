@@ -87,7 +87,8 @@ GET     /adm/list/prices                        adm.PriceTableController.list
 GET     /adm/force/prices                       adm.PriceTableController.forceSync
 
 # SpaceController
-GET     /search/storage/regions                 guest.SpaceController.searchStorageRegions
+GET     /list/spaces                            guest.VwSpaceController.list
+GET     /view/spaces/{id}                       guest.VwSpaceController.show
 GET     /list/spaces                            guest.SpaceController.list
 GET     /spaces/{id}                            guest.SpaceController.show
 PUT     /spaces/{id}                            guest.SpaceController.save
@@ -95,15 +96,18 @@ DELETE  /spaces/{id}                            guest.SpaceController.delete
 GET     /spaces                                 guest.SpaceController.blank
 POST    /spaces                                 guest.SpaceController.create
 
+GET     /search/storage/regions                 guest.SpaceController.searchStorageRegions
+
 # SpaceFileController
-GET     /upload/space/files                     guest.SpaceFileController.getFileLocationToUpload
-GET     /download/space/files                   guest.SpaceFileController.getFileLocationToDownload
 GET     /list/space/files                       guest.SpaceFileController.list
 GET     /space/files/{id}                       guest.SpaceFileController.show
 PUT     /space/files/{id}                       guest.SpaceFileController.save
 DELETE  /space/files/{id}                       guest.SpaceFileController.delete
 GET     /space/files                            guest.SpaceFileController.blank
 POST    /space/files                            guest.SpaceFileController.create
+
+GET     /upload/space/files                     guest.SpaceFileController.getFileLocationToUpload
+GET     /download/space/files                   guest.SpaceFileController.getFileLocationToDownload
 
 # SecureFileAccessController
 GET     /secure/file/download/{id}              guest.SecureFileAccessController.download

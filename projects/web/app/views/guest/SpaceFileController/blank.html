@@ -13,6 +13,31 @@
 #{form action:@create(), enctype:'multipart/form-data', class: 'submitForm'}
 
     #{crud.form}
+        #{crud.custom 'space'}            
+            #{field 'object.space'}            
+            <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                <label for="${field.id}">&{field.name}</label>
+                <div class="nav-container">
+                    <select class="form-control nav" id="${field.id}" name="${field.name}.id">                        
+                        <option value="">&{'crud.selectValue'}</option>
+                        %{ models.VwSpaceModel.searchForCurrentUserWithShared().each() { }%
+                        %{
+                            selected = false
+                            if(object.space != null) {
+                                selected = (it.id == object.space.id) 
+                            }
+                        }%
+                        <option value="${it.id}" ${selected ? 'selected="true"'.raw() : ''}>${it.name}</option>
+                        %{ } }%
+                    </select>
+                </div>
+                #{ifError field.name}
+                    <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                #{/ifError}
+            </div>                   
+            #{/field}            
+        #{/crud.custom}
+        
         #{crud.custom 'publicUrl'}
             #{field 'object.publicUrl'}
             <div class="form-group row ${field.errorClass ? 'has-error' : ''}">

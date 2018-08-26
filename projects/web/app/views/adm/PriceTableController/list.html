@@ -45,7 +45,21 @@
             ${object.syncMessage}
         #{/if}
     #{/crud.custom}
-
+    #{crud.custom 'priceTableDate'}
+        #{if object.priceTableDate != null}
+            ${object.priceTableDate.format()}
+        #{/if}
+    #{/crud.custom}
+    #{crud.custom 'lastSearchDate'}
+        #{if object.lastSearchDate != null}
+            ${object.lastSearchDate.format()}
+        #{/if}
+    #{/crud.custom}
+    #{crud.custom 'lastSyncDate'}
+        #{if object.lastSyncDate != null}
+            ${object.lastSyncDate.format()}
+        #{/if}
+    #{/crud.custom}
 #{/crud.table}
 
 #{crud.pagination /}

@@ -2,6 +2,7 @@ package models;
 
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -33,11 +34,14 @@ public class ApplicationModel extends GenericModel {
     @MinSize(3)
     private String name;
     @Required
-    @MaxSize(500)
+    @MaxSize(1000)
     @MinSize(3)
+    @Column(length=1000)
     private String startupScript;
     @MaxSize(10)
     private String scriptExtension;
+    @MinSize(5)
+    private String commandLine;
     @CheckWith(NetworkPortsCheck.class)
     private String firewallUdpRules;
     @CheckWith(NetworkPortsCheck.class)
@@ -96,6 +100,12 @@ public class ApplicationModel extends GenericModel {
     }
     public void setScriptExtension(String scriptExtension) {
         this.scriptExtension = scriptExtension;
+    }    
+    public final String getCommandLine() {
+        return commandLine;
+    }
+    public final void setCommandLine(String commandLine) {
+        this.commandLine = commandLine;
     }
     
     @Override

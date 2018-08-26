@@ -21,16 +21,17 @@ import play.db.jpa.GenericModel;
 public class InstanceModel extends GenericModel {
 
     public static enum CredentialUsagePolicy {
-        ONLY_SHARED,
-        ONLY_OWNER,
         SHARED_FIRST,
-        OWNER_FIRST
+        OWNER_FIRST,
+        ONLY_SHARED,
+        ONLY_OWNER
     }
 
     @Id
     @GeneratedValue
     private Long id;
     @Unique
+    @NoBinding
     private String instanceIdentity;
     @Required
     @ManyToOne(fetch = FetchType.LAZY)

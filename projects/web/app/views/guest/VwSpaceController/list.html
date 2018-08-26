@@ -1,0 +1,57 @@
+
+#{extends 'CRUD/layout.html' /}
+#{set title:messages.get('crud.list.title', type.name) /}
+
+<div class="row crud-title">
+    <h1 class="col-xs-12"> &{'crud.list.title', type.name} </h1>
+    <pre class="col-xs-12"> &{'crud.list.title.desc', type.name+'.desc'} </pre>
+</div>
+
+<br>
+
+<div class=row>
+
+    <div class="col-xs-12 col-sm-12 col-md-7 margin-bottom no-bootstrap-padding">
+        #{form action:@list().remove('page'), method:'GET', id:'searchForm', class: 'submitForm'}
+            #{if _fields}
+                <input type="hidden" name="searchFields" value="${_fields.toString().substring(1, _fields.toString().length()-1).replace(',', '')}" />
+            #{/if}
+            <input type="text" class="form-control btn-buscar" placeholder="&{'crud.search'}" name="search" value="${params.search?.escape()?.raw()}" />
+        #{/form}
+        #{if totalCount > 0 && params.search}
+            <div class="list-total-count">
+                (<a href="@{list()}">&{'crud.list.totalSize', totalCount}</a>)
+            </div>
+        #{/if}
+    </div>
+
+    <div class="row col-xs-12 col-sm-12 col-md-4 pull-right no-bootstrap-padding">
+        <button class="btn-crud-search-form-submit btn btn-primary margin-bottom col-xs-12 col-sm-12 col-md-4" type="button" onclick="javascript: block('&{'crud.wait'}');">&{'crud.search'}</button>
+        <input class="btn btn-primary margin-bottom col-xs-12 col-sm-12 col-md-7 pull-right" type="button" onclick="javascript: location.href = '@{guest.SpaceController.blank()}'; block('&{'crud.wait'}');" value="&{'crud.add', type}">
+    </div>
+
+</div>
+
+<br>
+
+#{crud.table fields: ['name', 'plugin.name', 'regionName', 'pricePerGB',
+            'classAPrice', 'classBPrice', 'creationDate', 'owner', 'shared']}
+
+    #{crud.custom 'plugin.name'}
+        ${object.plugin.name}
+    #{/crud.custom}
+    #{crud.custom 'creationDate'}
+        ${object.creationDate.format()}
+    #{/crud.custom}
+    #{crud.custom 'name'}
+        #{if object.owner}
+         <a href="@{guest.SpaceController.show(object._key())}">${object.name?.toString()?.escape()?.raw() ?: '(no value)'}</a>
+        #{/if}
+        #{else}
+        <a href="@{guest.VwSpaceController.show(object._key())}">${object.name?.toString()?.escape()?.raw() ?: '(no value)'}</a>
+        #{/else}
+    #{/crud.custom}
+
+#{/crud.table}
+
+#{crud.pagination /}

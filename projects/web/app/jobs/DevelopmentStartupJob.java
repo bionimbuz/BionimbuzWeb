@@ -83,7 +83,8 @@ public class DevelopmentStartupJob extends Job {
         this.insertAWSCredential(pluginAWS, userNormal);
 
         this.insertLocalCredential(pluginLocal, userAdmin);
-
+        
+        this.insertFakeExecutor(pluginLocal);
         this.insertExecutor(pluginGCE, pluginAWS, pluginLocal);
     }
 
@@ -104,6 +105,40 @@ public class DevelopmentStartupJob extends Job {
         executor.setListImages(listImages);
         executor.save();
     }
+    
+    private void insertFakeExecutor(final PluginModel... plugins) {
+        final ExecutorModel executor = new ExecutorModel();
+        final List<ImageModel> listImages = new ArrayList<>();
+        for (final PluginModel plugin : plugins) {
+            plugin.refresh();
+            listImages.add(
+                    plugin.getListImages().get(0));
+        }
+        executor.setName("Application Fake");
+        executor.setStartupScript(
+            "#!/bin/bash\n" + 
+            "\n" + 
+            "APP_NAME=application.sh\n" + 
+            "echo \"#!/bin/bash\" > ${APP_NAME}\n" + 
+            "echo \"\" >> ${APP_NAME}\n" + 
+            "echo \"cat \\$1 > \\$3\" >> ${APP_NAME}\n" + 
+            "echo \"cat \\$2 >> \\$3\" >> ${APP_NAME}\n" + 
+            "echo \"\" >> ${APP_NAME}\n" + 
+            "echo \"echo \\\"Execution time: \\`date\\`\\\" >> \\$3\" >> ${APP_NAME}\n" + 
+            "echo \"\" >> ${APP_NAME}\n" + 
+            "echo \"echo \\\"Extra file execution time: \\`date\\`\\\" >> \\$4\" >> ${APP_NAME}\n" + 
+            "chmod 777 ${APP_NAME}\n" + 
+            "\n" + 
+            "\n" + 
+            "COORDINATOR=executor-coordinator-0.1.jar\n" + 
+            "curl -o ${COORDINATOR} http://localhost:8282/spaces/test/file/${COORDINATOR}/download\n" + 
+            "apt-get install -y openjdk-8-jdk && java -jar ${COORDINATOR}" +
+            "\n");
+        executor.setScriptExtension("sh");
+        executor.setCommandLine("application.sh {i} {i} {i} {o} {o} {o}");
+        executor.setListImages(listImages);
+        executor.save();
+    }
 
     private void insertTempGroup(final String name, final UserModel... users) {
         final GroupModel group = new GroupModel();
@@ -120,14 +155,8 @@ public class DevelopmentStartupJob extends Job {
 
     private void insertGCEImages(final PluginModel plugin) {
         ImageModel image = new ImageModel();
-        image.setName("ubuntu-1804-bionic-v20180522");
-        image.setUrl("https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1804-bionic-v20180522");
-        image.setPlugin(plugin);
-        image.save();
-
-        image = new ImageModel();
-        image.setName("ubuntu-1204-precise-v20141028");
-        image.setUrl("https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1204-precise-v20141028");
+        image.setName("ubuntu-1604-xenial-v20180627");
+        image.setUrl("https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1604-xenial-v20180627");
         image.setPlugin(plugin);
         image.save();
     }

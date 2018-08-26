@@ -36,6 +36,8 @@ public class GroupModel extends GenericModel {
     private List<UserGroupModel> listUserGroups;
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "listSharedGroups")
     private List<CredentialModel> listCredentials;
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "listSharedGroups")
+    private List<SpaceModel> listSpaces;
     @NoBinding
     @ManyToMany
     @JoinTable(name = "tb_user_group", 
@@ -65,6 +67,16 @@ public class GroupModel extends GenericModel {
                 + " JOIN groups.listUsers users \n"   
                 + " WHERE users.id = ?1 AND credentials.id = ?2 \n", 
                 currentUser.getId(), credentialId).fetch();        
+    }
+    public static List<GroupModel> searchUserGroupsForSpace(final Long spaceId) {
+        UserModel currentUser = BaseAdminController.getConnectedUser();  
+        return find(
+                " \n SELECT groups \n"
+                + " FROM SpaceModel spaces \n"
+                + " JOIN spaces.listSharedGroups groups \n"
+                + " JOIN groups.listUsers users \n"   
+                + " WHERE users.id = ?1 AND spaces.id = ?2 \n", 
+                currentUser.getId(), spaceId).fetch();        
     }
     
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -118,7 +130,13 @@ public class GroupModel extends GenericModel {
     public void setListUsers(List<UserModel> listUsers) {
         this.listUsers = listUsers;
     }
-
+    public final List<SpaceModel> getListSpaces() {
+        return listSpaces;
+    }
+    public final void setListSpaces(List<SpaceModel> listSpaces) {
+        this.listSpaces = listSpaces;
+    }
+    
     @Override
     public String toString() {
         return name;

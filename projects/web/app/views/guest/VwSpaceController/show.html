@@ -1,0 +1,88 @@
+
+#{extends 'CRUD/layout.html' /}
+#{set title:messages.get('crud.show.title', type.modelName) /}
+
+<div class="row crud-title">
+    <h1 class="col-xs-12"> &{'crud.view.title', type.modelName} </h1>
+    <pre class="col-xs-12"> &{'crud.view.title.desc', type.modelName} </pre>
+</div>
+
+<br>
+
+<div class="row" >
+    
+#{field 'object.name' }
+    <div class="form-group row">
+        <label for="${field.id}">&{field.name}</label>
+        <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value}"/>
+    </div>
+#{/field}
+#{field 'object.creationDate' }
+    <div class="form-group row">
+        <label for="${field.id}">&{field.name}</label>
+        <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value.format()}"/>
+    </div>
+#{/field}
+#{field 'object.plugin' }
+    <div class="form-group row">
+        <label for="${field.id}">&{field.name}</label>
+        <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value}"/>
+    </div>
+#{/field}
+#{field 'object.pricePerGB' }
+    <div class="form-group row">
+        <label for="${field.id}">&{field.name}</label>
+        <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value}"/>
+    </div>
+#{/field}
+#{field 'object.classAPrice' }
+    <div class="form-group row">
+        <label for="${field.id}">&{field.name}</label>
+        <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value}"/>
+    </div>
+#{/field}
+#{field 'object.classBPrice' }
+    <div class="form-group row">
+        <label for="${field.id}">&{field.name}</label>
+        <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value}"/>
+    </div>
+#{/field}
+#{field 'object.priceTableDate' }
+    <div class="form-group row">
+        <label for="${field.id}">&{field.name}</label>
+        <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value.format()}"/>
+    </div>
+#{/field}
+#{field 'object.regionName' }
+    <div class="form-group row">
+        <label for="${field.id}">&{field.name}</label>
+        <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value}"/>
+    </div>
+#{/field}
+
+#{field 'object.listSharedGroups'}
+    <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+            <div class="div-label">
+                <label for="${field.id}">
+                    &{field.name}
+                </label>
+                <a class="check-all ${field.id}_class_all_"></a>
+            </div>
+            <div class="custom-muilt-check-box">
+                %{
+                field.value.each() {
+                }%
+                <div style="padding-top: 5px;padding-bottom: 5px;">
+                    <input checked disabled type="checkbox" class="icheck"/>&nbsp;${it}<br/>
+                </div>
+                %{ } }%
+            </div>
+    </div>
+#{/field}
+
+<div class="btn-row text-center">
+    <a href="@{guest.VwSpaceController.list()}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>
+</div>
+
+</div>
+

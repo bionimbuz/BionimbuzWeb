@@ -1,11 +1,15 @@
 package models;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -14,7 +18,7 @@ import play.data.validation.Required;
 import play.db.jpa.GenericModel;
 
 @Entity
-@Table(name = "tb_storage")
+@Table(name = "tb_space")
 public class SpaceModel extends GenericModel {
 
     @Id
@@ -27,6 +31,15 @@ public class SpaceModel extends GenericModel {
     @ManyToOne(fetch = FetchType.LAZY)
     @Required
     private PluginModel plugin;
+    @NoBinding
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
+    private UserModel user;
+    @ManyToMany
+    @JoinTable(name = "tb_group_space",
+        joinColumns = @JoinColumn(name = "id_space", referencedColumnName = "id"),
+        inverseJoinColumns = @JoinColumn(name = "id_group", referencedColumnName = "id"))
+    private List<GroupModel> listSharedGroups;
     @Required
     private boolean alocationAfterCreation;
 
@@ -48,11 +61,7 @@ public class SpaceModel extends GenericModel {
     public SpaceModel() {
         super();
     }
-
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    // Data access
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+    
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Getters and Setters
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -115,6 +124,18 @@ public class SpaceModel extends GenericModel {
     }
     public void setAlocationAfterCreation(boolean alocationAfterCreation) {
         this.alocationAfterCreation = alocationAfterCreation;
+    }
+    public final UserModel getUser() {
+        return user;
+    }
+    public final void setUser(UserModel user) {
+        this.user = user;
+    }
+    public final List<GroupModel> getListSharedGroups() {
+        return listSharedGroups;
+    }
+    public final void setListSharedGroups(List<GroupModel> listSharedGroups) {
+        this.listSharedGroups = listSharedGroups;
     }
 
     @Override

@@ -12,58 +12,120 @@
 <br>
 
 <div class="row" >
-    #{field 'object.name' }
-        <div class="form-group row">
-            <label for="${field.id}">&{field.name}</label>
-            <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value}"/>
-        </div>
-    #{/field}
-    #{field 'object.creationDate' }
-        <div class="form-group row">
-            <label for="${field.id}">&{field.name}</label>
-            <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value}"/>
-        </div>
-    #{/field}
-    #{field 'object.plugin' }
-        <div class="form-group row">
-            <label for="${field.id}">&{field.name}</label>
-            <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value}"/>
-        </div>
-    #{/field}
-    #{field 'object.pricePerGB' }
-        <div class="form-group row">
-            <label for="${field.id}">&{field.name}</label>
-            <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value}"/>
-        </div>
-    #{/field}
-    #{field 'object.classAPrice' }
-        <div class="form-group row">
-            <label for="${field.id}">&{field.name}</label>
-            <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value}"/>
-        </div>
-    #{/field}
-    #{field 'object.classBPrice' }
-        <div class="form-group row">
-            <label for="${field.id}">&{field.name}</label>
-            <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value}"/>
-        </div>
-    #{/field}
-    #{field 'object.priceTableDate' }
-        <div class="form-group row">
-            <label for="${field.id}">&{field.name}</label>
-            <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value}"/>
-        </div>
-    #{/field}
-    #{field 'object.regionName' }
-        <div class="form-group row">
-            <label for="${field.id}">&{field.name}</label>
-            <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value}"/>
-        </div>
-    #{/field}
+#{form action:@save(object._key()), enctype:'multipart/form-data', class: 'submitForm'}
+
+    #{crud.form}
+    
+        #{crud.custom 'name' }
+            #{field 'object.name' }
+                <div class="form-group row">
+                    <label for="${field.id}">&{field.name}</label>
+                    <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value}"/>
+                </div>
+            #{/field}
+        #{/crud.custom}            
+        #{crud.custom 'creationDate' }
+            #{field 'object.creationDate' }
+                <div class="form-group row">
+                    <label for="${field.id}">&{field.name}</label>
+                    <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value.format()}"/>
+                </div>
+            #{/field}
+        #{/crud.custom}
+        #{crud.custom 'plugin' }
+            #{field 'object.plugin' }
+                <div class="form-group row">
+                    <label for="${field.id}">&{field.name}</label>
+                    <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value}"/>
+                </div>
+            #{/field}
+            #{field 'object.pricePerGB' }
+                <div class="form-group row">
+                    <label for="${field.id}">&{field.name}</label>
+                    <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value}"/>
+                </div>
+            #{/field}
+            #{field 'object.classAPrice' }
+                <div class="form-group row">
+                    <label for="${field.id}">&{field.name}</label>
+                    <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value}"/>
+                </div>
+            #{/field}
+            #{field 'object.classBPrice' }
+                <div class="form-group row">
+                    <label for="${field.id}">&{field.name}</label>
+                    <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value}"/>
+                </div>
+            #{/field}
+            #{field 'object.priceTableDate' }
+                <div class="form-group row">
+                    <label for="${field.id}">&{field.name}</label>
+                    <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value.format()}"/>
+                </div>
+            #{/field}
+            #{field 'object.regionName' }
+                <div class="form-group row">
+                    <label for="${field.id}">&{field.name}</label>
+                    <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value}"/>
+                </div>
+            #{/field}
+        #{/crud.custom}
+        #{crud.custom 'alocationAfterCreation' }
+        #{/crud.custom}
+        
+        
+    
+        #{crud.custom 'listSharedGroups'}
+            #{field 'object.listSharedGroups'}
+            <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                <div class="div-label">
+                    <label for="${field.id}">
+                        &{field.name}
+                    </label>
+                    <a class="check-all ${field.id}_class_all_"></a>
+                </div>
+                <div class="custom-muilt-check-box">
+                    %{
+        
+                    fieldChoices = models.GroupModel.searchUserGroups();
+                    fieldChoices.each() {
+                        selected = (object.listSharedGroups != null && object.listSharedGroups.contains(it));
+                    }%
+                    <div style="padding-top: 5px;padding-bottom: 5px;">
+                        <input type="checkbox" name="${field.name}.id" value="${it._key()}" ${selected ? 'checked'.raw() : ''}
+                            class="icheck icheckbox_table_list ${field.id}_class_one_"/>&nbsp;${it}<br/>
+                    </div>
+                    %{ } }%
+                </div>
+        
+                #{set 'tempInnerScript' }
+                <script type="text/javascript">
+                    configureCheckAll(
+                            $('.${field.id}_class_all_'),
+                            $('.${field.id}_class_one_'));
+                </script>
+                #{/set}
+        
+                #{set 'moreInnerScripts'}
+                    #{get 'moreInnerScripts' /}
+                    #{get 'tempInnerScript' /}
+                #{/set}
+                #{ifError field.name}
+                    <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                #{/ifError}
+            </div>
+            #{/field}
+        #{/crud.custom}
+    
+    #{/crud.form}
 
     <div class="btn-row text-center">
-        <a href="@{list()}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>
+        <input class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_save" value="&{'crud.save', type.modelName}" />
+        <input class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_saveAndContinue" value="&{'crud.saveAndContinue', type.modelName}" />
+        <a href="@{guest.VwSpaceController.list()}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>
     </div>
+#{/form}
+
 </div>
 
 <div id="deleteModal" class="modal fade">

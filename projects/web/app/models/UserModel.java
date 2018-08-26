@@ -54,6 +54,8 @@ public class UserModel extends GenericModel {
     private List<UserGroupModel> listUserGroups;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<CredentialModel> listCredentials;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<SpaceModel> listSpaces;
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "listUsers")
     private List<GroupModel> listGroups;
     
@@ -135,6 +137,12 @@ public class UserModel extends GenericModel {
     }
     public void setListGroups(List<GroupModel> listGroups) {
         this.listGroups = listGroups;
+    }    
+    public final List<SpaceModel> getListSpaces() {
+        return listSpaces;
+    }
+    public final void setListSpaces(List<SpaceModel> listSpaces) {
+        this.listSpaces = listSpaces;
     }
     
     @Override
