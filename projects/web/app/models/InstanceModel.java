@@ -9,6 +9,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import play.data.binding.NoBinding;
@@ -50,6 +51,8 @@ public class InstanceModel extends GenericModel {
     private boolean executionAfterCreation;
     @NoBinding
     private Date creationDate;
+    @OneToOne
+    private ApplicationArgumentsModel applicationArguments;
 
     // ---- Redundant Data for price table exclusion/update
     @NoBinding

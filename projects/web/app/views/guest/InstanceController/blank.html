@@ -9,15 +9,171 @@
 
 <br>
 
+#{form id:'submitExecutor', action:@blank(), enctype:'multipart/form-data', class: 'submitForm'}
+    #{field 'executorSelected'}
+    <input type="hidden" id="${field.id}" name="${field.name}.id" 
+            value="${field.value != null ? field.value.id : ''}">
+    #{/field} 
+#{/form}
+
 <div class="row" >
 #{form action:@create(), enctype:'multipart/form-data', class: 'submitForm'}
 
-    #{crud.form}
+    #{field 'object.executor'}    
+    <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+        <label for="${field.id}">&{field.name}</label>
+        <div class="nav-container">
+            <select class="form-control nav" id="${field.id}" name="${pName}">
+                <option value="">&{'crud.selectValue'}</option>
+                %{ models.ExecutorModel.findAll().each() { }%
+                %{
+                    selected = (object.executor != null && object.executor.id == it.id);
+                }%
+                <option value="${it.id}" ${selected ? 'selected="true"'.raw() : ''}>${it.name}</option>
+                %{ } }%
+            </select>
+        </div>
+        #{ifError field.name}
+            <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+        #{/ifError}
+    </div>
+    #{/field} 
+    
+    
+    #{if executorSelected != null}
+    
 
-        #{crud.custom 'credentialUsage'}
+    #{field 'object.executionAfterCreation'}    
+    <div class="form-group row ${field.errorClass ? 'has-error' : ''}">            
+        <input type="checkbox" id="${field.id}" name="${field.name}" class="icheck" value="true" 
+                ${ (field.value != null && field.value) ? 'checked="true" '.raw() : ''} /> 
+        <input type="hidden" name="${field.name}" value="false" />        
+        <label for="${field.id}" style="margin-left: 10px;">&{field.name}</label>        
+        #{ifError field.name}
+            <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+        #{/ifError} 
+    </div>
+    #{/field} 
 
+    <ul class="nav nav-tabs" style="margin-bottom: 20px;">
+        <li class="active">
+            <a href="#tabApplication" data-toggle="tab">&{'tab.application'}</a>
+        </li>
+        <li>
+            <a href="#tabCloud" data-toggle="tab">&{'tab.cloud'}</a>
+        </li>
+    </ul>
+
+    <div class="tab-content ">
+        <div class="tab-pane active" id="tabApplication">
+        
+<!-- ############## BEGIN TAB APPLICATION ####################  -->      
+            
+            #{if executorSelected.hasArguments()}
+                #{field 'applicationArguments.arguments'}
+                    <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                        <label for="${field.id}">&{field.name}</label>
+                        <input id="${field.id}" class="form-control"  type="text" name="${field.name}" 
+                                value="${field.value}" />
+                        #{ifError field.name}
+                            <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                        #{/ifError} 
+                    </div>
+                #{/field}
+            #{/if}
+                        
+            #{if executorSelected.countInputs() > 0}            
+            
+                <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                    <label>&{'applicationArguments.inputs'}</label>
+                </div>
+                               
+                #{field 'applicationInputFiles'}
+                
+                    #{list items:1..executorSelected.countInputs(), as:'i'}                
+                    <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                    
+                        <div class="col-md-4 no-bootstrap-padding">                    
+                            <label style="font-weight: normal;">#${i}: &{'applicationArguments.space'}</label>
+                            <div class="nav-container">
+                                <select class="form-control nav select-space-input">
+                                    <option value="">&{'crud.none'}</option>
+                                    %{ listSpaces.each() { }%
+                                    %{
+                                        selected = false;
+                                    }%
+                                    <option value="${it.id}" ${selected ? 'selected="true"'.raw() : ''}>${it.name}</option>
+                                    %{ } }%
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-7 col-md-offset-1 no-bootstrap-padding">                    
+                            <label style="font-weight: normal;">&{'applicationArguments.file'}</label>
+                            <div class="nav-container">
+                                <select class="form-control nav select-file-input" id="${field.id}" name="${pName}">
+                                    <option value="">&{'crud.none'}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    #{/list}
+                #{/field}
+            #{/if}
+            
+            #{if executorSelected.countOutputs() > 0}            
+            
+                <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                    <label>&{'applicationArguments.outputs'}</label>
+                </div>
+                               
+                #{field 'applicationInputFiles'}
+                
+                    #{list items:1..executorSelected.countOutputs(), as:'i'}                
+                    <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                    
+                        <div class="col-md-4 no-bootstrap-padding">                    
+                            <label style="font-weight: normal;">#${i}: &{'applicationArguments.space'}</label>
+                            <div class="nav-container">
+                                <select class="form-control nav select-space-output">
+                                    <option value="">&{'crud.none'}</option>
+                                    %{ listSpaces.each() { }%
+                                    %{
+                                        selected = false;
+                                    }%
+                                    <option value="${it.id}" ${selected ? 'selected="true"'.raw() : ''}>${it.name}</option>
+                                    %{ } }%
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-7 col-md-offset-1 no-bootstrap-padding">                    
+                            <label style="font-weight: normal;">&{'applicationArguments.file'}</label>
+                            <input class="form-control name-file-output" type="text" value="" />
+                            #{ifError field.name}
+                                <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                            #{/ifError}                       
+                        </div>
+                    </div>
+                    #{/list}
+                #{/field}
+            #{/if}
+                       
+            <div class="form-group row">
+                <label for="commandLine">&{'object.commandLine'}</label>
+                <textarea readonly data-command-line="${executorSelected.commandLine}" 
+                        id="commandLine" class="form-control" rows="5"></textarea>
+            </div>        
+            
+<!-- ################ END TAB APPLICATION ####################  -->   
+      
+        </div>
+        <div class="tab-pane" id="tabCloud">        
+
+<!-- ############## BEGIN TAB CLOUD ##########################  -->    
+        
             #{field 'object.credentialUsage'}
-
+        
             <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
                 <div class="div-label">
                     <label for="${field.id}">
@@ -38,16 +194,14 @@
                             class="icheck icheckbox_table_list"/>&nbsp;&{it}<br/>
                     </div>
                     %{ } }%
-
+        
             #{ifError field.name}
                 <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
             #{/ifError}
             </div>
-
+        
             #{/field}
-        #{/crud.custom}
-
-        #{crud.custom 'plugin'}
+            
             #{field 'object.plugin'}
             <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
                 <label for="${field.id}">&{field.name}</label>
@@ -62,11 +216,11 @@
                                     selected = true;
                                 }
                         }%
-
+        
                         <option value="${it._key()}" ${selected ? 'selected="true"'.raw() : ''}>${it}</option>
-
+        
                         %{ } }%
-
+        
                     </select>
                 </div>
                 #{ifError field.name}
@@ -74,7 +228,7 @@
                 #{/ifError}
             </div>
             #{/field}
-
+        
             #{field 'regionSelected'}
             <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
                 <label for="${field.id}">&{field.name}</label>
@@ -92,7 +246,7 @@
                         }%
                         <option value="${it.id}" ${selected ? 'selected="true"'.raw() : ''}>${it.name}</option>
                         %{ } } }%
-
+        
                     </select>
                 </div>
                 #{ifError field.name}
@@ -100,7 +254,7 @@
                 #{/ifError}
             </div>
             #{/field}
-
+        
         %{
             instanceTypesZones = null;
             if(object.plugin != null && regionSelected != null) {
@@ -109,7 +263,7 @@
                             object.plugin.id, regionSelected.id);
             }
         }%
-
+        
             #{field 'zoneSelected'}
             <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
                 <label for="${field.id}">&{field.name}</label>
@@ -127,7 +281,7 @@
                         }%
                         <option value="${it}" ${selected ? 'selected="true"'.raw() : ''}>${it}</option>
                         %{ } } }%
-
+        
                     </select>
                 </div>
                 #{ifError field.name}
@@ -135,7 +289,7 @@
                 #{/ifError}
             </div>
             #{/field}
-
+        
             #{field 'instanceTypeSelected'}
             <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
                 <label for="${field.id}">&{field.name}</label>
@@ -188,15 +342,18 @@
                         }
                 }%
                 </table>
-            #{ifError field.name}
-                <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
-            #{/ifError}
+                #{ifError field.name}
+                    <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                #{/ifError}
             </div>
             #{/field}
-        #{/crud.custom}
+        
+<!-- ################ END TAB CLOUD ##########################  -->    
+        
+        </div>
+    </div>
 
-    #{/crud.form}
-
+    #{/if}
 
     <div class="btn-row text-center">
         <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_save">&{'crud.save'}</button>
@@ -340,6 +497,95 @@ $(function(){
     $('#object_plugin').change(reloadRegions);
 
     $('#regionSelected').change(reloadInstanceTypes);
+    
+    $('#object_executor').change(function(){        
+        var selected = $(this).val();
+        $('#executorSelected').val(selected);        
+        $('#submitExecutor').submit();
+    });
+    
+    function updateCommandLineArea(){
+        var commandLine = $('#commandLine').data('command-line');      
+        
+        // Replace option arguments
+        var arguments = $('#applicationArguments_arguments').val();        
+        commandLine = commandLine.replace("{a}", arguments);
+        
+        // Replace input file arguments
+        $('.select-file-input').each(function(){ 
+            var selectedFile = $(this).val();     
+            var fileName = "";
+            if(selectedFile != "") {
+                fileName = $(this).find(":selected").text().trim();
+            }
+            commandLine = commandLine.replace(/\{i\}/, fileName);   
+        });
+        commandLine = commandLine.replace(/\{i\}/g, "");  
+
+        // Replace output file arguments
+        $('.name-file-output').each(function(){ 
+            var fileName = $(this).val();     
+            commandLine = commandLine.replace(/\{o\}/, fileName);   
+        });
+        commandLine = commandLine.replace(/\{o\}/g, "");  
+        
+        // Update textarea
+        $('#commandLine').val(commandLine);
+    }
+    
+    updateCommandLineArea();
+    
+    $('#applicationArguments_arguments').on('input', function(){
+        updateCommandLineArea();
+    });
+    
+    $('.select-file-input').change(function(){
+        updateCommandLineArea();
+    });
+    
+    $('.name-file-output').on('input', function(){
+        updateCommandLineArea();
+    });
+    
+    
+    $('.select-space-input').change(function(){
+       
+        showPleaseWait();
+        
+        var filesSelect = $(this).closest('div.form-group.row').find('.select-file-input');
+        filesSelect.empty();
+        addSelectItem(filesSelect, "&{'crud.none'}");
+        
+        updateCommandLineArea();
+
+        spaceId = $(this).val();
+        var search = #{jsRoute @guest.SpaceFileController.searchFilesForSpace() /};
+        if(spaceId == ""){
+            hidePleaseWait();
+            return;
+        }
+
+        $.ajax({
+            url: search.url(),
+            type: search.method,
+            data:{ spaceId: spaceId}
+           })
+        .done(function(data) {
+            for(var i in data) {
+                addSelectItem(
+                        filesSelect,
+                        data[i]['name'],
+                        data[i]['id']);
+            }
+        })
+        .fail(function(data) {
+            flashError(data.responseText);
+        })
+        .always(function() {
+            hidePleaseWait();
+        });       
+    });
+    
 });
 
 </script>

@@ -1,5 +1,9 @@
 package models;
 
+import static common.constants.SystemConstants.CMD_LINE_ARGS;
+import static common.constants.SystemConstants.CMD_LINE_INPUTS;
+import static common.constants.SystemConstants.CMD_LINE_OUTPUTS;
+
 import java.util.List;
 
 import javax.persistence.Column;
@@ -12,7 +16,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
+import app.common.utils.StringUtils;
 import common.fields.validation.NetworkPortsCheck;
 import play.data.validation.CheckWith;
 import play.data.validation.MaxSize;
@@ -101,11 +107,32 @@ public class ApplicationModel extends GenericModel {
     public void setScriptExtension(String scriptExtension) {
         this.scriptExtension = scriptExtension;
     }    
-    public final String getCommandLine() {
+    public String getCommandLine() {
         return commandLine;
     }
-    public final void setCommandLine(String commandLine) {
+    public void setCommandLine(String commandLine) {
         this.commandLine = commandLine;
+    }
+    @Transient
+    public boolean hasArguments() {
+        if(StringUtils.isEmpty(this.commandLine)) {
+            return false;
+        }
+        return this.commandLine.contains(CMD_LINE_ARGS);
+    }
+    @Transient
+    public int countInputs() {
+        if(StringUtils.isEmpty(this.commandLine)) {
+            return 0;
+        }
+        return org.apache.commons.lang.StringUtils.countMatches(this.commandLine, CMD_LINE_INPUTS);
+    }
+    @Transient
+    public int countOutputs() {
+        if(StringUtils.isEmpty(this.commandLine)) {
+            return 0;
+        }
+        return org.apache.commons.lang.StringUtils.countMatches(this.commandLine, CMD_LINE_OUTPUTS);
     }
     
     @Override

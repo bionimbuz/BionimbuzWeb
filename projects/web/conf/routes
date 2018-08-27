@@ -108,6 +108,7 @@ POST    /space/files                            guest.SpaceFileController.create
 
 GET     /upload/space/files                     guest.SpaceFileController.getFileLocationToUpload
 GET     /download/space/files                   guest.SpaceFileController.getFileLocationToDownload
+GET     /search/space/files                     guest.SpaceFileController.searchFilesForSpace
 
 # SecureFileAccessController
 GET     /secure/file/download/{id}              guest.SecureFileAccessController.download

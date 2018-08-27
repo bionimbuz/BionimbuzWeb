@@ -244,7 +244,7 @@ object.firewallUdpRules=UDP Port Rules for Firewall
 object.firewallTcpRules=TCP Port Rules for Firewall
 firewall.separate.ports=Separate values with commas (,) or semicolons (;), ex.: 80,3306,5432
 object.commandLine=Command Line
-commandLine.obs=To create the command line to be executed, the following tags can be used: \
+obs.commandLine=To create the command line to be executed, the following tags can be used: \
 {a} for arguments, {i} for inputs and {o} for outputs \
 (e.g. "./application.sh {a} -g -r {i} {i} {i} {o} {o} ")
 
@@ -293,6 +293,8 @@ object.cloudInstanceIp=External IP
 object.executor.name=Executor
 object.regionName=Region
 object.creationDate=Creation Date
+tab.application=Application Arguments
+tab.cloud=Cloud Settings
 
 # SpaceModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -321,6 +323,15 @@ object.virtualName=Virtual Name
 # InstanceTypeRegionModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 object.price=Price per Hour
+
+# ApplicationArgumentsModel
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+applicationArguments.arguments=Arguments
+applicationArguments.inputs=Inputs
+applicationArguments.outputs=Outputs
+applicationArguments.space=Space
+applicationArguments.file=File
+
 
 # Modals
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

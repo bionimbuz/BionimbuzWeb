@@ -17,6 +17,7 @@ import common.utils.UserCredentialsReader;
 import controllers.CRUD.For;
 import controllers.Check;
 import controllers.adm.BaseAdminController;
+import models.ApplicationArgumentsModel;
 import models.ExecutorModel;
 import models.ImageModel;
 import models.InstanceModel;
@@ -27,6 +28,7 @@ import models.InstanceTypeRegionModel;
 import models.PluginModel;
 import models.RegionModel;
 import models.RegionModel.Region;
+import models.VwSpaceModel;
 import play.Logger;
 import play.data.binding.Binder;
 import play.data.validation.Validation;
@@ -37,19 +39,28 @@ import play.i18n.Messages;
 @Check("/list/instances")
 public class InstanceController extends BaseAdminController {
 
+    private static final String EXECUTOR_SELECTED = "executorSelected";
+    private static final String EXECUTOR_SELECTED_ID = "executorSelected.id";
     private static final String INSTANCE_TYPE_SELECTED = "instanceTypeSelected";
     private static final String INSTANCE_TYPE_SELECTED_ID = INSTANCE_TYPE_SELECTED + ".id";
     private static final String REGION_SELECTED = "regionSelected";
     private static final String REGION_SELECTED_ID = REGION_SELECTED + ".id";
 
-    public static void blank() throws Exception {
+    public static void blank(ExecutorModel executorSelected) throws Exception {
         final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);
+        String executorId = params.get(EXECUTOR_SELECTED_ID);
+        if(StringUtils.isEmpty(executorId) ){
+            executorSelected = null;
+        }        
         final InstanceModel object = new InstanceModel();
+        object.setExecutor(executorSelected);        
+        List<VwSpaceModel> listSpaces = 
+                VwSpaceModel.searchForCurrentUserWithShared();        
         try {
-            render(type, object);
+            render(type, object, executorSelected, listSpaces);
         } catch (final TemplateNotFoundException e) {
-            render("CRUD/blank.html", type, object);
+            render("CRUD/blank.html", type, object, executorSelected, listSpaces);
         }
     }
 
@@ -64,23 +75,28 @@ public class InstanceController extends BaseAdminController {
         Binder.bindBean(params.getRootParamNode(), "object", object);
         validation.valid(object);
         String regionId = params.get(REGION_SELECTED_ID);
-        if(regionId == null || regionId.isEmpty()) {
+        if(StringUtils.isEmpty(regionId)) {
             regionSelected = null;
             validation.addError(REGION_SELECTED, Messages.get("validation.required"));
         }
         String instanceTypeId = params.get(INSTANCE_TYPE_SELECTED_ID);
-        if(instanceTypeId == null || instanceTypeId.isEmpty()) {
+        if(StringUtils.isEmpty(instanceTypeId)) {
             instanceTypeSelected = null;
             validation.addError(INSTANCE_TYPE_SELECTED, Messages.get("validation.required"));
         }
         validation.required(zoneSelected);
+        
+        ApplicationArgumentsModel applicationArguments = new ApplicationArgumentsModel();
+        
         if (Validation.hasErrors()) {
+            List<VwSpaceModel> listSpaces = 
+                    VwSpaceModel.searchForCurrentUserWithShared(); 
             renderArgs.put("error", Messages.get("crud.hasErrors"));
             try {
                 render(request.controller.replace(".", "/") + "/blank.html",
-                        type, object, regionSelected, zoneSelected, instanceTypeSelected);
+                        type, object, regionSelected, zoneSelected, instanceTypeSelected, listSpaces);
             } catch (final TemplateNotFoundException e) {
-                render("CRUD/blank.html", type, object, regionSelected, zoneSelected, instanceTypeSelected);
+                render("CRUD/blank.html", type, object, regionSelected, zoneSelected, instanceTypeSelected, listSpaces);
             }
         }
         InstanceTypeRegionModel instanceTypeRegion =

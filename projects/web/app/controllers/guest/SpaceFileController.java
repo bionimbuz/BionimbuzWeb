@@ -1,6 +1,8 @@
 package controllers.guest;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import app.client.StorageApi;
@@ -18,6 +20,7 @@ import controllers.adm.BaseAdminController;
 import models.CredentialModel;
 import models.PluginModel;
 import models.SpaceFileModel;
+import models.SpaceFileModel.SpaceFile;
 import models.SpaceModel;
 import play.Logger;
 import play.i18n.Messages;
@@ -25,7 +28,27 @@ import play.i18n.Messages;
 @For(SpaceFileModel.class)
 @Check("/list/space/files")
 public class SpaceFileController extends BaseAdminController {
-
+    
+    public static void searchFilesForSpace(final Long spaceId) {
+        try {
+            List<SpaceFile> listSpaceFiles = getSpaceFiles(spaceId);
+            if(listSpaceFiles == null)
+                notFound(Messages.get(I18N.not_found));
+            renderJSON(listSpaceFiles);
+        } catch (Exception e) {
+            Logger.error(e, "Error searching files from space [%s]", e.getMessage());
+            notFound(Messages.get(I18N.not_found));
+        }
+    }
+    
+    public static List<SpaceFile> getSpaceFiles(final Long spaceId) {
+        List<SpaceFile> listSpaceFiles = new ArrayList<>();
+        for(SpaceFileModel region : SpaceFileModel.findBySpaceId(spaceId)) {
+            listSpaceFiles.add(new SpaceFile(region.getId(), region.getName()));
+        }
+        return listSpaceFiles;
+    }
+    
     public static void getFileLocationToDownload(final Long fileId) {
 
         SpaceFileModel file = SpaceFileModel.findById(fileId);

@@ -14,6 +14,9 @@ public class ExecutorModel extends ApplicationModel {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "executor")
     private List<InstanceModel> listInstances;
 
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Getters and Setters
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public List<InstanceModel> getListInstances() {
         return listInstances;
     }
