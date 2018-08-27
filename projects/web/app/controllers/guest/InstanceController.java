@@ -18,6 +18,9 @@ import controllers.CRUD.For;
 import controllers.Check;
 import controllers.adm.BaseAdminController;
 import models.ApplicationArgumentsModel;
+import models.ApplicationFileInputModel;
+import models.ApplicationFileOutputModel;
+import models.ApplicationFileOutputModel.ApplicationOutput;
 import models.ExecutorModel;
 import models.ImageModel;
 import models.InstanceModel;
@@ -28,6 +31,8 @@ import models.InstanceTypeRegionModel;
 import models.PluginModel;
 import models.RegionModel;
 import models.RegionModel.Region;
+import models.SpaceFileModel;
+import models.SpaceModel;
 import models.VwSpaceModel;
 import play.Logger;
 import play.data.binding.Binder;
@@ -63,6 +68,65 @@ public class InstanceController extends BaseAdminController {
             render("CRUD/blank.html", type, object, executorSelected, listSpaces);
         }
     }
+    
+    private static ApplicationArgumentsModel bindApplicationArguments() {
+        
+        ApplicationArgumentsModel res = new ApplicationArgumentsModel();     
+
+        // Process option arguments
+        final String applicationArguments = "";
+        Binder.bindBean(params.getRootParamNode(), "applicationArguments", applicationArguments);   
+        res.setArguments(applicationArguments);
+        
+        // Process input files
+        Integer [] applicationInputFiles = new Integer [] {};
+        Binder.bindBean(params.getRootParamNode(), "applicationInputFiles", applicationInputFiles);   
+        
+        List<ApplicationFileInputModel> inputFiles = new ArrayList();
+        for(int i = 0; i<applicationInputFiles.length; i++) {
+            Integer spaceFileId = applicationInputFiles[i];
+            if(spaceFileId == null)
+                continue;            
+            SpaceFileModel spaceFile = 
+                    SpaceFileModel.findById(spaceFileId);            
+            ApplicationFileInputModel inputFile = 
+                    new ApplicationFileInputModel();            
+            inputFile.setOrder(i);
+            inputFile.setSpaceFile(spaceFile);
+            inputFiles.add(inputFile);            
+        }
+        res.setApplicationInputFiles(inputFiles);
+        
+        // Process output files
+        ApplicationOutput [] applicationOutputFiles = new ApplicationOutput [] {};
+        Binder.bindBean(params.getRootParamNode(), "applicationOutputFiles", applicationOutputFiles);   
+
+        List<ApplicationFileOutputModel> outputFiles = new ArrayList(); 
+        for(int i = 0; i<applicationOutputFiles.length; i++) {
+            ApplicationOutput spaceOutputFile = applicationOutputFiles[i];
+            if(spaceOutputFile == null 
+                || spaceOutputFile.getSpaceId() == null
+                || StringUtils.isEmpty(spaceOutputFile.getName())) {
+                continue;            
+            }
+            SpaceModel space = 
+                    SpaceModel.findById(spaceOutputFile.getSpaceId());         
+            
+            SpaceFileModel spaceFile = new SpaceFileModel();
+            spaceFile.setName(spaceOutputFile.getName());
+            spaceFile.setSpace(space);
+            spaceFile.setVirtualName(SpaceFileModel.generateVirtualName(spaceOutputFile.getName()));
+            
+            ApplicationFileOutputModel outputFile = 
+                    new ApplicationFileOutputModel();            
+            outputFile.setOrder(i);
+            outputFile.setSpaceFile(spaceFile);
+            outputFiles.add(outputFile);            
+        }
+        res.setApplicationOutputFiles(outputFiles);
+        
+        return res;
+    }
 
     public static void create(
             RegionModel regionSelected,
@@ -70,10 +134,11 @@ public class InstanceController extends BaseAdminController {
             InstanceTypeModel instanceTypeSelected) throws Exception {
 
         final CustomObjectType type = CustomObjectType.get(getControllerClass());
-        notFoundIfNull(type);
+        notFoundIfNull(type);        
+        ApplicationArgumentsModel arguments = bindApplicationArguments();
         final InstanceModel object = new InstanceModel();
         Binder.bindBean(params.getRootParamNode(), "object", object);
-        validation.valid(object);
+        validation.valid(object);        
         String regionId = params.get(REGION_SELECTED_ID);
         if(StringUtils.isEmpty(regionId)) {
             regionSelected = null;
@@ -85,8 +150,6 @@ public class InstanceController extends BaseAdminController {
             validation.addError(INSTANCE_TYPE_SELECTED, Messages.get("validation.required"));
         }
         validation.required(zoneSelected);
-        
-        ApplicationArgumentsModel applicationArguments = new ApplicationArgumentsModel();
         
         if (Validation.hasErrors()) {
             List<VwSpaceModel> listSpaces = 
@@ -110,7 +173,7 @@ public class InstanceController extends BaseAdminController {
         object.setTypeName(instanceTypeSelected.getName());
         object.setCores(instanceTypeSelected.getCores());
         object.setMemory(instanceTypeSelected.getMemory());
-        object.setCreationDate(new Date());
+        object.setCreationDate(new Date());        
 
         object._save();
         if(object.isExecutionAfterCreation()) {

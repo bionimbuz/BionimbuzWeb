@@ -70,7 +70,7 @@
 <!-- ############## BEGIN TAB APPLICATION ####################  -->      
             
             #{if executorSelected.hasArguments()}
-                #{field 'applicationArguments.arguments'}
+                #{field 'applicationArguments'}
                     <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
                         <label for="${field.id}">&{field.name}</label>
                         <input id="${field.id}" class="form-control"  type="text" name="${field.name}" 
@@ -111,7 +111,7 @@
                         <div class="col-md-7 col-md-offset-1 no-bootstrap-padding">                    
                             <label style="font-weight: normal;">&{'applicationArguments.file'}</label>
                             <div class="nav-container">
-                                <select class="form-control nav select-file-input" id="${field.id}" name="${pName}">
+                                <select name="${field.name}[${i-1}]" id="${field.id}" class="form-control nav select-file-input">
                                     <option value="">&{'crud.none'}</option>
                                 </select>
                             </div>
@@ -127,7 +127,7 @@
                     <label>&{'applicationArguments.outputs'}</label>
                 </div>
                                
-                #{field 'applicationInputFiles'}
+                #{field 'applicationOutputFiles'}
                 
                     #{list items:1..executorSelected.countOutputs(), as:'i'}                
                     <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
@@ -135,7 +135,7 @@
                         <div class="col-md-4 no-bootstrap-padding">                    
                             <label style="font-weight: normal;">#${i}: &{'applicationArguments.space'}</label>
                             <div class="nav-container">
-                                <select class="form-control nav select-space-output">
+                                <select name="${field.name}[${i-1}].spaceId" class="form-control nav select-space-output">
                                     <option value="">&{'crud.none'}</option>
                                     %{ listSpaces.each() { }%
                                     %{
@@ -149,7 +149,7 @@
                         
                         <div class="col-md-7 col-md-offset-1 no-bootstrap-padding">                    
                             <label style="font-weight: normal;">&{'applicationArguments.file'}</label>
-                            <input class="form-control name-file-output" type="text" value="" />
+                            <input name="${field.name}[${i-1}].name" class="form-control name-file-output" type="text" value="" />
                             #{ifError field.name}
                                 <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
                             #{/ifError}                       
@@ -157,10 +157,15 @@
                     </div>
                     #{/list}
                 #{/field}
-            #{/if}
+            #{/if}                       
                        
             <div class="form-group row">
                 <label for="commandLine">&{'object.commandLine'}</label>
+                <textarea readonly class="form-control" rows="2">${executorSelected.commandLine}</textarea>                            
+            </div>        
+                       
+            <div class="form-group row">
+                <label for="commandLine">&{'applicationArguments.commandLine.result'}</label>
                 <textarea readonly data-command-line="${executorSelected.commandLine}" 
                         id="commandLine" class="form-control" rows="5"></textarea>
             </div>        

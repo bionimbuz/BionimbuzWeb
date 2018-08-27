@@ -23,7 +23,9 @@ public class ApplicationArgumentsModel extends GenericModel {
     private InstanceModel instance;
     private String arguments;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "applicationArguments")
-    private List<ApplicationFileModel> applicationFiles;
+    private List<ApplicationFileInputModel> applicationInputFiles;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "applicationArguments")
+    private List<ApplicationFileOutputModel> applicationOutputFiles;
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Constructors
@@ -53,11 +55,18 @@ public class ApplicationArgumentsModel extends GenericModel {
     public final void setArguments(String arguments) {
         this.arguments = arguments;
     }
-    public final List<ApplicationFileModel> getApplicationFiles() {
-        return applicationFiles;
+    public final List<ApplicationFileInputModel> getApplicationInputFiles() {
+        return applicationInputFiles;
     }
-    public final void setApplicationFiles(
-            List<ApplicationFileModel> applicationFiles) {
-        this.applicationFiles = applicationFiles;
+    public final void setApplicationInputFiles(
+            List<ApplicationFileInputModel> applicationInputFiles) {
+        this.applicationInputFiles = applicationInputFiles;
     }
+    public final List<ApplicationFileOutputModel> getApplicationOutputFiles() {
+        return applicationOutputFiles;
+    }
+    public final void setApplicationOutputFiles(
+            List<ApplicationFileOutputModel> applicationOuputFiles) {
+        this.applicationOutputFiles = applicationOuputFiles;
+    }    
 }

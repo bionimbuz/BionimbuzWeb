@@ -331,6 +331,7 @@ applicationArguments.inputs=Inputs
 applicationArguments.outputs=Outputs
 applicationArguments.space=Space
 applicationArguments.file=File
+applicationArguments.commandLine.result=Command Line Result
 
 
 # Modals
