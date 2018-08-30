@@ -265,7 +265,6 @@ public class InstanceController extends BaseAdminController {
         res.setRegion(instance.getRegionName());
         res.setZone(instance.getZoneName());
         res.setStartupScript(instance.getExecutor().getStartupScript());
-        res.setScriptExtension(instance.getExecutor().getScriptExtension());
 
         return res;
     }

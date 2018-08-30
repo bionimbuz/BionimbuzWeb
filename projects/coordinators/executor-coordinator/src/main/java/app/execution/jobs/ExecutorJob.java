@@ -8,8 +8,11 @@ import static app.common.SystemConstants.OUTPUTS_FOLDER;
 import static app.common.SystemConstants.OUTPUT_LINE_CMD_REGEX;
 import static app.common.SystemConstants.OUTPUT_PREFIX;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +22,8 @@ import org.slf4j.LoggerFactory;
 
 import app.common.LineCmdUtils;
 import app.common.Pair;
+import app.common.utils.FileUtils;
+import app.common.utils.OsUtil;
 import app.common.utils.StringUtils;
 import app.execution.IApplicationExecution;
 import app.models.Command;
@@ -26,6 +31,7 @@ import app.models.ExecutionStatus.EXECUTION_PHASE;
 
 public class ExecutorJob {
     protected static final Logger LOGGER = LoggerFactory.getLogger(ExecutorJob.class);
+    private static final String APPLICATION_NAME = "./application"; 
     
     private Thread job;
 
@@ -59,6 +65,7 @@ public class ExecutorJob {
         public void run() {            
             try {
                 createOutDir();
+                generateApplicationFile();
                 String lineCommand = generateLinecommand();                
                 Process process = 
                         Runtime.getRuntime().exec(lineCommand);
@@ -109,6 +116,19 @@ public class ExecutorJob {
             return true;
         }
         
+        private void generateApplicationFile() throws IOException {
+            if(StringUtils.isEmpty(command.getExecutionScript())) {
+                return;
+            }
+            File scriptFile = new File(getApplicationFileName());
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(scriptFile))) {
+                writer.write(command.getExecutionScript());
+            }
+            if(scriptFile.exists()) {
+                FileUtils.setExecutionPermission(scriptFile);
+            }        	
+        }
+        
         private String generateLinecommand() {
             String lineCommand = 
                     updateLineCommandWithFiles(
@@ -126,8 +146,15 @@ public class ExecutorJob {
                             OUTPUT_LINE_CMD_REGEX);
             lineCommand = 
                     updateLineCommandArgs(lineCommand);
-            return lineCommand;
+            
+            if(StringUtils.isEmpty(command.getExecutionScript()))
+                return lineCommand;
+            return getApplicationFileName() + " " + lineCommand;
         }
+
+        private String getApplicationFileName() {
+            return APPLICATION_NAME + "." + OsUtil.getDefaultScriptExtension();
+        }        
 
         private String updateLineCommandArgs(String lineCommand) {
             String res = lineCommand;

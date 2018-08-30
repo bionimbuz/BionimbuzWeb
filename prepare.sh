@@ -61,7 +61,8 @@ if [ ! -z "$PREPARE_ALL" ]; then
     sudo apt-get install -y \
         postgresql postgresql-client \
         maven \
-	openjdk-8-jdk
+        openjdk-8-jdk \
+        curl
 
 	echo ""
 	echo "# ======================================="

@@ -50,7 +50,16 @@ public class TestUtils {
         List<Pair<String, String>> outputs = generateOutputs(baseUrl);
         
         Command command = new Command();
-        command.setCommandLine(getAbsoluteCurrentDir() + "test/resources/application.sh {i} {i} {i} {o} {o} {o}");
+        command.setCommandLine("{i} {i} {i} {o} {o} {o}");
+        command.setExecutionScript(
+                "#!/bin/bash\n" + 
+                "\n" + 
+                "cat $1 > $3\n" + 
+                "cat $2 >> $3\n" + 
+                "\n" + 
+                "echo \"Execution time: `date`\" >> $3\n" + 
+                "\n" + 
+                "echo \"Extra file execution time: `date`\" >> $4");
         command.setListInputPathsWithExtension(inputs);
         command.setListOutputPathsWithExtension(outputs);
         command.setArgs("-a -b -c content");

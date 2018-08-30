@@ -44,8 +44,10 @@ public class ApplicationModel extends GenericModel {
     @MinSize(3)
     @Column(length=1000)
     private String startupScript;
-    @MaxSize(10)
-    private String scriptExtension;
+    private Boolean executionScriptEnabled;
+    @MaxSize(1000)
+    @Column(length=1000)
+    private String executionScript;
     @MinSize(5)
     private String commandLine;
     @CheckWith(NetworkPortsCheck.class)
@@ -100,20 +102,26 @@ public class ApplicationModel extends GenericModel {
     }
     public void setFirewallTcpRules(String firewallTcpRules) {
         this.firewallTcpRules = firewallTcpRules;
-    }    
-    public String getScriptExtension() {
-        return scriptExtension;
-    }
-    public void setScriptExtension(String scriptExtension) {
-        this.scriptExtension = scriptExtension;
-    }    
+    }     
     public String getCommandLine() {
         return commandLine;
     }
     public void setCommandLine(String commandLine) {
         this.commandLine = commandLine;
     }
-    @Transient
+    public String getExecutionScript() {
+        return executionScript;
+    }
+    public void setExecutionScript(String executionScript) {
+        this.executionScript = executionScript;
+    }
+    public Boolean getExecutionScriptEnabled() {
+        return executionScriptEnabled;
+    }
+    public void setExecutionScriptEnabled(Boolean executionScriptEnabled) {
+        this.executionScriptEnabled = executionScriptEnabled;
+    }
+	@Transient
     public boolean hasArguments() {
         if(StringUtils.isEmpty(this.commandLine)) {
             return false;

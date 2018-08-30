@@ -244,6 +244,8 @@ object.firewallUdpRules=UDP Port Rules for Firewall
 object.firewallTcpRules=TCP Port Rules for Firewall
 firewall.separate.ports=Separate values with commas (,) or semicolons (;), ex.: 80,3306,5432
 object.commandLine=Command Line
+object.executionScript=Execution Script
+object.executionScriptEnabled=Enable Execution Script
 obs.commandLine=To create the command line to be executed, the following tags can be used: \
 {a} for arguments, {i} for inputs and {o} for outputs \
 (e.g. "./application.sh {a} -g -r {i} {i} {i} {o} {o} ")
@@ -253,8 +255,6 @@ obs.commandLine=To create the command line to be executed, the following tags ca
 CoordinatorModel=Coordinator
 object.startupScript=Startup Script
 object.listImages=Images
-object.scriptExtension=Script Extension
-obs.scriptExtension=In some cloud plugins, this extension (i.e. *.BAT, *.SH, etc.) is not necessary
 
 # ExecutorModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

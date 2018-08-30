@@ -7,6 +7,7 @@ import app.common.Pair;
 public class Command extends Body<Command> {
 
     private String commandLine;
+    private String executionScript;
     private String args;
     private List<Pair<String, String>> listInputPathsWithExtension;
     private List<Pair<String, String>> listOutputPathsWithExtension;
@@ -46,5 +47,11 @@ public class Command extends Body<Command> {
     public final void setListOutputPathsWithExtension(
             List<Pair<String, String>> listOutputPathsWithExtension) {
         this.listOutputPathsWithExtension = listOutputPathsWithExtension;
+    }
+    public String getExecutionScript() {
+        return executionScript;
+    }
+    public void setExecutionScript(String executionScript) {
+        this.executionScript = executionScript;
     }
 }

@@ -100,7 +100,6 @@ public class DevelopmentStartupJob extends Job {
         executor.setStartupScript(
                 "#!/bin/bash \n"
                 + "apt-get update && apt-get install -y apache2 && hostname > /var/www/index.html");
-        executor.setScriptExtension("sh");
         executor.setFirewallTcpRules("80,8080");
         executor.setListImages(listImages);
         executor.save();
@@ -118,24 +117,21 @@ public class DevelopmentStartupJob extends Job {
         executor.setStartupScript(
             "#!/bin/bash\n" + 
             "\n" + 
-            "APP_NAME=application.sh\n" + 
-            "echo \"#!/bin/bash\" > ${APP_NAME}\n" + 
-            "echo \"\" >> ${APP_NAME}\n" + 
-            "echo \"cat \\$1 > \\$3\" >> ${APP_NAME}\n" + 
-            "echo \"cat \\$2 >> \\$3\" >> ${APP_NAME}\n" + 
-            "echo \"\" >> ${APP_NAME}\n" + 
-            "echo \"echo \\\"Execution time: \\`date\\`\\\" >> \\$3\" >> ${APP_NAME}\n" + 
-            "echo \"\" >> ${APP_NAME}\n" + 
-            "echo \"echo \\\"Extra file execution time: \\`date\\`\\\" >> \\$4\" >> ${APP_NAME}\n" + 
-            "chmod 777 ${APP_NAME}\n" + 
-            "\n" + 
-            "\n" + 
             "COORDINATOR=executor-coordinator-0.1.jar\n" + 
             "curl -o ${COORDINATOR} http://localhost:8282/spaces/test/file/${COORDINATOR}/download\n" + 
             "apt-get install -y openjdk-8-jdk && java -jar ${COORDINATOR}" +
             "\n");
-        executor.setScriptExtension("sh");
-        executor.setCommandLine("application.sh {i} {i} {i} {o} {o} {o}");
+        executor.setExecutionScript(
+                "#!/bin/bash\n" + 
+                "\n" + 
+                "cat $1 > $3\n" + 
+                "cat $2 >> $3\n" + 
+                "\n" + 
+                "echo \"Execution time: `date`\" >> $3\n" + 
+                "\n" + 
+                "echo \"Extra file execution time: `date`\" >> $4");
+        executor.setExecutionScriptEnabled(true);
+        executor.setCommandLine("{i} {i} {i} {o} {o} {o}");
         executor.setListImages(listImages);
         executor.save();
     }

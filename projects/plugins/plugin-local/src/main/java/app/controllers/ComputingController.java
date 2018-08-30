@@ -8,14 +8,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
-import java.nio.file.Files;
-import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -69,7 +65,6 @@ public class ComputingController extends AbstractComputingController {
             String startupScript =
                     generateStartupScript(
                             instancePath,
-                            pluginInstanceModel.getScriptExtension(),
                             pluginInstanceModel.getStartupScript());
 
             Process process = Runtime.getRuntime().exec(
@@ -310,36 +305,17 @@ public class ComputingController extends AbstractComputingController {
 
     protected String generateStartupScript(
             final String path,
-            String extension,
             final String content) throws IOException {
-        if(extension == null || extension.trim().isEmpty())
-            extension =  OsUtil.getDefaultScriptExtension();
+        String extension =  OsUtil.getDefaultScriptExtension();
         File scriptFile = new File(path, STARTUP_SCRIPT_NAME + "." + extension);
         String absolutePath = scriptFile.getAbsolutePath();
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(scriptFile))) {
             writer.write(content);
         }
         if(scriptFile.exists()) {
-            setPermission(scriptFile);
+            FileUtils.setExecutionPermission(scriptFile);
         }
         return absolutePath;
-    }
-
-    private void setPermission(File file) throws IOException{
-        Set<PosixFilePermission> perms = new HashSet<>();
-        perms.add(PosixFilePermission.OWNER_READ);
-        perms.add(PosixFilePermission.OWNER_WRITE);
-        perms.add(PosixFilePermission.OWNER_EXECUTE);
-
-        perms.add(PosixFilePermission.OTHERS_READ);
-        perms.add(PosixFilePermission.OTHERS_WRITE);
-        perms.add(PosixFilePermission.OTHERS_EXECUTE);
-
-        perms.add(PosixFilePermission.GROUP_READ);
-        perms.add(PosixFilePermission.GROUP_WRITE);
-        perms.add(PosixFilePermission.GROUP_EXECUTE);
-
-        Files.setPosixFilePermissions(file.toPath(), perms);
     }
 
     private void insertFakeProcess(Integer id) throws Exception{
