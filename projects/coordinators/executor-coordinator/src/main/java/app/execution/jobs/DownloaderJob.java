@@ -23,8 +23,8 @@ import org.slf4j.LoggerFactory;
 import app.common.Pair;
 import app.common.SystemConstants;
 import app.common.utils.StringUtils;
+import app.execution.CoordinatorServerAccess;
 import app.execution.IApplicationExecution;
-import app.execution.RemoteFileInfoAccess;
 import app.models.ExecutionStatus.EXECUTION_PHASE;
 import app.models.RemoteFileInfo;
 import app.models.RemoteFileProcessingStatus;
@@ -92,8 +92,10 @@ public class DownloaderJob {
                 }
                 threadPool.shutdown();
                 threadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
-                executor.onSuccess(
-                        EXECUTION_PHASE.DOWNLOADING);
+                if(downloadStatus.getFailed().size() == 0) {
+                    executor.onSuccess(
+                            EXECUTION_PHASE.DOWNLOADING);
+                }
             } catch (Exception e) {
                 executor.onError(
                         EXECUTION_PHASE.DOWNLOADING, 
@@ -106,7 +108,11 @@ public class DownloaderJob {
         }
         @Override
         public void onError(String fileName, String message) {     
-            downloadStatus.addFailed(fileName, message);       
+            downloadStatus.addFailed(fileName, message);      
+            executor.onError(
+                    EXECUTION_PHASE.DOWNLOADING, 
+                    String.format("File download error: [%s] => [%s]", fileName, message));
+            threadPool.shutdownNow(); 
         }    
        
         private boolean createOutDir() {
@@ -149,7 +155,7 @@ public class DownloaderJob {
             try {
                 LOGGER.info("######### Downloading: " + fileName);
                 RemoteFileInfo fileInfo =
-                        RemoteFileInfoAccess.get().getRemoteFileInfo(filePath);                
+                        CoordinatorServerAccess.get().getRemoteFileInfo(filePath);                
                 URL website = new URL(fileInfo.getUrl());                
                 HttpURLConnection conn = (HttpURLConnection) website.openConnection();
                 conn.setRequestMethod(fileInfo.getMethod().toString());   

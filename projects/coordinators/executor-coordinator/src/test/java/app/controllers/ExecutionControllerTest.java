@@ -13,10 +13,10 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import app.client.ExecutionApi;
-import app.controllers.mocks.FileInfoControllerMock;
+import app.controllers.mocks.CoordinatorAccessControllerMock;
 import app.models.Body;
 import app.models.Command;
-import app.models.SecureFileAccess;
+import app.models.SecureCoordinatorAccess;
 import utils.TestUtils;
 
 @RunWith(SpringRunner.class)
@@ -43,9 +43,9 @@ public class ExecutionControllerTest {
 
         ExecutionApi api = new ExecutionApi(TestUtils.getUrl(PORT));
 
-        String token = FileInfoControllerMock.generateToken("1@machine", 2*1000l);        
+        String token = CoordinatorAccessControllerMock.generateToken("1@machine", 2*1000l);        
         String baseUrl = TestUtils.getUrl(PORT);   
-        SecureFileAccess secureFileAccess = 
+        SecureCoordinatorAccess secureFileAccess = 
                 TestUtils.generateSecureFileAccess(baseUrl, token);   
         Command command = 
                 TestUtils.generateCommand(baseUrl, secureFileAccess);  

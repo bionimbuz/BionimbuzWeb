@@ -9,9 +9,10 @@ public class Command extends Body<Command> {
     private String commandLine;
     private String executionScript;
     private String args;
+    private String refreshStatusUrl;
     private List<Pair<String, String>> listInputPathsWithExtension;
     private List<Pair<String, String>> listOutputPathsWithExtension;
-    private SecureFileAccess secureFileAccess;
+    private SecureCoordinatorAccess secureFileAccess;
     
     public Command() {
     }
@@ -28,10 +29,10 @@ public class Command extends Body<Command> {
     public void setArgs(String args) {
         this.args = args;
     }
-    public final SecureFileAccess getSecureFileAccess() {
+    public final SecureCoordinatorAccess getSecureFileAccess() {
         return secureFileAccess;
     }
-    public final void setSecureFileAccess(SecureFileAccess secureFileAccess) {
+    public final void setSecureFileAccess(SecureCoordinatorAccess secureFileAccess) {
         this.secureFileAccess = secureFileAccess;
     }
     public final List<Pair<String, String>> getListInputPathsWithExtension() {
@@ -53,5 +54,11 @@ public class Command extends Body<Command> {
     }
     public void setExecutionScript(String executionScript) {
         this.executionScript = executionScript;
+    }
+    public String getRefreshStatusUrl() {
+        return refreshStatusUrl;
+    }
+    public void setRefreshStatusUrl(String refreshStatusUrl) {
+        this.refreshStatusUrl = refreshStatusUrl;
     }
 }

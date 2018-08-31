@@ -6,6 +6,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -13,25 +14,29 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.google.common.net.HttpHeaders;
 
+import app.execution.jobs.IStatusRefresh;
+import app.models.ExecutionStatus;
 import app.models.RemoteFileInfo;
 import app.security.AccessSecurity;
 
 @RestController
-public class FileInfoControllerMock {    
+public class CoordinatorAccessControllerMock {    
     
     public static final String SECRET = "Ha2uwrn1jKwmVp50BJ8K0W1LmEiuXzNnlrQuugR4ia6veGCVMMrptuMB1dljXmbU";
     private static AccessSecurity security = new AccessSecurity(
             SECRET,
             60*1000); // 60 seconds
-    public static final String webDownloadUrl = "/secure/file/download/{id}";
-    public static final String webUploadUrl = "/secure/file/upload/{id}";
-    public static final String webRefreshTokenUrl = "/secure/file/refresh";
+    public static final String webDownloadUrl =      "/external/file/download/{id}";
+    public static final String webUploadUrl =        "/external/file/upload/{id}";
+    public static final String webRefreshTokenUrl =  "/external/token/refresh";
+    public static final String webRefreshStatusUrl = "/external/status/refresh";
     
     private static final String pluginLocalBaseUrl = "http://localhost:8282";
     private String localFileDownloadPath = pluginLocalBaseUrl+"/spaces/%s/file/%s/download";
     private String localFileUploadPath = pluginLocalBaseUrl + "/spaces/%s/file/%s/upload";
     private static HashMap<Long, String> file = new HashMap<>();
     private String localFileSpace = "test";
+    private IStatusRefresh statusRefresh = null;
     
     static {
         file.put(1l, "test_input1.txt");
@@ -39,7 +44,7 @@ public class FileInfoControllerMock {
         file.put(3l, "test_output1.txt");
         file.put(4l, "test_output2.txt");
     }
-    
+        
     public static String getFileNameById(long id) {
         return file.get(id);        
     }
@@ -65,6 +70,18 @@ public class FileInfoControllerMock {
         return generateResponse(id, token, localFileUploadPath, HttpMethod.POST.toString());     
     }
     
+    @RequestMapping(path = webRefreshStatusUrl, method = RequestMethod.POST)
+    private ResponseEntity<Void> refreshStatus(
+            @RequestHeader(value=HttpHeaders.AUTHORIZATION) final String token,
+            @RequestBody ExecutionStatus status) {        
+        if(statusRefresh != null) {
+            statusRefresh.onStatusRefreshed(
+                    status.getStatus(), 
+                    status.getPhase(), 
+                    status.getErrorMessage());
+        }
+        return new ResponseEntity<>(HttpStatus.OK); 
+    }    
     
     @RequestMapping(path = webRefreshTokenUrl, method = RequestMethod.GET)
     private ResponseEntity<String> refreshToken(
@@ -110,5 +127,9 @@ public class FileInfoControllerMock {
                         fileName));
         fileInfo.setMethod(method);
         return ResponseEntity.ok(fileInfo);        
+    }
+
+    public void setStatusRefresh(IStatusRefresh statusRefresh) {
+        this.statusRefresh = statusRefresh;
     }
 }

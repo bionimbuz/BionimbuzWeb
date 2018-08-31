@@ -2,7 +2,9 @@ package models;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -14,6 +16,15 @@ import javax.persistence.Table;
 
 import com.google.gson.annotations.Expose;
 
+import app.client.StorageApi;
+import app.common.Authorization;
+import app.models.Body;
+import app.models.PluginInfoModel.AuthenticationType;
+import app.models.PluginStorageFileDownloadModel;
+import app.models.PluginStorageFileUploadModel;
+import app.models.RemoteFileInfo;
+import app.models.security.TokenModel;
+import play.Logger;
 import play.data.validation.MaxSize;
 import play.data.validation.Required;
 import play.db.jpa.GenericModel;
@@ -115,5 +126,104 @@ public class SpaceFileModel extends GenericModel {
         String virtualName = DATE_FORMAT.format(new Date());
         virtualName += "_" + Math.abs(fileName.hashCode());
         return virtualName;
+    }
+    
+    public static RemoteFileInfo getDownloadFileInfo(final Long fileId) {
+
+        RemoteFileInfo res = null;
+        
+        try {
+            SpaceFileModel file = SpaceFileModel.findById(fileId);
+            if(file == null)
+                return null;
+            SpaceModel space = file.getSpace();
+            PluginModel plugin = space.getPlugin();
+            StorageApi api = new StorageApi(plugin.getUrl());
+    
+            CredentialModel credential = space.getCredential();        
+        
+            String credentialStr =
+                    credential.getCredentialData().getContentAsString();
+
+            TokenModel token = Authorization.getToken(
+                    plugin.getCloudType(),
+                    plugin.getStorageWriteScope(),
+                    credentialStr);
+
+            Body<PluginStorageFileDownloadModel> body =
+                    api.getDownloadUrl(space.getName(), file.getVirtualName());
+            PluginStorageFileDownloadModel content =
+                    body.getContent();
+
+            if(body.getContent() == null)
+                return null;
+
+            res = new RemoteFileInfo();
+            res.setUrl(content.getUrl());
+            res.setMethod(content.getMethod());
+            res.setName(file.getName());
+
+            Map<String, String> headers =
+                    new HashMap<>();
+            if(plugin.getAuthType() == AuthenticationType.AUTH_BEARER_TOKEN) {
+                headers.put("Authorization", "Bearer " + token.getToken());
+            } else if(plugin.getAuthType() == AuthenticationType.AUTH_SUPER_USER) {
+            }
+            res.setHeaders(headers);
+            
+        } catch (Exception e) {    
+            Logger.warn(e, "Operation cannot be completed with credential [%s]", e.getMessage());                
+        }
+
+        return res;
+    }    
+
+    public static RemoteFileInfo getUploadFileInfo(final Long spaceId, final String fileName) {
+
+        RemoteFileInfo res = null;
+        
+        try {
+            
+            SpaceModel space = SpaceModel.findById(spaceId);
+            if(space == null)
+                return null;
+    
+            PluginModel plugin = space.getPlugin();
+            StorageApi api = new StorageApi(plugin.getUrl());
+    
+            CredentialModel credential = space.getCredential(); 
+    
+            String credentialStr =
+                    credential.getCredentialData().getContentAsString();
+
+            TokenModel token = Authorization.getToken(
+                    plugin.getCloudType(),
+                    plugin.getStorageWriteScope(),
+                    credentialStr);
+
+            String virtualName = SpaceFileModel.generateVirtualName(fileName);
+            Body<PluginStorageFileUploadModel> body =
+                    api.getUploadUrl(space.getName(), virtualName);
+            PluginStorageFileUploadModel content =
+                    body.getContent();
+
+            if(body.getContent() == null)
+                return null;
+
+            res = new RemoteFileInfo();
+            res.setUrl(content.getUrl());
+            res.setMethod(content.getMethod());
+            res.setName(virtualName);
+
+            Map<String, String> headers = new HashMap<>();
+            if(plugin.getAuthType() == AuthenticationType.AUTH_BEARER_TOKEN) {
+                headers.put("Authorization", "Bearer " + token.getToken());
+            }
+            res.setHeaders(headers);
+        } catch (Exception e) {
+            Logger.warn(e, "Operation cannot be completed with credential [%s]", e.getMessage());                
+        }
+
+        return res;
     }
 }

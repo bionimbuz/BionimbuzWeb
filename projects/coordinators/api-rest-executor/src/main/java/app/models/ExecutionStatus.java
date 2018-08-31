@@ -1,26 +1,38 @@
 package app.models;
 
 public class ExecutionStatus extends Body<ExecutionStatus> {
-
-    public static enum EXECUTION_PHASE{
+    
+    public static enum STATUS {
+        IDDLE,
+        RUNNING,
+        STOPPED,
+        FINISHED
+    }
+    
+    public static enum EXECUTION_PHASE {
+        WAITING,
         STARTING,
         DOWNLOADING,
         EXECUTING,
         UPLOADING,
         FINISHED
     }
-    
+
+    private STATUS status;
     private EXECUTION_PHASE phase;
     private RemoteFileProcessingStatus downloadStatus;
     private RemoteFileProcessingStatus uploadStatus;
     private String errorMessage;
     private boolean hasError;
     
+    public ExecutionStatus() {
+        super();
+    }
     public ExecutionStatus(
             RemoteFileProcessingStatus downloadStatus,
             RemoteFileProcessingStatus uploadStatus) {
         super();
-        this.phase = EXECUTION_PHASE.STARTING;
+        this.phase = EXECUTION_PHASE.WAITING;
         this.downloadStatus = downloadStatus;
         this.uploadStatus = uploadStatus;
         this.errorMessage = "";
@@ -50,5 +62,11 @@ public class ExecutionStatus extends Body<ExecutionStatus> {
     }
     public void setHasError(boolean hasError) {
         this.hasError = hasError;
+    }
+    public STATUS getStatus() {
+        return status;
+    }
+    public void setStatus(STATUS status) {
+        this.status = status;
     }
 }

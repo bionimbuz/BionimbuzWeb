@@ -15,30 +15,31 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import app.common.utils.FileUtils;
-import app.controllers.mocks.FileInfoControllerMock;
+import app.controllers.mocks.CoordinatorAccessControllerMock;
 import app.exceptions.SingletonAlreadyInitializedException;
 import app.exceptions.SingletonNotInitializedException;
-import app.execution.RemoteFileInfoAccess;
+import app.execution.CoordinatorServerAccess;
 import app.models.Command;
 import app.models.ExecutionStatus;
 import app.models.ExecutionStatus.EXECUTION_PHASE;
-import app.models.SecureFileAccess;
+import app.models.ExecutionStatus.STATUS;
+import app.models.SecureCoordinatorAccess;
 import utils.TestUtils;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class ApplicationExecutionJobTest {
+public class ApplicationExecutionJobTest implements IStatusRefresh{
 
     private static final String PLUGIN_LOCAL_DIR = "../../plugins/plugin-local/";
     private static final String SPACES_DIR = PLUGIN_LOCAL_DIR + "spaces/";
     private static final String TEST_SPACE = SPACES_DIR + "test/";
-    private static final String outputFile0 = FileInfoControllerMock.getFileNameById(3);
-    private static final String outputFile1 = FileInfoControllerMock.getFileNameById(4);
+    private static final String outputFile0 = CoordinatorAccessControllerMock.getFileNameById(3);
+    private static final String outputFile1 = CoordinatorAccessControllerMock.getFileNameById(4);
     
     @Value("${local.server.port}")
     private int PORT;
     @Autowired
-    private FileInfoControllerMock controller;
+    private CoordinatorAccessControllerMock controller;
     
     @Before
     public void init() {
@@ -65,15 +66,18 @@ public class ApplicationExecutionJobTest {
         assertThat((new File(TEST_SPACE, outputFile0).exists())).isFalse();
         assertThat((new File(TEST_SPACE, outputFile1).exists())).isFalse();
         
-        String token = FileInfoControllerMock.generateToken("1@machine", 2*1000l);        
+        String token = CoordinatorAccessControllerMock.generateToken("1@machine", 2*1000l); 
+        controller.setStatusRefresh(this);
         String baseUrl = TestUtils.getUrl(PORT);   
         
-        SecureFileAccess secureFileAccess = 
+        SecureCoordinatorAccess secureFileAccess = 
                 TestUtils.generateSecureFileAccess(baseUrl, token);   
         Command command = 
                 TestUtils.generateCommand(baseUrl, secureFileAccess);     
         
-        RemoteFileInfoAccess.init(command.getSecureFileAccess());
+        CoordinatorServerAccess.init(
+                command.getRefreshStatusUrl(), 
+                command.getSecureFileAccess());
         ApplicationExecutionJob.init(command);
         
         // Wait for complete execution        
@@ -90,6 +94,11 @@ public class ApplicationExecutionJobTest {
         assertThat((new File(OUTPUTS_FOLDER, "o1.txt").exists())).isTrue();
         assertThat((new File(TEST_SPACE, outputFile0).exists())).isTrue();
         assertThat((new File(TEST_SPACE, outputFile1).exists())).isTrue();
+    }
+
+    @Override
+    public void onStatusRefreshed(STATUS status, EXECUTION_PHASE phase, String errorMessage) {
+        System.out.println("Status: " + status + " | Phase: " + phase + " | Error: " + errorMessage);        
     }    
 }
 

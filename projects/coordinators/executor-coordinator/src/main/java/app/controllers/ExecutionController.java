@@ -6,12 +6,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import app.execution.RemoteFileInfoAccess;
+import app.execution.CoordinatorServerAccess;
 import app.execution.jobs.ApplicationExecutionJob;
 import app.models.Body;
 import app.models.Command;
 import app.models.ExecutionStatus;
-import app.models.STATUS;
+import app.models.ExecutionStatus.STATUS;
 
 @RestController
 public class ExecutionController extends AbstractExecutionController {
@@ -28,7 +28,9 @@ public class ExecutionController extends AbstractExecutionController {
             return ResponseEntity.ok(
                     Body.create(false));
         }
-        RemoteFileInfoAccess.init(command.getSecureFileAccess());
+        CoordinatorServerAccess.init(
+                command.getRefreshStatusUrl(),
+                command.getSecureFileAccess());
         ApplicationExecutionJob.init(command);
         return ResponseEntity.ok(
                 Body.create(true));

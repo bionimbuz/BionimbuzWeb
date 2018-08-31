@@ -42,6 +42,9 @@ public class SpaceModel extends GenericModel {
     private List<GroupModel> listSharedGroups;
     @Required
     private boolean alocationAfterCreation;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
+    private CredentialModel credential;
 
     // ---- Redundant Data for price table exclusion/update
     @NoBinding
@@ -136,6 +139,12 @@ public class SpaceModel extends GenericModel {
     }
     public final void setListSharedGroups(List<GroupModel> listSharedGroups) {
         this.listSharedGroups = listSharedGroups;
+    }
+    public CredentialModel getCredential() {
+        return credential;
+    }
+    public void setCredential(CredentialModel credential) {
+        this.credential = credential;
     }
 
     @Override

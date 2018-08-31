@@ -8,10 +8,13 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import app.models.ExecutionStatus.EXECUTION_PHASE;
+import app.models.STATUS;
 import play.data.binding.NoBinding;
 import play.data.validation.Required;
 import play.data.validation.Unique;
@@ -53,6 +56,15 @@ public class InstanceModel extends GenericModel {
     private Date creationDate;
     @OneToOne
     private ApplicationArgumentsModel applicationArguments;
+    @NoBinding
+    private EXECUTION_PHASE phase;
+    @NoBinding
+    private STATUS status;
+    @NoBinding
+    private String executionObservation;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
+    private CredentialModel credential;
 
     // ---- Redundant Data for price table exclusion/update
     @NoBinding
@@ -79,6 +91,13 @@ public class InstanceModel extends GenericModel {
         super();
     }
 
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Data access
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+    public static InstanceModel findByIdentity(final String identity) {        
+        return find("instanceIdentity = ?'", identity).first();
+    }
+    
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Getters and Setters
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -171,5 +190,42 @@ public class InstanceModel extends GenericModel {
     }
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
+    }
+    public String getInstanceIdentity() {
+        return instanceIdentity;
+    }
+    public void setInstanceIdentity(String instanceIdentity) {
+        this.instanceIdentity = instanceIdentity;
+    }
+    public ApplicationArgumentsModel getApplicationArguments() {
+        return applicationArguments;
+    }
+    public void setApplicationArguments(
+            ApplicationArgumentsModel applicationArguments) {
+        this.applicationArguments = applicationArguments;
+    }
+    public EXECUTION_PHASE getPhase() {
+        return phase;
+    }
+    public void setPhase(EXECUTION_PHASE phase) {
+        this.phase = phase;
+    }
+    public STATUS getStatus() {
+        return status;
+    }
+    public void setStatus(STATUS status) {
+        this.status = status;
+    }
+    public String getExecutionObservation() {
+        return executionObservation;
+    }
+    public void setExecutionObservation(String executionObservation) {
+        this.executionObservation = executionObservation;
+    }
+    public CredentialModel getCredential() {
+        return credential;
+    }
+    public void setCredential(CredentialModel credential) {
+        this.credential = credential;
     }
 }

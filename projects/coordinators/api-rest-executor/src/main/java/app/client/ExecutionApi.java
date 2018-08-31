@@ -8,7 +8,7 @@ import app.common.Routes;
 import app.models.Body;
 import app.models.Command;
 import app.models.ExecutionStatus;
-import app.models.STATUS;
+import app.models.ExecutionStatus.STATUS;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Header;

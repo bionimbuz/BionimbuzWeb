@@ -8,8 +8,8 @@ import app.execution.IApplicationExecution;
 import app.models.Command;
 import app.models.ExecutionStatus;
 import app.models.ExecutionStatus.EXECUTION_PHASE;
+import app.models.ExecutionStatus.STATUS;
 import app.models.RemoteFileProcessingStatus;
-import app.models.STATUS;
 
 public class ApplicationExecutionJob {
     
@@ -64,7 +64,7 @@ public class ApplicationExecutionJob {
      */
     
     public STATUS getStatus(){
-        return core.getStatus();
+        return core.getExecutionStatus().getStatus();
     }
     public ExecutionStatus getExecutionStatus(){
         return core.getExecutionStatus();
@@ -77,11 +77,9 @@ public class ApplicationExecutionJob {
     private static class Core implements Runnable, IApplicationExecution {
         
         private Command command;
-        private STATUS status = STATUS.IDDLE;
         private volatile ExecutionStatus executionStatus;
         private RemoteFileProcessingStatus downloadStatus;
         private RemoteFileProcessingStatus uploadStatus;
-        private Object _lock_ = new Object();
 
         public Core(final Command command) {
             this.command = command;
@@ -97,48 +95,42 @@ public class ApplicationExecutionJob {
             return executionStatus;
         }
         
-        public STATUS getStatus() {
-            synchronized (_lock_) {                
-                return status;
-            }
-        }
-        public void setStatus(STATUS status) {
-            synchronized (_lock_) {
-                this.status = status;
-            }
-        }
-
         @Override
         public void run() {     
             onSuccess(EXECUTION_PHASE.STARTING);   
         }
 
         @Override
-        public void onError(EXECUTION_PHASE phase, String message) {       
-            setStatus(STATUS.STOPPED);
-            executionStatus.setMessage(message);
+        public void onError(EXECUTION_PHASE phase, String message) {   
+            executionStatus.setStatus(STATUS.STOPPED);
+            executionStatus.setErrorMessage(message);
             executionStatus.setHasError(true);
+            StatusNotifierJob.waitNotification();
         }
 
         @Override
         public void onSuccess(EXECUTION_PHASE phase) { 
             switch (phase) {
                 case STARTING:       
-                    setStatus(STATUS.RUNNING);
+                    executionStatus.setStatus(STATUS.RUNNING);
                     executionStatus.setPhase(EXECUTION_PHASE.DOWNLOADING);
+                    StatusNotifierJob.tryNotification();
                     startDownloadPhase();
                     break;
                 case DOWNLOADING:
                     executionStatus.setPhase(EXECUTION_PHASE.EXECUTING);
+                    StatusNotifierJob.tryNotification();
                     startExecutionPhase();
                     break;
                 case EXECUTING:
                     executionStatus.setPhase(EXECUTION_PHASE.UPLOADING);
+                    StatusNotifierJob.tryNotification();
                     startUploadPhase();
                     break;
                 case UPLOADING:
                     executionStatus.setPhase(EXECUTION_PHASE.FINISHED);
-                    setStatus(STATUS.STOPPED);
+                    executionStatus.setStatus(STATUS.STOPPED);
+                    StatusNotifierJob.waitNotification();
                     break;
                 default :
                     break;

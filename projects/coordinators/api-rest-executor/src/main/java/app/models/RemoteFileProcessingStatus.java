@@ -13,6 +13,8 @@ public class RemoteFileProcessingStatus {
     private Map<String, String> failed = new HashMap<>();
     private Object _lock_ = new Object();
     
+    public RemoteFileProcessingStatus() {
+    }
     public RemoteFileProcessingStatus(final Integer total) {
         this.total = total;
     }
@@ -48,5 +50,10 @@ public class RemoteFileProcessingStatus {
         progress = current.doubleValue() / total.doubleValue();
         if(progress > 1d) 
             progress = 1d;
+    }
+    public Map<String, String> getFailed() {
+        synchronized (_lock_) {
+            return failed;
+        }
     }
 }

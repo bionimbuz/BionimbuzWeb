@@ -10,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import common.binders.FileFieldType;
@@ -48,6 +49,10 @@ public class CredentialModel extends GenericModel  {
         joinColumns = @JoinColumn(name = "id_credential", referencedColumnName = "id"),
         inverseJoinColumns = @JoinColumn(name = "id_group", referencedColumnName = "id"))
     private List<GroupModel> listSharedGroups;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "credential")
+    private List<SpaceModel> listSpaces;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "credential")
+    private List<InstanceModel> listInstances;
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Constructors
@@ -106,5 +111,17 @@ public class CredentialModel extends GenericModel  {
     }
     public void setListSharedGroups(List<GroupModel> listSharedGroups) {
         this.listSharedGroups = listSharedGroups;
+    }
+    public List<SpaceModel> getListSpaces() {
+        return listSpaces;
+    }
+    public void setListSpaces(List<SpaceModel> listSpaces) {
+        this.listSpaces = listSpaces;
+    }
+    public List<InstanceModel> getListInstances() {
+        return listInstances;
+    }
+    public void setListInstances(List<InstanceModel> listInstances) {
+        this.listInstances = listInstances;
     }
 }

@@ -16,13 +16,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import app.common.Pair;
 import app.common.utils.FileUtils;
-import app.controllers.mocks.FileInfoControllerMock;
+import app.controllers.mocks.CoordinatorAccessControllerMock;
 import app.exceptions.SingletonAlreadyInitializedException;
+import app.execution.CoordinatorServerAccess;
 import app.execution.IApplicationExecution;
-import app.execution.RemoteFileInfoAccess;
 import app.models.ExecutionStatus.EXECUTION_PHASE;
 import app.models.RemoteFileProcessingStatus;
-import app.models.SecureFileAccess;
+import app.models.SecureCoordinatorAccess;
 import utils.TestUtils;
 
 @RunWith(SpringRunner.class)
@@ -32,13 +32,13 @@ public class UploaderJobTest implements IApplicationExecution{
     private static final String PLUGIN_LOCAL_DIR = "../../plugins/plugin-local/";
     private static final String SPACES_DIR = PLUGIN_LOCAL_DIR + "spaces/";
     private static final String TEST_SPACE = SPACES_DIR + "test/";
-    private static final String outputFile0 = FileInfoControllerMock.getFileNameById(3);
-    private static final String outputFile1 = FileInfoControllerMock.getFileNameById(4);
+    private static final String outputFile0 = CoordinatorAccessControllerMock.getFileNameById(3);
+    private static final String outputFile1 = CoordinatorAccessControllerMock.getFileNameById(4);
     
     @Value("${local.server.port}")
     private int PORT;
     @Autowired
-    private FileInfoControllerMock controller;
+    private CoordinatorAccessControllerMock controller;
     
     @Before
     public void init() {
@@ -65,13 +65,15 @@ public class UploaderJobTest implements IApplicationExecution{
         assertThat((new File(TEST_SPACE, outputFile0).exists())).isFalse();
         assertThat((new File(TEST_SPACE, outputFile1).exists())).isFalse();
         
-        FileInfoControllerMock.getFileNameById(3);
+        CoordinatorAccessControllerMock.getFileNameById(3);
         
-        String token = FileInfoControllerMock.generateToken("1@machine", 2*1000l);        
+        String token = CoordinatorAccessControllerMock.generateToken("1@machine", 2*1000l);        
         String baseUrl = TestUtils.getUrl(PORT);        
-        SecureFileAccess secureFileAccess = 
+        SecureCoordinatorAccess secureFileAccess = 
                 TestUtils.generateSecureFileAccess(baseUrl, token);        
-        RemoteFileInfoAccess.init(secureFileAccess);
+        CoordinatorServerAccess.init(
+                baseUrl + CoordinatorAccessControllerMock.webRefreshStatusUrl,
+                secureFileAccess);
 
         List<Pair<String, String>> outputs = TestUtils.generateOutputs(baseUrl);        
         

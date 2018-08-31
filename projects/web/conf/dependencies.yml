@@ -6,6 +6,8 @@ require:
     - play -> secure
     - br.unb.cic.bionimbuz.commons -> api-commons 0.1
     - br.unb.cic.bionimbuz.plugins -> api-rest-plugin 0.1
+    - br.unb.cic.bionimbuz.coordinators -> api-rest-executor 0.1    
+    
     - com.squareup.retrofit2 -> retrofit 2.3.0
     - com.squareup.retrofit2 -> converter-jackson 2.3.0
     - com.google.code.gson -> gson 2.5:
@@ -30,6 +32,11 @@ repositories:
     artifact:   ${application.path}/../plugins/api-rest-plugin/target/[module]-[revision].jar
     contains:
         - br.unb.cic.bionimbuz.plugins -> *       
+- api-rest-coordinators:
+    type:       local
+    artifact:   ${application.path}/../coordinators/api-rest-executor/target/[module]-[revision].jar
+    contains:
+        - br.unb.cic.bionimbuz.coordinators -> *       
 
 - jclouds:
     type: iBiblio

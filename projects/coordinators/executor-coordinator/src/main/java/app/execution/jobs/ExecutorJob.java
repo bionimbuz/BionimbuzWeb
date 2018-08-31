@@ -179,7 +179,9 @@ public class ExecutorJob {
             for(int i=0; i<lintFileExtensions.size(); i++) {          
                 String extension = lintFileExtensions.get(i).getRight();                
                 String fileName = LineCmdUtils.generateFilePath(dir, filePrefix, i, extension);    
-                outputFiles.add(fileName);
+                if(OUTPUT_PREFIX.equals(filePrefix)) {
+                    outputFiles.add(fileName);
+                }
                 res = res.replaceFirst(replacement, fileName);
             }
             res = res.replaceAll(replacement, "");

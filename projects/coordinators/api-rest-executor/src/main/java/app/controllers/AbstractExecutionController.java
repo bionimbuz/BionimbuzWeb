@@ -13,7 +13,7 @@ import app.common.Routes;
 import app.models.Body;
 import app.models.Command;
 import app.models.ExecutionStatus;
-import app.models.STATUS;
+import app.models.ExecutionStatus.STATUS;
 
 public abstract class AbstractExecutionController extends BaseControllerVersioned {
     protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractExecutionController.class);

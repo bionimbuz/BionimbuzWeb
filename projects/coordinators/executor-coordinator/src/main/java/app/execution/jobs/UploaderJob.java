@@ -23,7 +23,7 @@ import app.common.Pair;
 import app.common.SystemConstants;
 import app.common.utils.StringUtils;
 import app.execution.IApplicationExecution;
-import app.execution.RemoteFileInfoAccess;
+import app.execution.CoordinatorServerAccess;
 import app.models.ExecutionStatus.EXECUTION_PHASE;
 import app.models.RemoteFileInfo;
 import app.models.RemoteFileProcessingStatus;
@@ -62,7 +62,6 @@ public class UploaderJob {
         private IApplicationExecution executor;
         private RemoteFileProcessingStatus uploadStatus;
         private ExecutorService threadPool;
-        private String inputDir;
         private List<Uploader> uploaderJobs = new ArrayList<>();     
 
         public Core(
@@ -72,7 +71,6 @@ public class UploaderJob {
                 final String inputDir) {
             this.executor = executor;
             this.uploadStatus = uploadStatus;
-            this.inputDir = inputDir;
             this.threadPool = Executors.newFixedThreadPool(MAX_SIMULTANEOUS_DOWNLOADS);
             
             for(int i = 0; i<listRemoteFilePathsWithExtension.size(); i++) {
@@ -139,7 +137,7 @@ public class UploaderJob {
             try {
                 LOGGER.info("######### Uploading: " + fileName);
                 RemoteFileInfo fileInfo =
-                        RemoteFileInfoAccess.get().getRemoteFileInfo(filePath);  
+                        CoordinatorServerAccess.get().getRemoteFileInfo(filePath);  
                 File file = new File(inputDir, fileName);
                 HttpEntity<FileSystemResource> requestEntity =
                             new HttpEntity<>(new FileSystemResource(file));

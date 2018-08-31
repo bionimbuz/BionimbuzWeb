@@ -110,10 +110,11 @@ GET     /upload/space/files                     guest.SpaceFileController.getFil
 GET     /download/space/files                   guest.SpaceFileController.getFileLocationToDownload
 GET     /search/space/files                     guest.SpaceFileController.searchFilesForSpace
 
-# SecureFileAccessController
-GET     /secure/file/download/{id}              guest.SecureFileAccessController.download
-GET     /secure/file/upload/{id}                guest.SecureFileAccessController.upload
-GET     /secure/file/refresh                    guest.SecureFileAccessController.refreshToken
+# ExternalAccessController
+GET     /external/file/download/{id}            guest.ExternalAccessController.download
+GET     /external/file/upload/{id}              guest.ExternalAccessController.upload
+GET     /external/token/refresh                 guest.ExternalAccessController.refreshToken
+POST    /external/status/refresh                guest.ExternalAccessController.refreshStatus
 
 # InstanceController
 GET     /search/instance/types/zones            guest.InstanceController.searchInstanceTypesZones

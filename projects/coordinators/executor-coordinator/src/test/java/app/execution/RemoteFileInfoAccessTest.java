@@ -11,11 +11,11 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import app.controllers.mocks.FileInfoControllerMock;
+import app.controllers.mocks.CoordinatorAccessControllerMock;
 import app.exceptions.SingletonAlreadyInitializedException;
 import app.exceptions.SingletonNotInitializedException;
 import app.models.RemoteFileInfo;
-import app.models.SecureFileAccess;
+import app.models.SecureCoordinatorAccess;
 import io.jsonwebtoken.ExpiredJwtException;
 import utils.TestUtils;
 
@@ -26,42 +26,44 @@ public class RemoteFileInfoAccessTest {
     @Value("${local.server.port}")
     private int PORT;
     @Autowired
-    private FileInfoControllerMock controller;
+    private CoordinatorAccessControllerMock controller;
     @Autowired
     private TestRestTemplate restTemplate;
     
     @Test
     // For this test, plugin-local must be running
     public void testSecurity() throws SingletonAlreadyInitializedException, SingletonNotInitializedException, InterruptedException {
-        String token = FileInfoControllerMock.generateToken("1@machine", 2*1000l);        
+        String token = CoordinatorAccessControllerMock.generateToken("1@machine", 2*1000l);        
         String baseUrl = TestUtils.getUrl(PORT);
         RemoteFileInfo remoteFileInfo = null;
         
         // Wait for token expiration
         Thread.sleep(3*0000);
         try {
-            FileInfoControllerMock.checkToken(token);
+            CoordinatorAccessControllerMock.checkToken(token);
         } catch(Exception e) {
             assertThat(e).isInstanceOf(ExpiredJwtException.class);
         }
         
-        SecureFileAccess secureFileAccess = new SecureFileAccess(
+        SecureCoordinatorAccess secureFileAccess = new SecureCoordinatorAccess(
                 token,
-                baseUrl + FileInfoControllerMock.webRefreshTokenUrl);
+                baseUrl + CoordinatorAccessControllerMock.webRefreshTokenUrl);
         
         // Call with a expired token
-        RemoteFileInfoAccess.init(secureFileAccess);
+        CoordinatorServerAccess.init(
+                baseUrl + CoordinatorAccessControllerMock.webRefreshStatusUrl,
+                secureFileAccess);
         remoteFileInfo = 
-                RemoteFileInfoAccess.get().getRemoteFileInfo(
-                        baseUrl + FileInfoControllerMock.webDownloadUrl.replace("{id}", "1"));         
+                CoordinatorServerAccess.get().getRemoteFileInfo(
+                        baseUrl + CoordinatorAccessControllerMock.webDownloadUrl.replace("{id}", "1"));         
 
         assertThat(remoteFileInfo).isNotNull();
         
         secureFileAccess.setToken("invalid token");
         // Call with an invalid token
         remoteFileInfo = 
-                RemoteFileInfoAccess.get().getRemoteFileInfo(
-                        baseUrl + FileInfoControllerMock.webDownloadUrl.replace("{id}", "1"));         
+                CoordinatorServerAccess.get().getRemoteFileInfo(
+                        baseUrl + CoordinatorAccessControllerMock.webDownloadUrl.replace("{id}", "1"));         
 
         assertThat(remoteFileInfo).isNull();
     }

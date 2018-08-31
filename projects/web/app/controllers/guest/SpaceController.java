@@ -147,7 +147,6 @@ public class SpaceController extends BaseAdminController {
         return listStorageRegions;
     }
 
-
     private static boolean createSpace(SpaceModel space) {
 
         PluginModel plugin = space.getPlugin();

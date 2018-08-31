@@ -131,7 +131,7 @@ public class DevelopmentStartupJob extends Job {
                 "\n" + 
                 "echo \"Extra file execution time: `date`\" >> $4");
         executor.setExecutionScriptEnabled(true);
-        executor.setCommandLine("{i} {i} {i} {o} {o} {o}");
+        executor.setCommandLine("{i} {i} {o} {o}");
         executor.setListImages(listImages);
         executor.save();
     }

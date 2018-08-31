@@ -16,13 +16,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import app.common.Pair;
 import app.common.utils.FileUtils;
-import app.controllers.mocks.FileInfoControllerMock;
+import app.controllers.mocks.CoordinatorAccessControllerMock;
 import app.exceptions.SingletonAlreadyInitializedException;
+import app.execution.CoordinatorServerAccess;
 import app.execution.IApplicationExecution;
-import app.execution.RemoteFileInfoAccess;
 import app.models.ExecutionStatus.EXECUTION_PHASE;
 import app.models.RemoteFileProcessingStatus;
-import app.models.SecureFileAccess;
+import app.models.SecureCoordinatorAccess;
 import utils.TestUtils;
 
 @RunWith(SpringRunner.class)
@@ -32,7 +32,7 @@ public class DownloaderJobTest implements IApplicationExecution{
     @Value("${local.server.port}")
     private int PORT;
     @Autowired
-    private FileInfoControllerMock controller;
+    private CoordinatorAccessControllerMock controller;
     
     @Before
     public void init() {
@@ -45,11 +45,13 @@ public class DownloaderJobTest implements IApplicationExecution{
 
         assertThat((new File(INPUTS_FOLDER).exists())).isFalse();
         
-        String token = FileInfoControllerMock.generateToken("1@machine", 2*1000l);        
+        String token = CoordinatorAccessControllerMock.generateToken("1@machine", 2*1000l);        
         String baseUrl = TestUtils.getUrl(PORT);        
-        SecureFileAccess secureFileAccess = 
+        SecureCoordinatorAccess secureFileAccess = 
                 TestUtils.generateSecureFileAccess(baseUrl, token);        
-        RemoteFileInfoAccess.init(secureFileAccess);
+        CoordinatorServerAccess.init(
+                baseUrl + CoordinatorAccessControllerMock.webRefreshStatusUrl,
+                secureFileAccess);
 
         List<Pair<String, String>> inputs = TestUtils.generateInputs(baseUrl);        
         

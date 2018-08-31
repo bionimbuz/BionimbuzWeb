@@ -1,11 +1,11 @@
 package app.models;
 
-public class SecureFileAccess {
+public class SecureCoordinatorAccess {
 
     private String token;    
     private String refreshTokenUrl;
     
-    public SecureFileAccess(String token, String refreshTokenURl) {
+    public SecureCoordinatorAccess(String token, String refreshTokenURl) {
         this.token = token;
         this.refreshTokenUrl = refreshTokenURl;
     }

@@ -2,7 +2,10 @@ package controllers.guest;
 
 import app.common.utils.StringUtils;
 import app.models.RemoteFileInfo;
+import app.models.STATUS;
 import app.security.AccessSecurity;
+import models.InstanceModel;
+import models.SpaceFileModel;
 import play.Logger;
 import play.Play;
 import play.libs.Time;
@@ -10,7 +13,7 @@ import play.mvc.Before;
 import play.mvc.Controller;
 import play.mvc.Http.Header;
 
-public class SecureFileAccessController extends Controller {
+public class ExternalAccessController extends Controller {
 
     private static AccessSecurity ACCESS_CHECKER;
     private static long EXPIRATION_TIME = 0;
@@ -25,13 +28,16 @@ public class SecureFileAccessController extends Controller {
      * Checkers
      */
     
-    @Before(only = {"upload","download"})
+    @Before(only = {"upload","download","refreshStatus"})
     private static void checkToken(){
         String token = "";
         try {         
             token = getToken();   
             String identity = 
                     ACCESS_CHECKER.checkToken(token);
+            if(StringUtils.isEmpty(identity)) {
+                throw new Exception("No identity found.");
+            }
             renderArgs.put(CONNECTED_IDENTITY, identity);
         } catch(Exception e) {
             Logger.warn(e, "Unauthorized access attempt with token [%s] error [%s]", token, e.getMessage());
@@ -43,13 +49,20 @@ public class SecureFileAccessController extends Controller {
      * Actions
      */
     
-    public static void download(final Long id) throws Exception {    
-        RemoteFileInfo fileInfo = new RemoteFileInfo();
+    public static void download(final Long id) throws Exception {
+        String identity = getIdentity();
+        InstanceModel instance = 
+                InstanceModel.findByIdentity(identity);
+        if(instance == null)
+            notFound("Instance not found.");
         
-        fileInfo.setMethod("GET");
-        fileInfo.setName("file.txt");
-        fileInfo.setUrl("http://localhost:8080");
+        if(instance.getStatus() != STATUS.RUNNING) {
+            Logger.warn("File download attempt while application not running, file id [%s].", id);
+            forbidden();
+        }
         
+        RemoteFileInfo fileInfo = 
+                SpaceFileModel.getDownloadFileInfo(id);        
         renderJSON(fileInfo);
     }
     
@@ -74,6 +87,10 @@ public class SecureFileAccessController extends Controller {
             Logger.warn(e, "Unauthorized access attempt with token [%s] error [%s]", token, e.getMessage());
             forbidden();
         }          
+    }    
+
+    public static void refreshStatus() {
+        
     }
 
     /*
@@ -89,4 +106,8 @@ public class SecureFileAccessController extends Controller {
         }
         return token.value();
     }    
+    
+    private static String getIdentity() {
+        return renderArgs.get(CONNECTED_IDENTITY).toString();
+    }
 }

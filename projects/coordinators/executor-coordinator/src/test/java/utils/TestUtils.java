@@ -13,9 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.common.Pair;
-import app.controllers.mocks.FileInfoControllerMock;
+import app.controllers.mocks.CoordinatorAccessControllerMock;
 import app.models.Command;
-import app.models.SecureFileAccess;
+import app.models.SecureCoordinatorAccess;
 
 public class TestUtils {
     protected static final Logger LOGGER = LoggerFactory.getLogger(TestUtils.class);
@@ -29,12 +29,12 @@ public class TestUtils {
         return "http://localhost:"+port;
     }
     
-    public static SecureFileAccess generateSecureFileAccess(
+    public static SecureCoordinatorAccess generateSecureFileAccess(
             final String baseUrl,
             final String token) {
-        SecureFileAccess secureFileAccess = new SecureFileAccess(
+        SecureCoordinatorAccess secureFileAccess = new SecureCoordinatorAccess(
                 token,
-                baseUrl + FileInfoControllerMock.webRefreshTokenUrl);
+                baseUrl + CoordinatorAccessControllerMock.webRefreshTokenUrl);
         return secureFileAccess;
     }    
 
@@ -44,7 +44,7 @@ public class TestUtils {
     
     public static Command generateCommand(
             final String baseUrl,
-            SecureFileAccess secureFileAccess) {
+            SecureCoordinatorAccess secureFileAccess) {
 
         List<Pair<String, String>> inputs = generateInputs(baseUrl);        
         List<Pair<String, String>> outputs = generateOutputs(baseUrl);
@@ -64,22 +64,24 @@ public class TestUtils {
         command.setListOutputPathsWithExtension(outputs);
         command.setArgs("-a -b -c content");
         command.setSecureFileAccess(secureFileAccess);
+        command.setRefreshStatusUrl(
+                baseUrl + CoordinatorAccessControllerMock.webRefreshStatusUrl);
         return command;
     }
 
     public static List<Pair<String, String>> generateInputs(
             final String baseUrl) {
         List<Pair<String, String>> inputs = new ArrayList<>();
-        inputs.add(new Pair<>(baseUrl + FileInfoControllerMock.webDownloadUrl.replace("{id}", "1"), "txt"));
-        inputs.add(new Pair<>(baseUrl + FileInfoControllerMock.webDownloadUrl.replace("{id}", "2"), "txt"));
+        inputs.add(new Pair<>(baseUrl + CoordinatorAccessControllerMock.webDownloadUrl.replace("{id}", "1"), "txt"));
+        inputs.add(new Pair<>(baseUrl + CoordinatorAccessControllerMock.webDownloadUrl.replace("{id}", "2"), "txt"));
         return inputs;
     }    
 
     public static List<Pair<String, String>> generateOutputs(
             final String baseUrl) {
         List<Pair<String, String>> outputs = new ArrayList<>();
-        outputs.add(new Pair<>(baseUrl + FileInfoControllerMock.webUploadUrl.replace("{id}", "3"), "txt"));
-        outputs.add(new Pair<>(baseUrl + FileInfoControllerMock.webUploadUrl.replace("{id}", "4"), "txt"));
+        outputs.add(new Pair<>(baseUrl + CoordinatorAccessControllerMock.webUploadUrl.replace("{id}", "3"), "txt"));
+        outputs.add(new Pair<>(baseUrl + CoordinatorAccessControllerMock.webUploadUrl.replace("{id}", "4"), "txt"));
         return outputs;
     }
     
