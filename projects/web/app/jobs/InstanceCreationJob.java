@@ -1,7 +1,5 @@
 package jobs;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -45,10 +43,8 @@ public class InstanceCreationJob {
         private void createCloudInstance() {   
 
             ComputingApi api = new ComputingApi(instance.getPlugin().getUrl());
-            List<PluginComputingInstanceModel> instancesToCreate = new ArrayList();
             PluginComputingInstanceModel instanceToCreate =
                     createPluginInstance(instance);
-            instancesToCreate.add(instanceToCreate);
 
             UserCredentialsReader credentialReader =
                     new UserCredentialsReader(
@@ -64,17 +60,17 @@ public class InstanceCreationJob {
                                 instance.getPlugin().getInstanceWriteScope(),
                                 credential);
 
-                    Body<List<PluginComputingInstanceModel>> body =
-                            api.createInstances(
+                    Body<PluginComputingInstanceModel> body =
+                            api.createInstance(
                                     token.getToken(),
                                     token.getIdentity(),
-                                    instancesToCreate);
-                    if(body.getContent() == null || body.getContent().isEmpty()) {
+                                    instanceToCreate);
+                    if(body == null || body.getContent() == null) {
                         continue;
                     }
 
                     PluginComputingInstanceModel instanceCreated =
-                            body.getContent().get(0);
+                            body.getContent();
 
                     instance.setCloudInstanceName(instanceCreated.getName());
                     instance.setCloudInstanceIp(instanceCreated.getExternalIp());
