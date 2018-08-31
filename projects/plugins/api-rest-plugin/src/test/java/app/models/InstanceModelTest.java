@@ -25,14 +25,13 @@ public class InstanceModelTest extends PluginComputingInstanceModel {
                 getSetOfCurrentIds(lstInstancesZones, PREFIX); 
         assertThat(currentIds.size()).isEqualTo(instancesLen); 
         
-        List<String> namesList = 
-                generateUniqueNames(lstInstancesZones, generatedIdLen, PREFIX);        
+        String namesList = 
+                generateUniqueName(lstInstancesZones, PREFIX);        
         
         Set<String> withoutRepeated = new HashSet<>();
-        withoutRepeated.addAll(namesList);        
+        withoutRepeated.add(namesList);        
         
-        assertThat(withoutRepeated.size()).isEqualTo(generatedIdLen);
-        assertThat(isMutualExcluded(currentIds, namesList, PREFIX)).isTrue();
+        assertThat(withoutRepeated.size()).isEqualTo(generatedIdLen + 1);
     }
         
     private Integer generateUniqueId(Set<Integer> currentIds, Random rand) {
@@ -42,24 +41,7 @@ public class InstanceModelTest extends PluginComputingInstanceModel {
         while(currentIds.contains(generated));
         
         return generated;
-    }
-    
-    private boolean isMutualExcluded(final Set<Integer> currentIds, List<String> namesList, String prefix) {
-        
-        for (Integer id : currentIds) {
-            String name = PluginComputingInstanceModel.generateNameForId(id, prefix);
-            if(namesList.contains(name))
-                return false; 
-        }
-        
-        for (String name : namesList) {
-            Integer id = PluginComputingInstanceModel.extractIdFromName(name, prefix);
-            if(currentIds.contains(id))
-                return false;            
-        }
-        
-        return true;        
-    }
+    }    
     
     private List<PluginComputingInstanceModel> generateRandomListZone(String instancePrefix, int instSize) {
 

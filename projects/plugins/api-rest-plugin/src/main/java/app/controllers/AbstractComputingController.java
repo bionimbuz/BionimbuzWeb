@@ -28,12 +28,12 @@ public abstract class AbstractComputingController extends BaseControllerVersione
      */
 
     @RequestMapping(path = Routes.COMPUTING_INSTANCES, method = RequestMethod.POST)
-    private ResponseEntity<Body<List<PluginComputingInstanceModel>>> createInstancesAction(
+    private ResponseEntity<Body<PluginComputingInstanceModel>> createInstanceAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
             @RequestHeader(value=HttpHeaders.AUTHORIZATION) final String token,
             @RequestHeader(value=HttpHeadersCustom.AUTHORIZATION_ID) final String identity,
-            @RequestBody List<PluginComputingInstanceModel> listModel) {
-        return callImplementedMethod("createInstances", version, token, identity, listModel);
+            @RequestBody PluginComputingInstanceModel model) {
+        return callImplementedMethod("createInstance", version, token, identity, model);
     }
     @RequestMapping(path = Routes.COMPUTING_REGIONS_ZONES_INSTANCES_NAME_, method = RequestMethod.GET)
     private ResponseEntity<Body<PluginComputingInstanceModel>> getInstanceAction(
@@ -82,10 +82,10 @@ public abstract class AbstractComputingController extends BaseControllerVersione
      * Abstract Methods
      */
 
-    protected abstract ResponseEntity<Body<List<PluginComputingInstanceModel>>> createInstances(
+    protected abstract ResponseEntity<Body<PluginComputingInstanceModel>> createInstance(
             final String token,
             final String identity,
-            List<PluginComputingInstanceModel> listModel) throws Exception;
+            PluginComputingInstanceModel model) throws Exception;
     protected abstract ResponseEntity<Body<PluginComputingInstanceModel>> getInstance(
             final String token,
             final String identity,

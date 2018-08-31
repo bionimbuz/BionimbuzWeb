@@ -26,15 +26,15 @@ public class ComputingApi  extends ClientApiVersioned<HttpMethods> {
         super(url, HttpMethods.class);
     }
 
-    public Body<List<PluginComputingInstanceModel>> createInstances(
+    public Body<PluginComputingInstanceModel> createInstance(
             final String token,
             final String identity,
-            List<PluginComputingInstanceModel> listModel) throws IOException
+            PluginComputingInstanceModel model) throws IOException
     {
         return getHttpMethods()
-                .createInstances(
+                .createInstance(
                         GlobalConstants.API_VERSION,
-                        token, identity, listModel)
+                        token, identity, model)
                 .execute().body();
     }
 
@@ -102,11 +102,11 @@ public class ComputingApi  extends ClientApiVersioned<HttpMethods> {
     
     protected interface HttpMethods {
         @POST(Routes.COMPUTING_INSTANCES)
-        public Call<Body<List<PluginComputingInstanceModel>>> createInstances(
+        public Call<Body<PluginComputingInstanceModel>> createInstance(
                 @Header(HttpHeadersCustom.API_VERSION) final String version,
                 @Header(HttpHeaders.AUTHORIZATION) final String token,
                 @Header(HttpHeadersCustom.AUTHORIZATION_ID) final String identity,
-                @retrofit2.http.Body List<PluginComputingInstanceModel> listModel);
+                @retrofit2.http.Body PluginComputingInstanceModel model);
         @GET(Routes.COMPUTING_REGIONS_ZONES_INSTANCES_NAME)
         public Call<Body<PluginComputingInstanceModel>> getInstance(
                 @Header(HttpHeadersCustom.API_VERSION) final String version,

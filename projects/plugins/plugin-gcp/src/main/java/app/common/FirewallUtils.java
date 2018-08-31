@@ -23,24 +23,22 @@ public class FirewallUtils {
         udp
     }
 
-    public static void createRulesForInstances(GoogleComputeEngineApi googleApi, final List<PluginComputingInstanceModel> instances) throws Exception {        
+    public static void createRulesForInstance(
+            GoogleComputeEngineApi googleApi, 
+            final PluginComputingInstanceModel instance) throws Exception {        
         // TODO: implement range list 
         List<String> range = new ArrayList<>();
         
         // First, TCP ports
         Set<Integer> ports = new TreeSet<>();        
-        for(PluginComputingInstanceModel instance : instances) {
-            ports.addAll(instance.getFirewallTcpPorts());
-        }
+        ports.addAll(instance.getFirewallTcpPorts());
         for(Integer port : ports) {
             replaceFirewallRule(googleApi, PROTOCOL.tcp, port, range);
         }
         
         // Second, UDP ports
         ports = new TreeSet<>();        
-        for(PluginComputingInstanceModel instance : instances) {
-            ports.addAll(instance.getFirewallUdpPorts());
-        }
+        ports.addAll(instance.getFirewallUdpPorts());
         for(Integer port : ports) {
             replaceFirewallRule(googleApi, PROTOCOL.udp, port, range);
         }

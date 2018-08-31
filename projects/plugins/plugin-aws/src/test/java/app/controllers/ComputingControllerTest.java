@@ -39,11 +39,8 @@ public class ComputingControllerTest {
 
     @Test
     public void CRUD_Test() throws Exception {
-        List<PluginComputingInstanceModel> instances =
-                createInstances();        
-        for (PluginComputingInstanceModel instance : instances) {
-            deleteInstances(instance);
-        }
+        PluginComputingInstanceModel instance = createInstance();   
+        deleteInstance(instance);
     }
 
     @Test
@@ -77,7 +74,7 @@ public class ComputingControllerTest {
         assertThat(body.getContent()).isNotEmpty();
     }
     
-    public void deleteInstances(PluginComputingInstanceModel instance) throws Exception {
+    public void deleteInstance(PluginComputingInstanceModel instance) throws Exception {
         
         Supplier<Credentials> awsSupplier = TestUtils.createSupplier();
         ComputingApi api = new ComputingApi(TestUtils.getUrl(PORT));
@@ -94,28 +91,27 @@ public class ComputingControllerTest {
         assertThat(body.getContent()).isTrue();         
     }
     
-    public List<PluginComputingInstanceModel> createInstances() throws Exception {
+    public PluginComputingInstanceModel createInstance() throws Exception {
         
-        List<PluginComputingInstanceModel> listInstance = 
-                new ArrayList<>();
-        listInstance.add(getInstancesToCreate());
+        PluginComputingInstanceModel instance = 
+                getInstanceToCreate();
         ComputingApi api = new ComputingApi(TestUtils.getUrl(PORT));
 
         Supplier<Credentials> awsSupplier = TestUtils.createSupplier();
 
-        Body<List<PluginComputingInstanceModel>> body =
-                api.createInstances(
+        Body<PluginComputingInstanceModel> body =
+                api.createInstance(
                     awsSupplier.get().credential,
                     awsSupplier.get().identity,
-                    listInstance);
+                    instance);
         
         assertThat(body).isNotNull();
-        assertThat(body.getContent()).isNotEmpty();    
+        assertThat(body.getContent()).isNotNull();    
         
         return body.getContent();
     }
     
-    private PluginComputingInstanceModel getInstancesToCreate() {
+    private PluginComputingInstanceModel getInstanceToCreate() {
         
         List<Integer> ports = new ArrayList<>() ;
         ports.add(80);

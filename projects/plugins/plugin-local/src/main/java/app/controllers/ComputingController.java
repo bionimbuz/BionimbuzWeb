@@ -38,48 +38,45 @@ public class ComputingController extends AbstractComputingController {
      */
 
     @Override
-    protected ResponseEntity<Body<List<PluginComputingInstanceModel>>> createInstances(
+    protected ResponseEntity<Body<PluginComputingInstanceModel>> createInstance(
             final String token,
             final String identity,
-            final List<PluginComputingInstanceModel> listModel) throws Exception {
+            final PluginComputingInstanceModel model) throws Exception {
 
         checkOphanInstances();
 
-        for (PluginComputingInstanceModel pluginInstanceModel : listModel) {
+        String instanceName = getNewName();
+        Integer id = PluginComputingInstanceModel.extractIdFromName(
+                        instanceName, GlobalConstants.BNZ_INSTANCE);
 
-            String instanceName = getNewName();
-            Integer id = PluginComputingInstanceModel.extractIdFromName(
-                            instanceName, GlobalConstants.BNZ_INSTANCE);
+        String ip = System.getProperty(
+                SystemConstants.SYSTEM_PROPERTY_IP,
+                InetAddress.getLocalHost().getHostAddress());
 
-            String ip = System.getProperty(
-                    SystemConstants.SYSTEM_PROPERTY_IP,
-                    InetAddress.getLocalHost().getHostAddress());
+        model.setId(String.valueOf(id));
+        model.setName(instanceName);
+        model.setExternalIp(ip);
 
-            pluginInstanceModel.setId(String.valueOf(id));
-            pluginInstanceModel.setName(instanceName);
-            pluginInstanceModel.setExternalIp(ip);
+        String instancePath =
+                createInstanceDir(instanceName);
 
-            String instancePath =
-                    createInstanceDir(instanceName);
+        String startupScript =
+                generateStartupScript(
+                        instancePath,
+                        model.getStartupScript());
 
-            String startupScript =
-                    generateStartupScript(
-                            instancePath,
-                            pluginInstanceModel.getStartupScript());
+        Process process = Runtime.getRuntime().exec(
+                startupScript,
+                null,
+                new File(instancePath));
 
-            Process process = Runtime.getRuntime().exec(
-                    startupScript,
-                    null,
-                    new File(instancePath));
+        InstanceProcess instanceProcess =
+                new InstanceProcess(instancePath, process, model);
 
-            InstanceProcess instanceProcess =
-                    new InstanceProcess(instancePath, process, pluginInstanceModel);
-
-            insertInstanceProcess(id, instanceProcess);
-        }
+        insertInstanceProcess(id, instanceProcess);
 
         return ResponseEntity.ok(
-                Body.create(listModel));
+                Body.create(model));
     }
 
     @Override

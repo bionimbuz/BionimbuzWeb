@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
@@ -52,14 +51,14 @@ public class ComputingControllerTest {
     @Test
     public void CRUD_Instances() throws IOException {
 
-        List<PluginComputingInstanceModel> listToCreate =
-                    getInstancesToCreate(LENGTH_CREATION);
+        PluginComputingInstanceModel instance =
+                    createInstance();
 
-        checkCurrentInstancesSize(0);
-        listToCreate = createInstancesTest(listToCreate);
-        checkGetInstances(listToCreate);
-        checkCurrentInstancesSize(LENGTH_CREATION);
-        deleteInstances(listToCreate);
+        checkCurrentInstancesSize(0);        
+        instance = createInstanceTest(instance);
+        checkGetInstance(instance);
+        checkCurrentInstancesSize(1);
+        deleteInstance(instance);
         checkCurrentInstancesSize(0);
     }
     
@@ -85,31 +84,27 @@ public class ComputingControllerTest {
     public void list_zones_Test() throws IOException {    
     }
 
-    private void deleteInstances(List<PluginComputingInstanceModel> instances) throws IOException {
+    private void deleteInstance(PluginComputingInstanceModel instance) throws IOException {
 
         ComputingApi api = new ComputingApi(TestUtils.getUrl(PORT));
-        for (PluginComputingInstanceModel pluginInstanceModel : instances) {
-            Body<Boolean> body = api.deleteInstance("", "",
-                    SystemConstants.PLUGIN_REGION,
-                    SystemConstants.PLUGIN_ZONE,
-                    pluginInstanceModel.getName());
-            assertThat(body).isNotNull();
-            assertThat(body.getContent()).isTrue();
-        }
+        Body<Boolean> body = api.deleteInstance("", "",
+                SystemConstants.PLUGIN_REGION,
+                SystemConstants.PLUGIN_ZONE,
+                instance.getName());
+        assertThat(body).isNotNull();
+        assertThat(body.getContent()).isTrue();
     }
 
-    private void checkGetInstances(List<PluginComputingInstanceModel> instances) throws IOException {
+    private void checkGetInstance(PluginComputingInstanceModel instance) throws IOException {
 
         ComputingApi api = new ComputingApi(TestUtils.getUrl(PORT));
-        for (PluginComputingInstanceModel pluginInstanceModel : instances) {
-            Body<PluginComputingInstanceModel> body =
-                    api.getInstance("", "",
-                            SystemConstants.PLUGIN_REGION,
-                            SystemConstants.PLUGIN_ZONE,
-                            pluginInstanceModel.getName());
-            assertThat(body).isNotNull();
-            assertThat(body.getContent()).isNotNull();
-        }
+        Body<PluginComputingInstanceModel> body =
+                api.getInstance("", "",
+                        SystemConstants.PLUGIN_REGION,
+                        SystemConstants.PLUGIN_ZONE,
+                        instance.getName());
+        assertThat(body).isNotNull();
+        assertThat(body.getContent()).isNotNull();
     }
 
     private void checkCurrentInstancesSize(int size) throws IOException {
@@ -120,35 +115,30 @@ public class ComputingControllerTest {
 
         assertThat(body.getContent().size()).isEqualTo(size);
     }
-
-    private List<PluginComputingInstanceModel> createInstancesTest(List<PluginComputingInstanceModel> instances) throws IOException{
+    
+    private PluginComputingInstanceModel createInstanceTest(PluginComputingInstanceModel instance) throws IOException{
 
         ComputingApi api = new ComputingApi(TestUtils.getUrl(PORT));
-        Body<List<PluginComputingInstanceModel>> body =
-                api.createInstances("", "", instances);
+        
+        
+        Body<PluginComputingInstanceModel> body =
+                api.createInstance("", "", instance);
         assertThat(body).isNotNull();
-        assertThat(body.getContent().size()).isEqualTo(LENGTH_CREATION);
+        assertThat(body.getContent()).isNotNull();
 
         return body.getContent();
     }
 
-    private List<PluginComputingInstanceModel> getInstancesToCreate(int length) {
-        List<PluginComputingInstanceModel> instances = new ArrayList<>();
+    private PluginComputingInstanceModel createInstance() {
+        PluginComputingInstanceModel instance = new PluginComputingInstanceModel();
+        instance.setImageUrl("");
+        instance.setStartupScript(INSTANCE_STARTUP_SCRIPT);
+        instance.setType(SystemConstants.CLOUD_COMPUTE_TYPE);
+        instance.setRegion(SystemConstants.PLUGIN_REGION);
+        instance.setZone(SystemConstants.PLUGIN_ZONE);
 
-        for(int i=0;i<length;i++) {
-            PluginComputingInstanceModel instance = new PluginComputingInstanceModel();
-            instance.setImageUrl("");
-            instance.setStartupScript(INSTANCE_STARTUP_SCRIPT);
-            instance.setType(SystemConstants.CLOUD_COMPUTE_TYPE);
-            instance.setRegion(SystemConstants.PLUGIN_REGION);
-            instance.setZone(SystemConstants.PLUGIN_ZONE);
-
-            instances.add(instance);
-        }
-
-        return instances;
+        return instance;
     }
-
 
     @Test
     public void createInstanceBeforeExecution() throws Exception {

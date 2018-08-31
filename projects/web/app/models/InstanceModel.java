@@ -14,7 +14,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import app.models.ExecutionStatus.EXECUTION_PHASE;
-import app.models.STATUS;
+import app.models.ExecutionStatus.STATUS;
 import play.data.binding.NoBinding;
 import play.data.validation.Required;
 import play.data.validation.Unique;

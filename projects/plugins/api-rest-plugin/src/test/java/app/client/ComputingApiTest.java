@@ -2,8 +2,6 @@ package app.client;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
@@ -35,21 +33,14 @@ public class ComputingApiTest {
     @Test
     public void createTest() throws Exception {
         ComputingApi instanceApi = new ComputingApi(getUrl());
-        List<PluginComputingInstanceModel> listModel = createListModel();  
+        PluginComputingInstanceModel model = createModel();
         
-        Body<List<PluginComputingInstanceModel>> body = 
-                instanceApi.createInstances(
-                        "fake-token", "fake-identity", listModel);
-        List<PluginComputingInstanceModel> listModelCreated = body.getContent();
+        Body<PluginComputingInstanceModel> body = 
+                instanceApi.createInstance(
+                        "fake-token", "fake-identity", model);
+        PluginComputingInstanceModel modelCreated = body.getContent();
         
-        Iterator<PluginComputingInstanceModel> 
-            iteratorNew = listModel.iterator(),
-            iteratorCreated = listModelCreated.iterator();
-        
-        while(iteratorNew.hasNext() && iteratorCreated.hasNext()) {
-            assertThat(iteratorNew.next().getName())
-                .isEqualTo(iteratorCreated.next().getName());
-        }
+        assertThat(model.getName()).isEqualTo(modelCreated.getName());
     }
     
     @Test
@@ -95,13 +86,6 @@ public class ComputingApiTest {
     
     private String getUrl() {
         return "http://localhost:"+PORT;
-    }
-    
-    private static List<PluginComputingInstanceModel> createListModel(){
-        List<PluginComputingInstanceModel> listModel = new ArrayList<>();
-        listModel.add(createModel());
-        listModel.add(createModel());
-        return listModel;
     }
     
     private static PluginComputingInstanceModel createModel() {

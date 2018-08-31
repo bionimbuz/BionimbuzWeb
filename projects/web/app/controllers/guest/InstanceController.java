@@ -8,21 +8,19 @@ import app.client.ComputingApi;
 import app.common.Authorization;
 import app.common.utils.StringUtils;
 import app.models.Body;
-import app.models.PluginComputingInstanceModel;
 import app.models.PluginComputingZoneModel;
 import app.models.security.TokenModel;
 import common.constants.I18N;
-import common.constants.SystemConstants;
 import common.utils.UserCredentialsReader;
 import controllers.CRUD.For;
 import controllers.Check;
 import controllers.adm.BaseAdminController;
+import jobs.InstanceCreationJob;
 import models.ApplicationArgumentsModel;
 import models.ApplicationFileInputModel;
 import models.ApplicationFileOutputModel;
 import models.ApplicationFileOutputModel.ApplicationOutput;
 import models.ExecutorModel;
-import models.ImageModel;
 import models.InstanceModel;
 import models.InstanceTypeModel;
 import models.InstanceTypeModel.InstanceType;
@@ -177,7 +175,7 @@ public class InstanceController extends BaseAdminController {
 
         object._save();
         if(object.isExecutionAfterCreation()) {
-            executeInstance(object);
+            InstanceCreationJob.create(object);
         }
 
         flash.success(Messages.get("crud.created", type.modelName));
@@ -237,80 +235,6 @@ public class InstanceController extends BaseAdminController {
         }
         flash.success(Messages.get("crud.deleted", type.modelName));
         redirect(request.controller + ".list");
-    }
-
-    private static PluginComputingInstanceModel createPluginInstance(InstanceModel instance){
-
-        PluginComputingInstanceModel res = new PluginComputingInstanceModel();
-
-        for(ImageModel image : instance.getExecutor().getListImages()) {
-            if(image.getPlugin().getId() != instance.getPlugin().getId()) {
-                continue;
-            }
-            res.setImageUrl(image.getUrl());
-            break;
-        }
-
-        ExecutorModel executor = instance.getExecutor();
-        res.setFirewallUdpPorts(
-                StringUtils.splitToIntList(
-                        executor.getFirewallUdpRules(),
-                        SystemConstants.SPLIT_EXP_COMMA));
-        res.setFirewallTcpPorts(
-                StringUtils.splitToIntList(
-                        executor.getFirewallTcpRules(),
-                        SystemConstants.SPLIT_EXP_COMMA));
-        res.setMachineType(instance.getTypeName());
-        res.setType(instance.getTypeName());
-        res.setRegion(instance.getRegionName());
-        res.setZone(instance.getZoneName());
-        res.setStartupScript(instance.getExecutor().getStartupScript());
-
-        return res;
-    }
-
-    private static void executeInstance(InstanceModel instance) {
-
-        ComputingApi api = new ComputingApi(instance.getPlugin().getUrl());
-        List<PluginComputingInstanceModel> instancesToCreate = new ArrayList();
-        PluginComputingInstanceModel instanceToCreate =
-                createPluginInstance(instance);
-        instancesToCreate.add(instanceToCreate);
-
-        UserCredentialsReader credentialReader =
-                new UserCredentialsReader(
-                        instance.getPlugin(),
-                        instance.getCredentialUsage());
-
-        try {
-            for(String credential : credentialReader) {
-
-                TokenModel token;
-                    token = Authorization.getToken(
-                            instance.getPlugin().getCloudType(),
-                            instance.getPlugin().getInstanceWriteScope(),
-                            credential);
-
-                Body<List<PluginComputingInstanceModel>> body =
-                        api.createInstances(
-                                token.getToken(),
-                                token.getIdentity(),
-                                instancesToCreate);
-                if(body.getContent() == null || body.getContent().isEmpty()) {
-                    continue;
-                }
-
-                PluginComputingInstanceModel instanceCreated =
-                        body.getContent().get(0);
-
-                instance.setCloudInstanceName(instanceCreated.getName());
-                instance.setCloudInstanceIp(instanceCreated.getExternalIp());
-                instance.save();
-                break;
-            }
-        } catch (Exception e) {
-            Logger.warn(e, "Operation cannot be completed with credential [%s]", e.getMessage());     
-        }
     }
 
     public static List<Region> getInstanceRegions(final Long pluginId) {

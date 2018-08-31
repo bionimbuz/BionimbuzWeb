@@ -1,8 +1,13 @@
 package controllers.guest;
 
+import java.io.InputStreamReader;
+
+import com.google.gson.GsonBuilder;
+
 import app.common.utils.StringUtils;
+import app.models.ExecutionStatus;
+import app.models.ExecutionStatus.STATUS;
 import app.models.RemoteFileInfo;
-import app.models.STATUS;
 import app.security.AccessSecurity;
 import models.InstanceModel;
 import models.SpaceFileModel;
@@ -90,7 +95,18 @@ public class ExternalAccessController extends Controller {
     }    
 
     public static void refreshStatus() {
+        String identity = getIdentity();
+        InstanceModel instance = 
+                InstanceModel.findByIdentity(identity);
+        if(instance == null)
+            notFound("Instance not found.");
         
+        ExecutionStatus status = new GsonBuilder().create().fromJson(
+                new InputStreamReader(request.body), ExecutionStatus.class);
+        instance.setStatus(status.getStatus());
+        instance.setPhase(status.getPhase());
+        instance.setExecutionObservation(status.getErrorMessage());
+        instance.save();
     }
 
     /*

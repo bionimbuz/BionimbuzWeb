@@ -88,7 +88,7 @@ public class DownloaderJob {
             try {
                 createOutDir();
                 for (Downloader downloadJob : downloadJobs) {
-                    threadPool.execute(downloadJob);
+                    threadPool.submit(downloadJob);
                 }
                 threadPool.shutdown();
                 threadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);

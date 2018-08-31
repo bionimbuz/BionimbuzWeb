@@ -16,11 +16,11 @@ import app.models.PluginComputingZoneModel;
 public class ComputingControllerMock extends AbstractComputingController {
 
     @Override
-    protected ResponseEntity<Body<List<PluginComputingInstanceModel>>> createInstances(
-            String token, String identity, List<PluginComputingInstanceModel> listModel)
+    protected ResponseEntity<Body<PluginComputingInstanceModel>> createInstance(
+            String token, String identity, PluginComputingInstanceModel model)
             throws Exception {
         return ResponseEntity.ok().body(
-                Body.create(Body.OK, listModel));
+                Body.create(Body.OK, model));
     }
     @Override
     protected ResponseEntity<Body<PluginComputingInstanceModel>> getInstance(String token,

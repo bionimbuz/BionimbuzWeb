@@ -37,26 +37,24 @@ public class ComputingController extends AbstractComputingController {
      */
 
     @Override
-    protected ResponseEntity<Body<List<PluginComputingInstanceModel>>> createInstances(
+    protected ResponseEntity<Body<PluginComputingInstanceModel>> createInstance(
             final String token,
             final String identity,
-            final List<PluginComputingInstanceModel> listModel) throws Exception {
+            final PluginComputingInstanceModel model) throws Exception {
         try(EC2Api awsApi =
                 AWSEC2Utils.createApi(
                         identity,
                         token)) {            
-            for (PluginComputingInstanceModel instance : listModel) {
-                createInstance(awsApi, instance);
-                if(instance.getId() != null && !instance.getId().isEmpty()) {
-                    try {
-                        FirewallUtils.createRulesForInstance(awsApi, instance);
-                    } catch(final Exception e) {
-                        e.printStackTrace();
-                    }
+            createInstance(awsApi, model);
+            if(model.getId() != null && !model.getId().isEmpty()) {
+                try {
+                    FirewallUtils.createRulesForInstance(awsApi, model);
+                } catch(final Exception e) {
+                    e.printStackTrace();
                 }
             }
             return ResponseEntity.ok(
-                    Body.create(listModel));            
+                    Body.create(model));            
         }
     }     
 

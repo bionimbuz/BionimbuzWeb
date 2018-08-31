@@ -1,7 +1,6 @@
 package app.models;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -41,18 +40,14 @@ public class PluginComputingInstanceModel extends Body<PluginComputingInstanceMo
         this.creationDate = creationDate;
     }
 
-    public static List<String> generateUniqueNames(
-            List<PluginComputingInstanceModel> currentZones, int size, final String prefix) {
-
-        List<String> res = new ArrayList<>();
-        Set<Integer> setOfNameIds = getSetOfCurrentIds(currentZones, prefix);
+    public static String generateUniqueName(
+            List<PluginComputingInstanceModel> currentInstances,
+            final String prefix) {
+        Set<Integer> setOfNameIds = getSetOfCurrentIds(currentInstances, prefix);
 
         int newId = setOfNameIds.size();
-        for(int i=0; i<size; i++) {
-            while(setOfNameIds.contains(++newId));
-            res.add(generateNameForId(newId, prefix));
-        }
-        return res;
+        while(setOfNameIds.contains(++newId));
+        return generateNameForId(newId, prefix);
     }
 
     public static String generateNameForId(final Integer id, final String prefix) {

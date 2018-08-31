@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import app.common.FirewallUtils;
 import app.common.GlobalConstants;
 import app.common.GoogleComputeEngineUtils;
-import app.common.Pair;
+import app.common.utils.StringUtils;
 import app.models.Body;
 import app.models.PluginComputingInstanceModel;
 import app.models.PluginComputingRegionModel;
@@ -40,17 +40,17 @@ public class ComputingController extends AbstractComputingController {
      */
 
     @Override
-    protected ResponseEntity<Body<List<PluginComputingInstanceModel>>> createInstances(
+    protected ResponseEntity<Body<PluginComputingInstanceModel>> createInstance(
             final String token,
             final String identity,
-            final List<PluginComputingInstanceModel> listModel) throws Exception {
+            final PluginComputingInstanceModel model) throws Exception {
         try (
              GoogleComputeEngineApi googleApi = GoogleComputeEngineUtils.createApi(
                      identity,
                      token)) {
-            final List<PluginComputingInstanceModel> res = listModel;
-            FirewallUtils.createRulesForInstances(googleApi, listModel);
-            this.createInstances(googleApi, listModel);
+            final PluginComputingInstanceModel res = model;
+            FirewallUtils.createRulesForInstance(googleApi, model);
+            this.createInstances(googleApi, model);
             return ResponseEntity.ok(
                     Body.create(res));
         }
@@ -223,80 +223,42 @@ public class ComputingController extends AbstractComputingController {
 
     protected void createInstances(
             final GoogleComputeEngineApi googleApi,
-            final List<PluginComputingInstanceModel> instances) throws Exception {
+            final PluginComputingInstanceModel instanceModel) throws Exception {
 
         try {
-            final List<Pair<PluginComputingInstanceModel, Operation>> operations = new ArrayList<>();
-            for (final PluginComputingInstanceModel instance : instances) {
-                operations.add(new Pair<>(instance, null));
-            }
-
-            final Iterator<Pair<PluginComputingInstanceModel, Operation>> itOperations = operations.iterator();
-            int instancesToCreate = instances.size();
-            int attempts = CREATION_ATTEMPTS; // For concurrent users       
-            while ((attempts-- > 0) && (instancesToCreate > 0)) {
-                PluginComputingInstanceModel model;
-                Operation operation;
-                final List<String> newNames = PluginComputingInstanceModel.generateUniqueNames(
-                        this.getInstances(googleApi),
-                        instancesToCreate,
-                        GlobalConstants.BNZ_INSTANCE);
-                final Iterator<String> itNames = newNames.iterator();
-
-                while (itOperations.hasNext() && itNames.hasNext()) {
-                    final Pair<PluginComputingInstanceModel, Operation> modelOperation = itOperations.next();
-                    model = modelOperation.getLeft();
-                    if (!model.getName().isEmpty()) {
+            int attempts = 0; // For concurrent users and repeated names      
+            while (attempts++ < CREATION_ATTEMPTS) {
+                try {
+                    final String newName = PluginComputingInstanceModel.generateUniqueName(
+                            this.getInstances(googleApi),
+                            GlobalConstants.BNZ_INSTANCE);                
+                    if (!StringUtils.isEmpty(newName)) {
                         continue;
                     }
-                    model.setName(itNames.next());
-                    modelOperation.setRight(
-                            this.createInstance(googleApi, model));
-                }
-
-                instancesToCreate = 0;
-                for (final Pair<PluginComputingInstanceModel, Operation> modelOperation : operations) {
-                    model = modelOperation.getLeft();
-                    operation = modelOperation.getRight();
-                    try {
-                        GoogleComputeEngineUtils.waitOperation(googleApi, operation);
-                    } catch (final Exception e) {
-                        LOGGER.error(e.getMessage(), e);
-                        instancesToCreate++;
-                        model.setName("");
-                    }
+                    instanceModel.setName(newName);
+                    Operation operation = this.createInstance(googleApi, instanceModel);
+                    GoogleComputeEngineUtils.waitOperation(googleApi, operation);
+                } catch (final Exception e) {
+                    LOGGER.error(e.getMessage(), e);
+                    instanceModel.setName("");
                 }
             }
 
-            if (instancesToCreate > 0) {
-                throw new Exception("Reached the number of attempts to create instances. Operation aborted.");
+            if (StringUtils.isEmpty(instanceModel.getName())) {
+                throw new Exception("Reached the number of attempts to create instance. Operation aborted.");
             }
 
             // Update instance informations (external and internal IP, etc.)
-            for (final PluginComputingInstanceModel model : instances) {
-                final InstanceApi instanceApi = googleApi.instancesInZone(model.getZone());
-                final Instance instance = instanceApi.get(model.getName());
-                if (instance == null) {
-                    throw new Exception("Instance created does not exist anymore.");
-                }
-                this.updateInstanceModel(instance, model);
+            final InstanceApi instanceApi = googleApi.instancesInZone(instanceModel.getZone());
+            final Instance instanceFromApi = instanceApi.get(instanceModel.getName());
+            if (instanceFromApi == null) {
+                throw new Exception("Instance created does not exist anymore.");
             }
+            this.updateInstanceModel(instanceFromApi, instanceModel);
         } catch (final Exception e) {
-            // Delete instances already created
-            this.deleteInstances(googleApi, instances);
+            // Delete instance already created
+            this.deleteInstance(googleApi, instanceModel);
             throw e;
-        }
-    }
-
-    private void deleteInstances(
-            final GoogleComputeEngineApi googleApi,
-            final List<PluginComputingInstanceModel> instances) {
-
-        for (final PluginComputingInstanceModel instance : instances) {
-            if (instance.getName().isEmpty()) {
-                continue;
-            }
-            this.deleteInstance(googleApi, instance);
         }
     }
 
