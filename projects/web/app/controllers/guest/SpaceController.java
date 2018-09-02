@@ -10,7 +10,6 @@ import app.models.Body;
 import app.models.PluginStorageModel;
 import app.models.security.TokenModel;
 import common.constants.I18N;
-import common.utils.UserCredentialsReader;
 import controllers.CRUD.For;
 import controllers.Check;
 import controllers.adm.BaseAdminController;
@@ -20,6 +19,7 @@ import models.SpaceModel;
 import models.StorageRegionModel;
 import models.StorageRegionModel.StorageRegion;
 import models.UserModel;
+import models.VwCredentialModel;
 import play.Logger;
 import play.data.binding.Binder;
 import play.data.validation.Validation;
@@ -154,17 +154,23 @@ public class SpaceController extends BaseAdminController {
         PluginStorageModel spaceToCreate =
                 new PluginStorageModel(space.getName(), space.getRegionName());
 
-        UserCredentialsReader credentialReader =
-                new UserCredentialsReader(
-                        plugin,
-                        CredentialUsagePolicy.ONLY_OWNER);
-        for(String credential : credentialReader) {
+        List<VwCredentialModel> listCredentials = 
+                VwCredentialModel.searchForCurrentUserAndPlugin(
+                        plugin.getId(),
+                        CredentialUsagePolicy.ONLY_OWNER);   
+
+        for(VwCredentialModel vwCredential : listCredentials) {
+            
             try {
+                String credentialData = vwCredential
+                        .getCredentialData()
+                        .getContentAsString();
+                
                 TokenModel token;
                     token = Authorization.getToken(
                             plugin.getCloudType(),
                             plugin.getStorageWriteScope(),
-                            credential);
+                            credentialData);
 
                 Body<PluginStorageModel> body =
                         api.createSpace(
@@ -174,7 +180,8 @@ public class SpaceController extends BaseAdminController {
                 if(body == null || body.getContent() == null) {
                     continue;
                 }
-
+                
+                space.setCredential(vwCredential.getCredential());
                 return true;
             } catch (Exception e) {
                 Logger.warn(e, "Operation cannot be completed with credential [%s]", e.getMessage());

@@ -71,14 +71,27 @@ public class ExternalAccessController extends Controller {
         renderJSON(fileInfo);
     }
     
-    public static void upload(final Long id) {   
-        RemoteFileInfo fileInfo = new RemoteFileInfo();
+    public static void upload(final Long id) {           
         
-        fileInfo.setMethod("POST");
-        fileInfo.setName("file.txt");
-        fileInfo.setUrl("http://localhost:8080");
+        String identity = getIdentity();
+        InstanceModel instance = 
+                InstanceModel.findByIdentity(identity);
+        if(instance == null)
+            notFound("Instance not found.");
+
+        SpaceFileModel file = SpaceFileModel.findById(id);
+        if(file == null)
+            notFound("Space file not found.");
         
-        renderJSON(fileInfo);    
+        if(instance.getStatus() != STATUS.RUNNING) {
+            Logger.warn("File upload attempt while application not running, file id [%s].", id);
+            forbidden();
+        }
+        
+        RemoteFileInfo fileInfo = 
+                SpaceFileModel.getUploadFileInfo(file.getSpace(), file.getVirtualName());        
+        
+        renderJSON(fileInfo);
     }
     
     public static void refreshToken() {           
@@ -100,6 +113,11 @@ public class ExternalAccessController extends Controller {
                 InstanceModel.findByIdentity(identity);
         if(instance == null)
             notFound("Instance not found.");
+        if(instance.getStatus() == STATUS.STOPPED 
+            || instance.getStatus() == STATUS.FINISHED) {
+            Logger.warn("Attempt to refresh a status already stopped, instance [%s] ", instance.getId());
+            badRequest("Status cannot be updated.");
+        }
         
         ExecutionStatus status = new GsonBuilder().create().fromJson(
                 new InputStreamReader(request.body), ExecutionStatus.class);
@@ -107,6 +125,12 @@ public class ExternalAccessController extends Controller {
         instance.setPhase(status.getPhase());
         instance.setExecutionObservation(status.getErrorMessage());
         instance.save();
+    }
+    
+    public static String generateToken(final String identity) {
+        if(StringUtils.isEmpty(identity))
+            return null; 
+        return ACCESS_CHECKER.generateToken(identity);
     }
 
     /*

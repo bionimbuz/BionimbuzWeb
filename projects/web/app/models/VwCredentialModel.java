@@ -1,5 +1,6 @@
 package models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -7,6 +8,7 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Subselect;
@@ -21,6 +23,7 @@ import play.db.jpa.GenericModel;
 @Subselect(
         " SELECT DISTINCT"
         + "      C.id, "
+        + "      C.id as id_credential, "
         + "      C.credentialData, "
         + "      C.enabled, "
         + "      C.name,"
@@ -37,8 +40,8 @@ import play.db.jpa.GenericModel;
         + "")
 public class VwCredentialModel extends GenericModel {
 
-    @Id
     @NoBinding
+    @Id
     private Long id;
     private boolean enabled = true;
     @NoBinding
@@ -60,6 +63,9 @@ public class VwCredentialModel extends GenericModel {
     private EncryptedFileField credentialData;
     @Transient
     private List<GroupModel> listSharedGroups;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_credential")
+    private CredentialModel credential;
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Constructors
@@ -71,34 +77,39 @@ public class VwCredentialModel extends GenericModel {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Data access
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    public static List<VwCredentialModel> searchForCurrentUserAndPluginWithShared(
-            final Long idPlugin,
-            final CredentialUsagePolicy credentialUsage) {
-        String order = credentialUsage == CredentialUsagePolicy.OWNER_FIRST ?
-                            "DESC" : "ASC";
-        UserModel currentUser = BaseAdminController.getConnectedUser();
-        return find(
-              " SELECT vwCredential "
-            + " FROM VwCredentialModel vwCredential "
-            + " WHERE vwCredential.userShared.id = ?1 "
-            + "       AND vwCredential.plugin.id = ?2 "
-            + " ORDER BY vwCredential.owner " + order
-            + "          ,vwCredential.id",
-            currentUser.getId(), idPlugin).fetch();
-    }
     public static List<VwCredentialModel> searchForCurrentUserAndPlugin(
-            final Long idPlugin) {
-        UserModel currentUser = BaseAdminController.getConnectedUser();
-        return find(
-              " SELECT vwCredential "
-            + " FROM VwCredentialModel vwCredential "
-            + " WHERE vwCredential.userShared.id = ?1 "
-            + "       AND vwCredential.plugin.id = ?2 "
-            + "       AND vwCredential.owner = TRUE"
-            + " ORDER BY vwCredential.name",
-            currentUser.getId(), idPlugin).fetch();
-    }
+            final Long idPlugin,
+            final CredentialUsagePolicy credentialUsage) {             
 
+        UserModel currentUser = BaseAdminController.getConnectedUser();
+        
+        if(credentialUsage == CredentialUsagePolicy.OWNER_FIRST 
+                || credentialUsage == CredentialUsagePolicy.SHARED_FIRST) {            
+            String order = credentialUsage == CredentialUsagePolicy.OWNER_FIRST ?
+                    "DESC" : "ASC";  
+            return find(
+                  " SELECT vwCredential "
+                + " FROM VwCredentialModel vwCredential "
+                + " WHERE vwCredential.userShared.id = ?1 "
+                + "       AND vwCredential.plugin.id = ?2 "
+                + " ORDER BY vwCredential.owner " + order
+                + "          ,vwCredential.id",
+                currentUser.getId(), idPlugin).fetch();
+        } else if (credentialUsage == CredentialUsagePolicy.ONLY_OWNER 
+                || credentialUsage == CredentialUsagePolicy.ONLY_SHARED) {
+            boolean onlyOwner = 
+                    (credentialUsage == CredentialUsagePolicy.ONLY_OWNER);
+            return find(
+                  " SELECT vwCredential "
+                + " FROM VwCredentialModel vwCredential "
+                + " WHERE vwCredential.userShared.id = ?1 "
+                + "       AND vwCredential.plugin.id = ?2 "
+                + "       AND vwCredential.owner = ?3"
+                + " ORDER BY vwCredential.name",
+                currentUser.getId(), idPlugin, onlyOwner).fetch(); 
+        }
+        return new ArrayList<>();
+    }
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Getters and Setters
@@ -162,5 +173,11 @@ public class VwCredentialModel extends GenericModel {
     }
     public void setListSharedGroups(List<GroupModel> listSharedGroups) {
         this.listSharedGroups = listSharedGroups;
+    }
+    public CredentialModel getCredential() {
+        return credential;
+    }
+    public void setCredential(CredentialModel credential) {
+        this.credential = credential;
     }
 }

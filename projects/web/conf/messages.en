@@ -326,7 +326,7 @@ object.price=Price per Hour
 
 # ApplicationArgumentsModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-applicationArguments.arguments=Arguments
+applicationArguments=Arguments
 applicationArguments.inputs=Inputs
 applicationArguments.outputs=Outputs
 applicationArguments.space=Space

@@ -48,7 +48,9 @@
             #{field 'object.commandLine'}
             <label for="${field.id}">&{field.name}</label>
             <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
-                <label id="applicationLabel" style="font-weight: normal !important;${object.executionScriptEnabled ? '' : 'display: none;'}">application.sh</label>
+                <label id="applicationLabel" style="font-weight: normal !important;${object.executionScriptEnabled ? '' : 'display: none;'}">
+                    ${common.constants.SystemConstants.DEFAULT_APP_SCRIPT}
+                </label>
                 <input id="${field.id}" class="form-control" type="text" name="${field.name}" value="${field.value}" />
 	            #{ifError field.name}
 	                <span id="helpBlock2" class="help-block">${field.error.raw()}</span>

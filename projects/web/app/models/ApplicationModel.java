@@ -19,6 +19,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import app.common.utils.StringUtils;
+import common.constants.SystemConstants;
 import common.fields.validation.NetworkPortsCheck;
 import play.data.validation.CheckWith;
 import play.data.validation.MaxSize;
@@ -44,6 +45,8 @@ public class ApplicationModel extends GenericModel {
     @MinSize(3)
     @Column(length=1000)
     private String startupScript;
+    @Required
+    @Column(nullable=false)
     private Boolean executionScriptEnabled;
     @MaxSize(1000)
     @Column(length=1000)
@@ -103,6 +106,13 @@ public class ApplicationModel extends GenericModel {
     public void setFirewallTcpRules(String firewallTcpRules) {
         this.firewallTcpRules = firewallTcpRules;
     }     
+    @Transient
+    public String getCommandLineWithDefault() {
+        if(executionScriptEnabled) {
+            return SystemConstants.DEFAULT_APP_SCRIPT + " " + commandLine;
+        }
+        return commandLine;
+    }
     public String getCommandLine() {
         return commandLine;
     }

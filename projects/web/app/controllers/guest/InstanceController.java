@@ -11,7 +11,6 @@ import app.models.Body;
 import app.models.PluginComputingZoneModel;
 import app.models.security.TokenModel;
 import common.constants.I18N;
-import common.utils.UserCredentialsReader;
 import controllers.CRUD.For;
 import controllers.Check;
 import controllers.adm.BaseAdminController;
@@ -22,6 +21,7 @@ import models.ApplicationFileOutputModel;
 import models.ApplicationFileOutputModel.ApplicationOutput;
 import models.ExecutorModel;
 import models.InstanceModel;
+import models.InstanceModel.CredentialUsagePolicy;
 import models.InstanceTypeModel;
 import models.InstanceTypeModel.InstanceType;
 import models.InstanceTypeModel.InstanceTypeZone;
@@ -31,6 +31,7 @@ import models.RegionModel;
 import models.RegionModel.Region;
 import models.SpaceFileModel;
 import models.SpaceModel;
+import models.VwCredentialModel;
 import models.VwSpaceModel;
 import play.Logger;
 import play.data.binding.Binder;
@@ -189,52 +190,43 @@ public class InstanceController extends BaseAdminController {
     }
 
     public static void delete(final Long id) throws Exception {
+        
         final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);
         final InstanceModel object = InstanceModel.findById(id);
         notFoundIfNull(object);
+        
         try {
             ComputingApi api = new ComputingApi(object.getPlugin().getUrl());
+            String credentialData = 
+                    object.getCredential().getCredentialData().getContentAsString();
+            TokenModel token;
+                token = Authorization.getToken(
+                        object.getPlugin().getCloudType(),
+                        object.getPlugin().getInstanceWriteScope(),
+                        credentialData);
+
+            Body<Boolean> body =
+                    api.deleteInstance(
+                            token.getToken(),
+                            token.getIdentity(),
+                            object.getRegionName(),
+                            object.getZoneName(),
+                            object.getCloudInstanceName());
             
-            UserCredentialsReader credentialReader =
-                    new UserCredentialsReader(
-                            object.getPlugin(),
-                            object.getCredentialUsage());
-
-            try {
-                for(String credential : credentialReader) {
-
-                    TokenModel token;
-                        token = Authorization.getToken(
-                                object.getPlugin().getCloudType(),
-                                object.getPlugin().getInstanceWriteScope(),
-                                credential);
-
-                    Body<Boolean> body =
-                            api.deleteInstance(
-                                    token.getToken(),
-                                    token.getIdentity(),
-                                    object.getRegionName(),
-                                    object.getZoneName(),
-                                    object.getCloudInstanceName());
-                    
-                    if(body.getContent() == null || 
-                            !body.getContent()) {
-                        continue;
-                    }
-                    break;
-                }
-            } catch (Exception e) {
-                Logger.warn(e, "Operation cannot be completed with credential [%s]", e.getMessage());     
-            }           
-            
-            object._delete();
+            if(body != null 
+                    && body.getContent() != null 
+                    && body.getContent()) {
+                object.delete();
+                flash.success(Messages.get("crud.deleted", type.modelName));
+                redirect(request.controller + ".list");
+            }        
         } catch (final Exception e) {
-            flash.error(Messages.get("crud.delete.error", type.modelName));
-            redirect(request.controller + ".show", object._key());
+            Logger.warn(e, "Error deleting instance [%s]", e.getMessage());
         }
-        flash.success(Messages.get("crud.deleted", type.modelName));
-        redirect(request.controller + ".list");
+        
+        flash.error(Messages.get("crud.delete.error", type.modelName));
+        redirect(request.controller + ".show", object._key());
     }
 
     public static List<Region> getInstanceRegions(final Long pluginId) {
@@ -261,33 +253,47 @@ public class InstanceController extends BaseAdminController {
     }
 
     private static List<String> getZones(final PluginModel plugin, final RegionModel region) {
-        List<String> res = new ArrayList<>();
-        ComputingApi api = new ComputingApi(plugin.getUrl());
-        UserCredentialsReader credentialReader =
-                new UserCredentialsReader(plugin);
+        
         try {
-            for(String credential : credentialReader) {
+            
+            List<String> res = new ArrayList<>();
+            ComputingApi api = new ComputingApi(plugin.getUrl());
+            
+            List<VwCredentialModel> listCredentials = 
+                    VwCredentialModel.searchForCurrentUserAndPlugin(
+                            plugin.getId(),
+                            CredentialUsagePolicy.OWNER_FIRST);   
 
-                TokenModel token;
-                    token = Authorization.getToken(
-                            plugin.getCloudType(),
-                            plugin.getInstanceReadScope(),
-                            credential);
+            for(VwCredentialModel vwCredential : listCredentials) {
 
-                Body<List<PluginComputingZoneModel>> body =
-                        api.listRegionZones(
-                                token.getToken(),
-                                token.getIdentity(),
-                                region.getName());
-                if(body.getContent() == null || body.getContent().isEmpty()) {
-                    continue;
+                try {
+                    String credentialData = vwCredential
+                            .getCredentialData()
+                            .getContentAsString();
+                    
+                    TokenModel token;
+                        token = Authorization.getToken(
+                                plugin.getCloudType(),
+                                plugin.getInstanceReadScope(),
+                                credentialData);
+    
+                    Body<List<PluginComputingZoneModel>> body =
+                            api.listRegionZones(
+                                    token.getToken(),
+                                    token.getIdentity(),
+                                    region.getName());
+                    
+                    if(body == null || body.getContent() == null || body.getContent().isEmpty()) {
+                        continue;
+                    }
+                    for(PluginComputingZoneModel zone : body.getContent()) {
+                        res.add(zone.getName());
+                    }
+                    return res;
+                } catch (Exception e) {
+                    Logger.warn(e, "Operation cannot be completed with credential [%s]", e.getMessage());
                 }
-                for(PluginComputingZoneModel zone : body.getContent()) {
-                    res.add(zone.getName());
-                }
-                return res;
             }
-
         } catch (Exception e) {
             Logger.error(e, "Error searching zones [%s]", e.getMessage());
         }

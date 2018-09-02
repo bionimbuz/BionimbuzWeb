@@ -44,6 +44,7 @@ public class SpaceModel extends GenericModel {
     private boolean alocationAfterCreation;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
+    @NoBinding
     private CredentialModel credential;
 
     // ---- Redundant Data for price table exclusion/update

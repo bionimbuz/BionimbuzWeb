@@ -82,91 +82,30 @@
                 #{/field}
             #{/if}
                         
-            #{if executorSelected.countInputs() > 0}            
-            
+            #{if executorSelected.countInputs() > 0}
                 <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
                     <label>&{'applicationArguments.inputs'}</label>
-                </div>
-                               
-                #{field 'applicationInputFiles'}
-                
-                    #{list items:1..executorSelected.countInputs(), as:'i'}                
-                    <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
-                    
-                        <div class="col-md-4 no-bootstrap-padding">                    
-                            <label style="font-weight: normal;">#${i}: &{'applicationArguments.space'}</label>
-                            <div class="nav-container">
-                                <select class="form-control nav select-space-input">
-                                    <option value="">&{'crud.none'}</option>
-                                    %{ listSpaces.each() { }%
-                                    %{
-                                        selected = false;
-                                    }%
-                                    <option value="${it.id}" ${selected ? 'selected="true"'.raw() : ''}>${it.name}</option>
-                                    %{ } }%
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-7 col-md-offset-1 no-bootstrap-padding">                    
-                            <label style="font-weight: normal;">&{'applicationArguments.file'}</label>
-                            <div class="nav-container">
-                                <select name="${field.name}[${i-1}]" id="${field.id}" class="form-control nav select-file-input">
-                                    <option value="">&{'crud.none'}</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    #{/list}
-                #{/field}
+                </div>                                
+                <div id="divInputs">                                
+                </div>                
             #{/if}
             
-            #{if executorSelected.countOutputs() > 0}            
-            
+            #{if executorSelected.countOutputs() > 0} 
                 <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
                     <label>&{'applicationArguments.outputs'}</label>
-                </div>
-                               
-                #{field 'applicationOutputFiles'}
-                
-                    #{list items:1..executorSelected.countOutputs(), as:'i'}                
-                    <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
-                    
-                        <div class="col-md-4 no-bootstrap-padding">                    
-                            <label style="font-weight: normal;">#${i}: &{'applicationArguments.space'}</label>
-                            <div class="nav-container">
-                                <select name="${field.name}[${i-1}].spaceId" class="form-control nav select-space-output">
-                                    <option value="">&{'crud.none'}</option>
-                                    %{ listSpaces.each() { }%
-                                    %{
-                                        selected = false;
-                                    }%
-                                    <option value="${it.id}" ${selected ? 'selected="true"'.raw() : ''}>${it.name}</option>
-                                    %{ } }%
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-7 col-md-offset-1 no-bootstrap-padding">                    
-                            <label style="font-weight: normal;">&{'applicationArguments.file'}</label>
-                            <input name="${field.name}[${i-1}].name" class="form-control name-file-output" type="text" value="" />
-                            #{ifError field.name}
-                                <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
-                            #{/ifError}                       
-                        </div>
-                    </div>
-                    #{/list}
-                #{/field}
+                </div>                              
+                <div id="divOutputs">                                
+                </div>    
             #{/if}                       
                        
             <div class="form-group row">
                 <label for="commandLine">&{'object.commandLine'}</label>
-                <textarea readonly class="form-control" rows="2">${executorSelected.commandLine}</textarea>                            
+                <textarea readonly class="form-control" rows="2">${executorSelected.getCommandLineWithDefault()}</textarea>                            
             </div>        
                        
             <div class="form-group row">
                 <label for="commandLine">&{'applicationArguments.commandLine.result'}</label>
-                <textarea readonly data-command-line="${executorSelected.commandLine}" 
+                <textarea readonly data-command-line="${executorSelected.getCommandLineWithDefault()}" 
                         id="commandLine" class="form-control" rows="5"></textarea>
             </div>        
             
@@ -369,11 +308,117 @@
 #{/form}
 </div>
 
+#{field 'applicationInputFiles'}                        
+<div style="display:none;" id="divInputTemplate" class="form-group row">                    
+    <div class="col-md-4 no-bootstrap-padding">                    
+        <label style="font-weight: normal;">&{'applicationArguments.space'}</label>
+        <div class="nav-container">
+            <select class="form-control nav select-space-input">
+                <option value="">&{'crud.none'}</option>
+                %{ listSpaces.each() { }%
+                %{
+                    selected = false;
+                }%
+                <option value="${it.id}" ${selected ? 'selected="true"'.raw() : ''}>${it.name}</option>
+                %{ } }%
+            </select>
+        </div>
+    </div>
+    <div class="col-md-7 col-md-offset-1 no-bootstrap-padding">                    
+        <label style="font-weight: normal;">&{'applicationArguments.file'}</label>
+        <div class="nav-container">
+            <select name="${field.name}[]" id="${field.id}" class="form-control nav select-file-input">
+                <option value="">&{'crud.none'}</option>
+            </select>
+        </div>
+    </div>                        
+</div>
+#{/field}
+
+#{field 'applicationOutputFiles'}
+<div style="display:none;" id="divOutputTemplate" class="form-group row">
+    <div class="col-md-4 no-bootstrap-padding">                    
+        <label style="font-weight: normal;">&{'applicationArguments.space'}</label>
+        <div class="nav-container">
+            <select name="${field.name}[].spaceId" class="form-control nav select-space-output">
+                <option value="">&{'crud.none'}</option>
+                %{ listSpaces.each() { }%
+                %{
+                    selected = false;
+                }%
+                <option value="${it.id}" ${selected ? 'selected="true"'.raw() : ''}>${it.name}</option>
+                %{ } }%
+            </select>
+        </div>
+    </div>
+    
+    <div class="col-md-7 col-md-offset-1 no-bootstrap-padding">                    
+        <label style="font-weight: normal;">&{'applicationArguments.file'}</label>
+        <input name="${field.name}[].name" class="form-control name-file-output" type="text" value="" />
+        #{ifError field.name}
+            <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+        #{/ifError}                       
+    </div>
+</div>
+#{/field}
+
 #{set 'moreScripts' }
 <script type="text/javascript">
 
-$(function(){
+#{if executorSelected != null}
+var countInputs = ${executorSelected.countInputs()}; 
+var countOutputs = ${executorSelected.countOutputs()};
 
+if(countInputs > 0) {
+    addEmptyInput();
+}
+if(countOutputs > 0) {
+    addEmptyOutput();
+}
+#{/if}
+
+function addEmptyInput(){
+    var inputDivs = $('.divInputTemplateClass');
+	var lengthInputs = inputDivs.length;
+	if(lengthInputs >= countInputs) {
+		return;
+	}		
+    if(lengthInputs > 0){
+    	var inputFileSelected = 
+    		inputDivs.last().find(".select-file-input option:selected");    	
+    	if(!inputFileSelected.val()) {
+    	    return;
+    	}	
+    }
+    var divInput = $('#divInputTemplate').clone(true);  
+    divInput.addClass('divInputTemplateClass');
+    divInput.removeAttr('id');
+    $('#divInputs').append(divInput);
+    divInput.show();
+}
+
+function addEmptyOutput(){
+    var outputDivs = $('.divOutputTemplateClass');
+    var lengthOutputs = outputDivs.length;
+    if(lengthOutputs >= countOutputs) {
+        return;
+    }       
+    if(lengthOutputs > 0){
+        var outputFileSelected = 
+        	outputDivs.last().find(".name-file-output");        
+        if(!outputFileSelected.val()) {
+            return;
+        }   
+    }
+    var divOutput = $('#divOutputTemplate').clone(true);  
+    divOutput.addClass('divOutputTemplateClass');
+    divOutput.removeAttr('id');
+    $('#divOutputs').append(divOutput);
+    divOutput.show();
+}
+
+$(function(){
+    
     $('#tableInstanceTypes').DataTable(
     {
         "paging":   false,
@@ -513,7 +558,7 @@ $(function(){
         var commandLine = $('#commandLine').data('command-line');      
         
         // Replace option arguments
-        var arguments = $('#applicationArguments_arguments').val();        
+        var arguments = $('#applicationArguments').val();        
         commandLine = commandLine.replace("{a}", arguments);
         
         // Replace input file arguments
@@ -540,7 +585,7 @@ $(function(){
     
     updateCommandLineArea();
     
-    $('#applicationArguments_arguments').on('input', function(){
+    $('#applicationArguments').on('input', function(){
         updateCommandLineArea();
     });
     
@@ -550,8 +595,33 @@ $(function(){
     
     $('.name-file-output').on('input', function(){
         updateCommandLineArea();
-    });
+        
+        var selected = $(this).val();        
+        
+        var selectedSpace = 
+        	$(this).closest('.divOutputTemplateClass').find('.select-space-output option:selected');
+        
+        if(!selected && selectedSpace) {
+            $(this).closest('.divOutputTemplateClass').remove();
+        }          
+        addEmptyOutput();
+    });    
     
+    $('.select-space-output').change(function(){     
+        var selected = $(this).val();        
+        if(!selected) {
+            $(this).closest('.divOutputTemplateClass').remove();
+        }          
+        addEmptyOutput();
+    });
+
+    $('.select-file-input').change(function(){      
+        var selected = $(this).val();        
+        if(!selected) {
+            $(this).closest('.divInputTemplateClass').remove();
+        }          
+        addEmptyInput();
+    });
     
     $('.select-space-input').change(function(){
        
@@ -563,7 +633,12 @@ $(function(){
         
         updateCommandLineArea();
 
-        spaceId = $(this).val();
+        spaceId = $(this).val();    
+        if(!spaceId) {
+            $(this).closest('.divInputTemplateClass').remove();
+        }          
+        addEmptyInput();
+        
         var search = #{jsRoute @guest.SpaceFileController.searchFilesForSpace() /};
         if(spaceId == ""){
             hidePleaseWait();

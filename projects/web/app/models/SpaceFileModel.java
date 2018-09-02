@@ -178,15 +178,19 @@ public class SpaceFileModel extends GenericModel {
         return res;
     }    
 
-    public static RemoteFileInfo getUploadFileInfo(final Long spaceId, final String fileName) {
+    public static RemoteFileInfo getUploadFileInfo(final Long spaceId, final String fileName) {        
+        SpaceModel space = SpaceModel.findById(spaceId);
+        if(space == null)
+            return null;
+        String virtualName = SpaceFileModel.generateVirtualName(fileName);
+        return getUploadFileInfo(space, virtualName);
+    }
+    
+    public static RemoteFileInfo getUploadFileInfo(SpaceModel space, final String virtualName) {
 
         RemoteFileInfo res = null;
         
         try {
-            
-            SpaceModel space = SpaceModel.findById(spaceId);
-            if(space == null)
-                return null;
     
             PluginModel plugin = space.getPlugin();
             StorageApi api = new StorageApi(plugin.getUrl());
@@ -201,7 +205,6 @@ public class SpaceFileModel extends GenericModel {
                     plugin.getStorageWriteScope(),
                     credentialStr);
 
-            String virtualName = SpaceFileModel.generateVirtualName(fileName);
             Body<PluginStorageFileUploadModel> body =
                     api.getUploadUrl(space.getName(), virtualName);
             PluginStorageFileUploadModel content =
