@@ -18,7 +18,6 @@ import jobs.InstanceCreationJob;
 import models.ApplicationArgumentsModel;
 import models.ApplicationFileInputModel;
 import models.ApplicationFileOutputModel;
-import models.ApplicationFileOutputModel.ApplicationOutput;
 import models.ExecutorModel;
 import models.InstanceModel;
 import models.InstanceModel.CredentialUsagePolicy;
@@ -50,7 +49,8 @@ public class InstanceController extends BaseAdminController {
     private static final String REGION_SELECTED = "regionSelected";
     private static final String REGION_SELECTED_ID = REGION_SELECTED + ".id";
 
-    public static void blank(ExecutorModel executorSelected) throws Exception {
+    public static void blank(
+            ExecutorModel executorSelected) throws Exception {
         final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);
         String executorId = params.get(EXECUTOR_SELECTED_ID);
@@ -66,75 +66,24 @@ public class InstanceController extends BaseAdminController {
         } catch (final TemplateNotFoundException e) {
             render("CRUD/blank.html", type, object, executorSelected, listSpaces);
         }
-    }
-    
-    private static ApplicationArgumentsModel bindApplicationArguments() {
-        
-        ApplicationArgumentsModel res = new ApplicationArgumentsModel();     
-
-        // Process option arguments
-        final String applicationArguments = "";
-        Binder.bindBean(params.getRootParamNode(), "applicationArguments", applicationArguments);   
-        res.setArguments(applicationArguments);
-        
-        // Process input files
-        Integer [] applicationInputFiles = new Integer [] {};
-        Binder.bindBean(params.getRootParamNode(), "applicationInputFiles", applicationInputFiles);   
-        
-        List<ApplicationFileInputModel> inputFiles = new ArrayList();
-        for(int i = 0; i<applicationInputFiles.length; i++) {
-            Integer spaceFileId = applicationInputFiles[i];
-            if(spaceFileId == null)
-                continue;            
-            SpaceFileModel spaceFile = 
-                    SpaceFileModel.findById(spaceFileId);            
-            ApplicationFileInputModel inputFile = 
-                    new ApplicationFileInputModel();            
-            inputFile.setOrder(i);
-            inputFile.setSpaceFile(spaceFile);
-            inputFiles.add(inputFile);            
-        }
-        res.setApplicationInputFiles(inputFiles);
-        
-        // Process output files
-        ApplicationOutput [] applicationOutputFiles = new ApplicationOutput [] {};
-        Binder.bindBean(params.getRootParamNode(), "applicationOutputFiles", applicationOutputFiles);   
-
-        List<ApplicationFileOutputModel> outputFiles = new ArrayList(); 
-        for(int i = 0; i<applicationOutputFiles.length; i++) {
-            ApplicationOutput spaceOutputFile = applicationOutputFiles[i];
-            if(spaceOutputFile == null 
-                || spaceOutputFile.getSpaceId() == null
-                || StringUtils.isEmpty(spaceOutputFile.getName())) {
-                continue;            
-            }
-            SpaceModel space = 
-                    SpaceModel.findById(spaceOutputFile.getSpaceId());         
-            
-            SpaceFileModel spaceFile = new SpaceFileModel();
-            spaceFile.setName(spaceOutputFile.getName());
-            spaceFile.setSpace(space);
-            spaceFile.setVirtualName(SpaceFileModel.generateVirtualName(spaceOutputFile.getName()));
-            
-            ApplicationFileOutputModel outputFile = 
-                    new ApplicationFileOutputModel();            
-            outputFile.setOrder(i);
-            outputFile.setSpaceFile(spaceFile);
-            outputFiles.add(outputFile);            
-        }
-        res.setApplicationOutputFiles(outputFiles);
-        
-        return res;
-    }
+    }        
 
     public static void create(
             RegionModel regionSelected,
             String zoneSelected,
-            InstanceTypeModel instanceTypeSelected) throws Exception {
+            InstanceTypeModel instanceTypeSelected,
+            final String applicationArguments,
+            final List<Long> applicationInputFiles,
+            final List<Long> applicationOutputFileSpaces,
+            final List<String> applicationOutputFileNames) throws Exception {
 
         final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);        
-        ApplicationArgumentsModel arguments = bindApplicationArguments();
+        ApplicationArgumentsModel arguments = bindApplicationArguments(
+                applicationArguments,
+                applicationInputFiles,
+                applicationOutputFileSpaces,
+                applicationOutputFileNames);
         final InstanceModel object = new InstanceModel();
         Binder.bindBean(params.getRootParamNode(), "object", object);
         validation.valid(object);        
@@ -173,6 +122,7 @@ public class InstanceController extends BaseAdminController {
         object.setCores(instanceTypeSelected.getCores());
         object.setMemory(instanceTypeSelected.getMemory());
         object.setCreationDate(new Date());        
+        object.setApplicationArguments(arguments);
 
         object._save();
         if(object.isExecutionAfterCreation()) {
@@ -250,6 +200,64 @@ public class InstanceController extends BaseAdminController {
             Logger.error(e, "Error searching regions [%s]", e.getMessage());
             notFound(Messages.get(I18N.not_found));
         }
+    }
+    
+    private static ApplicationArgumentsModel bindApplicationArguments(
+            final String applicationArguments,
+            final List<Long> applicationInputFiles,
+            final List<Long> applicationOutputFileSpaces,
+            final List<String> applicationOutputFileNames) {
+        
+        ApplicationArgumentsModel res = new ApplicationArgumentsModel();     
+
+        // Process option arguments
+        res.setArguments(applicationArguments);
+        
+        // Process input files
+        List<ApplicationFileInputModel> inputFiles = new ArrayList();
+        for(int i = 0; i<applicationInputFiles.size(); i++) {
+            Long spaceFileId = applicationInputFiles.get(i);
+            if(spaceFileId == null)
+                continue;            
+            SpaceFileModel spaceFile = 
+                    SpaceFileModel.findById(spaceFileId);            
+            ApplicationFileInputModel inputFile = 
+                    new ApplicationFileInputModel();            
+            inputFile.setOrder(i);
+            inputFile.setSpaceFile(spaceFile);
+            inputFiles.add(inputFile);            
+        }
+        res.setApplicationInputFiles(inputFiles);
+        
+        // Process output files
+        List<ApplicationFileOutputModel> outputFiles = new ArrayList(); 
+        for(int i = 0; i<applicationOutputFileSpaces.size(); i++) {
+            Long spaceId = applicationOutputFileSpaces.get(i);
+            if(spaceId == null)
+                continue;    
+            SpaceModel space = 
+                    SpaceModel.findById(spaceId);                  
+            if(i >= applicationOutputFileNames.size())
+                break;
+            
+            String fileName = applicationOutputFileNames.get(i);
+            if(StringUtils.isEmpty(fileName))
+                break;
+            
+            SpaceFileModel spaceFile = new SpaceFileModel();
+            spaceFile.setName(fileName);
+            spaceFile.setSpace(space);
+            
+            ApplicationFileOutputModel outputFile = 
+                    new ApplicationFileOutputModel();        
+
+            outputFile.setOrder(i);
+            outputFile.setSpaceFile(spaceFile);
+            outputFiles.add(outputFile);            
+        }
+        res.setApplicationOutputFiles(outputFiles);
+        
+        return res;
     }
 
     private static List<String> getZones(final PluginModel plugin, final RegionModel region) {

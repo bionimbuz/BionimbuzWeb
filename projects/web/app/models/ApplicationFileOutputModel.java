@@ -14,24 +14,6 @@ public class ApplicationFileOutputModel extends ApplicationFileModel {
     @JoinColumn(nullable = false)
     private ApplicationArgumentsModel applicationArguments;
     
-    public static class ApplicationOutput {
-        private Integer spaceId;
-        private String name;
-        
-        public final Integer getSpaceId() {
-            return spaceId;
-        }
-        public final void setSpaceId(Integer spaceId) {
-            this.spaceId = spaceId;
-        }
-        public final String getName() {
-            return name;
-        }
-        public final void setName(String name) {
-            this.name = name;
-        }
-    }
-
     public ApplicationFileOutputModel() {        
     }
     

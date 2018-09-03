@@ -63,7 +63,7 @@ public class InstanceModel extends GenericModel {
     @NoBinding
     private String executionObservation;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = true)
     private CredentialModel credential;
 
     // ---- Redundant Data for price table exclusion/update
