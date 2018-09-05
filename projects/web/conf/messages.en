@@ -306,6 +306,7 @@ object.status=Status
 WORKFLOW_STATUS.EDITING=(editing)
 WORKFLOW_STATUS.RUNNING=Running...
 WORKFLOW_STATUS.STOPPED=Stopped
+workflow.editor=Workflow Editor
 
 # SpaceModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
