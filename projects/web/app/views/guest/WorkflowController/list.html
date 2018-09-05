@@ -1,0 +1,19 @@
+
+#{extends 'CRUD/layout.html' /}
+#{set title:messages.get('crud.list.title', type.name) /}
+
+<div class="row crud-title">
+    <h1 class="col-xs-12"> &{'crud.list.title', type.name} </h1>
+    <pre class="col-xs-12"> &{'crud.list.title.desc', type.name+'.desc'} </pre>
+</div>
+
+<br>
+
+#{crud.searchAndAdd /}
+
+<br>
+
+#{crud.table fields: ['name', 'status']}
+#{/crud.table}
+
+#{crud.pagination /}

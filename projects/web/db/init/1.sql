@@ -35,7 +35,7 @@ INSERT INTO tb_menu (id, parentmenu_id, menuorder, path, name, iconclass) VALUES
    ,(12,   10,  2, '/list/space/files',     'menu.files',                       NULL)
    ,(13, NULL,  7, '#',                     'menu.execution',                   'glyphicon glyphicon-screenshot')
    ,(14,   13,  1, '/list/instances',       'menu.instances',                   NULL)
-   ,(15,   13,  2, '#',                     'menu.workflows',                   NULL)
+   ,(15,   13,  2, '/list/workflows',       'menu.workflows',                   NULL)
    ,(16, NULL,  8, '/adm/list/settings',    'menu.settings',                   'glyphicon glyphicon-wrench')
 ;
 

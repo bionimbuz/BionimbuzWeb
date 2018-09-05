@@ -135,6 +135,9 @@ ExecutorController.desc=Executors of applications
 InstanceController=Instances
 InstanceController.desc=Machine instances created
 
+WorkflowController=Workflows
+WorkflowController.desc=Workflows with instances running jobs
+
 SpaceController=Spaces
 SpaceController.desc=Spaces to upload/download files
 
@@ -295,6 +298,14 @@ object.regionName=Region
 object.creationDate=Creation Date
 tab.application=Application Arguments
 tab.cloud=Cloud Settings
+
+# WorkflowModel
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+WorkflowModel=Workflow
+object.status=Status
+WORKFLOW_STATUS.EDITING=(editing)
+WORKFLOW_STATUS.RUNNING=Running...
+WORKFLOW_STATUS.STOPPED=Stopped
 
 # SpaceModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

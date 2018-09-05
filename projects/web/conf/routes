@@ -126,6 +126,14 @@ DELETE  /instances/{id}                         guest.InstanceController.delete
 GET     /instances                              guest.InstanceController.blank
 POST    /instances                              guest.InstanceController.create
 
+# WorkflowController
+GET     /list/workflows                         guest.WorkflowController.list
+GET     /workflows/{id}                         guest.WorkflowController.show
+PUT     /workflows/{id}                         guest.WorkflowController.save
+DELETE  /workflows/{id}                         guest.WorkflowController.delete
+GET     /workflows                              guest.WorkflowController.blank
+POST    /workflows                              guest.WorkflowController.create
+
 # SettingController
 GET     /adm/list/settings                      adm.SettingController.list
 GET     /adm/settings/{id}                      adm.SettingController.show

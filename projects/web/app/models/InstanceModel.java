@@ -65,6 +65,8 @@ public class InstanceModel extends GenericModel {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = true)
     private CredentialModel credential;
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    private WorkflowModel workflow;
 
     // ---- Redundant Data for price table exclusion/update
     @NoBinding
@@ -227,5 +229,11 @@ public class InstanceModel extends GenericModel {
     }
     public void setCredential(CredentialModel credential) {
         this.credential = credential;
+    }
+    public WorkflowModel getWorkflow() {
+        return workflow;
+    }
+    public void setWorkflow(WorkflowModel workflow) {
+        this.workflow = workflow;
     }
 }
