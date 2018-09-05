@@ -51,6 +51,38 @@
     border: 3px solid #BBB;
 }
 
+.flowchart-operator .flowchart-operator-title {    
+    text-overflow: unset !important;
+    white-space: normal !important;
+    border-radius: 15px 15px 0 0;
+    text-align: center;
+}
+
+.flowchart-operator {
+    width: 80px;
+    border-radius: 16px;
+    padding-left: 1px;
+}
+
+.flowchart-operator .flowchart-operator-inputs-outputs {
+    color: white;
+}
+
+.terminal-operator {
+    background-color: #aaacb3;
+}
+
+.terminal-operator  .flowchart-operator-inputs-outputs {
+    color: #aaacb3;
+}
+
+.terminal-operator .flowchart-operator-title {
+    background-color: #5a6a88;
+    color: white;
+
+}
+    
+
 </style>        
 #{/set}
 
@@ -65,40 +97,6 @@
 <script type="text/javascript">
 
 $(function(){
-
-var data = {
-  operators: {
-    operator1: {
-      top: 20,
-      left: 20,
-      properties: {
-        title: 'Fake Application 1',
-        inputs: {},
-        outputs: {
-          outs: {
-            label: '&nbsp;',
-            multiple: true
-          }
-        }
-      }
-    },
-    operator2: {
-      top: 20,
-      left: 300,
-      properties: {
-        title: 'Fake Application 2',
-        inputs: {
-          ins: {
-            label: '&nbsp;',
-            multiple: true
-          }
-        },
-        outputs: {}
-      }
-    },
-  }
-};	
-	
 
 var $flowchart = $('#workflow_editor');
 var $container = $flowchart.parent();
@@ -127,46 +125,86 @@ $container.on('mousewheel.focal', function( e ) {
         focal: e
     });
 });
-
 var data = {
-  operators: {
-    operator1: {
-      top: cy - 100,
-      left: cx - 200,
-      properties: {
-        title: 'Fake Application 1 aaaaaaa',
-        inputs: {},
-        outputs: {
-          output_1: {
-            label: 'Output 1',
-          }
-        }
-      }
-    },
-    operator2: {
-      top: cy,
-      left: cx + 140,
-      properties: {
-        title: 'Fake Application 2',
-        inputs: {
-          input_1: {
-            label: '',
-          },
-          input_2: {
-            label: '',
-          },
+    operators: {
+        start_operator: {
+            top: cy - 100,
+            left: cx - 200,
+            properties: {
+                title: 'Start',
+                inputs: {},
+                outputs: {
+                    outs: {
+                        label: ".",
+                        multiple: true
+                    }
+                }
+            }
         },
-        outputs: {}
-      }
-    },
-  }
+        end_operator: {
+            top: cy,
+            left: cx + 140,
+            properties: {
+                title: 'End',
+                inputs: {
+                    ins: {
+                        label: '.',
+                        multiple: true
+                    }
+                },
+                outputs: {}
+            }
+        },
+        normal_operator1: {
+            top: cy -100,
+            left: cx,
+            properties: {
+                title: 'Normal Operator',
+                inputs: {
+                    ins: {
+                        label: '.',
+                        multiple: true
+                    }
+                },
+                outputs: {
+                    outs: {
+                        label: ".",
+                        multiple: true
+                    }
+                }
+            }
+        },
+        normal_operator2: {
+            top: cy,
+            left: cx,
+            properties: {
+                title: 'Normal Operator',
+                inputs: {
+                    ins: {
+                        label: '.',
+                        multiple: true
+                    }
+                },
+                outputs: {
+                    outs: {
+                        label: ".",
+                        multiple: true
+                    }
+                }
+            }
+        },
+    }
 };
-
 
 // Apply the plugin on a standard, empty div...
 $flowchart.flowchart({
   data: data
 });
+
+
+
+$flowchart.flowchart('addClassOperator', 'start_operator', 'terminal-operator');
+$flowchart.flowchart('addClassOperator', 'end_operator', 'terminal-operator');
 
 $flowchart.parent().siblings('.delete_selected_button').click(function() {
   $flowchart.flowchart('deleteSelected');
