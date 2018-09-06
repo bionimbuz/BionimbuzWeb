@@ -48,20 +48,22 @@ public class InstanceCreationJob {
     private static final int TIME_BETWEEN_ATTEMPTS = 30 * 1000; // half minute
     
     
-    public static synchronized void create(InstanceModel instance) {        
-        threadPool.submit(new Job(instance));
+    public static synchronized void create(InstanceModel instance, Long userId) {        
+        threadPool.submit(new Job(instance, userId));
     }
     
     private static class Job implements Runnable {
         
         private InstanceModel instance;
+        private Long userId;
         private String baseUrl;
         private String refreshStatusUrl;  
         private String refreshTokenUrl;  
         
-        public Job(InstanceModel instance) {
+        public Job(InstanceModel instance, Long userId) {
             super();
             this.instance = instance;
+            this.userId = userId;
             this.baseUrl = SettingModel.getStringSetting(Name.setting_external_url);
             this.refreshStatusUrl = 
                     baseUrl +
