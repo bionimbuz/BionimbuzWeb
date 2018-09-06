@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.hibernate.Hibernate;
-
 import app.client.ComputingApi;
 import app.common.Authorization;
 import app.common.utils.StringUtils;
@@ -86,6 +84,7 @@ public class InstanceController extends BaseAdminController {
                 applicationOutputFileNames);
         final InstanceModel object = new InstanceModel();
         Binder.bindBean(params.getRootParamNode(), "object", object);
+        ExecutorModel executorSelected = object.getExecutor();
         validation.valid(object);
         final String regionId = params.get(REGION_SELECTED_ID);
         if (StringUtils.isEmpty(regionId)) {
@@ -104,9 +103,9 @@ public class InstanceController extends BaseAdminController {
             renderArgs.put("error", Messages.get("crud.hasErrors"));
             try {
                 render(request.controller.replace(".", "/") + "/blank.html",
-                        type, object, regionSelected, zoneSelected, instanceTypeSelected, listSpaces);
+                        type, object, executorSelected, regionSelected, zoneSelected, instanceTypeSelected, listSpaces);
             } catch (final TemplateNotFoundException e) {
-                render("CRUD/blank.html", type, object, regionSelected, zoneSelected, instanceTypeSelected, listSpaces);
+                render("CRUD/blank.html", type, object, executorSelected, regionSelected, zoneSelected, instanceTypeSelected, listSpaces);
             }
         }
         final InstanceTypeRegionModel instanceTypeRegion = InstanceTypeRegionModel.findByInstanceTypeAndRegion(instanceTypeSelected, regionSelected);
