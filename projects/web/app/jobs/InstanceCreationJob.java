@@ -164,7 +164,8 @@ public class InstanceCreationJob {
                         createPluginInstance(instance);
                 
                 List<VwCredentialModel> listCredentials = 
-                        VwCredentialModel.searchForCurrentUserAndPlugin(
+                        VwCredentialModel.searchUserAndPlugin(
+                                userId,
                                 instance.getPlugin().getId(),
                                 instance.getCredentialUsage());            
 
