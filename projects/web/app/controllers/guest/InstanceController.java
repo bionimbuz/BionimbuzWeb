@@ -241,6 +241,8 @@ public class InstanceController extends BaseAdminController {
             final SpaceFileModel spaceFile = new SpaceFileModel();
             spaceFile.setName(fileName);
             spaceFile.setSpace(space);
+            spaceFile.setVirtualName(
+                    SpaceFileModel.generateVirtualName(fileName));
 
             final ApplicationFileOutputModel outputFile = new ApplicationFileOutputModel();
             outputFile.setFileOrder(i);
