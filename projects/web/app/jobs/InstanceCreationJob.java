@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.commons.io.FilenameUtils;
+import org.hibernate.Hibernate;
 
 import app.client.ComputingApi;
 import app.client.ExecutionApi;
@@ -48,7 +49,9 @@ public class InstanceCreationJob {
     private static final int TIME_BETWEEN_ATTEMPTS = 30 * 1000; // half minute
     
     
-    public static synchronized void create(InstanceModel instance) {        
+    public static synchronized void create(InstanceModel instance) {       
+        
+        Hibernate.initialize(instance.getExecutor().getListImages());
         threadPool.submit(new Job(instance));
     }
     
