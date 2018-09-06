@@ -18,6 +18,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.DiscriminatorOptions;
+
 import app.common.utils.StringUtils;
 import common.constants.SystemConstants;
 import common.fields.validation.NetworkPortsCheck;
@@ -31,6 +33,7 @@ import play.db.jpa.GenericModel;
 @Inheritance
 @DiscriminatorColumn(name="type")
 @Table(name = "tb_application")
+@DiscriminatorOptions(force=true)
 public class ApplicationModel extends GenericModel {
     
     @Id
