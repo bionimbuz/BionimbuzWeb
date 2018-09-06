@@ -49,22 +49,23 @@ public class InstanceCreationJob {
     private static final int TIME_BETWEEN_ATTEMPTS = 30 * 1000; // half minute
     
     
-    public static synchronized void create(InstanceModel instance) {       
-        
+    public static synchronized void create(InstanceModel instance, Long userId) {    
         Hibernate.initialize(instance.getExecutor().getListImages());
-        threadPool.submit(new Job(instance));
+        threadPool.submit(new Job(instance, userId));
     }
     
     private static class Job implements Runnable {
         
         private InstanceModel instance;
+        private Long userId;
         private String baseUrl;
         private String refreshStatusUrl;  
         private String refreshTokenUrl;  
         
-        public Job(InstanceModel instance) {
+        public Job(InstanceModel instance, Long userId) {
             super();
             this.instance = instance;
+            this.userId = userId;
             this.baseUrl = SettingModel.getStringSetting(Name.setting_external_url);
             this.refreshStatusUrl = 
                     baseUrl +

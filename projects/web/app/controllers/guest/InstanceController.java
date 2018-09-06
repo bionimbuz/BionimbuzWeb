@@ -124,8 +124,7 @@ public class InstanceController extends BaseAdminController {
 
         object._save();
         if (object.isExecutionAfterCreation()) {
-            Hibernate.initialize(object.getExecutor().getListImages());
-            InstanceCreationJob.create(object);
+            InstanceCreationJob.create(object, getConnectedUser().getId());
         }
 
         flash.success(Messages.get("crud.created", type.modelName));
