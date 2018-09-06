@@ -42,7 +42,6 @@ import play.i18n.Messages;
 @Check("/list/instances")
 public class InstanceController extends BaseAdminController {
 
-    private static final String EXECUTOR_SELECTED = "executorSelected";
     private static final String EXECUTOR_SELECTED_ID = "executorSelected.id";
     private static final String INSTANCE_TYPE_SELECTED = "instanceTypeSelected";
     private static final String INSTANCE_TYPE_SELECTED_ID = INSTANCE_TYPE_SELECTED + ".id";
@@ -53,24 +52,23 @@ public class InstanceController extends BaseAdminController {
             ExecutorModel executorSelected) throws Exception {
         final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);
-        String executorId = params.get(EXECUTOR_SELECTED_ID);
-        if(StringUtils.isEmpty(executorId) ){
+        final String executorId = params.get(EXECUTOR_SELECTED_ID);
+        if (StringUtils.isEmpty(executorId)) {
             executorSelected = null;
-        }        
+        }
         final InstanceModel object = new InstanceModel();
-        object.setExecutor(executorSelected);        
-        List<VwSpaceModel> listSpaces = 
-                VwSpaceModel.searchForCurrentUserWithShared();        
+        object.setExecutor(executorSelected);
+        final List<VwSpaceModel> listSpaces = VwSpaceModel.searchForCurrentUserWithShared();
         try {
             render(type, object, executorSelected, listSpaces);
         } catch (final TemplateNotFoundException e) {
             render("CRUD/blank.html", type, object, executorSelected, listSpaces);
         }
-    }        
+    }
 
     public static void create(
             RegionModel regionSelected,
-            String zoneSelected,
+            final String zoneSelected,
             InstanceTypeModel instanceTypeSelected,
             final String applicationArguments,
             final List<Long> applicationInputFiles,
@@ -78,30 +76,29 @@ public class InstanceController extends BaseAdminController {
             final List<String> applicationOutputFileNames) throws Exception {
 
         final CustomObjectType type = CustomObjectType.get(getControllerClass());
-        notFoundIfNull(type);        
-        ApplicationArgumentsModel arguments = bindApplicationArguments(
+        notFoundIfNull(type);
+        final ApplicationArgumentsModel arguments = bindApplicationArguments(
                 applicationArguments,
                 applicationInputFiles,
                 applicationOutputFileSpaces,
                 applicationOutputFileNames);
         final InstanceModel object = new InstanceModel();
         Binder.bindBean(params.getRootParamNode(), "object", object);
-        validation.valid(object);        
-        String regionId = params.get(REGION_SELECTED_ID);
-        if(StringUtils.isEmpty(regionId)) {
+        validation.valid(object);
+        final String regionId = params.get(REGION_SELECTED_ID);
+        if (StringUtils.isEmpty(regionId)) {
             regionSelected = null;
             validation.addError(REGION_SELECTED, Messages.get("validation.required"));
         }
-        String instanceTypeId = params.get(INSTANCE_TYPE_SELECTED_ID);
-        if(StringUtils.isEmpty(instanceTypeId)) {
+        final String instanceTypeId = params.get(INSTANCE_TYPE_SELECTED_ID);
+        if (StringUtils.isEmpty(instanceTypeId)) {
             instanceTypeSelected = null;
             validation.addError(INSTANCE_TYPE_SELECTED, Messages.get("validation.required"));
         }
         validation.required(zoneSelected);
-        
+
         if (Validation.hasErrors()) {
-            List<VwSpaceModel> listSpaces = 
-                    VwSpaceModel.searchForCurrentUserWithShared(); 
+            final List<VwSpaceModel> listSpaces = VwSpaceModel.searchForCurrentUserWithShared();
             renderArgs.put("error", Messages.get("crud.hasErrors"));
             try {
                 render(request.controller.replace(".", "/") + "/blank.html",
@@ -110,8 +107,7 @@ public class InstanceController extends BaseAdminController {
                 render("CRUD/blank.html", type, object, regionSelected, zoneSelected, instanceTypeSelected, listSpaces);
             }
         }
-        InstanceTypeRegionModel instanceTypeRegion =
-                InstanceTypeRegionModel.findByInstanceTypeAndRegion(instanceTypeSelected, regionSelected);
+        final InstanceTypeRegionModel instanceTypeRegion = InstanceTypeRegionModel.findByInstanceTypeAndRegion(instanceTypeSelected, regionSelected);
         notFoundIfNull(instanceTypeRegion);
 
         object.setPrice(instanceTypeRegion.getPrice());
@@ -121,11 +117,11 @@ public class InstanceController extends BaseAdminController {
         object.setTypeName(instanceTypeSelected.getName());
         object.setCores(instanceTypeSelected.getCores());
         object.setMemory(instanceTypeSelected.getMemory());
-        object.setCreationDate(new Date());        
+        object.setCreationDate(new Date());
         object.setApplicationArguments(arguments);
 
         object._save();
-        if(object.isExecutionAfterCreation()) {
+        if (object.isExecutionAfterCreation()) {
             InstanceCreationJob.create(object);
         }
 
@@ -140,51 +136,50 @@ public class InstanceController extends BaseAdminController {
     }
 
     public static void delete(final Long id) throws Exception {
-        
+
         final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);
         final InstanceModel object = InstanceModel.findById(id);
         notFoundIfNull(object);
-        
-        try {
-            ComputingApi api = new ComputingApi(object.getPlugin().getUrl());
-            String credentialData = 
-                    object.getCredential().getCredentialData().getContentAsString();
-            TokenModel token;
-                token = Authorization.getToken(
-                        object.getPlugin().getCloudType(),
-                        object.getPlugin().getInstanceWriteScope(),
-                        credentialData);
 
-            Body<Boolean> body =
-                    api.deleteInstance(
-                            token.getToken(),
-                            token.getIdentity(),
-                            object.getRegionName(),
-                            object.getZoneName(),
-                            object.getCloudInstanceName());
-            
-            if(body != null 
-                    && body.getContent() != null 
+        try {
+            final ComputingApi api = new ComputingApi(object.getPlugin().getUrl());
+            final String credentialData = object.getCredential().getCredentialData().getContentAsString();
+            TokenModel token;
+            token = Authorization.getToken(
+                    object.getPlugin().getCloudType(),
+                    object.getPlugin().getInstanceWriteScope(),
+                    credentialData);
+
+            final Body<Boolean> body = api.deleteInstance(
+                    token.getToken(),
+                    token.getIdentity(),
+                    object.getRegionName(),
+                    object.getZoneName(),
+                    object.getCloudInstanceName());
+
+            if (body != null
+                    && body.getContent() != null
                     && body.getContent()) {
                 object.delete();
                 flash.success(Messages.get("crud.deleted", type.modelName));
                 redirect(request.controller + ".list");
-            }        
+            }
         } catch (final Exception e) {
             Logger.warn(e, "Error deleting instance [%s]", e.getMessage());
         }
-        
+
         flash.error(Messages.get("crud.delete.error", type.modelName));
         redirect(request.controller + ".show", object._key());
     }
 
     public static List<Region> getInstanceRegions(final Long pluginId) {
-        PluginModel plugin = PluginModel.findById(pluginId);
-        if(plugin == null)
+        final PluginModel plugin = PluginModel.findById(pluginId);
+        if (plugin == null) {
             return null;
-        List<Region> listRegions = new ArrayList<>();
-        for(RegionModel region : RegionModel.searchInstanceRegionsForPlugin(plugin)) {
+        }
+        final List<Region> listRegions = new ArrayList<>();
+        for (final RegionModel region : RegionModel.searchInstanceRegionsForPlugin(plugin)) {
             listRegions.add(new Region(region));
         }
         return listRegions;
@@ -192,126 +187,119 @@ public class InstanceController extends BaseAdminController {
 
     public static void searchRegions(final Long pluginId) {
         try {
-            List<Region> listRegions = getInstanceRegions(pluginId);
-            if(listRegions == null)
+            final List<Region> listRegions = getInstanceRegions(pluginId);
+            if (listRegions == null) {
                 notFound(Messages.get(I18N.not_found));
+            }
             renderJSON(listRegions);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Logger.error(e, "Error searching regions [%s]", e.getMessage());
             notFound(Messages.get(I18N.not_found));
         }
     }
-    
+
     private static ApplicationArgumentsModel bindApplicationArguments(
             final String applicationArguments,
             final List<Long> applicationInputFiles,
             final List<Long> applicationOutputFileSpaces,
             final List<String> applicationOutputFileNames) {
-        
-        ApplicationArgumentsModel res = new ApplicationArgumentsModel();     
+
+        final ApplicationArgumentsModel object = new ApplicationArgumentsModel();
 
         // Process option arguments
-        res.setArguments(applicationArguments);
-        
+        object.setArguments(applicationArguments);
+
         // Process input files
-        List<ApplicationFileInputModel> inputFiles = new ArrayList();
-        for(int i = 0; i<applicationInputFiles.size(); i++) {
-            Long spaceFileId = applicationInputFiles.get(i);
-            if(spaceFileId == null)
-                continue;            
-            SpaceFileModel spaceFile = 
-                    SpaceFileModel.findById(spaceFileId);            
-            ApplicationFileInputModel inputFile = 
-                    new ApplicationFileInputModel();            
-            inputFile.setOrder(i);
+        for (int i = 0; i < applicationInputFiles.size(); i++) {
+            final Long spaceFileId = applicationInputFiles.get(i);
+            if (spaceFileId == null) {
+                continue;
+            }
+            final SpaceFileModel spaceFile = SpaceFileModel.findById(spaceFileId);
+            final ApplicationFileInputModel inputFile = new ApplicationFileInputModel();
+            inputFile.setFileOrder(i);
             inputFile.setSpaceFile(spaceFile);
-            inputFiles.add(inputFile);            
+            object.addInputFile(inputFile);
         }
-        res.setApplicationInputFiles(inputFiles);
-        
+
         // Process output files
-        List<ApplicationFileOutputModel> outputFiles = new ArrayList(); 
-        for(int i = 0; i<applicationOutputFileSpaces.size(); i++) {
-            Long spaceId = applicationOutputFileSpaces.get(i);
-            if(spaceId == null)
-                continue;    
-            SpaceModel space = 
-                    SpaceModel.findById(spaceId);                  
-            if(i >= applicationOutputFileNames.size())
+        for (int i = 0; i < applicationOutputFileSpaces.size(); i++) {
+            final Long spaceId = applicationOutputFileSpaces.get(i);
+            if (spaceId == null) {
+                continue;
+            }
+            final SpaceModel space = SpaceModel.findById(spaceId);
+            if (i >= applicationOutputFileNames.size()) {
                 break;
-            
-            String fileName = applicationOutputFileNames.get(i);
-            if(StringUtils.isEmpty(fileName))
+            }
+
+            final String fileName = applicationOutputFileNames.get(i);
+            if (StringUtils.isEmpty(fileName)) {
                 break;
-            
-            SpaceFileModel spaceFile = new SpaceFileModel();
+            }
+
+            final SpaceFileModel spaceFile = new SpaceFileModel();
             spaceFile.setName(fileName);
             spaceFile.setSpace(space);
-            
-            ApplicationFileOutputModel outputFile = 
-                    new ApplicationFileOutputModel();        
 
-            outputFile.setOrder(i);
+            final ApplicationFileOutputModel outputFile = new ApplicationFileOutputModel();
+            outputFile.setFileOrder(i);
             outputFile.setSpaceFile(spaceFile);
-            outputFiles.add(outputFile);            
+            object.addOutputFile(outputFile);
         }
-        res.setApplicationOutputFiles(outputFiles);
-        
-        return res;
+
+        return object;
     }
 
     private static List<String> getZones(final PluginModel plugin, final RegionModel region) {
-        
-        try {
-            
-            List<String> res = new ArrayList<>();
-            ComputingApi api = new ComputingApi(plugin.getUrl());
-            
-            List<VwCredentialModel> listCredentials = 
-                    VwCredentialModel.searchForCurrentUserAndPlugin(
-                            plugin.getId(),
-                            CredentialUsagePolicy.OWNER_FIRST);   
 
-            for(VwCredentialModel vwCredential : listCredentials) {
+        try {
+
+            final List<String> res = new ArrayList<>();
+            final ComputingApi api = new ComputingApi(plugin.getUrl());
+
+            final List<VwCredentialModel> listCredentials = VwCredentialModel.searchForCurrentUserAndPlugin(
+                    plugin.getId(),
+                    CredentialUsagePolicy.OWNER_FIRST);
+
+            for (final VwCredentialModel vwCredential : listCredentials) {
 
                 try {
-                    String credentialData = vwCredential
+                    final String credentialData = vwCredential
                             .getCredentialData()
                             .getContentAsString();
-                    
+
                     TokenModel token;
-                        token = Authorization.getToken(
-                                plugin.getCloudType(),
-                                plugin.getInstanceReadScope(),
-                                credentialData);
-    
-                    Body<List<PluginComputingZoneModel>> body =
-                            api.listRegionZones(
-                                    token.getToken(),
-                                    token.getIdentity(),
-                                    region.getName());
-                    
-                    if(body == null || body.getContent() == null || body.getContent().isEmpty()) {
+                    token = Authorization.getToken(
+                            plugin.getCloudType(),
+                            plugin.getInstanceReadScope(),
+                            credentialData);
+
+                    final Body<List<PluginComputingZoneModel>> body = api.listRegionZones(
+                            token.getToken(),
+                            token.getIdentity(),
+                            region.getName());
+
+                    if (body == null || body.getContent() == null || body.getContent().isEmpty()) {
                         continue;
                     }
-                    for(PluginComputingZoneModel zone : body.getContent()) {
+                    for (final PluginComputingZoneModel zone : body.getContent()) {
                         res.add(zone.getName());
                     }
                     return res;
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     Logger.warn(e, "Operation cannot be completed with credential [%s]", e.getMessage());
                 }
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Logger.error(e, "Error searching zones [%s]", e.getMessage());
         }
         return null;
     }
 
     private static List<InstanceType> getInstanceTypes(final RegionModel region) {
-        List<InstanceType> listInstanceTypeModel = new ArrayList<>();
-        for(InstanceTypeRegionModel instanceTypeRegion :
-                    InstanceTypeRegionModel.searchForRegion(region)) {
+        final List<InstanceType> listInstanceTypeModel = new ArrayList<>();
+        for (final InstanceTypeRegionModel instanceTypeRegion : InstanceTypeRegionModel.searchForRegion(region)) {
             listInstanceTypeModel.add(
                     new InstanceType(instanceTypeRegion));
         }
@@ -319,27 +307,29 @@ public class InstanceController extends BaseAdminController {
     }
 
     public static InstanceTypeZone getInstanceTypesZones(final Long pluginId, final Long regionId) {
-        RegionModel region = RegionModel.findById(regionId);
-        if(region == null)
+        final RegionModel region = RegionModel.findById(regionId);
+        if (region == null) {
             return null;
-        PluginModel plugin = PluginModel.findById(pluginId);
-        if(plugin == null)
+        }
+        final PluginModel plugin = PluginModel.findById(pluginId);
+        if (plugin == null) {
             return null;
+        }
 
-        List<InstanceType> listInstanceTypes = getInstanceTypes(region);
-        List<String> listZones = getZones(plugin, region);
+        final List<InstanceType> listInstanceTypes = getInstanceTypes(region);
+        final List<String> listZones = getZones(plugin, region);
 
         return new InstanceTypeZone(listInstanceTypes, listZones);
     }
 
     public static void searchInstanceTypesZones(final Long pluginId, final Long regionId) {
         try {
-            InstanceTypeZone instanceTypeZoneModel =
-                    getInstanceTypesZones(pluginId, regionId);
-            if(instanceTypeZoneModel == null)
+            final InstanceTypeZone instanceTypeZoneModel = getInstanceTypesZones(pluginId, regionId);
+            if (instanceTypeZoneModel == null) {
                 notFound(Messages.get(I18N.not_found));
+            }
             renderJSON(instanceTypeZoneModel);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Logger.error(e, "Error searching instance type zones [%s]", e.getMessage());
             notFound(Messages.get(I18N.not_found));
         }

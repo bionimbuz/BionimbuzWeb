@@ -1,7 +1,9 @@
 package models;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -19,12 +21,12 @@ public class ApplicationArgumentsModel extends GenericModel {
     @Id
     @GeneratedValue
     private Long id;
-    @OneToOne(fetch = FetchType.LAZY, mappedBy="applicationArguments")
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "applicationArguments")
     private InstanceModel instance;
     private String arguments;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "applicationArguments")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "applicationArguments", cascade = CascadeType.ALL)
     private List<ApplicationFileInputModel> applicationInputFiles;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "applicationArguments")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "applicationArguments", cascade = CascadeType.ALL)
     private List<ApplicationFileOutputModel> applicationOutputFiles;
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -35,38 +37,67 @@ public class ApplicationArgumentsModel extends GenericModel {
     }
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    // Getters and Setters
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
-    public final Long getId() {
-        return id;
+    // Transients
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    public boolean addInputFile(final ApplicationFileInputModel inputFile) {
+        if (this.applicationInputFiles == null) {
+            this.applicationInputFiles = new ArrayList<>();
+        }
+        inputFile.setApplicationArguments(this);
+        return this.applicationInputFiles.add(inputFile);
     }
-    public final void setId(Long id) {
+
+    public boolean addOutputFile(final ApplicationFileOutputModel outputFile) {
+        if (this.applicationOutputFiles == null) {
+            this.applicationOutputFiles = new ArrayList<>();
+        }
+        outputFile.setApplicationArguments(this);
+        return this.applicationOutputFiles.add(outputFile);
+    }
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Getters and Setters
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    public final Long getId() {
+        return this.id;
+    }
+
+    public final void setId(final Long id) {
         this.id = id;
     }
+
     public final InstanceModel getInstance() {
-        return instance;
+        return this.instance;
     }
-    public final void setInstance(InstanceModel instance) {
+
+    public final void setInstance(final InstanceModel instance) {
         this.instance = instance;
     }
+
     public final String getArguments() {
-        return arguments;
+        return this.arguments;
     }
-    public final void setArguments(String arguments) {
+
+    public final void setArguments(final String arguments) {
         this.arguments = arguments;
     }
+
     public final List<ApplicationFileInputModel> getApplicationInputFiles() {
-        return applicationInputFiles;
+        return this.applicationInputFiles;
     }
+
     public final void setApplicationInputFiles(
-            List<ApplicationFileInputModel> applicationInputFiles) {
+            final List<ApplicationFileInputModel> applicationInputFiles) {
         this.applicationInputFiles = applicationInputFiles;
     }
+
     public final List<ApplicationFileOutputModel> getApplicationOutputFiles() {
-        return applicationOutputFiles;
+        return this.applicationOutputFiles;
     }
+
     public final void setApplicationOutputFiles(
-            List<ApplicationFileOutputModel> applicationOuputFiles) {
+            final List<ApplicationFileOutputModel> applicationOuputFiles) {
         this.applicationOutputFiles = applicationOuputFiles;
-    }    
+    }
 }

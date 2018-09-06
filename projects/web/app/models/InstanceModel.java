@@ -2,6 +2,7 @@ package models;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -54,7 +55,7 @@ public class InstanceModel extends GenericModel {
     private boolean executionAfterCreation;
     @NoBinding
     private Date creationDate;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private ApplicationArgumentsModel applicationArguments;
     @NoBinding
     private EXECUTION_PHASE phase;
@@ -85,7 +86,6 @@ public class InstanceModel extends GenericModel {
     private Double memory;
     // ---------------------------------------
 
-
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Constructors
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -95,145 +95,188 @@ public class InstanceModel extends GenericModel {
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Data access
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
-    public static InstanceModel findByIdentity(final String identity) {        
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    public static InstanceModel findByIdentity(final String identity) {
         return find("instanceIdentity = ?'", identity).first();
     }
-    
+
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Getters and Setters
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public Long getId() {
-        return id;
+        return this.id;
     }
-    public void setId(Long id) {
+
+    public void setId(final Long id) {
         this.id = id;
     }
+
     public String getCloudInstanceIp() {
-        return cloudInstanceIp;
+        return this.cloudInstanceIp;
     }
-    public void setCloudInstanceIp(String cloudInstanceIp) {
+
+    public void setCloudInstanceIp(final String cloudInstanceIp) {
         this.cloudInstanceIp = cloudInstanceIp;
     }
+
     public String getCloudInstanceName() {
-        return cloudInstanceName;
+        return this.cloudInstanceName;
     }
-    public void setCloudInstanceName(String cloudInstanceName) {
+
+    public void setCloudInstanceName(final String cloudInstanceName) {
         this.cloudInstanceName = cloudInstanceName;
     }
+
     public CredentialUsagePolicy getCredentialUsage() {
-        return credentialUsage;
+        return this.credentialUsage;
     }
-    public void setCredentialUsage(CredentialUsagePolicy credentialUsage) {
+
+    public void setCredentialUsage(final CredentialUsagePolicy credentialUsage) {
         this.credentialUsage = credentialUsage;
     }
+
     public ExecutorModel getExecutor() {
-        return executor;
+        return this.executor;
     }
-    public void setExecutor(ExecutorModel executor) {
+
+    public void setExecutor(final ExecutorModel executor) {
         this.executor = executor;
     }
+
     public boolean isExecutionAfterCreation() {
-        return executionAfterCreation;
+        return this.executionAfterCreation;
     }
-    public void setExecutionAfterCreation(boolean executionAfterCreation) {
+
+    public void setExecutionAfterCreation(final boolean executionAfterCreation) {
         this.executionAfterCreation = executionAfterCreation;
     }
+
     public PluginModel getPlugin() {
-        return plugin;
+        return this.plugin;
     }
-    public void setPlugin(PluginModel plugin) {
+
+    public void setPlugin(final PluginModel plugin) {
         this.plugin = plugin;
     }
+
     public Date getPriceTableDate() {
-        return priceTableDate;
+        return this.priceTableDate;
     }
-    public void setPriceTableDate(Date priceTableDate) {
+
+    public void setPriceTableDate(final Date priceTableDate) {
         this.priceTableDate = priceTableDate;
     }
+
     public Double getPrice() {
-        return price;
+        return this.price;
     }
-    public void setPrice(Double price) {
+
+    public void setPrice(final Double price) {
         this.price = price;
     }
+
     public String getTypeName() {
-        return typeName;
+        return this.typeName;
     }
-    public void setTypeName(String typeName) {
+
+    public void setTypeName(final String typeName) {
         this.typeName = typeName;
     }
+
     public String getRegionName() {
-        return regionName;
+        return this.regionName;
     }
-    public void setRegionName(String regionName) {
+
+    public void setRegionName(final String regionName) {
         this.regionName = regionName;
     }
+
     public String getZoneName() {
-        return zoneName;
+        return this.zoneName;
     }
-    public void setZoneName(String zoneName) {
+
+    public void setZoneName(final String zoneName) {
         this.zoneName = zoneName;
     }
+
     public Short getCores() {
-        return cores;
+        return this.cores;
     }
-    public void setCores(Short cores) {
+
+    public void setCores(final Short cores) {
         this.cores = cores;
     }
+
     public Double getMemory() {
-        return memory;
+        return this.memory;
     }
-    public void setMemory(Double memory) {
+
+    public void setMemory(final Double memory) {
         this.memory = memory;
     }
+
     public Date getCreationDate() {
-        return creationDate;
+        return this.creationDate;
     }
-    public void setCreationDate(Date creationDate) {
+
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
+
     public String getInstanceIdentity() {
-        return instanceIdentity;
+        return this.instanceIdentity;
     }
-    public void setInstanceIdentity(String instanceIdentity) {
+
+    public void setInstanceIdentity(final String instanceIdentity) {
         this.instanceIdentity = instanceIdentity;
     }
+
     public ApplicationArgumentsModel getApplicationArguments() {
-        return applicationArguments;
+        return this.applicationArguments;
     }
+
     public void setApplicationArguments(
-            ApplicationArgumentsModel applicationArguments) {
+            final ApplicationArgumentsModel applicationArguments) {
         this.applicationArguments = applicationArguments;
     }
+
     public EXECUTION_PHASE getPhase() {
-        return phase;
+        return this.phase;
     }
-    public void setPhase(EXECUTION_PHASE phase) {
+
+    public void setPhase(final EXECUTION_PHASE phase) {
         this.phase = phase;
     }
+
     public STATUS getStatus() {
-        return status;
+        return this.status;
     }
-    public void setStatus(STATUS status) {
+
+    public void setStatus(final STATUS status) {
         this.status = status;
     }
+
     public String getExecutionObservation() {
-        return executionObservation;
+        return this.executionObservation;
     }
-    public void setExecutionObservation(String executionObservation) {
+
+    public void setExecutionObservation(final String executionObservation) {
         this.executionObservation = executionObservation;
     }
+
     public CredentialModel getCredential() {
-        return credential;
+        return this.credential;
     }
-    public void setCredential(CredentialModel credential) {
+
+    public void setCredential(final CredentialModel credential) {
         this.credential = credential;
     }
+
     public WorkflowModel getWorkflow() {
-        return workflow;
+        return this.workflow;
     }
-    public void setWorkflow(WorkflowModel workflow) {
+
+    public void setWorkflow(final WorkflowModel workflow) {
         this.workflow = workflow;
     }
 }
