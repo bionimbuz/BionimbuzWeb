@@ -24,9 +24,15 @@ public class ApplicationArgumentsModel extends GenericModel {
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "applicationArguments")
     private InstanceModel instance;
     private String arguments;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "applicationArguments", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "applicationArguments", cascade = {
+            CascadeType.PERSIST,
+            CascadeType.REMOVE
+    }, orphanRemoval = true)
     private List<ApplicationFileInputModel> applicationInputFiles;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "applicationArguments", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "applicationArguments", cascade = {
+            CascadeType.PERSIST,
+            CascadeType.REMOVE
+    }, orphanRemoval = true)
     private List<ApplicationFileOutputModel> applicationOutputFiles;
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

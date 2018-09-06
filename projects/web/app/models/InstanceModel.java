@@ -55,7 +55,10 @@ public class InstanceModel extends GenericModel {
     private boolean executionAfterCreation;
     @NoBinding
     private Date creationDate;
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.REMOVE
+    }, orphanRemoval = true)
     private ApplicationArgumentsModel applicationArguments;
     @NoBinding
     private EXECUTION_PHASE phase;

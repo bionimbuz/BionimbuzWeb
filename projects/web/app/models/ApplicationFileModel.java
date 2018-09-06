@@ -11,18 +11,24 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.DiscriminatorOptions;
+
 import play.db.jpa.GenericModel;
 
 @Entity
 @Inheritance
-@DiscriminatorColumn(name = "type")
+@DiscriminatorColumn(name = "file_type")
+@DiscriminatorOptions(force = true)
 @Table(name = "tb_application_file")
 public class ApplicationFileModel extends GenericModel {
 
     @Id
     @GeneratedValue
     private Long id;
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {
+            CascadeType.PERSIST,
+            CascadeType.REMOVE
+    })
     @JoinColumn(nullable = false)
     private SpaceFileModel spaceFile;
     private Integer fileOrder;

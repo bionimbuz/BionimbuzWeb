@@ -50,6 +50,7 @@ public class InstanceController extends BaseAdminController {
 
     public static void blank(
             ExecutorModel executorSelected) throws Exception {
+
         final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);
         final String executorId = params.get(EXECUTOR_SELECTED_ID);
@@ -84,7 +85,7 @@ public class InstanceController extends BaseAdminController {
                 applicationOutputFileNames);
         final InstanceModel object = new InstanceModel();
         Binder.bindBean(params.getRootParamNode(), "object", object);
-        ExecutorModel executorSelected = object.getExecutor();
+        final ExecutorModel executorSelected = object.getExecutor();
         validation.valid(object);
         final String regionId = params.get(REGION_SELECTED_ID);
         if (StringUtils.isEmpty(regionId)) {
