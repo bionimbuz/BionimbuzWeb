@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.Hibernate;
+
 import app.client.ComputingApi;
 import app.common.Authorization;
 import app.common.utils.StringUtils;
