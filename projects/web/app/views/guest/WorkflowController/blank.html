@@ -14,6 +14,20 @@
    #{crud.form /}
 
     <label>&{'workflow.editor'}</label>
+    
+    <div class="btn-toolbar margin-bottom" role="toolbar" aria-label="Toolbar with button groups">
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-secondary">
+                <span class="glyphiconglyphicon glyphicon glyphicon-screenshot"></span>
+            </button>
+        </div>
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-secondary">
+                <span class="glyphiconglyphicon glyphicon glyphicon-remove"></span>
+            </button>
+        </div>
+    </div>
+
 	<div id="chart_container">
 		<div id="workflow_editor"></div>
 	</div>
@@ -72,16 +86,17 @@
     background-color: #aaacb3;
 }
 
-.terminal-operator  .flowchart-operator-inputs-outputs {
+.terminal-operator.selected {
+}
+
+.terminal-operator .flowchart-operator-inputs-outputs {
     color: #aaacb3;
 }
 
 .terminal-operator .flowchart-operator-title {
     background-color: #5a6a88;
     color: white;
-
-}
-    
+}    
 
 </style>        
 #{/set}

@@ -77,11 +77,12 @@ public class VwCredentialModel extends GenericModel {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Data access
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    public static List<VwCredentialModel> searchForCurrentUserAndPlugin(
-            final Long idPlugin,
-            final CredentialUsagePolicy credentialUsage) {             
+    
 
-        UserModel currentUser = BaseAdminController.getConnectedUser();
+    public static List<VwCredentialModel> searchUserAndPlugin(
+            final Long idUser,
+            final Long idPlugin,
+            final CredentialUsagePolicy credentialUsage) {
         
         if(credentialUsage == CredentialUsagePolicy.OWNER_FIRST 
                 || credentialUsage == CredentialUsagePolicy.SHARED_FIRST) {            
@@ -94,7 +95,7 @@ public class VwCredentialModel extends GenericModel {
                 + "       AND vwCredential.plugin.id = ?2 "
                 + " ORDER BY vwCredential.owner " + order
                 + "          ,vwCredential.id",
-                currentUser.getId(), idPlugin).fetch();
+                idUser, idPlugin).fetch();
         } else if (credentialUsage == CredentialUsagePolicy.ONLY_OWNER 
                 || credentialUsage == CredentialUsagePolicy.ONLY_SHARED) {
             boolean onlyOwner = 
@@ -106,9 +107,16 @@ public class VwCredentialModel extends GenericModel {
                 + "       AND vwCredential.plugin.id = ?2 "
                 + "       AND vwCredential.owner = ?3"
                 + " ORDER BY vwCredential.name",
-                currentUser.getId(), idPlugin, onlyOwner).fetch(); 
+                idUser, idPlugin, onlyOwner).fetch(); 
         }
         return new ArrayList<>();
+    }
+
+    public static List<VwCredentialModel> searchForCurrentUserAndPlugin(
+            final Long idPlugin,
+            final CredentialUsagePolicy credentialUsage) {
+        UserModel currentUser = BaseAdminController.getConnectedUser();
+        return searchUserAndPlugin(currentUser.getId(), idPlugin, credentialUsage);
     }
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
