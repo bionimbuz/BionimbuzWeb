@@ -1,7 +1,9 @@
 package models;
 
+import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -11,7 +13,6 @@ import javax.persistence.Table;
 
 import play.data.binding.NoBinding;
 import play.data.validation.MaxSize;
-import play.data.validation.Required;
 import play.db.jpa.GenericModel;
 
 @Entity
@@ -27,15 +28,17 @@ public class WorkflowModel extends GenericModel {
     @Id
     @GeneratedValue
     private Long id;
-
-    @Required
     @MaxSize(100)
     private String name;        
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "workflow")
     @NoBinding
-    private List<InstanceModel> listInstances;
+    private List<WorkflowNodeModel> listWorkflowNodes;
     @NoBinding
     private WORKFLOW_STATUS status;
+    @NoBinding
+    private Date creationDate;
+    @Column(length=3000)
+    private String jsonModel;
         
     public WorkflowModel() {        
         super();
@@ -53,17 +56,29 @@ public class WorkflowModel extends GenericModel {
     public void setName(String name) {
         this.name = name;
     }    
-    public List<InstanceModel> getListInstances() {
-        return listInstances;
-    }
-    public void setListInstances(List<InstanceModel> listInstances) {
-        this.listInstances = listInstances;
-    }
     public WORKFLOW_STATUS getStatus() {
         return status;
     }
     public void setStatus(WORKFLOW_STATUS status) {
         this.status = status;
+    }
+    public Date getCreationDate() {
+        return creationDate;
+    }
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+    public List<WorkflowNodeModel> getListWorkflowNodes() {
+        return listWorkflowNodes;
+    }
+    public void setListWorkflowNodes(List<WorkflowNodeModel> listWorkflowNodes) {
+        this.listWorkflowNodes = listWorkflowNodes;
+    }
+    public String getJsonModel() {
+        return jsonModel;
+    }
+    public void setJsonModel(String jsonModel) {
+        this.jsonModel = jsonModel;
     }
 
     @Override

@@ -1,17 +1,44 @@
 
 #{extends 'CRUD/layout.html' /}
-#{set title:messages.get('crud.blank.title', type.modelName) /}
+#{set title:messages.get('crud.show.title', type.modelName) /}
 
 <div class="row crud-title">
-    <h1 class="col-xs-12"> &{'crud.blank.title', type.modelName} </h1>
-    <pre class="col-xs-12"> &{'crud.blank.title.desc', type.modelName} </pre>
+    <h1 class="col-xs-12"> &{'crud.show.title', type.modelName} </h1>
+    <pre class="col-xs-12 col-sm-12 col-md-9"> &{'crud.show.title.desc', type.modelName} </pre>
+    <input data-toggle="modal" data-target="#deleteModal"
+        class="col-xs-12 col-sm-12 col-md-2 btn btn-danger pull-right" type="button" value="&{'crud.delete', type.modelName}" />
 </div>
 
 <br>
 
 <div class="row" >
-#{form action:@create(), enctype:'multipart/form-data', class:'submitForm'} 
-   #{crud.form /}
+#{form id: 'saveForm', action:@save(object._key()), enctype:'multipart/form-data', class: 'submitForm'}
+
+    #{crud.form}
+    
+        #{crud.custom 'jsonModel'}
+            #{field 'object.jsonModel'}
+                <input id="${field.id}" class="${field.errorClass}" type="hidden" name="${field.name}" value="${field.value}" size="50" />
+            #{/field}
+        #{/crud.custom}
+    
+        #{crud.custom 'name'}
+        
+            #{field 'object.name'}
+            <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                <label for="${field.id}">&{field.name}</label>
+                <input id="${field.id}" class="form-control" type="text" 
+                        name="${field.name}" 
+                        value="${field.value}" placeholder="&{'workflow.unnamed'}"/>
+                #{ifError field.name}
+                    <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                #{/ifError} 
+            </div>
+            #{/field}
+            
+        #{/crud.custom}
+        
+    #{/crud.form}
 
     <label>&{'workflow.editor'}</label>
     
@@ -31,19 +58,43 @@
                 <span class="glyphiconglyphicon glyphicon glyphicon-ok-circle"></span>
             </button>
         </div>
+        <div class="btn-group" role="group">
+            <button id="buttonAnlyseDepth" type="button" class="btn btn-secondary">
+                <span class="glyphiconglyphicon glyphicon glyphicon glyphicon-cog"></span>
+            </button>
+        </div>       
     </div>
 
-	<div id="chart_container">
-		<div id="workflow_editor"></div>
-	</div>
+    <div id="chart_container">
+        <div id="workflow_editor"></div>
+    </div>
 
-	<div class="btn-row text-center">
-        <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_save">&{'crud.save'}</button>
-        <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_saveAndContinue">&{'crud.saveAndContinue'}</button>
-        <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_saveAndAddAnother">&{'crud.saveAndAddAnother'}</button>
+    <div class="btn-row text-center">
+        <input name="_save" id="_save" class="btn btn-primary btn-md btn-mobile margin-bottom" type="button" value="&{'crud.save', type.modelName}" />
         <a href="@{list()}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>
     </div>
 #{/form}
+</div>
+
+<div id="deleteModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">&{'modal.confirm'}</h4>
+            </div>
+            <div class="modal-body">
+                <p>&{'modal.confirm.delete'}</p>
+                <p class="text-warning"><small>&{'modal.confirm.delete.desc'}</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">&{'modal.button.cancel'}</button>
+                #{form @delete(object._key()), style: 'display:inline;', class: 'submitForm'}
+                    <button type="submit" class="btn btn-primary">&{'modal.button.confirm'}</button>
+                #{/form}
+            </div>
+        </div>
+    </div>
 </div>
 
 <div id="messageModal" class="modal fade">
@@ -102,7 +153,6 @@
 .flowchart-operator {
     width: 80px;
     border-radius: 16px;
-    padding-left: 1px;
 }
 
 .flowchart-operator .flowchart-operator-inputs-outputs {
@@ -176,10 +226,10 @@ $container.on('mousewheel.focal', function( e ) {
     });
 });
 
-function getOperatorData(title) {
+function getDefaultOperatorData() {
   var data = {
     properties: {
-      title: title,
+      title: "&{'workflow.node.not.configured'}",
       inputs: {
           ins: {
               label: '.',
@@ -203,7 +253,7 @@ var end_operator = "end_operator";
 
 var data = {
     operators: {
-    	start_operator: {
+        start_operator: {
             top: cy - 100,
             left: cx - 200,
             properties: {
@@ -234,6 +284,19 @@ var data = {
     }
 };
 
+#{if object.jsonModel != null 
+	   && !object.jsonModel.isEmpty()}
+    data = JSON.parse('${object.jsonModel.raw()}');
+#{/if}
+
+
+$('#_save').click(function(){
+    var data = $flowchart.flowchart('getData');
+    var jsonModel = JSON.stringify(data);
+    $('#object_jsonModel').val(jsonModel);
+    $('#saveForm').submit();
+});
+
 var operators = new Set();
 // From start to end
 var graphData = {};
@@ -243,18 +306,18 @@ var graphDataReverse = {};
 // Apply the plugin on a standard, empty div...
 $flowchart.flowchart({
     data: data,
-    onLinkCreate: function(linkId, linkData){	    
+    onLinkCreate: function(linkId, linkData){       
        return onLinkCreate(linkId, linkData);
     },
     onLinkDelete: function(linkId, forced){   
-    	return onLinkDelete(linkId, forced);
+        return onLinkDelete(linkId, forced);
     },
     onOperatorCreate: function(operatorId){
-    	onOperatorCreate(operatorId);
+        onOperatorCreate(operatorId);
         return true;
     },
     onOperatorDelete: function(operatorId){
-    	onOperatorDelete(operatorId);
+        onOperatorDelete(operatorId);
         return true;
     } 
 });
@@ -263,17 +326,17 @@ $flowchart.flowchart('addClassOperator', start_operator, 'terminal-operator');
 $flowchart.flowchart('addClassOperator', end_operator, 'terminal-operator');
 
 function getLinkData(linkId) {
-	var data = $flowchart.flowchart('getData');
-	var links = data["links"];
-	if(!links) {
-		return null;
-	}	
-	return links[linkId];
+    var data = $flowchart.flowchart('getData');
+    var links = data["links"];
+    if(!links) {
+        return null;
+    }   
+    return links[linkId];
 }
 
 function onOperatorCreate(operatorId){
     if(operatorId != start_operator 
-    	    && operatorId != end_operator) {  
+            && operatorId != end_operator) {  
        operators.add(operatorId);
     }
 }
@@ -285,9 +348,9 @@ function onOperatorDelete(operatorId){
 }
 
 function onLinkDelete(linkId, forced){    
-	var linkData = getLinkData(linkId);
-	
-	// Removes link connection
+    var linkData = getLinkData(linkId);
+    
+    // Removes link connection
     var connections = 
         graphData[linkData.fromOperator]; 
     connections.delete(linkData.toOperator);
@@ -301,25 +364,25 @@ function onLinkDelete(linkId, forced){
 }
 
 function onLinkCreate(linkId, linkData){  
-	
-	// Check if the connection is from Start to End operators
+    
+    // Check if the connection is from Start to End operators
     if(linkData.fromOperator == start_operator 
         && linkData.toOperator == end_operator){
         showWarnModal("&{'modal.editor.end.start.connection'}")
         return false;
     }    
-	
+    
     var connections = 
-    	graphData[linkData.fromOperator];    
+        graphData[linkData.fromOperator];    
     // Check if connections Set has already initialized
     if(!connections) {
-    	connections = new Set();
+        connections = new Set();
         graphData[linkData.fromOperator] = connections;
     } 
     // Check repeated connection
     else if(connections.has(linkData.toOperator)) {
         showWarnModal("&{'modal.editor.connection.repeated'}")
-    	return false;
+        return false;
     }  
     // Check if connector has already a connection to End operator
     else if(linkData.toOperator != end_operator && connections.has(end_operator)) {
@@ -339,19 +402,19 @@ function onLinkCreate(linkId, linkData){
     var connectionsReverse = 
         graphDataReverse[linkData.toOperator];    
     if(!connectionsReverse) {
-    	connectionsReverse = new Set();
-    	graphDataReverse[linkData.toOperator] = connectionsReverse;
+        connectionsReverse = new Set();
+        graphDataReverse[linkData.toOperator] = connectionsReverse;
     }     
     connectionsReverse.add(linkData.fromOperator);
         
     if(isCyclic()) {
-    	// Reverts already added connections
+        // Reverts already added connections
         connections.delete(linkData.toOperator);   
 
         // Reverts already added connections reverse
-    	connectionsReverse.delete(linkData.fromOperator);       	
-    	
-    	showWarnModal("&{'modal.editor.connection.has.loops'}")
+        connectionsReverse.delete(linkData.fromOperator);           
+        
+        showWarnModal("&{'modal.editor.connection.has.loops'}")
         return false;
     }
     
@@ -385,23 +448,13 @@ function isCyclic() {
         if (isCyclicUtil(node[0], visited, recStack)) {
             return true;
         }
-	}
+    }
     return false;
 }
 
 function showWarnModal(message){  
-	$('#modal_description').html(message)
+    $('#modal_description').html(message)
     $('#messageModal').modal('show');
-}
-
-function deleteSelected() {
-    var operatorId = $flowchart.flowchart("getSelectedOperatorId");
-    if(operatorId == start_operator 
-      || operatorId == end_operator) {    
-      showWarnModal("&{'modal.editor.end.start.delete'}");
-      return;
-    } 
-    $flowchart.flowchart('deleteSelected');
 }
 
 $('.delete_selected_button').click(deleteSelected);
@@ -419,12 +472,10 @@ $draggableOperators.draggable({
     zIndex: 1000,
     
     helper: function(e) {
-      var $this = $(this);
-      var data = getOperatorData("Operator Normal");
+      var data = getDefaultOperatorData();
       return $flowchart.flowchart('getOperatorElement', data);
     },
     stop: function(e, ui) {
-        var $this = $(this);
         var elOffset = ui.offset;
         var containerOffset = $container.offset();
         if (elOffset.left > containerOffset.left &&
@@ -441,25 +492,73 @@ $draggableOperators.draggable({
             relativeLeft /= positionRatio;
             relativeTop /= positionRatio;
 
-            var data = getOperatorData("Operator");
+            var data = getDefaultOperatorData();
             data.left = relativeLeft;
             data.top = relativeTop;
             
-            var operatorId = 
-            	$flowchart.flowchart('addOperator', data);
-            
-            $flowchart.flowchart('setOperatorTitle', 
-            		operatorId, "Operator " + operatorId);
+            createOperator(data);
         }
     }
 });
 
-function getNodesDepth(curNode, nodesDepth, depth){	 
+function createOperator(operator){	
+	showPleaseWait();
+    var search = #{jsRoute @createNode() /};
+    $.ajax({
+        url: search.url(),
+        type: search.method,
+        data:{ id: ${object.id}}
+       })
+    .done(function(data) {
+        $flowchart.flowchart('createOperator', data, operator);    	
+    })
+    .fail(function(data) {
+        flashError(data.responseText);
+    })
+    .always(function() {
+        hidePleaseWait();
+    });
+}
+
+function deleteSelected() {
 	
-	if(!depth) {
-		depth = 0;
-	} 
-	
+    var operatorId = $flowchart.flowchart("getSelectedOperatorId");
+    if(operatorId == start_operator 
+      || operatorId == end_operator) {    
+      showWarnModal("&{'modal.editor.end.start.delete'}");
+      return;
+    }
+    // Operators deleting
+    else if (operatorId) {
+    	showPleaseWait();
+        var search = #{jsRoute @deleteNode() /};
+        $.ajax({
+            url: search.url(),
+            type: search.method,
+            data:{ id: operatorId}
+           })
+        .done(function(data) {
+            $flowchart.flowchart('deleteSelected');   
+        })
+        .fail(function(data) {
+            flashError(data.responseText);
+        })
+        .always(function() {
+            hidePleaseWait();
+        });
+    } 
+    // Links deleting
+    else {    	
+        $flowchart.flowchart('deleteSelected');
+    }
+}
+
+function getNodesDepth(curNode, nodesDepth, depth){  
+    
+    if(!depth) {
+        depth = 0;
+    } 
+    
     if(!nodesDepth[curNode] 
         || nodesDepth[curNode] < depth) {
         nodesDepth[curNode] = depth;
@@ -470,24 +569,24 @@ function getNodesDepth(curNode, nodesDepth, depth){
     
     if(connections && connections.size > 0) {
         for (let node of connections) {
-        	getNodesDepth(node, nodesDepth, ++depth);
-        	--depth;        	
+            getNodesDepth(node, nodesDepth, ++depth);
+            --depth;            
         }
     }
 }
 
 function checkNodesReachesEnd(curNode, visited){
-	   
+       
     if(!visited) {
-    	visited = new Set();
+        visited = new Set();
     } 
     
     if(curNode == end_operator){
-    	return true;
+        return true;
     }
     
     if(visited.has(curNode)) {
-    	return false;
+        return false;
     }
     visited.add(curNode);
     
@@ -496,10 +595,10 @@ function checkNodesReachesEnd(curNode, visited){
     
     if(connections && connections.size > 0) {
         for (let node of connections) {
-        	if(checkNodesReachesEnd(node, visited))
-        	{
-        		return true;
-        	}
+            if(checkNodesReachesEnd(node, visited))
+            {
+                return true;
+            }
         }
     }
     
@@ -538,19 +637,16 @@ function checkNodesReachesStart(curNode, visited){
 
 
 $('#buttonAnlyseDepth').click(function(){
-
     for (let operator of operators) {
         if(!checkNodesReachesStart(operator)
-        		|| !checkNodesReachesEnd(operator)) {
-        	$flowchart.flowchart('addClassOperator', operator, 'operator-warning');
+                || !checkNodesReachesEnd(operator)) {
+            $flowchart.flowchart('addClassOperator', operator, 'operator-warning');
         } else {
             $flowchart.flowchart('removeClassOperator', operator, 'operator-warning');
         }
     }
-	
 });
 
 });
 </script>        
 #{/set}
-
