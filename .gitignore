@@ -1,4 +1,11 @@
 /system/
-/.DS_Store
+*.DS_Store
 /.classpath
 /.project
+*.springBeans
+/projects/plugins/plugin-gcp/ft4j-aux-path
+/projects/plugins/plugin-gcp/logs
+/projects/plugins/plugin-aws/ft4j-aux-path
+/projects/plugins/plugin-aws/logs
+/projects/plugins/plugin-local/ft4j-aux-path
+/projects/plugins/plugin-local/logs
