@@ -354,7 +354,17 @@ modal.confirm.delete.desc=The register will be permanently deleted.
 modal.button.ok=Ok
 modal.button.cancel=Cancel
 modal.button.confirm=Confirm
+modal.warn=Attention
+modal.operation.not.permitted=Operation cannot be completed.
 
+# Workflow Editor Modals
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+modal.editor.end.start.delete=The operators 'Start' and 'End' cannot be deleted.
+modal.editor.end.start.connection=The operators 'Start' and 'End' cannot be connected. 
+modal.editor.connection.repeated=A connection between operators already exists.
+modal.editor.connection.repeated.to.end=The operator has already a connection to 'End'.
+modal.editor.connection.has.a.valid.path=The operator has already a valid path.
+modal.editor.connection.has.loops=The connection created generates a recursion and that is not permitted.
 
 # Other labels
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

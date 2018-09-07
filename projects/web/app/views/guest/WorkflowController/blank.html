@@ -26,6 +26,11 @@
                 <span class="glyphiconglyphicon glyphicon glyphicon-remove"></span>
             </button>
         </div>
+        <div class="btn-group" role="group">
+            <button id="buttonAnlyseDepth" type="button" class="btn btn-secondary">
+                <span class="glyphiconglyphicon glyphicon glyphicon-ok-circle"></span>
+            </button>
+        </div>
     </div>
 
 	<div id="chart_container">
@@ -39,6 +44,28 @@
         <a href="@{list()}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>
     </div>
 #{/form}
+</div>
+
+<div id="messageModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">&{'modal.warn'}</h4>
+            </div>
+            <div class="modal-body">
+                <p>&{'modal.operation.not.permitted'}</p>
+                <p class="text-warning">
+                    <small id="modal_description">
+                        &{'modal.confirm.delete.desc'}
+                    </small>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">&{'modal.button.ok'}</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 #{set 'moreStyles' }
@@ -98,6 +125,15 @@
     color: white;
 }    
 
+.operator-warning .flowchart-operator-title {
+    background-color: #e26e1c;
+    color: white;
+}    
+
+.flowchart-operator-connector-arrow {
+    cursor: pointer;
+}
+
 </style>        
 #{/set}
 
@@ -118,7 +154,6 @@ var $container = $flowchart.parent();
 
 var cx = $flowchart.width() / 2;
 var cy = $flowchart.height() / 2;
-
 
 // Panzoom initialization...
 $flowchart.panzoom();
@@ -163,9 +198,12 @@ function getOperatorData(title) {
   return data;
 }
 
+var start_operator = "start_operator";
+var end_operator = "end_operator";
+
 var data = {
     operators: {
-        start_operator: {
+    	start_operator: {
             top: cy - 100,
             left: cx - 200,
             properties: {
@@ -192,64 +230,183 @@ var data = {
                 },
                 outputs: {}
             }
-        },
-        normal_operator1: {
-            top: cy -100,
-            left: cx,
-            properties: {
-                title: 'Normal Operator',
-                inputs: {
-                    ins: {
-                        label: '.',
-                        multiple: true
-                    }
-                },
-                outputs: {
-                    outs: {
-                        label: ".",
-                        multiple: true
-                    }
-                }
-            }
-        },
-        normal_operator2: {
-            top: cy,
-            left: cx,
-            properties: {
-                title: 'Normal Operator',
-                inputs: {
-                    ins: {
-                        label: '.',
-                        multiple: true
-                    }
-                },
-                outputs: {
-                    outs: {
-                        label: ".",
-                        multiple: true
-                    }
-                }
-            }
-        },
+        }
     }
 };
 
+var operators = new Set();
+// From start to end
+var graphData = {};
+//From end to start
+var graphDataReverse = {};
+
 // Apply the plugin on a standard, empty div...
 $flowchart.flowchart({
-  data: data
+    data: data,
+    onLinkCreate: function(linkId, linkData){	    
+       return onLinkCreate(linkId, linkData);
+    },
+    onLinkDelete: function(linkId, forced){   
+    	return onLinkDelete(linkId, forced);
+    },
+    onOperatorCreate: function(operatorId){
+    	onOperatorCreate(operatorId);
+        return true;
+    },
+    onOperatorDelete: function(operatorId){
+    	onOperatorDelete(operatorId);
+        return true;
+    } 
 });
 
-$flowchart.flowchart('addClassOperator', 'start_operator', 'terminal-operator');
-$flowchart.flowchart('addClassOperator', 'end_operator', 'terminal-operator');
+$flowchart.flowchart('addClassOperator', start_operator, 'terminal-operator');
+$flowchart.flowchart('addClassOperator', end_operator, 'terminal-operator');
 
-$('.delete_selected_button').click(function() {
-  $flowchart.flowchart('deleteSelected');
-});
+function getLinkData(linkId) {
+	var data = $flowchart.flowchart('getData');
+	var links = data["links"];
+	if(!links) {
+		return null;
+	}	
+	return links[linkId];
+}
+
+function onOperatorCreate(operatorId){
+    if(operatorId != start_operator 
+    	    && operatorId != end_operator) {  
+       operators.add(operatorId);
+    }
+}
+
+function onOperatorDelete(operatorId){
+    if(operators.has(operatorId)) {
+        operators.delete(operatorId);
+    }
+}
+
+function onLinkDelete(linkId, forced){    
+	var linkData = getLinkData(linkId);
+	
+	// Removes link connection
+    var connections = 
+        graphData[linkData.fromOperator]; 
+    connections.delete(linkData.toOperator);
+    
+    // Removes link connection reverse
+    var connectionsReverse = 
+        graphDataReverse[linkData.toOperator]; 
+    connectionsReverse.delete(linkData.fromOperator);
+    
+    return true;
+}
+
+function onLinkCreate(linkId, linkData){  
+	
+	// Check if the connection is from Start to End operators
+    if(linkData.fromOperator == start_operator 
+        && linkData.toOperator == end_operator){
+        showWarnModal("&{'modal.editor.end.start.connection'}")
+        return false;
+    }    
+	
+    var connections = 
+    	graphData[linkData.fromOperator];    
+    // Check if connections Set has already initialized
+    if(!connections) {
+    	connections = new Set();
+        graphData[linkData.fromOperator] = connections;
+    } 
+    // Check repeated connection
+    else if(connections.has(linkData.toOperator)) {
+        showWarnModal("&{'modal.editor.connection.repeated'}")
+    	return false;
+    }  
+    // Check if connector has already a connection to End operator
+    else if(linkData.toOperator != end_operator && connections.has(end_operator)) {
+        showWarnModal("&{'modal.editor.connection.repeated.to.end'}");
+        return false;
+    }
+    // Check if connector has already a connection to an operator before connect to 'End'
+    else if(linkData.toOperator == end_operator && connections.size > 0) {
+        showWarnModal("&{'modal.editor.connection.has.a.valid.path'}")
+        return false;
+    }
+    
+    // Adds link connection
+    connections.add(linkData.toOperator);   
+
+    // Adds reverse link connection
+    var connectionsReverse = 
+        graphDataReverse[linkData.toOperator];    
+    if(!connectionsReverse) {
+    	connectionsReverse = new Set();
+    	graphDataReverse[linkData.toOperator] = connectionsReverse;
+    }     
+    connectionsReverse.add(linkData.fromOperator);
+        
+    if(isCyclic()) {
+    	// Reverts already added connections
+        connections.delete(linkData.toOperator);   
+
+        // Reverts already added connections reverse
+    	connectionsReverse.delete(linkData.fromOperator);       	
+    	
+    	showWarnModal("&{'modal.editor.connection.has.loops'}")
+        return false;
+    }
+    
+    return true;
+}     
+
+function isCyclicUtil(curNode, visited, recStack)  {
+    if (recStack[curNode])
+        return true;
+    if (visited[curNode])
+        return false;         
+    visited[curNode] = true; 
+    recStack[curNode] = true;    
+    var connections = 
+        graphData[curNode];       
+    if(connections && connections.size > 0) {
+        for (let node of connections) {
+            if(isCyclicUtil(node, visited, recStack)) {
+                return true;
+            }
+        }
+    }             
+    recStack[curNode] = false;
+    return false;
+}
+ 
+function isCyclic() {
+    var visited = {};
+    var recStack = {};
+    for (let node of Object.entries(graphData)) {
+        if (isCyclicUtil(node[0], visited, recStack)) {
+            return true;
+        }
+	}
+    return false;
+}
+
+function showWarnModal(message){  
+	$('#modal_description').html(message)
+    $('#messageModal').modal('show');
+}
+
+function deleteSelected() {
+    var operatorId = $flowchart.flowchart("getSelectedOperatorId");
+    if(operatorId == start_operator 
+      || operatorId == end_operator) {    
+      showWarnModal("&{'modal.editor.end.start.delete'}");
+      return;
+    } 
+    $flowchart.flowchart('deleteSelected');
+}
+
+$('.delete_selected_button').click(deleteSelected);
 
 var $draggableOperators = $('.draggable_operator');
-
-
-var operatorId = 0;
 
 $('#buttonNewInstance').draggable({cancel:false});
 
@@ -283,14 +440,114 @@ $draggableOperators.draggable({
             var positionRatio = $flowchart.flowchart('getPositionRatio');
             relativeLeft /= positionRatio;
             relativeTop /= positionRatio;
-            
-            var data = getOperatorData("Operator Normal");
+
+            var data = getOperatorData("Operator");
             data.left = relativeLeft;
             data.top = relativeTop;
             
-            $flowchart.flowchart('addOperator', data);
+            var operatorId = 
+            	$flowchart.flowchart('addOperator', data);
+            
+            $flowchart.flowchart('setOperatorTitle', 
+            		operatorId, "Operator " + operatorId);
         }
     }
+});
+
+function getNodesDepth(curNode, nodesDepth, depth){	 
+	
+	if(!depth) {
+		depth = 0;
+	} 
+	
+    if(!nodesDepth[curNode] 
+        || nodesDepth[curNode] < depth) {
+        nodesDepth[curNode] = depth;
+    } 
+    
+    var connections = 
+        graphData[curNode];   
+    
+    if(connections && connections.size > 0) {
+        for (let node of connections) {
+        	getNodesDepth(node, nodesDepth, ++depth);
+        	--depth;        	
+        }
+    }
+}
+
+function checkNodesReachesEnd(curNode, visited){
+	   
+    if(!visited) {
+    	visited = new Set();
+    } 
+    
+    if(curNode == end_operator){
+    	return true;
+    }
+    
+    if(visited.has(curNode)) {
+    	return false;
+    }
+    visited.add(curNode);
+    
+    var connections = 
+        graphData[curNode];   
+    
+    if(connections && connections.size > 0) {
+        for (let node of connections) {
+        	if(checkNodesReachesEnd(node, visited))
+        	{
+        		return true;
+        	}
+        }
+    }
+    
+    return false;
+}
+
+function checkNodesReachesStart(curNode, visited){
+    
+    if(!visited) {
+        visited = new Set();
+    } 
+    
+    if(curNode == start_operator){
+        return true;
+    }
+    
+    if(visited.has(curNode)) {
+        return false;
+    }
+    visited.add(curNode);
+    
+    var connections = 
+        graphDataReverse[curNode];   
+    
+    if(connections && connections.size > 0) {
+        for (let node of connections) {
+            if(checkNodesReachesStart(node, visited))
+            {
+                return true;
+            }
+        }
+    }
+    
+    return false;
+}
+
+
+$('#buttonAnlyseDepth').click(function(){
+
+    for (let operator of operators) {
+        if(!checkNodesReachesStart(operator)
+        		|| !checkNodesReachesEnd(operator)) {
+        	$flowchart.flowchart('addClassOperator', operator, 'operator-warning');
+        } else {
+            $flowchart.flowchart('removeClassOperator', operator, 'operator-warning');
+        }
+    }
+	
 });
 
 });
