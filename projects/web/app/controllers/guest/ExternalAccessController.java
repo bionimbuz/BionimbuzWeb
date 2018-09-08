@@ -23,6 +23,8 @@ public class ExternalAccessController extends Controller {
     private static AccessSecurity ACCESS_CHECKER;
     private static long EXPIRATION_TIME = 0;
     private static final String CONNECTED_IDENTITY = "connectedIdentity";
+    public static final String GUEST_EXTERNAL_ACCESS_CONTROLLER_DOWNLOAD = "guest.ExternalAccessController.download";
+    public static final String GUEST_EXTERNAL_ACCESS_CONTROLLER_UPLOAD = "guest.ExternalAccessController.upload";
     static {
         String EXPIRATION_TIME_CONF = Play.configuration.getProperty("application.token.maxAge", "0s");
         EXPIRATION_TIME = (Time.parseDuration(EXPIRATION_TIME_CONF) * 1000l);    

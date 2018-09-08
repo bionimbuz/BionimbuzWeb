@@ -21,6 +21,12 @@
                 <input id="${field.id}" class="${field.errorClass}" type="hidden" name="${field.name}" value="${field.value}" size="50" />
             #{/field}
         #{/crud.custom}
+        
+        #{crud.custom 'jsonGraph'}
+            #{field 'object.jsonGraph'}
+                <input id="${field.id}" class="${field.errorClass}" type="hidden" name="${field.name}" value="${field.value}" size="50" />
+            #{/field}
+        #{/crud.custom}
     
         #{crud.custom 'name'}
         
@@ -54,12 +60,12 @@
             </button>
         </div>
         <div class="btn-group" role="group">
-            <button id="buttonAnlyseDepth" type="button" class="btn btn-secondary">
+            <button id="buttonAnlyseGraph" type="button" class="btn btn-secondary">
                 <span class="glyphiconglyphicon glyphicon glyphicon-ok-circle"></span>
             </button>
         </div>
         <div class="btn-group" role="group">
-            <button id="buttonAnlyseDepth" type="button" class="btn btn-secondary">
+            <button id="configureInstance" type="button" class="btn btn-secondary">
                 <span class="glyphiconglyphicon glyphicon glyphicon glyphicon-cog"></span>
             </button>
         </div>       
@@ -289,7 +295,6 @@ var data = {
     data = JSON.parse('${object.jsonModel.raw()}');
 #{/if}
 
-
 $('#_save').click(function(){
     var data = $flowchart.flowchart('getData');
     var jsonModel = JSON.stringify(data);
@@ -297,11 +302,22 @@ $('#_save').click(function(){
     $('#saveForm').submit();
 });
 
+class JSONSet extends Set {
+    toJSON () {
+        return [...this]
+    }
+}
+
 var operators = new Set();
 // From start to end
 var graphData = {};
 //From end to start
 var graphDataReverse = {};
+
+#{if object.jsonModel != null 
+       && !object.jsonModel.isEmpty()}
+    data = JSON.parse('${object.jsonModel.raw()}');
+#{/if}
 
 // Apply the plugin on a standard, empty div...
 $flowchart.flowchart({
@@ -376,7 +392,7 @@ function onLinkCreate(linkId, linkData){
         graphData[linkData.fromOperator];    
     // Check if connections Set has already initialized
     if(!connections) {
-        connections = new Set();
+        connections = new JSONSet();
         graphData[linkData.fromOperator] = connections;
     } 
     // Check repeated connection
@@ -402,7 +418,7 @@ function onLinkCreate(linkId, linkData){
     var connectionsReverse = 
         graphDataReverse[linkData.toOperator];    
     if(!connectionsReverse) {
-        connectionsReverse = new Set();
+        connectionsReverse = new JSONSet();
         graphDataReverse[linkData.toOperator] = connectionsReverse;
     }     
     connectionsReverse.add(linkData.fromOperator);
@@ -630,13 +646,13 @@ function checkNodesReachesStart(curNode, visited){
                 return true;
             }
         }
-    }
-    
+    }    
     return false;
 }
 
-
-$('#buttonAnlyseDepth').click(function(){
+$('#buttonAnlyseGraph').click(function(){
+    var jsonModel = JSON.stringify(graphData);
+	console.log(jsonModel);	
     for (let operator of operators) {
         if(!checkNodesReachesStart(operator)
                 || !checkNodesReachesEnd(operator)) {
@@ -645,6 +661,9 @@ $('#buttonAnlyseDepth').click(function(){
             $flowchart.flowchart('removeClassOperator', operator, 'operator-warning');
         }
     }
+});
+
+$('#configureInstance').click(function(){
 });
 
 });

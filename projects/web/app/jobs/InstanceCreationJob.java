@@ -1,5 +1,8 @@
 package jobs;
 
+import static controllers.guest.ExternalAccessController.GUEST_EXTERNAL_ACCESS_CONTROLLER_DOWNLOAD;
+import static controllers.guest.ExternalAccessController.GUEST_EXTERNAL_ACCESS_CONTROLLER_UPLOAD;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +24,7 @@ import app.models.security.TokenModel;
 import common.constants.SystemConstants;
 import controllers.guest.ExternalAccessController;
 import models.ApplicationArgumentsModel;
-import models.ApplicationFileInputModel;
+import models.ApplicationFileModel;
 import models.ExecutorModel;
 import models.ImageModel;
 import models.InstanceModel;
@@ -137,7 +140,13 @@ public class InstanceCreationJob extends Job {
                         instance.getInstanceIdentity(),
                         InstanceCreationJob.REFRESH_TOKEN_URL));
         command.setListInputPathsWithExtension(
-                InstanceCreationJob.generateInputPaths(arguments));
+                InstanceCreationJob.generatePaths(
+                        arguments.getApplicationInputFiles(),
+                        GUEST_EXTERNAL_ACCESS_CONTROLLER_DOWNLOAD));
+        command.setListInputPathsWithExtension(
+                InstanceCreationJob.generatePaths(
+                        arguments.getApplicationOutputFiles(),
+                        GUEST_EXTERNAL_ACCESS_CONTROLLER_UPLOAD));
 
         return command;
     }
@@ -159,22 +168,25 @@ public class InstanceCreationJob extends Job {
         }
     }
 
-    private static List<Pair<String, String>> generateInputPaths(final ApplicationArgumentsModel arguments) {
+    private static <T extends ApplicationFileModel> 
+                List<Pair<String, String>> generatePaths(
+            final List<T> argumentFiles,
+            final String fileUrl) {
 
-        final List<Pair<String, String>> listInputs = new ArrayList<>();
-        for (final ApplicationFileInputModel input : arguments.getApplicationInputFiles()) {
+        final List<Pair<String, String>> listFiles = new ArrayList<>();
+        for (final ApplicationFileModel argumentFile : argumentFiles) {
 
-            final SpaceFileModel spaceFile = input.getSpaceFile();
+            final SpaceFileModel spaceFile = argumentFile.getSpaceFile();
             final Long spaceFileId = spaceFile.getId();
             final String extension = FilenameUtils.getExtension(spaceFile.getName());
             final Map<String, Object> args = new HashMap();
             args.put("id", spaceFileId);
-            final String inputUrl = InstanceCreationJob.BASE_URL +
-                    Router.reverse("guest.ExternalAccessController.download", args).url;
+            final String url = InstanceCreationJob.BASE_URL +
+                    Router.reverse(fileUrl, args).url;
 
-            listInputs.add(new Pair<>(inputUrl, extension));
+            listFiles.add(new Pair<>(url, extension));
         }
-        return listInputs;
+        return listFiles;
     }
 
     private static SecureCoordinatorAccess generateSecureAccess(

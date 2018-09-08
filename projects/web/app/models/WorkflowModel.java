@@ -39,6 +39,8 @@ public class WorkflowModel extends GenericModel {
     private Date creationDate;
     @Column(length=3000)
     private String jsonModel;
+    @Column(length=3000)
+    private String jsonGraph;
         
     public WorkflowModel() {        
         super();
@@ -79,6 +81,12 @@ public class WorkflowModel extends GenericModel {
     }
     public void setJsonModel(String jsonModel) {
         this.jsonModel = jsonModel;
+    }
+    public String getJsonGraph() {
+        return jsonGraph;
+    }
+    public void setJsonGraph(String jsonGraph) {
+        this.jsonGraph = jsonGraph;
     }
 
     @Override
