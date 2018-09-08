@@ -14,7 +14,7 @@
 <br>
 
 #{crud.table fields: ['executor.name', 'cloudInstanceName', 'cloudInstanceIp',
-            'plugin.name', 'typeName', 'regionName', 'zoneName', 'price', 'creationDate']}
+            'plugin.name', 'price', 'creationDate', 'phase', 'status']}
 
     #{crud.custom 'executor.name'}
         <a href="@{show(object._key())}">${object.executor.name}</a>

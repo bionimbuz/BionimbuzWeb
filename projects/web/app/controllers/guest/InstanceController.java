@@ -37,7 +37,6 @@ import play.data.binding.Binder;
 import play.data.validation.Validation;
 import play.exceptions.TemplateNotFoundException;
 import play.i18n.Messages;
-import play.libs.F.Promise;
 
 @For(InstanceModel.class)
 @Check("/list/instances")
@@ -50,21 +49,6 @@ public class InstanceController extends BaseAdminController {
     private static final String REGION_SELECTED_ID = REGION_SELECTED + ".id";
 
     public static void blank(ExecutorModel executorSelected) throws Exception {
-
-        //
-        //
-        //
-        final long count = InstanceModel.count();
-        if (count > 0) {
-            final InstanceModel object = InstanceModel.findById(1L);
-            final Promise jobResult = new InstanceCreationJob(object.getId(), getConnectedUser().getId()).now();
-            if (jobResult.isDone()) {
-                System.out.println("acabou o job hein");
-            }
-        }
-        //
-        //
-        //
 
         final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);
@@ -139,8 +123,7 @@ public class InstanceController extends BaseAdminController {
 
         object._save();
         if (object.isExecutionAfterCreation()) {
-            new InstanceCreationJob(object.getId(), getConnectedUser().getId()).doJob();
-            //            new InstanceCreationJob(object, getConnectedUser().getId()).now();
+            new InstanceCreationJob(object.getId(), getConnectedUser().getId()).now();
         }
 
         flash.success(Messages.get("crud.created", type.modelName));

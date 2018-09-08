@@ -296,6 +296,7 @@ object.cloudInstanceIp=External IP
 object.executor.name=Executor
 object.regionName=Region
 object.creationDate=Creation Date
+object.phase=Phase
 tab.application=Application Arguments
 tab.cloud=Cloud Settings
 

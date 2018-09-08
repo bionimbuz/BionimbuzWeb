@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -143,7 +144,7 @@ public class InstanceCreationJob extends Job {
                 InstanceCreationJob.generatePaths(
                         arguments.getApplicationInputFiles(),
                         GUEST_EXTERNAL_ACCESS_CONTROLLER_DOWNLOAD));
-        command.setListInputPathsWithExtension(
+        command.setListOutputPathsWithExtension(
                 InstanceCreationJob.generatePaths(
                         arguments.getApplicationOutputFiles(),
                         GUEST_EXTERNAL_ACCESS_CONTROLLER_UPLOAD));
@@ -159,17 +160,17 @@ public class InstanceCreationJob extends Job {
         while (attempts++ < MAX_ATTEMPTS) {
             try {
                 final Body<Boolean> body = executorApi.startExecution(command);
-                if (body == null || body.getContent() == null) {
-                    continue;
+                if (body != null && body.getContent() != null) {
+                    break;
                 }
-            } catch (final IOException e) {
+                TimeUnit.SECONDS.sleep(2);
+            } catch (final IOException | InterruptedException e) {
                 Logger.warn("Command execution attempt failed, attempting [%s]", attempts);
             }
         }
     }
 
-    private static <T extends ApplicationFileModel> 
-                List<Pair<String, String>> generatePaths(
+    private static <T extends ApplicationFileModel> List<Pair<String, String>> generatePaths(
             final List<T> argumentFiles,
             final String fileUrl) {
 

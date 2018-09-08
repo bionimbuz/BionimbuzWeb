@@ -90,6 +90,18 @@
             <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value}"/>
         </div>
     #{/field}
+    #{field 'object.phase' }
+        <div class="form-group row">
+            <label for="${field.id}">&{field.name}</label>
+            <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value}"/>
+        </div>
+    #{/field}
+    #{field 'object.status' }
+        <div class="form-group row">
+            <label for="${field.id}">&{field.name}</label>
+            <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value}"/>
+        </div>
+    #{/field}    
 
     <div class="btn-row text-center">
         <a href="@{list()}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>
