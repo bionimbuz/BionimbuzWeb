@@ -2,24 +2,35 @@ package app.models;
 
 public class SecureCoordinatorAccess {
 
-    private String token;    
+    private String token;
     private String refreshTokenUrl;
-    
-    public SecureCoordinatorAccess(String token, String refreshTokenURl) {
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Constructors.
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    public SecureCoordinatorAccess() {
+        super();
+    }
+
+    public SecureCoordinatorAccess(final String token, final String refreshTokenURl) {
+        super();
         this.token = token;
         this.refreshTokenUrl = refreshTokenURl;
     }
-    
+
     public final String getToken() {
-        return token;
+        return this.token;
     }
-    public final void setToken(String token) {
+
+    public final void setToken(final String token) {
         this.token = token;
     }
+
     public final String getRefreshTokenUrl() {
-        return refreshTokenUrl;
+        return this.refreshTokenUrl;
     }
-    public final void setRefreshTokenUrl(String refreshTokenURl) {
+
+    public final void setRefreshTokenUrl(final String refreshTokenURl) {
         this.refreshTokenUrl = refreshTokenURl;
-    }    
+    }
 }

@@ -48,7 +48,7 @@ public class DevelopmentStartupJob extends Job {
 
         final PluginModel pluginGCE = this.insertGCEPlugin();
         this.insertGCEImages(pluginGCE);
-        
+
         final PluginModel pluginAWS = this.insertAWSPlugin();
         this.insertAWSImages(pluginAWS);
 
@@ -83,7 +83,7 @@ public class DevelopmentStartupJob extends Job {
         this.insertAWSCredential(pluginAWS, userNormal);
 
         this.insertLocalCredential(pluginLocal, userAdmin);
-        
+
         this.insertFakeExecutor(pluginLocal);
         this.insertExecutor(pluginGCE, pluginAWS, pluginLocal);
     }
@@ -99,38 +99,68 @@ public class DevelopmentStartupJob extends Job {
         executor.setName("Apache");
         executor.setStartupScript(
                 "#!/bin/bash \n"
-                + "apt-get update && apt-get install -y apache2 && hostname > /var/www/index.html");
+                        + "apt-get update && apt-get install -y apache2 && hostname > /var/www/index.html");
         executor.setExecutionScriptEnabled(false);
         executor.setFirewallTcpRules("80,8080");
         executor.setListImages(listImages);
         executor.save();
     }
-    
+
     private void insertFakeExecutor(final PluginModel... plugins) {
-        final ExecutorModel executor = new ExecutorModel();
         final List<ImageModel> listImages = new ArrayList<>();
         for (final PluginModel plugin : plugins) {
             plugin.refresh();
             listImages.add(
                     plugin.getListImages().get(0));
         }
-        executor.setName("Application Fake");
+        saveUnixExecutor(listImages);
+        saveWindowsExecutor(listImages);
+    }
+
+    private static void saveUnixExecutor(final List<ImageModel> listImages) {
+        final ExecutorModel executor = new ExecutorModel();
+        executor.setName("Unix Application Fake");
         executor.setStartupScript(
-            "#!/bin/bash\n" + 
-            "\n" + 
-            "COORDINATOR=executor-coordinator-0.1.jar\n" + 
-            "curl -o ${COORDINATOR} http://localhost:8282/spaces/test/file/${COORDINATOR}/download\n" + 
-            "apt-get install -y openjdk-8-jdk && java -jar ${COORDINATOR}" +
-            "\n");
+                "#!/bin/bash\n" +
+                        "\n" +
+                        "COORDINATOR=executor-coordinator-0.1.jar\n" +
+                        "curl -o ${COORDINATOR} http://localhost:8282/spaces/test/file/${COORDINATOR}/download\n" +
+                        "apt-get install -y openjdk-8-jdk && java -jar ${COORDINATOR}" +
+                        "\n");
         executor.setExecutionScript(
-                "#!/bin/bash\n" + 
-                "\n" + 
-                "cat $1 > $3\n" + 
-                "cat $2 >> $3\n" + 
-                "\n" + 
-                "echo \"Execution time: `date`\" >> $3\n" + 
-                "\n" + 
-                "echo \"Extra file execution time: `date`\" >> $4");
+                "#!/bin/bash\n" +
+                        "\n" +
+                        "cat $1 > $3\n" +
+                        "cat $2 >> $3\n" +
+                        "\n" +
+                        "echo \"Execution time: `date`\" >> $3\n" +
+                        "\n" +
+                        "echo \"Extra file execution time: `date`\" >> $4");
+        executor.setExecutionScriptEnabled(true);
+        executor.setCommandLine("{i} {i} {o} {o}");
+        executor.setListImages(listImages);
+        executor.save();
+    }
+
+    private static void saveWindowsExecutor(final List<ImageModel> listImages) {
+
+        final ExecutorModel executor = new ExecutorModel();
+        executor.setName("Windows Application Fake");
+        executor.setStartupScript("SET COORDINATOR=executor-coordinator-0.1.jar\n" +
+                "curl -o %COORDINATOR% http://localhost:8282/spaces/test/file/%COORDINATOR%/download\n" +
+                "java -jar %COORDINATOR%" +
+                "\n");
+        executor.setExecutionScript("type %1 > %3\n" +
+                "type %2 >> %3\n" +
+                "\n" +
+                "set h=%TIME:~0,2%\n" +
+                "set m=%TIME:~3,2%\n" +
+                "set s=%TIME:~6,2%\n" +
+                "set time=%h%%m%%s%\n" +
+                "\n" +
+                "echo \"Execution time: %time%\" >> %3\n" +
+                "\n" +
+                "echo \"Extra file execution time: %time%\" >> %4");
         executor.setExecutionScriptEnabled(true);
         executor.setCommandLine("{i} {i} {o} {o}");
         executor.setListImages(listImages);
@@ -151,15 +181,15 @@ public class DevelopmentStartupJob extends Job {
     }
 
     private void insertGCEImages(final PluginModel plugin) {
-        ImageModel image = new ImageModel();
+        final ImageModel image = new ImageModel();
         image.setName("ubuntu-1604-xenial-v20180627");
         image.setUrl("https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1604-xenial-v20180627");
         image.setPlugin(plugin);
         image.save();
     }
-    
+
     private void insertAWSImages(final PluginModel plugin) {
-        ImageModel image = new ImageModel();
+        final ImageModel image = new ImageModel();
         image.setName("ubuntu-xenial-16.04-amd64-server-20180627");
         image.setUrl("ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-20180627");
         image.setPlugin(plugin);
@@ -186,7 +216,7 @@ public class DevelopmentStartupJob extends Job {
         model.setUser(user);
         model.save();
     }
-    
+
     private void insertAWSCredential(final PluginModel plugin, final UserModel user) {
         final CredentialModel model = new CredentialModel();
         final EncryptedFileField data = new EncryptedFileField(
@@ -227,7 +257,7 @@ public class DevelopmentStartupJob extends Job {
         model.save();
         return model;
     }
-    
+
     private PluginModel insertAWSPlugin() {
         final PluginModel model = new PluginModel();
         model.setAuthType(app.models.PluginInfoModel.AuthenticationType.AUTH_AWS);

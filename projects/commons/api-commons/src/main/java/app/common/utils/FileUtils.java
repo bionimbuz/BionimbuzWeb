@@ -2,17 +2,21 @@ package app.common.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.HashSet;
 import java.util.Set;
 
 public class FileUtils {
-    public static void deleteDir(File file) {
-        File[] contents = file.listFiles();
+
+    private static final String POSIX_SUPPORT = "posix";
+
+    public static void deleteDir(final File file) {
+        final File[] contents = file.listFiles();
         if (contents != null) {
-            for (File f : contents) {
-                if (! Files.isSymbolicLink(f.toPath())) {
+            for (final File f : contents) {
+                if (!Files.isSymbolicLink(f.toPath())) {
                     deleteDir(f);
                 }
             }
@@ -20,8 +24,13 @@ public class FileUtils {
         file.delete();
     }
 
-    public static  void setExecutionPermission(File file) throws IOException{
-        Set<PosixFilePermission> perms = new HashSet<>();
+    public static void setExecutionPermission(final File file) throws IOException {
+
+        if (!FileSystems.getDefault().supportedFileAttributeViews().contains(POSIX_SUPPORT)) {
+            return;
+        }
+
+        final Set<PosixFilePermission> perms = new HashSet<>();
         perms.add(PosixFilePermission.OWNER_READ);
         perms.add(PosixFilePermission.OWNER_WRITE);
         perms.add(PosixFilePermission.OWNER_EXECUTE);

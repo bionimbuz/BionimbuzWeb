@@ -45,11 +45,11 @@ public class ComputingController extends AbstractComputingController {
 
         checkOphanInstances();
 
-        String instanceName = getNewName();
-        Integer id = PluginComputingInstanceModel.extractIdFromName(
-                        instanceName, GlobalConstants.BNZ_INSTANCE);
+        final String instanceName = getNewName();
+        final Integer id = PluginComputingInstanceModel.extractIdFromName(
+                instanceName, GlobalConstants.BNZ_INSTANCE);
 
-        String ip = System.getProperty(
+        final String ip = System.getProperty(
                 SystemConstants.SYSTEM_PROPERTY_IP,
                 InetAddress.getLocalHost().getHostAddress());
 
@@ -57,21 +57,18 @@ public class ComputingController extends AbstractComputingController {
         model.setName(instanceName);
         model.setExternalIp(ip);
 
-        String instancePath =
-                createInstanceDir(instanceName);
+        final String instancePath = createInstanceDir(instanceName);
 
-        String startupScript =
-                generateStartupScript(
-                        instancePath,
-                        model.getStartupScript());
+        final String startupScript = generateStartupScript(
+                instancePath,
+                model.getStartupScript());
 
-        Process process = Runtime.getRuntime().exec(
+        final Process process = Runtime.getRuntime().exec(
                 startupScript,
                 null,
                 new File(instancePath));
 
-        InstanceProcess instanceProcess =
-                new InstanceProcess(instancePath, process, model);
+        final InstanceProcess instanceProcess = new InstanceProcess(instancePath, process, model);
 
         insertInstanceProcess(id, instanceProcess);
 
@@ -89,20 +86,18 @@ public class ComputingController extends AbstractComputingController {
 
         checkOphanInstances();
 
-        if(!SystemConstants.PLUGIN_ZONE.equals(zone)) {
+        if (!SystemConstants.PLUGIN_ZONE.equals(zone)) {
             return new ResponseEntity<>(
                     Body.create(null),
                     HttpStatus.NOT_FOUND);
         }
 
-        Integer instanceId =
-                PluginComputingInstanceModel.extractIdFromName(
-                        name, GlobalConstants.BNZ_INSTANCE);
+        final Integer instanceId = PluginComputingInstanceModel.extractIdFromName(
+                name, GlobalConstants.BNZ_INSTANCE);
 
-        InstanceProcess instanceProcess =
-                getInstanceProcess(instanceId);
+        final InstanceProcess instanceProcess = getInstanceProcess(instanceId);
 
-        if(instanceProcess == null) {
+        if (instanceProcess == null) {
             return new ResponseEntity<>(
                     Body.create(null),
                     HttpStatus.NOT_FOUND);
@@ -123,11 +118,10 @@ public class ComputingController extends AbstractComputingController {
 
         deleteInstanceDir(name);
 
-        Integer instanceId =
-                PluginComputingInstanceModel.extractIdFromName(
-                        name, GlobalConstants.BNZ_INSTANCE);
+        final Integer instanceId = PluginComputingInstanceModel.extractIdFromName(
+                name, GlobalConstants.BNZ_INSTANCE);
 
-        if(!existsInstanceProcess(instanceId)) {
+        if (!existsInstanceProcess(instanceId)) {
             return new ResponseEntity<>(
                     Body.create(false),
                     HttpStatus.OK);
@@ -147,8 +141,8 @@ public class ComputingController extends AbstractComputingController {
 
         checkOphanInstances();
 
-        List<PluginComputingInstanceModel> res = new ArrayList<>();
-        for (Map.Entry<Integer, InstanceProcess> entry : processes.entrySet()) {
+        final List<PluginComputingInstanceModel> res = new ArrayList<>();
+        for (final Map.Entry<Integer, InstanceProcess> entry : processes.entrySet()) {
             res.add(entry.getValue().getPluginInstance());
         }
 
@@ -164,19 +158,19 @@ public class ComputingController extends AbstractComputingController {
             final String token,
             final String identity) throws Exception {
 
-        List<PluginComputingRegionModel> res = new ArrayList<>();
+        final List<PluginComputingRegionModel> res = new ArrayList<>();
         res.add(createRegionModel());
         return ResponseEntity.ok(
                 Body.create(res));
     }
-    
+
     @Override
     protected ResponseEntity<Body<List<PluginComputingZoneModel>>> listRegionZones(
             final String token,
             final String identity,
-            final String name) throws Exception {        
-        if(SystemConstants.PLUGIN_REGION.equals(name)) {
-            List<PluginComputingZoneModel> res = new ArrayList<>();
+            final String name) throws Exception {
+        if (SystemConstants.PLUGIN_REGION.equals(name)) {
+            final List<PluginComputingZoneModel> res = new ArrayList<>();
             res.add(createZoneModel());
             return ResponseEntity.ok(
                     Body.create(res));
@@ -185,51 +179,53 @@ public class ComputingController extends AbstractComputingController {
                 HttpStatus.NOT_FOUND);
     }
 
-    private PluginComputingRegionModel createRegionModel() {
+    private static PluginComputingRegionModel createRegionModel() {
         return new PluginComputingRegionModel(
-                        SystemConstants.PLUGIN_REGION);
+                SystemConstants.PLUGIN_REGION);
     }
 
     public static PluginComputingZoneModel createZoneModel() {
         return new PluginComputingZoneModel(
-                        SystemConstants.PLUGIN_ZONE);
+                SystemConstants.PLUGIN_ZONE);
     }
 
-    private static class InstanceProcess implements Runnable{
+    private static class InstanceProcess implements Runnable {
 
-        private String workingDirPath;
-        private Process process;
-        private PluginComputingInstanceModel pluginInstance;
+        private final String workingDirPath;
+        private final Process process;
+        private final PluginComputingInstanceModel pluginInstance;
 
         public InstanceProcess(
-                String workingDirPath,
-                Process process,
-                PluginComputingInstanceModel pluginInstance) {
+                final String workingDirPath,
+                final Process process,
+                final PluginComputingInstanceModel pluginInstance) {
             this.workingDirPath = workingDirPath;
             this.process = process;
             this.pluginInstance = pluginInstance;
-            startWritingStdoutFile();
+            this.startWritingStdoutFile();
         }
 
         private void startWritingStdoutFile() {
-            new Thread(this).start();;
+            new Thread(this).start();
         }
 
         public Process getProcess() {
-            return process;
+            return this.process;
         }
+
         public PluginComputingInstanceModel getPluginInstance() {
-            return pluginInstance;
+            return this.pluginInstance;
         }
 
         @Override
         public void run() {
-            File stdoutFile = new File(workingDirPath, "stdout.txt");
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(stdoutFile))) {
-                InputStream stdout = process.getInputStream ();
-                BufferedReader reader = new BufferedReader (new InputStreamReader(stdout));
+            final File stdoutFile = new File(this.workingDirPath, "stdout.txt");
+            try (
+                 BufferedWriter writer = new BufferedWriter(new FileWriter(stdoutFile))) {
+                final InputStream stdout = this.process.getInputStream();
+                final BufferedReader reader = new BufferedReader(new InputStreamReader(stdout));
                 String line = "";
-                while ((line = reader.readLine ()) != null) {
+                while ((line = reader.readLine()) != null) {
                     writer.write(line);
                     writer.newLine();
                     writer.flush();
@@ -239,106 +235,100 @@ public class ComputingController extends AbstractComputingController {
                 writer.write("END OF EXECUTION");
                 writer.newLine();
                 writer.write("#############################################################");
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private synchronized void checkOphanInstances() throws Exception {
-        File instancesDir = new File(SystemConstants.INSTANCES_DIR);
-        if(!instancesDir.exists()) {
+    private synchronized static void checkOphanInstances() throws Exception {
+        final File instancesDir = new File(SystemConstants.INSTANCES_DIR);
+        if (!instancesDir.exists()) {
             return;
         }
 
         // Insert process in memory that only exists your directory
-        for (File file : instancesDir.listFiles()) {
-            if (!file.isDirectory())
+        for (final File file : instancesDir.listFiles()) {
+            if (!file.isDirectory()) {
                 continue;
-            String instanceName = file.getName();
-            Integer instanceId =
-                    PluginComputingInstanceModel.extractIdFromName(
-                            instanceName, GlobalConstants.BNZ_INSTANCE);
-            if(!existsInstanceProcess(instanceId)) {
+            }
+            final String instanceName = file.getName();
+            final Integer instanceId = PluginComputingInstanceModel.extractIdFromName(
+                    instanceName, GlobalConstants.BNZ_INSTANCE);
+            if (!existsInstanceProcess(instanceId)) {
                 insertFakeProcess(instanceId);
             }
         }
 
         // Removes from memory process that dont have a directory
-        List<Integer> idsToRemove = new ArrayList<>();
+        final List<Integer> idsToRemove = new ArrayList<>();
         String instanceName = "";
-        for (Integer id : processes.keySet()){
-            instanceName =
-                    PluginComputingInstanceModel.generateNameForId(
-                            id, GlobalConstants.BNZ_INSTANCE);
-            String instancePath =
-                    getInstancePath(instanceName);
-            File instaceDir = new File(instancePath);
-            if(!instaceDir.exists()) {
+        for (final Integer id : processes.keySet()) {
+            instanceName = PluginComputingInstanceModel.generateNameForId(
+                    id, GlobalConstants.BNZ_INSTANCE);
+            final String instancePath = getInstancePath(instanceName);
+            final File instaceDir = new File(instancePath);
+            if (!instaceDir.exists()) {
                 idsToRemove.add(id);
             }
         }
-        for(Integer id : idsToRemove) {
+        for (final Integer id : idsToRemove) {
             removeInstanceProcess(id);
         }
     }
 
-    private String getNewName() throws Exception {
+    private static String getNewName() throws Exception {
 
         String instanceName = "";
-        while(true) {
-            Integer newId = getNextInstanceId();
-            instanceName =
-                    PluginComputingInstanceModel.generateNameForId(
-                            newId, GlobalConstants.BNZ_INSTANCE);
-            String instancePath =
-                    getInstancePath(instanceName);
-            File instanceDir = new File(instancePath);
-            if(!instanceDir.exists())
+        while (true) {
+            final Integer newId = getNextInstanceId();
+            instanceName = PluginComputingInstanceModel.generateNameForId(
+                    newId, GlobalConstants.BNZ_INSTANCE);
+            final String instancePath = getInstancePath(instanceName);
+            final File instanceDir = new File(instancePath);
+            if (!instanceDir.exists()) {
                 break;
+            }
         }
         return instanceName;
     }
 
-    protected String generateStartupScript(
+    protected static String generateStartupScript(
             final String path,
             final String content) throws IOException {
-        String extension =  OsUtil.getDefaultScriptExtension();
-        File scriptFile = new File(path, STARTUP_SCRIPT_NAME + "." + extension);
-        String absolutePath = scriptFile.getAbsolutePath();
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(scriptFile))) {
+        final String extension = OsUtil.getDefaultScriptExtension();
+        final File scriptFile = new File(path, STARTUP_SCRIPT_NAME + "." + extension);
+        final String absolutePath = scriptFile.getAbsolutePath();
+        try (
+             BufferedWriter writer = new BufferedWriter(new FileWriter(scriptFile))) {
             writer.write(content);
         }
-        if(scriptFile.exists()) {
+        if (scriptFile.exists()) {
             FileUtils.setExecutionPermission(scriptFile);
         }
         return absolutePath;
     }
 
-    private void insertFakeProcess(Integer id) throws Exception{
+    private static void insertFakeProcess(final Integer id) throws Exception {
 
-        PluginComputingInstanceModel pluginInstanceModel =
-                new PluginComputingInstanceModel();
-        String instanceName =
-                PluginComputingInstanceModel.generateNameForId(
-                        id, GlobalConstants.BNZ_INSTANCE);
-        String ip = System.getProperty(
+        final PluginComputingInstanceModel pluginInstanceModel = new PluginComputingInstanceModel();
+        final String instanceName = PluginComputingInstanceModel.generateNameForId(
+                id, GlobalConstants.BNZ_INSTANCE);
+        final String ip = System.getProperty(
                 SystemConstants.SYSTEM_PROPERTY_IP,
                 InetAddress.getLocalHost().getHostAddress());
-        String instancePath =
-                getInstancePath(instanceName);
+        final String instancePath = getInstancePath(instanceName);
 
         pluginInstanceModel.setId(String.valueOf(id));
         pluginInstanceModel.setName(instanceName);
         pluginInstanceModel.setExternalIp(ip);
         pluginInstanceModel.setStartupScript("echo");
-        Process process = Runtime.getRuntime().exec(
+        final Process process = Runtime.getRuntime().exec(
                 pluginInstanceModel.getStartupScript(),
                 null,
                 new File(instancePath));
 
-        InstanceProcess instanceProcess =
-                new InstanceProcess(instancePath, process, pluginInstanceModel);
+        final InstanceProcess instanceProcess = new InstanceProcess(instancePath, process, pluginInstanceModel);
 
         insertInstanceProcess(id, instanceProcess);
     }
@@ -351,43 +341,42 @@ public class ComputingController extends AbstractComputingController {
         return ++instanceIdSequence;
     }
 
-    public static String createInstanceDir(String name) {
+    public static String createInstanceDir(final String name) {
 
-        String instancePath =
-                getInstancePath(name);
+        final String instancePath = getInstancePath(name);
         deleteInstanceDir(name);
-        File dir = new File(instancePath);
+        final File dir = new File(instancePath);
         dir.mkdirs();
         return instancePath;
     }
 
-    public static void deleteInstanceDir(String name) {
-        String instancePath =
-                getInstancePath(name);
-        File dir = new File(instancePath);
+    public static void deleteInstanceDir(final String name) {
+        final String instancePath = getInstancePath(name);
+        final File dir = new File(instancePath);
         if (dir.exists()) {
             FileUtils.deleteDir(dir);
         }
     }
 
-    private static synchronized Boolean existsInstanceProcess(Integer id) {
+    private static synchronized Boolean existsInstanceProcess(final Integer id) {
         return processes.containsKey(id);
     }
 
-    private static synchronized InstanceProcess getInstanceProcess(Integer id) {
+    private static synchronized InstanceProcess getInstanceProcess(final Integer id) {
         return processes.get(id);
     }
 
     private static synchronized void insertInstanceProcess(
-            Integer id, InstanceProcess instanceProcess) {
+            final Integer id, final InstanceProcess instanceProcess) {
         processes.put(id, instanceProcess);
     }
 
     private static synchronized void removeInstanceProcess(
-            Integer id) {
-        InstanceProcess instProc = processes.get(id);
-        if(instProc == null)
+            final Integer id) {
+        final InstanceProcess instProc = processes.get(id);
+        if (instProc == null) {
             return;
+        }
         instProc.getProcess().destroyForcibly();
         processes.remove(id);
     }
