@@ -254,8 +254,21 @@ function getDefaultOperatorData() {
   return data;
 }
 
+class JSONSet extends Set {
+    toJSON () {
+        return [...this]
+    }
+}
+
+
 var start_operator = "start_operator";
 var end_operator = "end_operator";
+
+var operators = new Set();
+// From start to end
+var graphData = {};
+//From end to start
+var graphDataReverse = {};
 
 var data = {
     operators: {
@@ -291,33 +304,18 @@ var data = {
 };
 
 #{if object.jsonModel != null 
-	   && !object.jsonModel.isEmpty()}
-    data = JSON.parse('${object.jsonModel.raw()}');
+	   && !object.jsonModel.isEmpty()}	   
+    data = JSON.parse('${object.jsonModel.raw()}');    
 #{/if}
-
+	
 $('#_save').click(function(){
     var data = $flowchart.flowchart('getData');
     var jsonModel = JSON.stringify(data);
     $('#object_jsonModel').val(jsonModel);
+    var jsonGraph = JSON.stringify(graphData);
+    $('#object_jsonGraph').val(jsonGraph);
     $('#saveForm').submit();
 });
-
-class JSONSet extends Set {
-    toJSON () {
-        return [...this]
-    }
-}
-
-var operators = new Set();
-// From start to end
-var graphData = {};
-//From end to start
-var graphDataReverse = {};
-
-#{if object.jsonModel != null 
-       && !object.jsonModel.isEmpty()}
-    data = JSON.parse('${object.jsonModel.raw()}');
-#{/if}
 
 // Apply the plugin on a standard, empty div...
 $flowchart.flowchart({
@@ -381,6 +379,7 @@ function onLinkDelete(linkId, forced){
 
 function onLinkCreate(linkId, linkData){  
     
+	debugger;
     // Check if the connection is from Start to End operators
     if(linkData.fromOperator == start_operator 
         && linkData.toOperator == end_operator){
