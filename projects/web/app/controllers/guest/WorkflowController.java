@@ -1,7 +1,9 @@
 package controllers.guest;
 
 import java.util.Date;
+import java.util.List;
 
+import app.common.utils.StringUtils;
 import controllers.CRUD.For;
 import controllers.Check;
 import controllers.adm.BaseAdminController;
@@ -10,12 +12,33 @@ import models.WorkflowModel.WORKFLOW_STATUS;
 import models.WorkflowNodeModel;
 import play.data.binding.Binder;
 import play.data.validation.Validation;
+import play.db.Model;
 import play.exceptions.TemplateNotFoundException;
 import play.i18n.Messages;
 
 @For(WorkflowModel.class)
 @Check("/list/workflows")
 public class WorkflowController extends BaseAdminController {
+    
+    public static void list(int page, String search, String searchFields, String orderBy, String order) {
+        final CustomObjectType type = CustomObjectType.get(getControllerClass());
+        notFoundIfNull(type);
+        if (page < 1) {
+            page = 1;
+        }        
+        if(StringUtils.isEmpty(orderBy)) {
+            orderBy = "creationDate";
+            order = "DESC";
+        }
+        final List<Model> objects = type.findPage(page, search, searchFields, orderBy, order, (String) request.args.get("where"));
+        final Long count = type.count(search, searchFields, (String) request.args.get("where"));
+        final Long totalCount = type.count(null, null, (String) request.args.get("where"));
+        try {
+            render(type, objects, count, totalCount, page, orderBy, order);
+        } catch (final TemplateNotFoundException e) {
+            render("CRUD/list.html", type, objects, count, totalCount, page, orderBy, order);
+        }
+    }
     
     public static void save(final Long id) throws Exception {
         final CustomObjectType type = CustomObjectType.get(getControllerClass());

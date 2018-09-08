@@ -125,6 +125,7 @@ PUT     /instances/{id}                         guest.InstanceController.save
 DELETE  /instances/{id}                         guest.InstanceController.delete
 GET     /instances                              guest.InstanceController.blank
 POST    /instances                              guest.InstanceController.create
+GET     /instance/node/{id}                     guest.InstanceController.createNode
 
 # WorkflowController
 GET     /list/workflows                         guest.WorkflowController.list

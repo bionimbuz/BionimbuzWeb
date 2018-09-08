@@ -10,6 +10,10 @@
 <br>
 
 #{form id:'submitExecutor', action:@blank(), enctype:'multipart/form-data', class: 'submitForm'}
+    #{field 'workflowNodeId'}
+    <input type="hidden" id="${field.id}" name="${field.name}" 
+            value="${field.value}">
+    #{/field} 
     #{field 'executorSelected'}
     <input type="hidden" id="${field.id}" name="${field.name}.id" 
             value="${field.value != null ? field.value.id : ''}">
@@ -18,6 +22,16 @@
 
 <div class="row" >
 #{form action:@create(), enctype:'multipart/form-data', class: 'submitForm'}
+    
+    #{field 'workflowNodeId'}
+    <input type="hidden" id="${field.id}" name="${field.name}" 
+            value="${field.value}">
+    #{/field} 
+    
+    #{field 'object.workflowNode'}   
+    <input type="hidden" id="${field.id}" name="${field.name}.id" 
+            value="${field.value != null ? field.value.id : ''}">
+    #{/field}
 
     #{field 'object.executor'}    
     <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
@@ -38,22 +52,24 @@
         #{/ifError}
     </div>
     #{/field} 
-    
-    
-    #{if executorSelected != null}
-    
+        
+#{if executorSelected != null}    
 
-    #{field 'object.executionAfterCreation'}    
-    <div class="form-group row ${field.errorClass ? 'has-error' : ''}">            
-        <input type="checkbox" id="${field.id}" name="${field.name}" class="icheck" value="true" 
-                ${ (field.value != null && field.value) ? 'checked="true" '.raw() : ''} /> 
-        <input type="hidden" name="${field.name}" value="false" />        
-        <label for="${field.id}" style="margin-left: 10px;">&{field.name}</label>        
-        #{ifError field.name}
-            <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
-        #{/ifError} 
-    </div>
-    #{/field} 
+    #{if workflowNodeId == null}
+    
+        #{field 'object.executionAfterCreation'}    
+        <div class="form-group row ${field.errorClass ? 'has-error' : ''}">            
+            <input type="checkbox" id="${field.id}" name="${field.name}" class="icheck" value="true" 
+                    ${ (field.value != null && field.value) ? 'checked="true" '.raw() : ''} /> 
+            <input type="hidden" name="${field.name}" value="false" />        
+            <label for="${field.id}" style="margin-left: 10px;">&{field.name}</label>        
+            #{ifError field.name}
+                <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+            #{/ifError} 
+        </div>
+        #{/field} 
+    
+    #{/if}
 
     <ul class="nav nav-tabs" style="margin-bottom: 20px;">
         <li class="active">
@@ -297,13 +313,18 @@
         </div>
     </div>
 
-    #{/if}
+#{/if}
 
     <div class="btn-row text-center">
         <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_save">&{'crud.save'}</button>
         <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_saveAndContinue">&{'crud.saveAndContinue'}</button>
-        <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_saveAndAddAnother">&{'crud.saveAndAddAnother'}</button>
-        <a href="@{list()}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>
+        #{if object.workflowNode != null}            
+            <a href="@{controllers.guest.WorkflowController.show(object.workflowNode.workflow.id)}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>
+        #{/if}
+        #{else}
+            <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_saveAndAddAnother">&{'crud.saveAndAddAnother'}</button>
+            <a href="@{list()}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>
+        #{/else}
     </div>
 #{/form}
 </div>
@@ -555,6 +576,9 @@ $(function(){
     
     function updateCommandLineArea(){
         var commandLine = $('#commandLine').data('command-line');      
+        if(!commandLine) {
+        	return;
+        }
         
         // Replace option arguments
         var arguments = $('#applicationArguments').val();      

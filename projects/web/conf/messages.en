@@ -285,6 +285,7 @@ object.credentialUsage=Credential Usage
 object.executor=Executor
 object.executionAfterCreation=Request execution after creation
 object.instanceTypeRegion=Instance Types
+object.workflowNode.workflow.name=Workflow
 ONLY_SHARED=Only Shared
 ONLY_OWNER=Only Owner
 SHARED_FIRST=Shared First
@@ -368,6 +369,11 @@ modal.editor.connection.repeated=A connection between operators already exists.
 modal.editor.connection.repeated.to.end=The operator has already a connection to 'End'.
 modal.editor.connection.has.a.valid.path=The operator has already a valid path.
 modal.editor.connection.has.loops=The connection created generates a recursion and that is not permitted.
+modal.editor.saving=Saving model...
+modal.editor.connection.not.created=Some nodes don't reaches 'Start' or 'End' operators
+modal.editor.connection.ok=Connections from 'Start' and 'End' operators are ok.
+modal.editor.model.ok=Information
+
 
 # Other labels
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

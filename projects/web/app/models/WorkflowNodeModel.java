@@ -1,14 +1,16 @@
 package models;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import play.data.validation.Required;
+import play.data.binding.NoBinding;
 import play.db.jpa.GenericModel;
 
 @Entity
@@ -18,12 +20,12 @@ public class WorkflowNodeModel extends GenericModel {
     @Id
     @GeneratedValue
     private Long id;
-    @Required
+    @OneToOne(cascade = CascadeType.ALL)
+    private InstanceModel instance;    
+    @NoBinding
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
     private WorkflowModel workflow;
-    @OneToOne
-    private InstanceModel instance;
-    
         
     public Long getId() {
         return id;

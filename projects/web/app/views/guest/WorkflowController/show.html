@@ -87,7 +87,7 @@
 
     <div class="btn-row text-center">
         <input name="_save" id="_save" class="btn btn-primary btn-md btn-mobile margin-bottom" type="button" value="&{'crud.save', type.modelName}" />
-        <a href="@{list()}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>
+        <input name="_cancel" id="_cancel" class="btn btn-primary btn-md btn-mobile margin-bottom" type="button" value="&{'crud.cancel'}" />        
     </div>
 #{/form}
 </div>
@@ -118,10 +118,10 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">&{'modal.warn'}</h4>
+                <h4 class="modal-title" id="modal_title">&{'modal.warn'}</h4>
             </div>
             <div class="modal-body">
-                <p>&{'modal.operation.not.permitted'}</p>
+                <p id="modal_text">&{'modal.operation.not.permitted'}</p>
                 <p class="text-warning">
                     <small id="modal_description">
                         &{'modal.confirm.delete.desc'}
@@ -230,6 +230,12 @@ var graphData = {};
 //From end to start
 var graphDataReverse = {};
 
+var $flowchart = $('#workflow_editor');
+var $container = $flowchart.parent();
+
+var cx = $flowchart.width() / 2;
+var cy = $flowchart.height() / 2;
+
 var data = {
     operators: {
         start_operator: {
@@ -294,7 +300,7 @@ function getDefaultOperatorData() {
         #{if item.instance != null}
             operator = data["operators"][${item.id}]
             if(operator) {
-                operator["properties"]["title"] = item.instance.executor.name;
+                operator["properties"]["title"] = "${item.instance.executor.name}";
             }               
         #{/if}
     #{/list}    
@@ -304,8 +310,11 @@ function getDefaultOperatorData() {
 //---------------- MODEL FUNCTIONS --------------------
 //-----------------------------------------------------
 
-var $flowchart = $('#workflow_editor');
-var $container = $flowchart.parent();
+// Panzoom initialization...
+$flowchart.panzoom();
+
+// Centering panzoom
+$flowchart.panzoom('pan', -cx + $container.width() / 2, -cy + $container.height() / 2);
 
 // Apply the plugin on a standard, empty div...
 $flowchart.flowchart({
@@ -329,15 +338,6 @@ $flowchart.flowchart({
 $flowchart.flowchart('addClassOperator', start_operator, 'terminal-operator');
 $flowchart.flowchart('addClassOperator', end_operator, 'terminal-operator');
 
-
-var cx = $flowchart.width() / 2;
-var cy = $flowchart.height() / 2;
-
-// Panzoom initialization...
-$flowchart.panzoom();
-
-// Centering panzoom
-$flowchart.panzoom('pan', -cx + $container.width() / 2, -cy + $container.height() / 2);
 
 // Panzoom zoom handling...
 var possibleZooms = [0.5, 0.75, 1, 2, 3];
@@ -449,12 +449,11 @@ function onLinkCreate(linkId, linkData){
 }     
 
 function deleteSelected() {
-    
     var operatorId = $flowchart.flowchart("getSelectedOperatorId");
     if(operatorId == start_operator 
       || operatorId == end_operator) {    
-      showWarnModal("&{'modal.editor.end.start.delete'}");
-      return;
+        showWarnModal("&{'modal.editor.end.start.delete'}");
+        return ;
     }
     // Operators deleting
     else if (operatorId) {
@@ -469,7 +468,16 @@ function deleteSelected() {
 }
 
 function showWarnModal(message){  
-    $('#modal_description').html(message)
+    $('#modal_title').html("&{'modal.warn'}");
+    $('#modal_text').html("&{'modal.operation.not.permitted'}");
+    $('#modal_description').html(message);
+    $('#messageModal').modal('show');
+}
+
+function showMessageModal(title, message){  
+    $('#modal_title').html(title);
+    $('#modal_text').html(message);
+    $('#modal_description').html('');
     $('#messageModal').modal('show');
 }
 
@@ -494,6 +502,12 @@ $('#_save').click(function(){
     $('#saveForm').submit();
 });
 
+$('#_cancel').click(function(){
+	saveModel(function(){
+		window.location.href = "@{list()}";
+	});
+});
+
 $('#buttonZoomIn').click(function(e){
     if(++currentZoom >= possibleZooms.length){
         currentZoom = possibleZooms.length - 1;
@@ -509,6 +523,19 @@ $('#buttonZoomOut').click(function(e){
 });
 
 $('#buttonDeleteSelected').click(deleteSelected);
+
+$('#buttonConfigureInstance').click(function(){		
+    var operatorId = $flowchart.flowchart("getSelectedOperatorId");
+    if(operatorId == start_operator 
+      || operatorId == end_operator) {    
+        return;
+    }
+    var listAction = #{jsRoute @controllers.guest.InstanceController.createNode(':id') /};
+    var url = listAction.url({id: operatorId});
+    saveModel(function(){
+        window.location.href = url;
+    });	
+});
 
 $('#buttonNewInstance').draggable({
 	cancel: false,
@@ -553,17 +580,24 @@ $('#buttonNewInstance').draggable({
 $('#buttonAnlyseGraph').click(function(){
     var jsonModel = JSON.stringify(graphData);
     console.log(jsonModel); 
+    var problemDetected = false;
     for (let operator of operators) {
         if(!checkNodesReachesStart(operator)
                 || !checkNodesReachesEnd(operator)) {
+        	if(!problemDetected) {
+        		problemDetected = true;
+    	    }
             $flowchart.flowchart('addClassOperator', operator, 'operator-warning');
         } else {
             $flowchart.flowchart('removeClassOperator', operator, 'operator-warning');
         }
     }
-});
-
-$('#buttonConfigureInstance').click(function(){
+    
+    if(problemDetected) {
+        showMessageModal("&{'modal.warn'}", "&{'modal.editor.connection.not.created'}");
+    } else {
+        showMessageModal("&{'modal.editor.model.ok'}", "&{'modal.editor.connection.ok'}");
+    }
 });
 
 //-----------------------------------------------------
@@ -605,7 +639,7 @@ function deleteOperator(operator) {
 }
 
 function saveModel(callback){
-	showPleaseWait();	
+	showPleaseWait("&{'modal.editor.saving'}");	
     var jsonModel = getJsonModel();
     var jsonGraph = getJsonGraph();    
     var search = #{jsRoute @saveModel() /};

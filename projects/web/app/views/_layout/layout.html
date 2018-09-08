@@ -142,13 +142,23 @@
             function updateProgressBar(progress){
                 $('.progress-bar').width(progress + "%");
             }
+            
+            function updatePleaseWaitMessage(message){
+                 if(message) {
+                    $('#pleaseWaitDialogMessage').html(message);
+                 } else {
+                     $('#pleaseWaitDialogMessage').html("&{'crud.processing'}");
+                 }
+            }
 
-            function showPleaseWaitEmpty() {
+            function showPleaseWaitEmpty(message) {
+            	updatePleaseWaitMessage(message);
                 updateProgressBar(0);
                 $('#pleaseWaitDialog').modal();
             }
 
-            function showPleaseWait() {
+            function showPleaseWait(message) {
+            	updatePleaseWaitMessage(message);
                 updateProgressBar(100);
                 $('#pleaseWaitDialog').modal();
             }

@@ -30,9 +30,9 @@ public class WorkflowModel extends GenericModel {
     private Long id;
     @MaxSize(100)
     private String name;        
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "workflow")
     @NoBinding
-    private List<WorkflowNodeModel> listWorkflowNodes;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "workflow")
+    private List<WorkflowNodeModel> listWorkflowNodes;    
     @NoBinding
     private WORKFLOW_STATUS status;
     @NoBinding
