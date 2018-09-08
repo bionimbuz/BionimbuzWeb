@@ -50,13 +50,18 @@
     
     <div class="btn-toolbar margin-bottom" role="toolbar">
         <div class="btn-group" role="group">
-            <button id="buttonNewInstance" type="button" class="btn btn-secondary draggable_operator ui-draggable ui-draggable-handle">
+            <button id="buttonNewInstance" style="cursor: grabbing;" type="button" class="btn btn-secondary ui-draggable ui-draggable-handle">
                 <span class="glyphiconglyphicon glyphicon glyphicon-screenshot"></span>
             </button>
         </div>
         <div class="btn-group" role="group">
-            <button type="button" class="btn btn-secondary delete_selected_button">
-                <span class="glyphiconglyphicon glyphicon glyphicon-remove"></span>
+            <button id="buttonZoomIn" type="button" class="btn btn-secondary">
+                <span class="glyphiconglyphicon glyphicon glyphicon glyphicon-zoom-in"></span>
+            </button>
+        </div>
+        <div class="btn-group" role="group">
+            <button id="buttonZoomOut" type="button" class="btn btn-secondary">
+                <span class="glyphiconglyphicon glyphicon glyphicon glyphicon-zoom-out"></span>
             </button>
         </div>
         <div class="btn-group" role="group">
@@ -65,7 +70,12 @@
             </button>
         </div>
         <div class="btn-group" role="group">
-            <button id="configureInstance" type="button" class="btn btn-secondary">
+            <button id="buttonDeleteSelected" type="button" class="btn btn-secondary">
+                <span class="glyphiconglyphicon glyphicon glyphicon-remove"></span>
+            </button>
+        </div>
+        <div class="btn-group" role="group">
+            <button id="buttonConfigureInstance" type="button" class="btn btn-secondary">
                 <span class="glyphiconglyphicon glyphicon glyphicon glyphicon-cog"></span>
             </button>
         </div>       
@@ -205,32 +215,53 @@
 
 $(function(){
 
-var $flowchart = $('#workflow_editor');
-var $container = $flowchart.parent();
+class JSONSet extends Set {
+    toJSON () {
+        return [...this]
+    }
+}
 
-var cx = $flowchart.width() / 2;
-var cy = $flowchart.height() / 2;
+var start_operator = "start_operator";
+var end_operator = "end_operator";
 
-// Panzoom initialization...
-$flowchart.panzoom();
+var operators = new Set();
+// From start to end
+var graphData = {};
+//From end to start
+var graphDataReverse = {};
 
-// Centering panzoom
-$flowchart.panzoom('pan', -cx + $container.width() / 2, -cy + $container.height() / 2);
-
-// Panzoom zoom handling...
-var possibleZooms = [3, 2, 1, 0.75, 0.5];
-var currentZoom = 2;
-$container.on('mousewheel.focal', function( e ) {
-    e.preventDefault();
-    var delta = (e.delta || e.originalEvent.wheelDelta) || e.originalEvent.detail;
-    var zoomOut = delta ? delta < 0 : e.originalEvent.deltaY > 0;
-    currentZoom = Math.max(0, Math.min(possibleZooms.length - 1, (currentZoom + (zoomOut * 2 - 1))));
-    $flowchart.flowchart('setPositionRatio', possibleZooms[currentZoom]);
-    $flowchart.panzoom('zoom', possibleZooms[currentZoom], {
-        animate: false,
-        focal: e
-    });
-});
+var data = {
+    operators: {
+        start_operator: {
+            top: cy - 100,
+            left: cx - 300,
+            properties: {
+                title: 'Start',
+                inputs: {},
+                outputs: {
+                    outs: {
+                        label: ".",
+                        multiple: true
+                    }
+                }
+            }
+        },
+        end_operator: {
+            top: cy - 100,
+            left: cx + 140,
+            properties: {
+                title: 'End',
+                inputs: {
+                    ins: {
+                        label: '.',
+                        multiple: true
+                    }
+                },
+                outputs: {}
+            }
+        }
+    }
+};
 
 function getDefaultOperatorData() {
   var data = {
@@ -254,68 +285,27 @@ function getDefaultOperatorData() {
   return data;
 }
 
-class JSONSet extends Set {
-    toJSON () {
-        return [...this]
-    }
-}
-
-
-var start_operator = "start_operator";
-var end_operator = "end_operator";
-
-var operators = new Set();
-// From start to end
-var graphData = {};
-//From end to start
-var graphDataReverse = {};
-
-var data = {
-    operators: {
-        start_operator: {
-            top: cy - 100,
-            left: cx - 200,
-            properties: {
-                title: 'Start',
-                inputs: {},
-                outputs: {
-                    outs: {
-                        label: ".",
-                        multiple: true
-                    }
-                }
-            }
-        },
-        end_operator: {
-            top: cy,
-            left: cx + 140,
-            properties: {
-                title: 'End',
-                inputs: {
-                    ins: {
-                        label: '.',
-                        multiple: true
-                    }
-                },
-                outputs: {}
-            }
-        }
-    }
-};
-
 #{if object.jsonModel != null 
 	   && !object.jsonModel.isEmpty()}	   
     data = JSON.parse('${object.jsonModel.raw()}');    
+   
+    var operator = [];
+    #{list items:object.listWorkflowNodes, as: 'item'}    
+        #{if item.instance != null}
+            operator = data["operators"][${item.id}]
+            if(operator) {
+                operator["properties"]["title"] = item.instance.executor.name;
+            }               
+        #{/if}
+    #{/list}    
 #{/if}
 	
-$('#_save').click(function(){
-    var data = $flowchart.flowchart('getData');
-    var jsonModel = JSON.stringify(data);
-    $('#object_jsonModel').val(jsonModel);
-    var jsonGraph = JSON.stringify(graphData);
-    $('#object_jsonGraph').val(jsonGraph);
-    $('#saveForm').submit();
-});
+//-----------------------------------------------------
+//---------------- MODEL FUNCTIONS --------------------
+//-----------------------------------------------------
+
+var $flowchart = $('#workflow_editor');
+var $container = $flowchart.parent();
 
 // Apply the plugin on a standard, empty div...
 $flowchart.flowchart({
@@ -338,6 +328,29 @@ $flowchart.flowchart({
 
 $flowchart.flowchart('addClassOperator', start_operator, 'terminal-operator');
 $flowchart.flowchart('addClassOperator', end_operator, 'terminal-operator');
+
+
+var cx = $flowchart.width() / 2;
+var cy = $flowchart.height() / 2;
+
+// Panzoom initialization...
+$flowchart.panzoom();
+
+// Centering panzoom
+$flowchart.panzoom('pan', -cx + $container.width() / 2, -cy + $container.height() / 2);
+
+// Panzoom zoom handling...
+var possibleZooms = [0.5, 0.75, 1, 2, 3];
+var currentZoom = 2;
+
+function setZoom(e){
+    e.preventDefault();
+    $flowchart.flowchart('setPositionRatio', possibleZooms[currentZoom]);       
+    $flowchart.panzoom('zoom', possibleZooms[currentZoom], {
+        animate: false,
+        focal: e
+    });
+}
 
 function getLinkData(linkId) {
     var data = $flowchart.flowchart('getData');
@@ -379,7 +392,6 @@ function onLinkDelete(linkId, forced){
 
 function onLinkCreate(linkId, linkData){  
     
-	debugger;
     // Check if the connection is from Start to End operators
     if(linkData.fromOperator == start_operator 
         && linkData.toOperator == end_operator){
@@ -422,7 +434,7 @@ function onLinkCreate(linkId, linkData){
     }     
     connectionsReverse.add(linkData.fromOperator);
         
-    if(isCyclic()) {
+    if(isGraphCyclic()) {
         // Reverts already added connections
         connections.delete(linkData.toOperator);   
 
@@ -436,35 +448,24 @@ function onLinkCreate(linkId, linkData){
     return true;
 }     
 
-function isCyclicUtil(curNode, visited, recStack)  {
-    if (recStack[curNode])
-        return true;
-    if (visited[curNode])
-        return false;         
-    visited[curNode] = true; 
-    recStack[curNode] = true;    
-    var connections = 
-        graphData[curNode];       
-    if(connections && connections.size > 0) {
-        for (let node of connections) {
-            if(isCyclicUtil(node, visited, recStack)) {
-                return true;
-            }
-        }
-    }             
-    recStack[curNode] = false;
-    return false;
-}
- 
-function isCyclic() {
-    var visited = {};
-    var recStack = {};
-    for (let node of Object.entries(graphData)) {
-        if (isCyclicUtil(node[0], visited, recStack)) {
-            return true;
-        }
+function deleteSelected() {
+    
+    var operatorId = $flowchart.flowchart("getSelectedOperatorId");
+    if(operatorId == start_operator 
+      || operatorId == end_operator) {    
+      showWarnModal("&{'modal.editor.end.start.delete'}");
+      return;
     }
-    return false;
+    // Operators deleting
+    else if (operatorId) {
+    	deleteOperator(operatorId);
+    } 
+    // Links deleting
+    else {  
+        showPleaseWait();   
+        $flowchart.flowchart('deleteSelected');        
+        saveModel();
+    }
 }
 
 function showWarnModal(message){  
@@ -472,13 +473,46 @@ function showWarnModal(message){
     $('#messageModal').modal('show');
 }
 
-$('.delete_selected_button').click(deleteSelected);
+function getJsonModel() {
+    var data = $flowchart.flowchart('getData');
+    var jsonModel = JSON.stringify(data);
+    return jsonModel;
+}
 
-var $draggableOperators = $('.draggable_operator');
+function getJsonGraph() {
+    var jsonGraph = JSON.stringify(graphData);
+    return jsonGraph;
+}
 
-$('#buttonNewInstance').draggable({cancel:false});
+//-----------------------------------------------------
+//-------------------- EVENTS -------------------------
+//-----------------------------------------------------
 
-$draggableOperators.draggable({
+$('#_save').click(function(){
+    $('#object_jsonModel').val(getJsonModel());
+    $('#object_jsonGraph').val(getJsonGraph());
+    $('#saveForm').submit();
+});
+
+$('#buttonZoomIn').click(function(e){
+    if(++currentZoom >= possibleZooms.length){
+        currentZoom = possibleZooms.length - 1;
+    }
+    setZoom(e);
+});
+
+$('#buttonZoomOut').click(function(e){
+    if(--currentZoom < 0){
+        currentZoom = 0;
+    }
+    setZoom(e); 
+});
+
+$('#buttonDeleteSelected').click(deleteSelected);
+
+$('#buttonNewInstance').draggable({
+	cancel: false,
+	
     cursor: "move",
     opacity: 0.7,
     
@@ -516,6 +550,26 @@ $draggableOperators.draggable({
     }
 });
 
+$('#buttonAnlyseGraph').click(function(){
+    var jsonModel = JSON.stringify(graphData);
+    console.log(jsonModel); 
+    for (let operator of operators) {
+        if(!checkNodesReachesStart(operator)
+                || !checkNodesReachesEnd(operator)) {
+            $flowchart.flowchart('addClassOperator', operator, 'operator-warning');
+        } else {
+            $flowchart.flowchart('removeClassOperator', operator, 'operator-warning');
+        }
+    }
+});
+
+$('#buttonConfigureInstance').click(function(){
+});
+
+//-----------------------------------------------------
+//-------------------- AJAX ---------------------------
+//-----------------------------------------------------
+
 function createOperator(operator){	
 	showPleaseWait();
     var search = #{jsRoute @createNode() /};
@@ -526,46 +580,91 @@ function createOperator(operator){
        })
     .done(function(data) {
         $flowchart.flowchart('createOperator', data, operator);    	
+        saveModel();    
+    })
+    .fail(function(data) {
+        flashError(data.responseText);
+    });
+}
+
+function deleteOperator(operator) {
+    showPleaseWait();
+    var search = #{jsRoute @deleteNode() /};
+    $.ajax({
+        url: search.url(),
+        type: search.method,
+        data:{ id: operator}
+    })
+    .done(function(data) {
+        $flowchart.flowchart('deleteSelected');  
+        saveModel();
+    })
+    .fail(function(data) {
+        flashError(data.responseText);
+    });
+}
+
+function saveModel(callback){
+	showPleaseWait();	
+    var jsonModel = getJsonModel();
+    var jsonGraph = getJsonGraph();    
+    var search = #{jsRoute @saveModel() /};
+    $.ajax({
+        url: search.url(),
+        type: search.method,
+        data:{ 
+        	id: ${object.id}, 
+        	jsonModel: jsonModel, 
+        	jsonGraph: jsonGraph
+    	}
+    })
+    .done(function(data) {
+        $flowchart.flowchart('deleteSelected');   
     })
     .fail(function(data) {
         flashError(data.responseText);
     })
     .always(function() {
         hidePleaseWait();
+        if(isFunctionDefined(callback)) {
+        	callback();
+        }
     });
 }
 
-function deleteSelected() {
-	
-    var operatorId = $flowchart.flowchart("getSelectedOperatorId");
-    if(operatorId == start_operator 
-      || operatorId == end_operator) {    
-      showWarnModal("&{'modal.editor.end.start.delete'}");
-      return;
+//-----------------------------------------------------
+//-------------------- GRAPH --------------------------
+//-----------------------------------------------------
+
+function isGraphCyclic() {
+    var visited = {};
+    var recStack = {};
+    for (let node of Object.entries(graphData)) {
+        if (isGraphCyclicRecursion(node[0], visited, recStack)) {
+            return true;
+        }
     }
-    // Operators deleting
-    else if (operatorId) {
-    	showPleaseWait();
-        var search = #{jsRoute @deleteNode() /};
-        $.ajax({
-            url: search.url(),
-            type: search.method,
-            data:{ id: operatorId}
-           })
-        .done(function(data) {
-            $flowchart.flowchart('deleteSelected');   
-        })
-        .fail(function(data) {
-            flashError(data.responseText);
-        })
-        .always(function() {
-            hidePleaseWait();
-        });
-    } 
-    // Links deleting
-    else {    	
-        $flowchart.flowchart('deleteSelected');
-    }
+    return false;
+}
+
+function isGraphCyclicRecursion(curNode, visited, recStack)  {
+    if (recStack[curNode])
+        return true;
+    if (visited[curNode])
+        return false;         
+    visited[curNode] = true; 
+    recStack[curNode] = true;    
+    var connections = 
+        graphData[curNode];       
+    if(connections && connections.size > 0) {
+        for (let node of connections) {
+            if(isGraphCyclicRecursion(node, visited, recStack)) {
+                return true;
+            }
+        }
+    }             
+    recStack[curNode] = false;
+    return false;
 }
 
 function getNodesDepth(curNode, nodesDepth, depth){  
@@ -590,16 +689,13 @@ function getNodesDepth(curNode, nodesDepth, depth){
     }
 }
 
-function checkNodesReachesEnd(curNode, visited){
-       
+function checkNodesReachesEnd(curNode, visited){       
     if(!visited) {
         visited = new Set();
-    } 
-    
+    }     
     if(curNode == end_operator){
         return true;
-    }
-    
+    }    
     if(visited.has(curNode)) {
         return false;
     }
@@ -649,22 +745,7 @@ function checkNodesReachesStart(curNode, visited){
     return false;
 }
 
-$('#buttonAnlyseGraph').click(function(){
-    var jsonModel = JSON.stringify(graphData);
-	console.log(jsonModel);	
-    for (let operator of operators) {
-        if(!checkNodesReachesStart(operator)
-                || !checkNodesReachesEnd(operator)) {
-            $flowchart.flowchart('addClassOperator', operator, 'operator-warning');
-        } else {
-            $flowchart.flowchart('removeClassOperator', operator, 'operator-warning');
-        }
-    }
 });
 
-$('#configureInstance').click(function(){
-});
-
-});
 </script>        
 #{/set}

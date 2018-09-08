@@ -63,4 +63,15 @@ public class WorkflowController extends BaseAdminController {
         object.delete();
         ok();
     }
+
+    public static void saveModel(
+            final Long id, 
+            final String jsonModel,
+            final String jsonGraph) {
+        WorkflowModel workflow = WorkflowModel.findById(id);
+        workflow.setJsonGraph(jsonGraph);
+        workflow.setJsonModel(jsonModel);
+        workflow.save();
+        ok();    
+    }
 }

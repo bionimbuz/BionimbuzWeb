@@ -134,6 +134,7 @@ DELETE  /workflows/{id}                         guest.WorkflowController.delete
 POST    /workflows                              guest.WorkflowController.create
 POST    /workflows/{id}/nodes                   guest.WorkflowController.createNode
 DELETE  /workflows/{id}/nodes                   guest.WorkflowController.deleteNode
+POST    /workflows/{id}/model                   guest.WorkflowController.saveModel
 
 # SettingController
 GET     /adm/list/settings                      adm.SettingController.list

@@ -1,3 +1,6 @@
+function isFunctionDefined(fn){
+    return typeof fn === 'function'
+}
 
 function flashMessage(message, icon, type) {
     $.notify(
