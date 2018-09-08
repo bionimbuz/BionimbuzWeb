@@ -131,8 +131,9 @@ GET     /list/workflows                         guest.WorkflowController.list
 GET     /workflows/{id}                         guest.WorkflowController.show
 PUT     /workflows/{id}                         guest.WorkflowController.save
 DELETE  /workflows/{id}                         guest.WorkflowController.delete
-GET     /workflows                              guest.WorkflowController.blank
 POST    /workflows                              guest.WorkflowController.create
+POST    /workflows/{id}/nodes                   guest.WorkflowController.createNode
+DELETE  /workflows/{id}/nodes                   guest.WorkflowController.deleteNode
 
 # SettingController
 GET     /adm/list/settings                      adm.SettingController.list

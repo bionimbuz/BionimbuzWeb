@@ -9,11 +9,54 @@
 
 <br>
 
-#{crud.searchAndAdd /}
+<div class=row>
+
+    <div class="col-xs-12 col-sm-12 col-md-7 margin-bottom no-bootstrap-padding">
+        #{form action:@list().remove('page'), method:'GET', id:'searchForm', class: 'submitForm'}
+            #{if _fields}
+                <input type="hidden" name="searchFields" value="${fields.toString().substring(1, fields.toString().length()-1).replace(',', '')}" />
+            #{/if}
+            <input type="text" class="form-control btn-buscar" placeholder="&{'crud.search'}" name="search" value="${params.search?.escape()?.raw()}" />
+        #{/form}
+        #{if totalCount > 0 && params.search}
+            <div class="list-total-count">
+                (<a href="@{list()}">&{'crud.list.totalSize', _caller.totalCount}</a>)
+            </div>
+        #{/if}
+    </div>
+
+    <div class="row col-xs-12 col-sm-12 col-md-4 pull-right no-bootstrap-padding">
+        <button class="btn-crud-search-form-submit btn btn-primary margin-bottom col-xs-12 col-sm-12 col-md-4" type="button" onclick="javascript: block('&{'crud.wait'}');">&{'crud.search'}</button>
+        #{form action:@create(), enctype:'multipart/form-data', class:'submitForm'} 
+            <input class="btn btn-primary margin-bottom col-xs-12 col-sm-12 col-md-7 pull-right" type="submit" value="&{'crud.add', type}">
+        #{/form}       
+    </div>
+
+</div>
 
 <br>
 
-#{crud.table fields: ['name', 'status']}
+#{crud.table fields: ['name', 'status', 'creationDate']}
+
+    #{crud.custom 'name'}
+        <a href="@{show(object._key())}">
+            #{if object.name == null || object.name.isEmpty()}
+                &{'workflow.unnamed'}
+            #{/if}
+            #{else}
+                ${object.name}
+            #{/else}
+        </a>
+    #{/crud.custom}
+    
+    #{crud.custom 'creationDate'}
+        ${object.creationDate.format()}
+    #{/crud.custom}
+    
+    #{crud.custom 'status'}
+        &{'WORKFLOW_STATUS.' + object.status}
+    #{/crud.custom}
+    
 #{/crud.table}
 
 #{crud.pagination /}

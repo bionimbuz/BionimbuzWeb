@@ -69,8 +69,9 @@ public class InstanceModel extends GenericModel {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = true)
     private CredentialModel credential;
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    private WorkflowModel workflow;
+    @NoBinding
+    @OneToOne(fetch = FetchType.LAZY, mappedBy="instance", optional = true)
+    private WorkflowNodeModel workflowNode;
 
     // ---- Redundant Data for price table exclusion/update
     @NoBinding
@@ -109,177 +110,134 @@ public class InstanceModel extends GenericModel {
     public Long getId() {
         return this.id;
     }
-
     public void setId(final Long id) {
         this.id = id;
     }
-
     public String getCloudInstanceIp() {
         return this.cloudInstanceIp;
     }
-
     public void setCloudInstanceIp(final String cloudInstanceIp) {
         this.cloudInstanceIp = cloudInstanceIp;
     }
-
     public String getCloudInstanceName() {
         return this.cloudInstanceName;
     }
-
     public void setCloudInstanceName(final String cloudInstanceName) {
         this.cloudInstanceName = cloudInstanceName;
     }
-
     public CredentialUsagePolicy getCredentialUsage() {
         return this.credentialUsage;
     }
-
     public void setCredentialUsage(final CredentialUsagePolicy credentialUsage) {
         this.credentialUsage = credentialUsage;
     }
-
     public ExecutorModel getExecutor() {
         return this.executor;
     }
-
     public void setExecutor(final ExecutorModel executor) {
         this.executor = executor;
     }
-
     public boolean isExecutionAfterCreation() {
         return this.executionAfterCreation;
     }
-
     public void setExecutionAfterCreation(final boolean executionAfterCreation) {
         this.executionAfterCreation = executionAfterCreation;
     }
-
     public PluginModel getPlugin() {
         return this.plugin;
     }
-
     public void setPlugin(final PluginModel plugin) {
         this.plugin = plugin;
     }
-
     public Date getPriceTableDate() {
         return this.priceTableDate;
     }
-
     public void setPriceTableDate(final Date priceTableDate) {
         this.priceTableDate = priceTableDate;
     }
-
     public Double getPrice() {
         return this.price;
     }
-
     public void setPrice(final Double price) {
         this.price = price;
     }
-
     public String getTypeName() {
         return this.typeName;
     }
-
     public void setTypeName(final String typeName) {
         this.typeName = typeName;
     }
-
     public String getRegionName() {
         return this.regionName;
     }
-
     public void setRegionName(final String regionName) {
         this.regionName = regionName;
     }
-
     public String getZoneName() {
         return this.zoneName;
     }
-
     public void setZoneName(final String zoneName) {
         this.zoneName = zoneName;
     }
-
     public Short getCores() {
         return this.cores;
     }
-
     public void setCores(final Short cores) {
         this.cores = cores;
     }
-
     public Double getMemory() {
         return this.memory;
     }
-
     public void setMemory(final Double memory) {
         this.memory = memory;
     }
-
     public Date getCreationDate() {
         return this.creationDate;
     }
-
     public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
-
     public String getInstanceIdentity() {
         return this.instanceIdentity;
     }
-
     public void setInstanceIdentity(final String instanceIdentity) {
         this.instanceIdentity = instanceIdentity;
     }
-
     public ApplicationArgumentsModel getApplicationArguments() {
         return this.applicationArguments;
     }
-
     public void setApplicationArguments(
             final ApplicationArgumentsModel applicationArguments) {
         this.applicationArguments = applicationArguments;
     }
-
     public EXECUTION_PHASE getPhase() {
         return this.phase;
     }
-
     public void setPhase(final EXECUTION_PHASE phase) {
         this.phase = phase;
     }
-
     public STATUS getStatus() {
         return this.status;
     }
-
     public void setStatus(final STATUS status) {
         this.status = status;
     }
-
     public String getExecutionObservation() {
         return this.executionObservation;
     }
-
     public void setExecutionObservation(final String executionObservation) {
         this.executionObservation = executionObservation;
     }
-
     public CredentialModel getCredential() {
         return this.credential;
     }
-
     public void setCredential(final CredentialModel credential) {
         this.credential = credential;
     }
-
-    public WorkflowModel getWorkflow() {
-        return this.workflow;
+    public WorkflowNodeModel getWorkflowNode() {
+        return workflowNode;
     }
-
-    public void setWorkflow(final WorkflowModel workflow) {
-        this.workflow = workflow;
+    public void setWorkflowNode(WorkflowNodeModel workflowNode) {
+        this.workflowNode = workflowNode;
     }
 }
