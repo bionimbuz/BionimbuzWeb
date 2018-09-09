@@ -36,7 +36,7 @@
 
 <br>
 
-#{crud.table fields: ['name', 'status', 'creationDate']}
+#{crud.table fields: ['name', 'status', 'executionMessage', 'creationDate']}
 
     #{crud.custom 'name'}
         <a href="@{show(object._key())}">
