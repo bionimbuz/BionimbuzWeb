@@ -58,6 +58,8 @@ public class UserModel extends GenericModel {
     private List<SpaceModel> listSpaces;
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "listUsers")
     private List<GroupModel> listGroups;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<WorkflowModel> listWorkflows;
     
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Data access
@@ -143,6 +145,12 @@ public class UserModel extends GenericModel {
     }
     public final void setListSpaces(List<SpaceModel> listSpaces) {
         this.listSpaces = listSpaces;
+    }    
+    public List<WorkflowModel> getListWorkflows() {
+        return listWorkflows;
+    }
+    public void setListWorkflows(List<WorkflowModel> listWorkflows) {
+        this.listWorkflows = listWorkflows;
     }
     
     @Override

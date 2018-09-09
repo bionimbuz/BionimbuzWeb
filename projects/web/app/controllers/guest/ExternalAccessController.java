@@ -9,6 +9,7 @@ import app.models.ExecutionStatus;
 import app.models.ExecutionStatus.STATUS;
 import app.models.RemoteFileInfo;
 import app.security.AccessSecurity;
+import jobs.WorkflowExecutionJob;
 import models.InstanceModel;
 import models.SpaceFileModel;
 import play.Logger;
@@ -127,6 +128,8 @@ public class ExternalAccessController extends Controller {
         instance.setPhase(status.getPhase());
         instance.setExecutionObservation(status.getErrorMessage());
         instance.save();
+        
+        (new WorkflowExecutionJob(instance.getId(), status)).doJob();
     }
     
     public static String generateToken(final String identity) {

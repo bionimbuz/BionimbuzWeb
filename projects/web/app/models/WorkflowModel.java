@@ -8,9 +8,13 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import app.models.ExecutionStatus.EXECUTION_PHASE;
+import app.models.ExecutionStatus.STATUS;
 import play.data.binding.NoBinding;
 import play.data.validation.MaxSize;
 import play.db.jpa.GenericModel;
@@ -23,6 +27,7 @@ public class WorkflowModel extends GenericModel {
         EDITING,
         RUNNING,
         STOPPED,
+        FINISHED,
     }
 
     @Id
@@ -41,11 +46,38 @@ public class WorkflowModel extends GenericModel {
     private String jsonModel;
     @Column(length=3000)
     private String jsonGraph;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)   
+    @NoBinding
+    private UserModel user;
+    @NoBinding
+    private String executionMessage;    
         
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Data access
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    public static boolean hasWorkflowFinished(final Long workflowId) {
+        return count(  
+                " SELECT id"
+                + " FROM WorkflowModel workflow "
+                + " INNER JOIN workflow.workflowNode workflowNode"
+                + " INNER JOIN workflowNode.instance instance"
+                + " WHERE workflow.id = ?1 "
+                + "         AND (instance.status <> ?2 AND instance.status <> ?3)"
+                + "         AND (instance.phase <> ?4)", 
+                workflowId, STATUS.FINISHED, STATUS.STOPPED, EXECUTION_PHASE.FINISHED) > 0;
+    }
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Constructors
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public WorkflowModel() {        
         super();
     }
 
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Getters and Setters
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public Long getId() {
         return id;
     }
@@ -87,6 +119,18 @@ public class WorkflowModel extends GenericModel {
     }
     public void setJsonGraph(String jsonGraph) {
         this.jsonGraph = jsonGraph;
+    }
+    public UserModel getUser() {
+        return user;
+    }
+    public void setUser(UserModel user) {
+        this.user = user;
+    }
+    public String getExecutionMessage() {
+        return executionMessage;
+    }   
+    public void setExecutionMessage(String executionMessage) {
+        this.executionMessage = executionMessage;
     }
 
     @Override

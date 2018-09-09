@@ -20,7 +20,7 @@ public class GraphBidirectional<T> extends Graph<T> {
         graphReverse.delVertex(toNode, fromNode);        
     }
     
-    public List<T> getDependenciesList(final T fromNode) {
-        return graphReverse.getDependentsList(fromNode);
+    public List<T> getDependenciesBackwards(final T fromNode) {
+        return graphReverse.getDependenciesForwards(fromNode);
     }
 }

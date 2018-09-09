@@ -7,6 +7,7 @@ import app.common.utils.StringUtils;
 import controllers.CRUD.For;
 import controllers.Check;
 import controllers.adm.BaseAdminController;
+import jobs.WorkflowExecutionJob;
 import models.WorkflowModel;
 import models.WorkflowModel.WORKFLOW_STATUS;
 import models.WorkflowNodeModel;
@@ -45,6 +46,7 @@ public class WorkflowController extends BaseAdminController {
         notFoundIfNull(type);
         final WorkflowModel object = WorkflowModel.findById(id);
         notFoundIfNull(object);
+        WORKFLOW_STATUS previousStatus = object.getStatus();
         Binder.bindBean(params.getRootParamNode(), "object", object);
         validation.valid(object);
         if (Validation.hasErrors()) {
@@ -56,6 +58,10 @@ public class WorkflowController extends BaseAdminController {
             }
         }
         object._save();
+        if(previousStatus == WORKFLOW_STATUS.EDITING 
+                && object.getStatus() == WORKFLOW_STATUS.RUNNING) {
+            (new WorkflowExecutionJob(object.getId())).doJob();            
+        }
         flash.success(Messages.get("crud.saved", type.modelName));
         if (params.get("_save") != null) {
             redirect(request.controller + ".list");
@@ -68,6 +74,7 @@ public class WorkflowController extends BaseAdminController {
         notFoundIfNull(type);
         final WorkflowModel object = new WorkflowModel();
         object.setCreationDate(new Date());
+        object.setUser(getConnectedUser());
         object.setStatus(WORKFLOW_STATUS.EDITING);       
         object.save();
         redirect(request.controller + ".show", object._key());

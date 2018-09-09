@@ -311,6 +311,7 @@ WORKFLOW_STATUS.STOPPED=Stopped
 workflow.editor=Workflow Editor
 workflow.unnamed=(Unnamed workflow)
 workflow.node.not.configured=(empty)
+workflow.execute=Execute
 
 # SpaceModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

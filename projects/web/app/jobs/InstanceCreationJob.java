@@ -63,22 +63,29 @@ public class InstanceCreationJob extends Job {
     // * @see play.jobs.Job#doJob()
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @Override
-    public void doJob() {
-
-        final InstanceModel instance = this.createCloudInstance();
+    public void doJob() {        
+        executeInstance(instanceId, userId);
+    }
+    
+    public static boolean executeInstance(final Long instanceId, final Long userId) {
+        final InstanceModel instance = InstanceModel.findById(instanceId);
+        if(!createCloudInstance(instance, userId)) {
+            return false;
+        }
         final Command command = InstanceCreationJob.generateCommandToExecute(instance);
-        InstanceCreationJob.executeCommand(instance, command);
+        return InstanceCreationJob.executeCommand(instance, command);
     }
 
-    private InstanceModel createCloudInstance() {
+    private static boolean createCloudInstance(
+            InstanceModel instance,
+            final Long userId) {
 
-        final InstanceModel instance = InstanceModel.findById(this.instanceId);
         try {
 
             final ComputingApi api = new ComputingApi(instance.getPlugin().getUrl());
             final PluginComputingInstanceModel instanceToCreate = createPluginInstance(instance);
             final List<VwCredentialModel> listCredentials = VwCredentialModel.searchUserAndPlugin(
-                    this.userId,
+                    userId,
                     instance.getPlugin().getId(),
                     instance.getCredentialUsage());
 
@@ -110,8 +117,7 @@ public class InstanceCreationJob extends Job {
                     instance.setCredential(vwCredential.getCredential());
                     instance.setInstanceIdentity(String.format(MACHINE_ID, instance.getId()));
                     instance.save();
-                    break;
-
+                    return true;
                 } catch (final Exception e) {
                     Logger.info(e, "Credential [%s] cannot be used for user [%s] => [%s]",
                             vwCredential.getId(),
@@ -122,7 +128,7 @@ public class InstanceCreationJob extends Job {
         } catch (final Exception e) {
             Logger.warn(e, "Instance cannot be created [%s]", e.getMessage());
         }
-        return instance;
+        return false;
     }
 
     private static Command generateCommandToExecute(final InstanceModel instance) {
@@ -152,7 +158,7 @@ public class InstanceCreationJob extends Job {
         return command;
     }
 
-    private static void executeCommand(final InstanceModel instance, final Command command) {
+    private static boolean executeCommand(final InstanceModel instance, final Command command) {
 
         final ExecutionApi executorApi = new ExecutionApi(instance.getCloudInstanceIp() + ":" + DEFAULT_EXECUTOR_PORT);
 
@@ -161,13 +167,14 @@ public class InstanceCreationJob extends Job {
             try {
                 final Body<Boolean> body = executorApi.startExecution(command);
                 if (body != null && body.getContent() != null) {
-                    break;
+                    return true;
                 }
                 TimeUnit.SECONDS.sleep(2);
             } catch (final IOException | InterruptedException e) {
                 Logger.warn("Command execution attempt failed, attempting [%s]", attempts);
             }
         }
+        return false;
     }
 
     private static <T extends ApplicationFileModel> List<Pair<String, String>> generatePaths(

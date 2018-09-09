@@ -2,11 +2,29 @@
 #{extends 'CRUD/layout.html' /}
 #{set title:messages.get('crud.show.title', type.modelName) /}
 
+#{set editorReadonly: (object.status != models.WorkflowModel.WORKFLOW_STATUS.EDITING) /}
+*{
+#{set editorReadonly: true/}
+}*
+
 <div class="row crud-title">
     <h1 class="col-xs-12"> &{'crud.show.title', type.modelName} </h1>
-    <pre class="col-xs-12 col-sm-12 col-md-9"> &{'crud.show.title.desc', type.modelName} </pre>
-    <input data-toggle="modal" data-target="#deleteModal"
-        class="col-xs-12 col-sm-12 col-md-2 btn btn-danger pull-right" type="button" value="&{'crud.delete', type.modelName}" />
+    #{if editorReadonly}
+        <pre class="col-xs-12 col-sm-12 col-md-12"> &{'crud.show.title.desc', type.modelName} </pre>
+    #{/if}
+    #{else}
+        <pre class="col-xs-12 col-sm-12 col-md-6"> &{'crud.show.title.desc', type.modelName} </pre>
+
+        <div class="col-xs-12 col-sm-12 col-md-5 pull-right" style="padding: 0px;">
+             <input id="executeWorkflow"
+                class="btn btn-success margin-bottom col-xs-12 col-sm-12 col-md-5"
+                type="button" value="&{'workflow.execute'}" />
+
+             <input data-toggle="modal" data-target="#deleteModal"
+                class="btn btn-danger margin-bottom col-xs-12 col-sm-12 col-md-6 pull-right"
+                type="button" value="&{'crud.delete', type.modelName}" />
+        </div>
+    #{/else}
 </div>
 
 <br>
@@ -29,6 +47,20 @@
         #{/crud.custom}
     
         #{crud.custom 'name'}
+                    
+            #{if editorReadonly}
+                #{field 'object.status'}
+                <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                    <label for="${field.id}_readonly">&{field.name}</label>
+                    <input id="${field.id}_readonly" readonly class="form-control" type="text" 
+                            value="&{'WORKFLOW_STATUS.' + object.status}" />
+                    <input type="hidden"
+                            id="${field.id}" 
+                            name="${field.name}" 
+                            value="${field.value}" size="50" />
+                </div>
+                #{/field}
+            #{/if}
         
             #{field 'object.name'}
             <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
@@ -49,11 +81,13 @@
     <label>&{'workflow.editor'}</label>
     
     <div class="btn-toolbar margin-bottom" role="toolbar">
+    #{if !editorReadonly}
         <div class="btn-group" role="group">
             <button id="buttonNewInstance" style="cursor: grabbing;" type="button" class="btn btn-secondary ui-draggable ui-draggable-handle">
                 <span class="glyphiconglyphicon glyphicon glyphicon-screenshot"></span>
             </button>
         </div>
+    #{/if}
         <div class="btn-group" role="group">
             <button id="buttonZoomIn" type="button" class="btn btn-secondary">
                 <span class="glyphiconglyphicon glyphicon glyphicon glyphicon-zoom-in"></span>
@@ -63,7 +97,8 @@
             <button id="buttonZoomOut" type="button" class="btn btn-secondary">
                 <span class="glyphiconglyphicon glyphicon glyphicon glyphicon-zoom-out"></span>
             </button>
-        </div>
+        </div>        
+    #{if !editorReadonly}
         <div class="btn-group" role="group">
             <button id="buttonAnlyseGraph" type="button" class="btn btn-secondary">
                 <span class="glyphiconglyphicon glyphicon glyphicon-ok-circle"></span>
@@ -79,6 +114,7 @@
                 <span class="glyphiconglyphicon glyphicon glyphicon glyphicon-cog"></span>
             </button>
         </div>       
+    #{/if}
     </div>
 
     <div id="chart_container">
@@ -155,7 +191,12 @@
 #chart_container #workflow_editor {
     width: 2000px;
     height: 1000px;
+#{if editorReadonly}
+    background: #dbdbe0;
+#{/if}
+#{else} 
     background: white;
+#{/else}
     border: 3px solid #BBB;
 }
 
@@ -167,10 +208,10 @@
 }
 
 .flowchart-operator {
-    width: 80px;
+    width: 100px;
     border-radius: 16px;
+    background-color: white;
 }
-
 .flowchart-operator .flowchart-operator-inputs-outputs {
     color: white;
 }
@@ -178,12 +219,29 @@
 .terminal-operator {
     background-color: #aaacb3;
 }
-
-.terminal-operator.selected {
-}
-
 .terminal-operator .flowchart-operator-inputs-outputs {
     color: #aaacb3;
+}
+
+.terminal-error {
+    background-color: #f57979;
+}
+.terminal-error .flowchart-operator-inputs-outputs {
+    color: #f57979;
+}
+
+.terminal-success {
+    background-color: #0bf753;
+}
+.terminal-success .flowchart-operator-inputs-outputs {
+    color: #0bf753;
+}
+
+.terminal-executing {
+    background-color: #6aadad;
+}
+.terminal-executing .flowchart-operator-inputs-outputs {
+    color: #6aadad;
 }
 
 .terminal-operator .flowchart-operator-title {
@@ -294,7 +352,7 @@ function getDefaultOperatorData() {
 #{if object.jsonModel != null 
 	   && !object.jsonModel.isEmpty()}	   
     data = JSON.parse('${object.jsonModel.raw()}');    
-   
+    
     var operator = [];
     #{list items:object.listWorkflowNodes, as: 'item'}    
         #{if item.instance != null}
@@ -332,12 +390,38 @@ $flowchart.flowchart({
     onOperatorDelete: function(operatorId){
         onOperatorDelete(operatorId);
         return true;
-    } 
+    }
+
+#{if editorReadonly}
+    ,canUserEditLinks: false
+    ,canUserMoveOperators: false    
+#{/if}
+    
 });
 
 $flowchart.flowchart('addClassOperator', start_operator, 'terminal-operator');
 $flowchart.flowchart('addClassOperator', end_operator, 'terminal-operator');
 
+#{list items:object.listWorkflowNodes, as: 'item'}    
+#{if item.instance != null}
+    operator = data["operators"][${item.id}]
+    if(operator) {
+        operator["properties"]["title"] = "${item.instance.executor.name}";
+    }        
+    #{if item.instance.getStatusPresentation() == 
+    	   models.InstanceModel.StatusPresentation.EXECUTING}
+        $flowchart.flowchart('addClassOperator', ${item.id}, 'terminal-executing');
+    #{/if}
+    #{elseif item.instance.getStatusPresentation() == 
+        models.InstanceModel.StatusPresentation.SUCCESS}
+        $flowchart.flowchart('addClassOperator', ${item.id}, 'terminal-success');
+    #{/elseif}
+    #{elseif item.instance.getStatusPresentation() == 
+        models.InstanceModel.StatusPresentation.ERROR}
+        $flowchart.flowchart('addClassOperator', ${item.id}, 'terminal-error');
+    #{/elseif}        
+#{/if}
+#{/list}    
 
 // Panzoom zoom handling...
 var possibleZooms = [0.5, 0.75, 1, 2, 3];
@@ -496,10 +580,22 @@ function getJsonGraph() {
 //-------------------- EVENTS -------------------------
 //-----------------------------------------------------
 
-$('#_save').click(function(){
+function submitSaveForm(){
     $('#object_jsonModel').val(getJsonModel());
     $('#object_jsonGraph').val(getJsonGraph());
-    $('#saveForm').submit();
+    $('#saveForm').submit();	
+}
+
+$('#_save').click(function(){
+	submitSaveForm();
+});
+
+$('#executeWorkflow').click(function(){
+	if(!connectionsIsOk()) {
+		return;
+	}
+	$('#object_status').val("${models.WorkflowModel.WORKFLOW_STATUS.RUNNING}");
+	submitSaveForm();
 });
 
 $('#_cancel').click(function(){
@@ -577,16 +673,15 @@ $('#buttonNewInstance').draggable({
     }
 });
 
-$('#buttonAnlyseGraph').click(function(){
-    var jsonModel = JSON.stringify(graphData);
-    console.log(jsonModel); 
+function connectionsIsOk(){
+	var jsonModel = JSON.stringify(graphData);
     var problemDetected = false;
     for (let operator of operators) {
         if(!checkNodesReachesStart(operator)
                 || !checkNodesReachesEnd(operator)) {
-        	if(!problemDetected) {
-        		problemDetected = true;
-    	    }
+            if(!problemDetected) {
+                problemDetected = true;
+            }
             $flowchart.flowchart('addClassOperator', operator, 'operator-warning');
         } else {
             $flowchart.flowchart('removeClassOperator', operator, 'operator-warning');
@@ -598,6 +693,12 @@ $('#buttonAnlyseGraph').click(function(){
     } else {
         showMessageModal("&{'modal.editor.model.ok'}", "&{'modal.editor.connection.ok'}");
     }
+    
+    return !problemDetected;
+}
+
+$('#buttonAnlyseGraph').click(function(){
+	connectionsIsOk();
 });
 
 //-----------------------------------------------------

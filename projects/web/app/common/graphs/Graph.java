@@ -50,14 +50,14 @@ public class Graph <T> {
         return nodes;        
     }
         
-    public List<T> getDependentsList(final T fromNode){
+    public List<T> getDependenciesForwards(final T fromNode){
         TreeSet<T> visited = new TreeSet<>();
-        getDependentsList(fromNode, visited);    
+        getDependenciesForwardsList(fromNode, visited);    
         visited.remove(fromNode);
         return new ArrayList<T> (visited);
     }
     
-    private void getDependentsList(
+    private void getDependenciesForwardsList(
             final T fromNode, 
             final Set<T> visited){    
         if(visited.contains(fromNode)) {
@@ -69,7 +69,7 @@ public class Graph <T> {
             return;
         }
         for (T toNode : nodeConnections) {
-            getDependentsList(toNode, visited);
+            getDependenciesForwardsList(toNode, visited);
         }   
     }        
 }
