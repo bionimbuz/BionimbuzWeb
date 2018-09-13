@@ -2,7 +2,7 @@
 #{extends 'CRUD/layout.html' /}
 #{set title:messages.get('crud.show.title', type.modelName) /}
 #{set isEmptyGroup: (object.listUserGroups.size() == 1) /}
-#{set isOwner: userGroup.owner /}
+#{set isOwner: userGroup.userOwner /}
 #{set isJoined: userGroup.joined /}
 
 <div class="row crud-title">
@@ -120,7 +120,7 @@
                                     </td>
                                 #{/if}
                                     <td style="text-align: center;">
-                                        <input type="checkbox" name="object.usersMarkedForOwner" class="icheck" value="${item.user.id}" ${item.owner ? 'checked="true" '.raw() : ''}
+                                        <input type="checkbox" name="object.usersMarkedForOwner" class="icheck" value="${item.user.id}" ${item.userOwner ? 'checked="true" '.raw() : ''}
                                             ${isOwner ? '' : 'disabled'.raw()} />
                                     </td>
                                     <td style="text-align: center;">

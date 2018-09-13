@@ -35,7 +35,7 @@
 <br>
 
 #{crud.table fields: ['name', 'plugin.name', 'regionName', 'pricePerGB',
-            'classAPrice', 'classBPrice', 'creationDate', 'owner', 'shared']}
+            'classAPrice', 'classBPrice', 'creationDate', 'userOwner', 'shared']}
 
     #{crud.custom 'plugin.name'}
         ${object.plugin.name}
@@ -44,7 +44,7 @@
         ${object.creationDate.format()}
     #{/crud.custom}
     #{crud.custom 'name'}
-        #{if object.owner}
+        #{if object.userOwner}
          <a href="@{guest.SpaceController.show(object._key())}">${object.name?.toString()?.escape()?.raw() ?: '(no value)'}</a>
         #{/if}
         #{else}

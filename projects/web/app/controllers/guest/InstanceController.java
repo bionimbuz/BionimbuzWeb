@@ -61,7 +61,7 @@ public class InstanceController extends BaseAdminController {
         final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);
         WorkflowNodeModel workflowNode = null;
-        if(workflowNodeId != null) {
+        if (workflowNodeId != null) {
             workflowNode = WorkflowNodeModel.findById(workflowNodeId);
         }
         final String executorId = params.get(EXECUTOR_SELECTED_ID);
@@ -98,9 +98,12 @@ public class InstanceController extends BaseAdminController {
                 applicationOutputFileNames);
         final InstanceModel object = new InstanceModel();
         Binder.bindBean(params.getRootParamNode(), "object", object);
+        if (object.getWorkflowNode() != null && object.getWorkflowNode().getId() == null) {
+            object.setWorkflowNode(null);
+        }
         final ExecutorModel executorSelected = object.getExecutor();
         WorkflowNodeModel workflowNode = null;
-        if(workflowNodeId != null) {
+        if (workflowNodeId != null) {
             workflowNode = WorkflowNodeModel.findById(workflowNodeId);
             notFoundIfNull(workflowNode);
             object.setWorkflowNode(workflowNode);
@@ -142,8 +145,8 @@ public class InstanceController extends BaseAdminController {
         object.setApplicationArguments(arguments);
 
         object._save();
-        
-        if(workflowNode!=null) {
+
+        if (workflowNode != null) {
             workflowNode.setInstance(object);
             workflowNode.save();
         }
@@ -153,11 +156,11 @@ public class InstanceController extends BaseAdminController {
 
         flash.success(Messages.get("crud.created", type.modelName));
         if (params.get("_save") != null) {
-            if(workflowNodeId != null) {
+            if (workflowNodeId != null) {
                 final Long id = workflowNode.getWorkflow().getId();
-                redirect(CONTROLLERS_GUEST_WORKFLOW_CONTROLLER_SHOW, id);   
+                redirect(CONTROLLERS_GUEST_WORKFLOW_CONTROLLER_SHOW, id);
             } else {
-                redirect(request.controller + ".list");                
+                redirect(request.controller + ".list");
             }
         }
         if (params.get("_saveAndAddAnother") != null) {
@@ -165,20 +168,20 @@ public class InstanceController extends BaseAdminController {
         }
         redirect(request.controller + ".show", object._key());
     }
-    
+
     public static void delete(Long id) throws Exception {
         final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);
         final InstanceModel object = InstanceModel.findById(id);
         notFoundIfNull(object);
-        try {            
-            if(object.getWorkflowNode() != null) {
-                if(object.getWorkflowNode().getWorkflow().getStatus() == WORKFLOW_STATUS.EDITING) {
+        try {
+            if (object.getWorkflowNode() != null) {
+                if (object.getWorkflowNode().getWorkflow().getStatus() == WORKFLOW_STATUS.EDITING) {
                     object.delete();
                     id = object.getWorkflowNode().getWorkflow().getId();
-                    redirect(CONTROLLERS_GUEST_WORKFLOW_CONTROLLER_SHOW, id);   
+                    redirect(CONTROLLERS_GUEST_WORKFLOW_CONTROLLER_SHOW, id);
                 }
-            } else {            
+            } else {
                 final ComputingApi api = new ComputingApi(object.getPlugin().getUrl());
                 final String credentialData = object.getCredential().getCredentialData().getContentAsString();
                 TokenModel token;
@@ -186,14 +189,14 @@ public class InstanceController extends BaseAdminController {
                         object.getPlugin().getCloudType(),
                         object.getPlugin().getInstanceWriteScope(),
                         credentialData);
-    
+
                 final Body<Boolean> body = api.deleteInstance(
                         token.getToken(),
                         token.getIdentity(),
                         object.getRegionName(),
                         object.getZoneName(),
                         object.getCloudInstanceName());
-    
+
                 if (body != null
                         && body.getContent() != null
                         && body.getContent()) {
@@ -247,7 +250,7 @@ public class InstanceController extends BaseAdminController {
         object.setArguments(applicationArguments);
 
         // Process input files
-        if(applicationInputFiles != null) {
+        if (applicationInputFiles != null) {
             for (int i = 0; i < applicationInputFiles.size(); i++) {
                 final Long spaceFileId = applicationInputFiles.get(i);
                 if (spaceFileId == null) {
@@ -262,7 +265,7 @@ public class InstanceController extends BaseAdminController {
         }
 
         // Process output files
-        if(applicationOutputFileSpaces != null) {
+        if (applicationOutputFileSpaces != null) {
             for (int i = 0; i < applicationOutputFileSpaces.size(); i++) {
                 final Long spaceId = applicationOutputFileSpaces.get(i);
                 if (spaceId == null) {
@@ -272,18 +275,18 @@ public class InstanceController extends BaseAdminController {
                 if (i >= applicationOutputFileNames.size()) {
                     break;
                 }
-    
+
                 final String fileName = applicationOutputFileNames.get(i);
                 if (StringUtils.isEmpty(fileName)) {
                     break;
                 }
-    
+
                 final SpaceFileModel spaceFile = new SpaceFileModel();
                 spaceFile.setName(fileName);
                 spaceFile.setSpace(space);
                 spaceFile.setVirtualName(
                         SpaceFileModel.generateVirtualName(fileName));
-    
+
                 final ApplicationFileOutputModel outputFile = new ApplicationFileOutputModel();
                 outputFile.setFileOrder(i);
                 outputFile.setSpaceFile(spaceFile);
@@ -378,16 +381,16 @@ public class InstanceController extends BaseAdminController {
         }
     }
 
-    public static void createNode(final Long id) {        
-        WorkflowNodeModel workflowNode = WorkflowNodeModel.findById(id);
+    public static void createNode(final Long id) {
+        final WorkflowNodeModel workflowNode = WorkflowNodeModel.findById(id);
         notFoundIfNull(workflowNode);
         final Long workflowNodeId = id;
-        if(workflowNode.getInstance() != null) {
-            redirect(CONTROLLERS_GUEST_INSTANCE_CONTROLLER_SHOW, 
-                    workflowNode.getInstance().getId()); 
+        if (workflowNode.getInstance() != null) {
+            redirect(CONTROLLERS_GUEST_INSTANCE_CONTROLLER_SHOW,
+                    workflowNode.getInstance().getId());
         } else {
-            redirect(CONTROLLERS_GUEST_INSTANCE_CONTROLLER_BLANK, 
-                    workflowNodeId);            
+            redirect(CONTROLLERS_GUEST_INSTANCE_CONTROLLER_BLANK,
+                    workflowNodeId);
         }
     }
 }

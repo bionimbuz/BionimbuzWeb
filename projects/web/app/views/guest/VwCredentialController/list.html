@@ -34,10 +34,10 @@
 
 <br>
 
-#{crud.table fields: ['name', 'plugin', 'owner', 'shared', 'enabled']}
+#{crud.table fields: ['name', 'plugin', 'userOwner', 'shared', 'enabled']}
 
     #{crud.custom 'name'}
-        #{if object.owner}
+        #{if object.userOwner}
          <a href="@{guest.CredentialController.show(object._key())}">${object.name?.toString()?.escape()?.raw() ?: '(no value)'}</a>
         #{/if}
         #{else}

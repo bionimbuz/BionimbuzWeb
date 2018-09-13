@@ -218,6 +218,7 @@ group.join.message=You will only be able to view other users if you agree to joi
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 UserGroupModel=&{GroupModel}
 object.owner=Owner
+object.userOwner=Owner
 object.joined=Joined
 object.user.name=User
 object.user.email=Email

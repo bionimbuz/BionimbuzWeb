@@ -40,7 +40,7 @@ public class GroupController extends BaseAdminController {
         UserGroupModel userGroup = new UserGroupModel(currentUser, object);
         userGroup.setGroup(object);
         userGroup.setUser(currentUser);
-        userGroup.setOwner(true);
+        userGroup.setUserOwner(true);
         userGroup.setJoined(true);
         userGroup.save();
         
@@ -128,7 +128,7 @@ public class GroupController extends BaseAdminController {
                 new UserGroupKey(currentUser, object));
         notFoundIfNull(userGroup);
         try {
-            if(userGroup.isOwner() && 
+            if(userGroup.isUserOwner() && 
                     UserGroupModel.countGroupOwnersJoined(object) <= 1) {
                 flash.error(Messages.get("group.error.sole.owner", type.modelName));
                 redirect(request.controller + ".show", object._key());
