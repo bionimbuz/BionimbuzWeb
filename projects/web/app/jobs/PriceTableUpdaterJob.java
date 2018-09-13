@@ -63,6 +63,20 @@ public class PriceTableUpdaterJob extends Job {
         try {
             final PricingApi api = new PricingApi(plugin.getUrl());
             final Body<PluginPriceTableModel> price = api.getPricing();
+            if(price == null) {
+                updateOrCreatePriceTableStatus(
+                        plugin, recentPriceTable, now,
+                        SyncStatus.ERROR, 
+                        Messages.get("application.price.table.cannot.be.found"), 
+                        null, null);
+            } else if(price.getContent().getStatus().getStatus() != 
+                    PluginPriceTableStatusModel.Status.OK) {
+                updateOrCreatePriceTableStatus(
+                        plugin, recentPriceTable, now,
+                        SyncStatus.ERROR, price.getContent().getStatus().getErrorMessage(), 
+                        null, null);
+                return;
+            }
             final PluginPriceModel princingRequested = price.getContent().getPrice();
             final PluginPriceTableStatusModel statusRequested = price.getContent().getStatus();
             if (!priceTableMustBeSync(recentPriceTable, princingRequested, statusRequested)) {
@@ -73,9 +87,17 @@ public class PriceTableUpdaterJob extends Job {
                 processPriceTable(now, princingRequested, statusRequested, plugin);
             }
         } catch (final Exception e) {
-            Logger.error(e, "Price table for plugin [%s] cannot be retrieved [%s]", plugin.getName(), e.getMessage());                
-            String message = e.getMessage() == null && e.getCause() != null ? e.getCause().getMessage() : null;
-            message = StringUtils.isNotEmpty(message) ? message : Messages.get("application.unknow.error.synchronizing.process");
+            Logger.error(e, "Price table for plugin [%s] cannot be retrieved [%s]", plugin.getName(), e.getMessage());  
+            
+            String message = null;
+            if(StringUtils.isNotEmpty(e.getMessage())) {
+                message = e.getMessage();
+            } else if(e.getCause() != null && StringUtils.isNotEmpty(e.getCause().getMessage())) {
+                message = e.getCause().getMessage();
+            } else {
+                message = Messages.get("application.unknow.error.synchronizing.process");
+            }
+            
             updateOrCreatePriceTableStatus(
                     plugin, recentPriceTable, now,
                     SyncStatus.ERROR, message, null, null);
