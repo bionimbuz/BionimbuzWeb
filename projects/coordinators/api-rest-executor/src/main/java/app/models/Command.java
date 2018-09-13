@@ -13,52 +13,68 @@ public class Command extends Body<Command> {
     private List<Pair<String, String>> listInputPathsWithExtension;
     private List<Pair<String, String>> listOutputPathsWithExtension;
     private SecureCoordinatorAccess secureFileAccess;
-    
+
     public Command() {
     }
 
     public String getCommandLine() {
-        return commandLine;
+        return this.commandLine;
     }
-    public void setCommandLine(String commandLine) {
+
+    public void setCommandLine(final String commandLine) {
         this.commandLine = commandLine;
     }
+
     public String getArgs() {
-        return args;
+        return this.args;
     }
-    public void setArgs(String args) {
+
+    public void setArgs(final String args) {
         this.args = args;
     }
+
     public final SecureCoordinatorAccess getSecureFileAccess() {
-        return secureFileAccess;
+        return this.secureFileAccess;
     }
-    public final void setSecureFileAccess(SecureCoordinatorAccess secureFileAccess) {
+
+    public final void setSecureFileAccess(final SecureCoordinatorAccess secureFileAccess) {
         this.secureFileAccess = secureFileAccess;
     }
+
     public final List<Pair<String, String>> getListInputPathsWithExtension() {
-        return listInputPathsWithExtension;
+        return this.listInputPathsWithExtension;
     }
+
     public final void setListInputPathsWithExtension(
-            List<Pair<String, String>> listInputPathsWithExtension) {
+            final List<Pair<String, String>> listInputPathsWithExtension) {
         this.listInputPathsWithExtension = listInputPathsWithExtension;
     }
+
     public final List<Pair<String, String>> getListOutputPathsWithExtension() {
-        return listOutputPathsWithExtension;
+        return this.listOutputPathsWithExtension;
     }
+
     public final void setListOutputPathsWithExtension(
-            List<Pair<String, String>> listOutputPathsWithExtension) {
+            final List<Pair<String, String>> listOutputPathsWithExtension) {
         this.listOutputPathsWithExtension = listOutputPathsWithExtension;
     }
+
     public String getExecutionScript() {
-        return executionScript;
+        if (this.executionScript != null && !this.executionScript.isEmpty()) {
+            this.executionScript = this.executionScript.replace("\r", "");
+        }
+        return this.executionScript;
     }
-    public void setExecutionScript(String executionScript) {
+
+    public void setExecutionScript(final String executionScript) {
         this.executionScript = executionScript;
     }
+
     public String getRefreshStatusUrl() {
-        return refreshStatusUrl;
+        return this.refreshStatusUrl;
     }
-    public void setRefreshStatusUrl(String refreshStatusUrl) {
+
+    public void setRefreshStatusUrl(final String refreshStatusUrl) {
         this.refreshStatusUrl = refreshStatusUrl;
     }
 }

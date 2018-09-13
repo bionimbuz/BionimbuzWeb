@@ -21,20 +21,18 @@ public class FileStorageService {
         Files.createDirectories(this.fileStorageLocation);
     }
 
-    public String storeFile(MultipartFile file, String fileName) throws IOException {
-        Path targetLocation = this.fileStorageLocation.resolve(fileName);
+    public String storeFile(final MultipartFile file, final String fileName) throws IOException {
+        final Path targetLocation = this.fileStorageLocation.resolve(fileName);
         Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
         return fileName;
     }
 
-    public Resource loadFileAsResource(String fileName) throws MalformedURLException {
-        Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
-        Resource resource = new UrlResource(filePath.toUri());
-        if(resource.exists()) {
+    public Resource loadFileAsResource(final String fileName) throws MalformedURLException {
+        final Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
+        final Resource resource = new UrlResource(filePath.toUri());
+        if (resource.exists()) {
             return resource;
-        } else {
-            return null;
         }
+        return null;
     }
 }
-
