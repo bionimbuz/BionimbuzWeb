@@ -67,12 +67,18 @@ public class AESEncrypter {
     }    
     
     public byte[] encryptBytes(byte [] plainText) throws Exception{
+        if(plainText == null) { 
+            return null;
+        }
         byte[] encryptedText = ecipher.doFinal(plainText);
         return encryptedText;
     }
 
     public byte[] decryptBytes(byte[] encryptText) throws Exception {
         byte[] decyrptTextBytes = null;
+        if(encryptText == null) { 
+            return null;
+        }
         try {
             decyrptTextBytes = dcipher.doFinal(encryptText);
         } catch (IllegalBlockSizeException e) {
