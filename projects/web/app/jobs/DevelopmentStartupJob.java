@@ -119,7 +119,7 @@ public class DevelopmentStartupJob extends Job {
 
     private static void saveUnixExecutor(final List<ImageModel> listImages) {
         final ExecutorModel executor = new ExecutorModel();
-        executor.setName("Unix Application Fake");
+        executor.setName("Unix Application");
         executor.setStartupScript(
                 "#!/bin/bash\n" +
                         "\n" +
@@ -145,7 +145,7 @@ public class DevelopmentStartupJob extends Job {
     private static void saveWindowsExecutor(final List<ImageModel> listImages) {
 
         final ExecutorModel executor = new ExecutorModel();
-        executor.setName("Windows Application Fake");
+        executor.setName("Windows Application");
         executor.setStartupScript("SET COORDINATOR=executor-coordinator-0.1.jar\n" +
                 "curl -o %COORDINATOR% http://localhost:8282/spaces/test/file/%COORDINATOR%/download\n" +
                 "java -jar %COORDINATOR%" +
@@ -181,12 +181,24 @@ public class DevelopmentStartupJob extends Job {
     }
 
     private void insertGCEImages(final PluginModel plugin) {
-        final ImageModel image = new ImageModel();
+        ImageModel image = new ImageModel();
         image.setName("ubuntu-1604-xenial-v20180627");
         image.setUrl("https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1604-xenial-v20180627");
         image.setPlugin(plugin);
         image.save();
-    }
+        
+        image = new ImageModel();
+        image.setName("ubuntu-1204-precise-v20141028");
+        image.setUrl("https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1204-precise-v20141028");
+        image.setPlugin(plugin);
+        image.save();
+        
+        image = new ImageModel();
+        image.setName("ubuntu-1610-yakkety-v20170307");
+        image.setUrl("https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1610-yakkety-v20170307");
+        image.setPlugin(plugin);
+        image.save();
+   }
 
     private void insertAWSImages(final PluginModel plugin) {
         final ImageModel image = new ImageModel();
