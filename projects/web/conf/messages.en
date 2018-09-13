@@ -99,9 +99,10 @@ datetimepicker.tooltip.next.century=Next century
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 application.title=BioNimbuZ
 application.description=Cloud Federation Platform
-application.unknow.error.synchronizing.process=The server encountered an error! Check your credentials file.
+application.unknow.error.synchronizing.process=Price table synchronization error.
 application.welcome=Welcome to BioNimbuZ!
 application.welcome.content=Select the menus available to start navigation.
+application.price.table.cannot.be.found=Price table not found.
 
 # Controllers
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
