@@ -127,6 +127,9 @@ public class ApplicationModel extends GenericModel {
     }
     public void setExecutionScript(String executionScript) {
         this.executionScript = executionScript;
+        if(executionScript != null && !executionScript.isEmpty()) {
+            this.executionScript = executionScript.replace("\r", "");           
+        }
     }
     public Boolean getExecutionScriptEnabled() {
         return executionScriptEnabled;
