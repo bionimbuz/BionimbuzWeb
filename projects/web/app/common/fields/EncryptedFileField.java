@@ -14,7 +14,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.type.BinaryType;
 
-import common.security.AESEncrypter;
+import common.security.DesEncrypter;
 import play.Logger;
 import play.Play;
 
@@ -38,7 +38,7 @@ public class EncryptedFileField extends FileField {
     public Object nullSafeGet(ResultSet resultSet, String[] names, SessionImplementor sessionImplementor, Object o) throws HibernateException, SQLException {
         try {
             byte [] val = (byte []) BinaryType.INSTANCE.nullSafeGet(resultSet, names[0], sessionImplementor, o);
-            AESEncrypter cript = new AESEncrypter(Play.secretKey);
+            DesEncrypter cript = new DesEncrypter(getDESKey());
             return new EncryptedFileField(cript.decryptBytes(val));
         } catch (Exception e) {
             Logger.error(e, e.getMessage());
@@ -49,7 +49,7 @@ public class EncryptedFileField extends FileField {
     public void nullSafeSet(PreparedStatement ps, Object o, int i, SessionImplementor sessionImplementor) throws HibernateException, SQLException {
         try {
             if(o != null) {
-                AESEncrypter cript = new AESEncrypter(Play.secretKey);
+                DesEncrypter cript = new DesEncrypter(getDESKey());
                 ps.setBytes(i, cript.encryptBytes(((EncryptedFileField) o).getFile()));
             } else {
                 ps.setNull(i, Types.LONGVARBINARY);
