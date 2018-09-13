@@ -44,7 +44,7 @@ public class WorkflowExecutionJob extends Job {
     }
     
     private boolean proccessNeedSynchronization() {
-        if(this.instanceId != null) {
+        if(this.instanceId == null) {
             return false;
         }        
         InstanceModel instance = 
