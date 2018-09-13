@@ -20,8 +20,7 @@ import play.data.binding.NoBinding;
 import play.db.jpa.GenericModel;
 
 @Entity
-@Subselect(
-        " SELECT DISTINCT"
+@Subselect(" SELECT DISTINCT"
         + "      C.id, "
         + "      C.id as id_credential, "
         + "      C.credentialData, "
@@ -29,9 +28,9 @@ import play.db.jpa.GenericModel;
         + "      C.name,"
         + "      C.plugin_id,"
         + "      C.user_id, "
-        + "      ISNULL(U.id, C.user_id) AS id_user_shared,"
+        + "      (CASE WHEN U.id IS NULL THEN C.user_id ELSE U.id END) AS id_user_shared,"
         + "      GC.id_group IS NOT NULL AS shared,"
-        + "      ( U.id IS NULL OR C.user_id = U.id ) owner"
+        + "      ( U.id IS NULL OR C.user_id = U.id ) userOwner"
         + " FROM tb_credential C"
         + " LEFT JOIN tb_group_credential GC ON ( GC.id_credential = C.id )"
         + " LEFT JOIN tb_group G ON ( G.id = GC.id_group )"
@@ -45,7 +44,7 @@ public class VwCredentialModel extends GenericModel {
     private Long id;
     private boolean enabled = true;
     @NoBinding
-    private boolean owner;
+    private boolean userOwner;
     @NoBinding
     private boolean shared;
     private String name;
@@ -57,7 +56,7 @@ public class VwCredentialModel extends GenericModel {
     @NoBinding
     private UserModel user;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="id_user_shared", nullable = true)
+    @JoinColumn(name = "id_user_shared", nullable = true)
     private UserModel userShared;
     @NoBinding
     private EncryptedFileField credentialData;
@@ -77,37 +76,34 @@ public class VwCredentialModel extends GenericModel {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Data access
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
 
     public static List<VwCredentialModel> searchUserAndPlugin(
             final Long idUser,
             final Long idPlugin,
             final CredentialUsagePolicy credentialUsage) {
-        
-        if(credentialUsage == CredentialUsagePolicy.OWNER_FIRST 
-                || credentialUsage == CredentialUsagePolicy.SHARED_FIRST) {            
-            String order = credentialUsage == CredentialUsagePolicy.OWNER_FIRST ?
-                    "DESC" : "ASC";  
+
+        if (credentialUsage == CredentialUsagePolicy.OWNER_FIRST
+                || credentialUsage == CredentialUsagePolicy.SHARED_FIRST) {
+            final String order = credentialUsage == CredentialUsagePolicy.OWNER_FIRST ? "DESC" : "ASC";
             return find(
-                  " SELECT vwCredential "
-                + " FROM VwCredentialModel vwCredential "
-                + " WHERE vwCredential.userShared.id = ?1 "
-                + "       AND vwCredential.plugin.id = ?2 "
-                + " ORDER BY vwCredential.owner " + order
-                + "          ,vwCredential.id",
-                idUser, idPlugin).fetch();
-        } else if (credentialUsage == CredentialUsagePolicy.ONLY_OWNER 
+                    " SELECT vwCredential "
+                            + " FROM VwCredentialModel vwCredential "
+                            + " WHERE vwCredential.userShared.id = ?1 "
+                            + "       AND vwCredential.plugin.id = ?2 "
+                            + " ORDER BY vwCredential.userOwner " + order
+                            + "          ,vwCredential.id",
+                    idUser, idPlugin).fetch();
+        } else if (credentialUsage == CredentialUsagePolicy.ONLY_OWNER
                 || credentialUsage == CredentialUsagePolicy.ONLY_SHARED) {
-            boolean onlyOwner = 
-                    (credentialUsage == CredentialUsagePolicy.ONLY_OWNER);
+            final boolean onlyOwner = (credentialUsage == CredentialUsagePolicy.ONLY_OWNER);
             return find(
-                  " SELECT vwCredential "
-                + " FROM VwCredentialModel vwCredential "
-                + " WHERE vwCredential.userShared.id = ?1 "
-                + "       AND vwCredential.plugin.id = ?2 "
-                + "       AND vwCredential.owner = ?3"
-                + " ORDER BY vwCredential.name",
-                idUser, idPlugin, onlyOwner).fetch(); 
+                    " SELECT vwCredential "
+                            + " FROM VwCredentialModel vwCredential "
+                            + " WHERE vwCredential.userShared.id = ?1 "
+                            + "       AND vwCredential.plugin.id = ?2 "
+                            + "       AND vwCredential.userOwner = ?3"
+                            + " ORDER BY vwCredential.name",
+                    idUser, idPlugin, onlyOwner).fetch();
         }
         return new ArrayList<>();
     }
@@ -115,7 +111,7 @@ public class VwCredentialModel extends GenericModel {
     public static List<VwCredentialModel> searchForCurrentUserAndPlugin(
             final Long idPlugin,
             final CredentialUsagePolicy credentialUsage) {
-        UserModel currentUser = BaseAdminController.getConnectedUser();
+        final UserModel currentUser = BaseAdminController.getConnectedUser();
         return searchUserAndPlugin(currentUser.getId(), idPlugin, credentialUsage);
     }
 
@@ -123,69 +119,90 @@ public class VwCredentialModel extends GenericModel {
     // Getters and Setters
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public Long getId() {
-        return id;
+        return this.id;
     }
-    public void setId(Long id) {
+
+    public void setId(final Long id) {
         this.id = id;
     }
+
     public EncryptedFileField getCredentialData() {
-        return credentialData;
+        return this.credentialData;
     }
-    public void setCredentialData(EncryptedFileField credentialData) {
+
+    public void setCredentialData(final EncryptedFileField credentialData) {
         this.credentialData = credentialData;
     }
+
     public boolean isEnabled() {
-        return enabled;
+        return this.enabled;
     }
-    public void setEnabled(boolean enabled) {
+
+    public void setEnabled(final boolean enabled) {
         this.enabled = enabled;
     }
+
     public String getName() {
-        return name;
+        return this.name;
     }
-    public void setName(String name) {
+
+    public void setName(final String name) {
         this.name = name;
     }
+
     public PluginModel getPlugin() {
-        return plugin;
+        return this.plugin;
     }
-    public void setPlugin(PluginModel plugin) {
+
+    public void setPlugin(final PluginModel plugin) {
         this.plugin = plugin;
     }
+
     public UserModel getUser() {
-        return user;
+        return this.user;
     }
-    public void setUser(UserModel user) {
+
+    public void setUser(final UserModel user) {
         this.user = user;
     }
+
     public UserModel getUserShared() {
-        return userShared;
+        return this.userShared;
     }
-    public void setUserShared(UserModel userShared) {
+
+    public void setUserShared(final UserModel userShared) {
         this.userShared = userShared;
     }
-    public boolean isOwner() {
-        return owner;
+
+    public boolean isUserOwner() {
+        return this.userOwner;
     }
-    public void setOwner(boolean owner) {
-        this.owner = owner;
+
+    public void setUserOwner(final boolean owner) {
+        this.userOwner = owner;
     }
+
     public boolean isShared() {
-        return shared;
+        return this.shared;
     }
-    public void setShared(boolean shared) {
+
+    public void setShared(final boolean shared) {
         this.shared = shared;
     }
+
     public List<GroupModel> getListSharedGroups() {
-        return listSharedGroups;
+        return this.listSharedGroups;
     }
-    public void setListSharedGroups(List<GroupModel> listSharedGroups) {
+
+    public void setListSharedGroups(final List<GroupModel> listSharedGroups) {
         this.listSharedGroups = listSharedGroups;
     }
+
     public CredentialModel getCredential() {
-        return credential;
+        return this.credential;
     }
-    public void setCredential(CredentialModel credential) {
+
+    public void setCredential(final CredentialModel credential) {
         this.credential = credential;
     }
 }

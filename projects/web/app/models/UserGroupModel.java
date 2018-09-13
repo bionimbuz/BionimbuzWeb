@@ -24,7 +24,7 @@ public class UserGroupModel extends GenericModel {
     @EmbeddedId 
     private UserGroupKey id;    
     @Required
-    private boolean owner = false;
+    private boolean userOwner = false;
     @Required
     private boolean joined = false;
     @ManyToOne(fetch = FetchType.LAZY)
@@ -49,7 +49,7 @@ public class UserGroupModel extends GenericModel {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public static long countGroupOwnersJoined(
             final GroupModel group) {
-        long value = count("group.id = ?1 AND owner = ?2 AND joined = ?3",
+        long value = count("group.id = ?1 AND userOwner = ?2 AND joined = ?3",
                 group.getId(), true, true);
         return value;
     }
@@ -74,7 +74,7 @@ public class UserGroupModel extends GenericModel {
                 continue;
             }
             userGroup = new UserGroupModel(user, group);
-            userGroup.setOwner(false);
+            userGroup.setUserOwner(false);
             userGroup.setJoined(false);
             userGroup.save();            
         };
@@ -99,10 +99,10 @@ public class UserGroupModel extends GenericModel {
             if(currentUser.getId() == userId)
                 continue;
             if(users == null || !users.contains(userId)){
-                userGroup.setOwner(false);
+                userGroup.setUserOwner(false);
             }
             else {
-                userGroup.setOwner(true);
+                userGroup.setUserOwner(true);
             }
             userGroup.save();                
         }
@@ -114,11 +114,11 @@ public class UserGroupModel extends GenericModel {
     public UserGroupKey getId() {
         return id;
     }
-    public boolean isOwner() {
-        return owner;
+    public boolean isUserOwner() {
+        return userOwner;
     }
-    public void setOwner(boolean owner) {
-        this.owner = owner;
+    public void setUserOwner(boolean owner) {
+        this.userOwner = owner;
     }
     public void setId(UserGroupKey id) {
         this.id = id;

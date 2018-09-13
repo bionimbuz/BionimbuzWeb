@@ -17,8 +17,7 @@ import play.data.binding.NoBinding;
 import play.db.jpa.GenericModel;
 
 @Entity
-@Subselect(
-        " SELECT DISTINCT"
+@Subselect(" SELECT DISTINCT"
         + "      S.id, "
         + "      S.name,"
         + "      S.creationDate,"
@@ -29,9 +28,9 @@ import play.db.jpa.GenericModel;
         + "      S.pricePerGB,"
         + "      S.classAPrice,"
         + "      S.classBPrice,"
-        + "      ISNULL(U.id, S.user_id) AS id_user_shared,"
+        + "      (CASE WHEN U.id IS NULL THEN S.user_id ELSE U.id END) AS id_user_shared,"
         + "      GS.id_group IS NOT NULL AS shared,"
-        + "      ( U.id IS NULL OR S.user_id = U.id ) owner"
+        + "      ( U.id IS NULL OR S.user_id = U.id ) userOwner"
         + " FROM tb_space S"
         + " LEFT JOIN tb_group_space GS ON ( GS.id_space = S.id )"
         + " LEFT JOIN tb_group G ON ( G.id = GS.id_group )"
@@ -57,11 +56,11 @@ public class VwSpaceModel extends GenericModel {
     @Transient
     private List<GroupModel> listSharedGroups;
     @NoBinding
-    private boolean owner;
+    private boolean userOwner;
     @NoBinding
     private boolean shared;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="id_user_shared", nullable = true)
+    @JoinColumn(name = "id_user_shared", nullable = true)
     private UserModel userShared;
     @NoBinding
     private String regionName;
@@ -73,7 +72,7 @@ public class VwSpaceModel extends GenericModel {
     private Double classAPrice;
     @NoBinding
     private Double classBPrice;
-    
+
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Constructors
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -85,113 +84,141 @@ public class VwSpaceModel extends GenericModel {
     // Data access
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public static List<VwSpaceModel> searchForCurrentUserWithShared() {
-        UserModel currentUser = BaseAdminController.getConnectedUser();
+        final UserModel currentUser = BaseAdminController.getConnectedUser();
         return find(
-              " SELECT vwSpace "
-            + " FROM VwSpaceModel vwSpace "
-            + " WHERE vwSpace.userShared.id = ?1 "
-            + " ORDER BY vwSpace.name",
-            currentUser.getId()).fetch();
+                " SELECT vwSpace "
+                        + " FROM VwSpaceModel vwSpace "
+                        + " WHERE vwSpace.userShared.id = ?1 "
+                        + " ORDER BY vwSpace.name",
+                currentUser.getId()).fetch();
     }
+
     public static List<VwSpaceModel> searchForCurrentUserAndPlugin(
             final Long idPlugin) {
-        UserModel currentUser = BaseAdminController.getConnectedUser();
+        final UserModel currentUser = BaseAdminController.getConnectedUser();
         return find(
-              " SELECT vwSpace "
-            + " FROM VwSpaceModel vwSpace "
-            + " WHERE vwSpace.userShared.id = ?1 "
-            + "       AND vwSpace.plugin.id = ?2 "
-            + "       AND vwSpace.owner = TRUE"
-            + " ORDER BY vwSpace.name",
-            currentUser.getId(), idPlugin).fetch();
+                " SELECT vwSpace "
+                        + " FROM VwSpaceModel vwSpace "
+                        + " WHERE vwSpace.userShared.id = ?1 "
+                        + "       AND vwSpace.plugin.id = ?2 "
+                        + "       AND vwSpace.userOwner = TRUE"
+                        + " ORDER BY vwSpace.name",
+                currentUser.getId(), idPlugin).fetch();
     }
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Getters and Setters
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
+
     public final Long getId() {
-        return id;
+        return this.id;
     }
-    public final void setId(Long id) {
+
+    public final void setId(final Long id) {
         this.id = id;
     }
-    public final boolean isOwner() {
-        return owner;
+
+    public final boolean isUserOwner() {
+        return this.userOwner;
     }
-    public final void setOwner(boolean owner) {
-        this.owner = owner;
+
+    public final void setUserOwner(final boolean owner) {
+        this.userOwner = owner;
     }
+
     public final boolean isShared() {
-        return shared;
+        return this.shared;
     }
-    public final void setShared(boolean shared) {
+
+    public final void setShared(final boolean shared) {
         this.shared = shared;
     }
+
     public final String getName() {
-        return name;
+        return this.name;
     }
-    public final void setName(String name) {
+
+    public final void setName(final String name) {
         this.name = name;
     }
+
     public final Date getCreationDate() {
-        return creationDate;
+        return this.creationDate;
     }
-    public final void setCreationDate(Date creationDate) {
+
+    public final void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
+
     public final PluginModel getPlugin() {
-        return plugin;
+        return this.plugin;
     }
-    public final void setPlugin(PluginModel plugin) {
+
+    public final void setPlugin(final PluginModel plugin) {
         this.plugin = plugin;
     }
+
     public final UserModel getUser() {
-        return user;
+        return this.user;
     }
-    public final void setUser(UserModel user) {
+
+    public final void setUser(final UserModel user) {
         this.user = user;
     }
+
     public final List<GroupModel> getListSharedGroups() {
-        return listSharedGroups;
+        return this.listSharedGroups;
     }
-    public final void setListSharedGroups(List<GroupModel> listSharedGroups) {
+
+    public final void setListSharedGroups(final List<GroupModel> listSharedGroups) {
         this.listSharedGroups = listSharedGroups;
     }
+
     public final String getRegionName() {
-        return regionName;
+        return this.regionName;
     }
-    public final void setRegionName(String regionName) {
+
+    public final void setRegionName(final String regionName) {
         this.regionName = regionName;
     }
+
     public final Date getPriceTableDate() {
-        return priceTableDate;
+        return this.priceTableDate;
     }
-    public final void setPriceTableDate(Date priceTableDate) {
+
+    public final void setPriceTableDate(final Date priceTableDate) {
         this.priceTableDate = priceTableDate;
     }
+
     public final Double getPricePerGB() {
-        return pricePerGB;
+        return this.pricePerGB;
     }
-    public final void setPricePerGB(Double pricePerGB) {
+
+    public final void setPricePerGB(final Double pricePerGB) {
         this.pricePerGB = pricePerGB;
     }
+
     public final Double getClassAPrice() {
-        return classAPrice;
+        return this.classAPrice;
     }
-    public final void setClassAPrice(Double classAPrice) {
+
+    public final void setClassAPrice(final Double classAPrice) {
         this.classAPrice = classAPrice;
     }
+
     public final Double getClassBPrice() {
-        return classBPrice;
+        return this.classBPrice;
     }
-    public final void setClassBPrice(Double classBPrice) {
+
+    public final void setClassBPrice(final Double classBPrice) {
         this.classBPrice = classBPrice;
     }
+
     public final UserModel getUserShared() {
-        return userShared;
+        return this.userShared;
     }
-    public final void setUserShared(UserModel userShared) {
+
+    public final void setUserShared(final UserModel userShared) {
         this.userShared = userShared;
     }
 }

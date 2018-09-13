@@ -35,7 +35,7 @@
 
 #{set url: @list().add('searchFields', params.get('searchFields')) /}
 
-#{crud.table fields: ['group.name', 'owner', 'joined']}
+#{crud.table fields: ['group.name', 'userOwner', 'joined']}
     #{crud.custom 'group.name'}
         <a href="@{guest.GroupController.show(object.group.id)}">${object.group.name}</a>
     #{/crud.custom}

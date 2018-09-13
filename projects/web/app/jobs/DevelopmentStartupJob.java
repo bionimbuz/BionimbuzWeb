@@ -175,7 +175,7 @@ public class DevelopmentStartupJob extends Job {
         for (final UserModel user : users) {
             final UserGroupModel userGroup = new UserGroupModel(user, group);
             userGroup.setJoined(true);
-            userGroup.setOwner(true);
+            userGroup.setUserOwner(true);
             userGroup.save();
         }
     }

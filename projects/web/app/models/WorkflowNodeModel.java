@@ -2,7 +2,6 @@ package models;
 
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -24,24 +23,24 @@ public class WorkflowNodeModel extends GenericModel {
     @Id
     @GeneratedValue
     private Long id;
-    @OneToOne(cascade = CascadeType.ALL)
-    private InstanceModel instance;    
+    @OneToOne
+    private InstanceModel instance;
     @NoBinding
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private WorkflowModel workflow;
-        
+
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Data access
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public static boolean hasDependentsFinished(final List<Long> nodesIds) {
-        return count(  
+        return count(
                 " SELECT id"
-                + " FROM WorkflowNodeModel workflowNode "
-                + " INNER JOIN workflowNode.instance instance"
-                + " WHERE workflowNode.id IN (?1)"
-                + "         AND (instance.status <> ?2 AND instance.status <> ?3)"
-                + "         AND (instance.phase <> ?4)", 
+                        + " FROM WorkflowNodeModel workflowNode "
+                        + " INNER JOIN workflowNode.instance instance"
+                        + " WHERE workflowNode.id IN (?1)"
+                        + "         AND (instance.status <> ?2 AND instance.status <> ?3)"
+                        + "         AND (instance.phase <> ?4)",
                 nodesIds, STATUS.FINISHED, STATUS.STOPPED, EXECUTION_PHASE.FINISHED) > 0;
     }
 
@@ -49,21 +48,26 @@ public class WorkflowNodeModel extends GenericModel {
     // Getters and Setters
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public Long getId() {
-        return id;
+        return this.id;
     }
-    public void setId(Long id) {
+
+    public void setId(final Long id) {
         this.id = id;
     }
+
     public WorkflowModel getWorkflow() {
-        return workflow;
+        return this.workflow;
     }
-    public void setWorkflow(WorkflowModel workflow) {
+
+    public void setWorkflow(final WorkflowModel workflow) {
         this.workflow = workflow;
     }
+
     public InstanceModel getInstance() {
-        return instance;
+        return this.instance;
     }
-    public void setInstance(InstanceModel instance) {
+
+    public void setInstance(final InstanceModel instance) {
         this.instance = instance;
     }
 }
