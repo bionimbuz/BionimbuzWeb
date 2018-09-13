@@ -61,19 +61,19 @@ public class DevelopmentStartupJob extends Job {
         final UserModel userAdmin = UserModel.findByEmail("master@bionimbuz.org.br");
         final UserModel userNormal = this.insertTempUserNormal();
         this.insertTempGroup(
-                "Test Group",
+                "UnB Group",
                 userAdmin,
                 userNormal);
         this.insertTempGroup(
-                "Test Group 2",
+                "UFRJ Group",
                 userAdmin,
                 userNormal);
 
         this.insertTempGroup(
-                "Admin Group",
+                "CiC Group",
                 userAdmin);
         this.insertTempGroup(
-                "Normal Group",
+                "Teachers Group",
                 userNormal);
         this.insertGCECredential(pluginGCE, userAdmin);
         this.insertGCECredential(pluginGCE, userNormal);

@@ -16,7 +16,49 @@
 
         #{crud.custom 'firewallTcpRules'}
         #{/crud.custom}
+        #{crud.custom 'executionScriptEnabled'}
+        #{/crud.custom}
+        #{crud.custom 'executionScript'}
+        #{/crud.custom}
+                
+        #{crud.custom 'commandLine'}  
+        
+            #{field 'object.executionScriptEnabled'}            
+            <div class="form-group row ${field.errorClass ? 'has-error' : ''}">                     
+                <input type="checkbox" id="${field.id}" name="${field.name}" class="icheck" value="true" 
+                         ${ field.value ? 'checked="true" '.raw() : ''} /> 
+                <input type="hidden" name="${field.name}" value="false" />                  
+                <label for="${field.id}" style="margin-left: 10px;">&{field.name}</label>                   
+                #{ifError field.name}
+                    <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                #{/ifError} 
+            </div>            
+            #{/field}
+        
+            #{field 'object.executionScript'}
+            <div id="executionScriptDiv" style="${object.executionScriptEnabled ? '' : 'display: none;'}" class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                <label for="${field.id}">&{field.name}</label>
+                <textarea id="${field.id}" name="${field.name}" class="form-control" rows="5">${field.value}</textarea>
+                #{ifError field.name}
+                    <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                #{/ifError} 
+            </div>
+            #{/field}
+                 
+            #{field 'object.commandLine'}
+                <label for="${field.id}">&{field.name}</label>
+                <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                    <label id="applicationLabel" style="font-weight: normal !important;${object.executionScriptEnabled ? '' : 'display: none;'}">${common.constants.SystemConstants.DEFAULT_APP_SCRIPT}</label>
+                    <input id="${field.id}" class="form-control" type="text" name="${field.name}" value="${field.value}" />
 
+                    #{ifError field.name}
+                        <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                    #{/ifError}     
+                    <span class="help-block">*&{'obs.commandLine'}</span>                    
+                </div>
+            #{/field}            
+        #{/crud.custom}
+        
         #{crud.custom 'firewallUdpRules'}
             #{field 'object.firewallTcpRules'}
             <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
@@ -142,6 +184,17 @@
         selectableOptgroup: false,
         afterSelect: disableItensFromSelectedGroup,
         afterDeselect: disableItensFromSelectedGroup
+    });
+    
+    $('#object_executionScriptEnabled').on('ifChanged', function(){
+        if($(this).is(":checked")) {     
+            $('#executionScriptDiv').show();
+            $('#applicationLabel').show();
+        } else {            
+            $('#executionScriptDiv').hide();
+            $('#applicationLabel').hide();
+        }
+        
     });
 
 </script>
