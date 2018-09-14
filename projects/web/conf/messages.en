@@ -377,7 +377,7 @@ modal.editor.saving=Saving model...
 modal.editor.connection.not.created=Some nodes don't reaches 'Start' or 'End' operators
 modal.editor.connection.ok=Connections from 'Start' and 'End' operators are ok.
 modal.editor.model.ok=Information
-
+success.workflow.started=Your workflow has started successfully!
 
 # Other labels
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
