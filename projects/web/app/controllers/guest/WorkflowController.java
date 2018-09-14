@@ -20,14 +20,14 @@ import play.i18n.Messages;
 @For(WorkflowModel.class)
 @Check("/list/workflows")
 public class WorkflowController extends BaseAdminController {
-    
-    public static void list(int page, String search, String searchFields, String orderBy, String order) {
+
+    public static void list(int page, final String search, final String searchFields, String orderBy, String order) {
         final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);
         if (page < 1) {
             page = 1;
-        }        
-        if(StringUtils.isEmpty(orderBy)) {
+        }
+        if (StringUtils.isEmpty(orderBy)) {
             orderBy = "creationDate";
             order = "DESC";
         }
@@ -40,13 +40,13 @@ public class WorkflowController extends BaseAdminController {
             render("CRUD/list.html", type, objects, count, totalCount, page, orderBy, order);
         }
     }
-    
+
     public static void save(final Long id) throws Exception {
         final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);
         final WorkflowModel object = WorkflowModel.findById(id);
         notFoundIfNull(object);
-        WORKFLOW_STATUS previousStatus = object.getStatus();
+        final WORKFLOW_STATUS previousStatus = object.getStatus();
         Binder.bindBean(params.getRootParamNode(), "object", object);
         validation.valid(object);
         if (Validation.hasErrors()) {
@@ -57,51 +57,51 @@ public class WorkflowController extends BaseAdminController {
                 render("CRUD/show.html", type, object);
             }
         }
-        object._save();
-        if(previousStatus == WORKFLOW_STATUS.EDITING 
-                && object.getStatus() == WORKFLOW_STATUS.RUNNING) {
-            (new WorkflowExecutionJob(object.getId())).doJob();            
+        object.save();
+        if (previousStatus == WORKFLOW_STATUS.EDITING && object.getStatus() == WORKFLOW_STATUS.RUNNING) {
+            new WorkflowExecutionJob(object.getId()).now();
         }
         flash.success(Messages.get("crud.saved", type.modelName));
-        if (params.get("_save") != null) {
+        if (object.getStatus() == WORKFLOW_STATUS.RUNNING) {
+            flash.success(Messages.get("success.workflow.started", type.modelName));
             redirect(request.controller + ".list");
         }
         redirect(request.controller + ".show", object._key());
     }
-    
+
     public static void create() throws Exception {
         final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);
         final WorkflowModel object = new WorkflowModel();
         object.setCreationDate(new Date());
         object.setUser(getConnectedUser());
-        object.setStatus(WORKFLOW_STATUS.EDITING);       
+        object.setStatus(WORKFLOW_STATUS.EDITING);
         object.save();
         redirect(request.controller + ".show", object._key());
     }
-    
-    public static void createNode(final Long id) {        
-        WorkflowModel workflow = WorkflowModel.findById(id);
-        WorkflowNodeModel object = new WorkflowNodeModel();
+
+    public static void createNode(final Long id) {
+        final WorkflowModel workflow = WorkflowModel.findById(id);
+        final WorkflowNodeModel object = new WorkflowNodeModel();
         object.setWorkflow(workflow);
-        object.save();        
+        object.save();
         renderJSON(object._key());
     }
-    
-    public static void deleteNode(final Long id) {        
-        WorkflowNodeModel object = WorkflowNodeModel.findById(id);
+
+    public static void deleteNode(final Long id) {
+        final WorkflowNodeModel object = WorkflowNodeModel.findById(id);
         object.delete();
         ok();
     }
 
     public static void saveModel(
-            final Long id, 
+            final Long id,
             final String jsonModel,
             final String jsonGraph) {
-        WorkflowModel workflow = WorkflowModel.findById(id);
+        final WorkflowModel workflow = WorkflowModel.findById(id);
         workflow.setJsonGraph(jsonGraph);
         workflow.setJsonModel(jsonModel);
         workflow.save();
-        ok();    
+        ok();
     }
 }

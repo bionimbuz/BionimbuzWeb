@@ -20,7 +20,8 @@ require:
     - org.apache.jclouds.provider -> aws-ec2 2.2.0-SNAPSHOT
     - org.apache.jclouds.common -> googlecloud 2.2.0-SNAPSHOT
     - org.apache.jclouds.provider -> google-compute-engine 2.2.0-SNAPSHOT
-
+    - org.postgresql -> postgresql 42.2.5.jre7:
+        force: true
 repositories:        
 - api-commons:
     type:       local

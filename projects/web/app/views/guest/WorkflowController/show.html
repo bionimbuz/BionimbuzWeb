@@ -32,6 +32,8 @@
 <div class="row" >
 #{form id: 'saveForm', action:@save(object._key()), enctype:'multipart/form-data', class: 'submitForm'}
 
+    <input type="hidden" id="object_status" name="object.status" value="${object.status}"/>
+
     #{crud.form}
     
         #{crud.custom 'jsonModel'}
