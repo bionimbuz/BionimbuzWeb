@@ -27,7 +27,7 @@ import app.common.Routes;
 import app.common.SystemConstants;
 import app.models.Body;
 import app.models.PluginComputingInstanceModel;
-import app.models.PluginComputingRegionModel;
+import app.models.PluginComputingZoneModel;
 import utils.TestUtils;
 
 @RunWith(SpringRunner.class)
@@ -58,6 +58,7 @@ public class ComputingControllerTest {
 
     @Test
     public void CRUD_Test() {
+        TestUtils.setTimeout(restTemplate.getRestTemplate(), 0);
         ResponseEntity<Body<PluginComputingInstanceModel>> responseGet = null;        
         
         List<PluginComputingInstanceModel> responseList = listAllTest();        
@@ -92,13 +93,13 @@ public class ComputingControllerTest {
         TestUtils.setTimeout(restTemplate.getRestTemplate(), 0);
         HttpEntity<Void> entity = TestUtils.createEntity(SystemConstants.PLUGIN_COMPUTE_READ_SCOPE);
     
-        ResponseEntity< Body<List<PluginComputingRegionModel>> > responseList = 
+        ResponseEntity< Body<List<PluginComputingZoneModel>> > responseList = 
                 this.restTemplate
                     .exchange(
-                            Routes.COMPUTING_REGIONS,
+                            Routes.COMPUTING_REGIONS_ZONES.replace("{name}", INSTANCE_REGION),
                             HttpMethod.GET, 
                             entity,
-                            new ParameterizedTypeReference< Body<List<PluginComputingRegionModel>> >() {});          
+                            new ParameterizedTypeReference< Body<List<PluginComputingZoneModel>> >() {});          
         
         assertThat(responseList.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseList.getBody()).isNotNull();
@@ -139,7 +140,10 @@ public class ComputingControllerTest {
         
         ResponseEntity<Body<Boolean>> response = this.restTemplate
                 .exchange(
-                        Routes.COMPUTING_INSTANCES+"/"+model.getZone() + "/"+model.getName(), 
+                        Routes.COMPUTING_REGIONS_ZONES_INSTANCES_NAME
+                            .replace("{region}", model.getRegion())
+                            .replace("{zone}", model.getZone())
+                            .replace("{name}", model.getName()), 
                         HttpMethod.DELETE, 
                         entity,
                         new ParameterizedTypeReference< Body<Boolean> >() {}
@@ -149,19 +153,27 @@ public class ComputingControllerTest {
     }
     
     private List<PluginComputingInstanceModel> createInstancesTest(List<PluginComputingInstanceModel> instances){
-        HttpEntity<List<PluginComputingInstanceModel>> entity = 
-                TestUtils.createEntity(instances, SystemConstants.PLUGIN_COMPUTE_WRITE_SCOPE);
+
         
-        ResponseEntity<Body<List<PluginComputingInstanceModel>>> response = this.restTemplate
-                .exchange(
-                        Routes.COMPUTING_INSTANCES, 
-                        HttpMethod.POST, 
-                        entity,
-                        new ParameterizedTypeReference<Body<List<PluginComputingInstanceModel>>>() {});                     
-        assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        List<PluginComputingInstanceModel> res = new ArrayList<>();
         
-        return response.getBody().getContent();
+        for (PluginComputingInstanceModel pluginComputingInstanceModel : instances) {
+            
+            HttpEntity<PluginComputingInstanceModel> entity = 
+                    TestUtils.createEntity(pluginComputingInstanceModel, SystemConstants.PLUGIN_COMPUTE_WRITE_SCOPE);
+            ResponseEntity<Body<PluginComputingInstanceModel>> response = this.restTemplate
+                    .exchange(
+                            Routes.COMPUTING_INSTANCES, 
+                            HttpMethod.POST, 
+                            entity,
+                            new ParameterizedTypeReference<Body<PluginComputingInstanceModel>>() {});                     
+            assertThat(response).isNotNull();
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+            
+            res.add(response.getBody().getContent());
+        }
+        
+        return res;
     }
     
     private List<PluginComputingInstanceModel> listAllTest() {         
@@ -188,7 +200,10 @@ public class ComputingControllerTest {
         ResponseEntity<Body<PluginComputingInstanceModel>> response = 
                 this.restTemplate
                     .exchange(
-                            Routes.COMPUTING_INSTANCES+"/"+model.getZone() + "/"+model.getName(), 
+                        Routes.COMPUTING_REGIONS_ZONES_INSTANCES_NAME
+                            .replace("{region}", model.getRegion())
+                            .replace("{zone}", model.getZone())
+                            .replace("{name}", model.getName()), 
                             HttpMethod.GET, 
                             entity,
                             new ParameterizedTypeReference< Body<PluginComputingInstanceModel> >() {}
@@ -199,6 +214,9 @@ public class ComputingControllerTest {
     
     private List<PluginComputingInstanceModel> getInstancesToCreate(int length) {
         List<PluginComputingInstanceModel> instances = new ArrayList<>();
+        List<Integer> firewallTcpPorts = new ArrayList<>();
+        firewallTcpPorts.add(8080);
+        firewallTcpPorts.add(80);
 
         for(int i=0;i<length;i++) {
             PluginComputingInstanceModel instance = new PluginComputingInstanceModel();
@@ -207,6 +225,7 @@ public class ComputingControllerTest {
             instance.setType(INSTANCE_TYPE);
             instance.setRegion(INSTANCE_REGION);
             instance.setZone(INSTANCE_ZONE);
+            instance.setFirewallTcpPorts(firewallTcpPorts);
             
             instances.add(instance);
         }

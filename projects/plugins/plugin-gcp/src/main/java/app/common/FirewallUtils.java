@@ -30,17 +30,21 @@ public class FirewallUtils {
         List<String> range = new ArrayList<>();
         
         // First, TCP ports
-        Set<Integer> ports = new TreeSet<>();        
-        ports.addAll(instance.getFirewallTcpPorts());
-        for(Integer port : ports) {
-            replaceFirewallRule(googleApi, PROTOCOL.tcp, port, range);
+        Set<Integer> ports = new TreeSet<>();     
+        if(instance.getFirewallTcpPorts() != null) {
+            ports.addAll(instance.getFirewallTcpPorts());
+            for(Integer port : ports) {
+                replaceFirewallRule(googleApi, PROTOCOL.tcp, port, range);
+            }
         }
         
         // Second, UDP ports
         ports = new TreeSet<>();        
-        ports.addAll(instance.getFirewallUdpPorts());
-        for(Integer port : ports) {
-            replaceFirewallRule(googleApi, PROTOCOL.udp, port, range);
+        if(instance.getFirewallUdpPorts() != null) {
+            ports.addAll(instance.getFirewallUdpPorts());
+            for(Integer port : ports) {
+                replaceFirewallRule(googleApi, PROTOCOL.udp, port, range);
+            }
         }
     }
     

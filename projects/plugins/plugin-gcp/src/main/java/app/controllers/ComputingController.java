@@ -232,12 +232,13 @@ public class ComputingController extends AbstractComputingController {
                     final String newName = PluginComputingInstanceModel.generateUniqueName(
                             this.getInstances(googleApi),
                             GlobalConstants.BNZ_INSTANCE);                
-                    if (!StringUtils.isEmpty(newName)) {
+                    if (StringUtils.isEmpty(newName)) {
                         continue;
                     }
                     instanceModel.setName(newName);
                     Operation operation = this.createInstance(googleApi, instanceModel);
                     GoogleComputeEngineUtils.waitOperation(googleApi, operation);
+                    break;
                 } catch (final Exception e) {
                     LOGGER.error(e.getMessage(), e);
                     instanceModel.setName("");
