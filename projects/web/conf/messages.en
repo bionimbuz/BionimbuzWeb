@@ -319,6 +319,7 @@ workflow.execute=Execute
 
 # UserModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+UserModel=User
 RoleType.ADMIN=System Administrator
 RoleType.NORMAL=Normal User
 user.password=Change Password
