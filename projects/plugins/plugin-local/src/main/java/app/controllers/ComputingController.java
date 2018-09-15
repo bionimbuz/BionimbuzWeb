@@ -377,6 +377,12 @@ public class ComputingController extends AbstractComputingController {
         if (instProc == null) {
             return;
         }
+        instProc.getProcess().destroy();
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         instProc.getProcess().destroyForcibly();
         processes.remove(id);
     }
