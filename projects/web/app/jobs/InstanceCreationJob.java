@@ -75,6 +75,40 @@ public class InstanceCreationJob extends Job {
         final Command command = InstanceCreationJob.generateCommandToExecute(instance);
         return InstanceCreationJob.executeCommand(instance, command);
     }
+    
+    public static boolean removeCloudInstance(
+            final InstanceModel instance,
+            final Long userId) {
+        
+        try {
+            final ComputingApi api = new ComputingApi(instance.getPlugin().getUrl());
+            final String credentialData = instance.getCredential()
+                    .getCredentialData()
+                    .getContentAsString();
+
+            TokenModel token;
+            token = Authorization.getToken(
+                    instance.getPlugin().getCloudType(),
+                    instance.getPlugin().getInstanceWriteScope(),
+                    credentialData);
+
+            final Body<Boolean> body = api.deleteInstance(
+                    token.getToken(),
+                    token.getIdentity(),
+                    instance.getRegionName(),
+                    instance.getZoneName(),
+                    instance.getCloudInstanceName());
+            
+            if (body == null || body.getContent() == null) {
+                return false;
+            }
+            
+            return body.getContent();
+        } catch (final Exception e) {
+            Logger.warn(e, "Instance cannot be deleted [%s]", e.getMessage());
+        }
+        return false;        
+    }
 
     private static boolean createCloudInstance(
             final InstanceModel instance,

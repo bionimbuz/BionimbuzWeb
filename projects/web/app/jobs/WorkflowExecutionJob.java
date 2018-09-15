@@ -16,6 +16,7 @@ import play.jobs.Job;
 public class WorkflowExecutionJob extends Job {
 
     private static final String MSG_NODE_CREATION_ERROR = "A node cannot be created.";
+    private static final String MSG_NODE_REMOVE_ERROR = "Some stopped instances cannot be deleted, but workflow execution was proceded.";
     private final Long workflowId;
     private final Long instanceId;
     private final ExecutionStatus instanceStatus;
@@ -71,6 +72,13 @@ public class WorkflowExecutionJob extends Job {
             }
 
             final WorkflowModel workflow = instance.getWorkflowNode().getWorkflow();
+            
+            if(!InstanceCreationJob.removeCloudInstance(
+                    instance, workflow.getUser().getId())) {
+                workflow.setExecutionMessage(MSG_NODE_REMOVE_ERROR);
+                workflow.save();
+            }
+            
             // Cannot continues with a workflow already stopped
             if (workflow.getStatus() == WORKFLOW_STATUS.STOPPED
                     || workflow.getStatus() == WORKFLOW_STATUS.FINISHED) {
