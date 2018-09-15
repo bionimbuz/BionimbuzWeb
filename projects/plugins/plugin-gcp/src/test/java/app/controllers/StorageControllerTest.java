@@ -2,6 +2,8 @@ package app.controllers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.IOException;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +18,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import app.client.StorageApi;
 import app.common.Routes;
 import app.common.SystemConstants;
 import app.models.Body;
+import app.models.PluginStorageFileDownloadModel;
+import app.models.PluginStorageFileUploadModel;
 import app.models.PluginStorageModel;
 import utils.TestUtils;
 
@@ -33,7 +38,8 @@ public class StorageControllerTest {
     @Value("${local.server.port}")
     private int PORT;
     private static String LOCATION = "us-central1";
-    private static String BUCKET_NAME = "bionimbuz_test_us_central1";
+    private static String BUCKET_NAME = "bionimbuz_workflow_us_central1";
+    private static String VIRTUAL_NAME = "20180902161910883_662067847";
 
     @Test
     public void contexLoads() throws Exception {
@@ -41,9 +47,19 @@ public class StorageControllerTest {
     }
 
     @Test
-    public void CRUD_Test() {
+    public void CRUD_Test() throws IOException {
         TestUtils.setTimeout(restTemplate.getRestTemplate(), 0);
         createSpaceTest();
+        
+        StorageApi api = new StorageApi("http://localhost:"+PORT);
+        Body<PluginStorageFileDownloadModel> bodyDownload = 
+                api.getDownloadUrl(BUCKET_NAME, VIRTUAL_NAME);
+        assertThat(bodyDownload).isNotNull();
+        
+        Body<PluginStorageFileUploadModel> bodyUpload = 
+                api.getUploadUrl(BUCKET_NAME, VIRTUAL_NAME);
+        assertThat(bodyUpload).isNotNull();
+        
         deleteSpaceTest();
     }
 

@@ -66,7 +66,7 @@ public class StorageController extends AbstractStorageController {
             }
             bucketApi.deleteBucket(name);
             return new ResponseEntity<>(
-                    Body.create(false),
+                    Body.create(true),
                     HttpStatus.OK);
         }
     }
