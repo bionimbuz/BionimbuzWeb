@@ -33,18 +33,21 @@ public class WorkflowNodeModel extends GenericModel {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Data access
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    public static boolean hasDependentsFinished(final List<Long> nodesIds) {
+    public static boolean hasDependentsNotFinished(final List<Long> nodesIds) {
 
         final String query = " SELECT COUNT(workflowNode.id)"
-                + " FROM WorkflowNodeModel workflowNode "
+                + " FROM WorkflowNodeModel workflowNode"
                 + " INNER JOIN workflowNode.instance instance"
                 + " WHERE workflowNode.id IN (:nodesIds)"
-                + "         AND (instance.status <> ?1 AND instance.status <> ?2)"
-                + "         AND (instance.phase <> ?3)";
+                + "     AND ((instance.status <> ?1 AND instance.status <> ?2) "
+                + "     OR (instance.phase <> ?3))";
 
-        final Long count = find(query, STATUS.FINISHED, STATUS.STOPPED, EXECUTION_PHASE.FINISHED)
-                .bind("nodesIds", nodesIds)
-                .first();
+        final Long count = find(query,
+                STATUS.FINISHED,
+                STATUS.STOPPED,
+                EXECUTION_PHASE.FINISHED)
+                        .bind("nodesIds", nodesIds)
+                        .first();
         return count > 0;
     }
 

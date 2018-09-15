@@ -311,6 +311,7 @@ object.executionMessage=Execution Message
 WORKFLOW_STATUS.EDITING=(editing)
 WORKFLOW_STATUS.RUNNING=Running...
 WORKFLOW_STATUS.STOPPED=Stopped
+WORKFLOW_STATUS.FINISHED=Finished
 workflow.editor=Workflow Editor
 workflow.unnamed=(Unnamed workflow)
 workflow.node.not.configured=(empty)

@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -22,7 +24,7 @@ import play.db.jpa.GenericModel;
 @Entity
 @Table(name = "tb_workflow")
 public class WorkflowModel extends GenericModel {
-    
+
     public static enum WORKFLOW_STATUS {
         EDITING,
         RUNNING,
@@ -34,105 +36,133 @@ public class WorkflowModel extends GenericModel {
     @GeneratedValue
     private Long id;
     @MaxSize(100)
-    private String name;        
+    private String name;
     @NoBinding
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "workflow")
-    private List<WorkflowNodeModel> listWorkflowNodes;    
+    private List<WorkflowNodeModel> listWorkflowNodes;
     @NoBinding
+    @Enumerated(EnumType.STRING)
     private WORKFLOW_STATUS status;
     @NoBinding
     private Date creationDate;
-    @Column(length=3000)
+    @Column(length = 3000)
     private String jsonModel;
-    @Column(length=3000)
+    @Column(length = 3000)
     private String jsonGraph;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)   
+    @JoinColumn(nullable = false)
     @NoBinding
     private UserModel user;
     @NoBinding
-    private String executionMessage;    
-        
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    // Data access
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    public static boolean hasWorkflowFinished(final Long workflowId) {
-        return count(  
-                " SELECT id"
-                + " FROM WorkflowModel workflow "
-                + " INNER JOIN workflow.workflowNode workflowNode"
-                + " INNER JOIN workflowNode.instance instance"
-                + " WHERE workflow.id = ?1 "
-                + "         AND (instance.status <> ?2 AND instance.status <> ?3)"
-                + "         AND (instance.phase <> ?4)", 
-                workflowId, STATUS.FINISHED, STATUS.STOPPED, EXECUTION_PHASE.FINISHED) > 0;
-    }
+    private String executionMessage;
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Constructors
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    public WorkflowModel() {        
+    public WorkflowModel() {
         super();
+    }
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Data access
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    public static boolean hasWorkflowFinished(final Long workflowId) {
+
+        final String query = " SELECT COUNT(instance.id)"
+                + " FROM InstanceModel instance "
+                + " INNER JOIN instance.workflowNode node"
+                + " INNER JOIN node.workflow workflow"
+                + " WHERE workflow.id = ?1 "
+                + "     AND ((instance.status <> ?2 AND instance.status <> ?3) "
+                + "     OR (instance.phase <> ?4))";
+
+        final Long count = find(query,
+                workflowId,
+                STATUS.FINISHED,
+                STATUS.STOPPED,
+                EXECUTION_PHASE.FINISHED)
+                        .first();
+        return count == 0;
     }
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Getters and Setters
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public Long getId() {
-        return id;
+        return this.id;
     }
-    public void setId(Long id) {
+
+    public void setId(final Long id) {
         this.id = id;
     }
+
     public String getName() {
-        return name;
+        return this.name;
     }
-    public void setName(String name) {
+
+    public void setName(final String name) {
         this.name = name;
-    }    
-    public WORKFLOW_STATUS getStatus() {
-        return status;
     }
-    public void setStatus(WORKFLOW_STATUS status) {
+
+    public WORKFLOW_STATUS getStatus() {
+        return this.status;
+    }
+
+    public void setStatus(final WORKFLOW_STATUS status) {
         this.status = status;
     }
+
     public Date getCreationDate() {
-        return creationDate;
+        return this.creationDate;
     }
-    public void setCreationDate(Date creationDate) {
+
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
+
     public List<WorkflowNodeModel> getListWorkflowNodes() {
-        return listWorkflowNodes;
+        return this.listWorkflowNodes;
     }
-    public void setListWorkflowNodes(List<WorkflowNodeModel> listWorkflowNodes) {
+
+    public void setListWorkflowNodes(final List<WorkflowNodeModel> listWorkflowNodes) {
         this.listWorkflowNodes = listWorkflowNodes;
     }
+
     public String getJsonModel() {
-        return jsonModel;
+        return this.jsonModel;
     }
-    public void setJsonModel(String jsonModel) {
+
+    public void setJsonModel(final String jsonModel) {
         this.jsonModel = jsonModel;
     }
+
     public String getJsonGraph() {
-        return jsonGraph;
+        return this.jsonGraph;
     }
-    public void setJsonGraph(String jsonGraph) {
+
+    public void setJsonGraph(final String jsonGraph) {
         this.jsonGraph = jsonGraph;
     }
+
     public UserModel getUser() {
-        return user;
+        return this.user;
     }
-    public void setUser(UserModel user) {
+
+    public void setUser(final UserModel user) {
         this.user = user;
     }
+
     public String getExecutionMessage() {
-        return executionMessage;
-    }   
-    public void setExecutionMessage(String executionMessage) {
+        return this.executionMessage;
+    }
+
+    public void setExecutionMessage(final String executionMessage) {
         this.executionMessage = executionMessage;
     }
 
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // * @see play.db.jpa.JPABase#toString()
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @Override
     public String toString() {
         return this.name;

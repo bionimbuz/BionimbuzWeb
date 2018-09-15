@@ -70,10 +70,10 @@ public class InstanceModel extends GenericModel {
     private ApplicationArgumentsModel applicationArguments;
     @NoBinding
     @Enumerated(EnumType.STRING)
-    private EXECUTION_PHASE phase;
+    private EXECUTION_PHASE phase = EXECUTION_PHASE.WAITING;
     @NoBinding
     @Enumerated(EnumType.STRING)
-    private STATUS status;
+    private STATUS status = STATUS.IDDLE;
     @NoBinding
     private String executionObservation;
     @ManyToOne(fetch = FetchType.LAZY)

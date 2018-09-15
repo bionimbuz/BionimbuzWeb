@@ -63,13 +63,13 @@ public class InstanceCreationJob extends Job {
     // * @see play.jobs.Job#doJob()
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @Override
-    public void doJob() {        
-        executeInstance(instanceId, userId);
+    public void doJob() {
+        executeInstance(this.instanceId, this.userId);
     }
-    
+
     public static boolean executeInstance(final Long instanceId, final Long userId) {
         final InstanceModel instance = InstanceModel.findById(instanceId);
-        if(!createCloudInstance(instance, userId)) {
+        if (!createCloudInstance(instance, userId)) {
             return false;
         }
         final Command command = InstanceCreationJob.generateCommandToExecute(instance);
@@ -77,7 +77,7 @@ public class InstanceCreationJob extends Job {
     }
 
     private static boolean createCloudInstance(
-            InstanceModel instance,
+            final InstanceModel instance,
             final Long userId) {
 
         try {
@@ -165,13 +165,14 @@ public class InstanceCreationJob extends Job {
         int attempts = 0;
         while (attempts++ < MAX_ATTEMPTS) {
             try {
+                TimeUnit.SECONDS.sleep(1);
                 final Body<Boolean> body = executorApi.startExecution(command);
                 if (body != null && body.getContent() != null) {
                     return true;
                 }
-                TimeUnit.SECONDS.sleep(2);
             } catch (final IOException | InterruptedException e) {
                 Logger.warn("Command execution attempt failed, attempting [%s]", attempts);
+                Logger.warn(e.getMessage());
             }
         }
         return false;

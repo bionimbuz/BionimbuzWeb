@@ -15,17 +15,17 @@ import play.jobs.Job;
 
 public class WorkflowExecutionJob extends Job {
 
-    private static final String MSG_NODE_EXECUTION_ERROR = "A node has an execution problem.";
     private static final String MSG_NODE_CREATION_ERROR = "A node cannot be created.";
-    private Long workflowId = null;
-    private Long instanceId = null;
-    private ExecutionStatus status = null;
-    private boolean startingCompleteWorkflow;
+    private final Long workflowId;
+    private final Long instanceId;
+    private final ExecutionStatus instanceStatus;
 
     // Initial Workflow execution
     public WorkflowExecutionJob(final Long workflowId) {
+        super();
+        this.instanceId = null;
+        this.instanceStatus = null;
         this.workflowId = workflowId;
-        this.startingCompleteWorkflow = true;
     }
 
     // Instance status update
@@ -33,8 +33,9 @@ public class WorkflowExecutionJob extends Job {
             final Long instanceId,
             final ExecutionStatus instanceStatus) {
         super();
+        this.workflowId = null;
         this.instanceId = instanceId;
-        this.status = instanceStatus;
+        this.instanceStatus = instanceStatus;
     }
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -43,34 +44,40 @@ public class WorkflowExecutionJob extends Job {
     @Override
     public void doJob() {
 
-        if (this.startingCompleteWorkflow) {
-            this.startCompleteExecution();
-        } else {
-            this.updateExecutionStatus();
-        }
+        this.startExecution();
     }
 
-    private void updateExecutionStatus() {
-
-        final InstanceModel instance = InstanceModel.findById(this.instanceId);
-        updateStatus(instance, this.status);
-    }
-
-    private synchronized void startCompleteExecution() {
+    private synchronized void startExecution() {
 
         if (this.workflowId != null) {
-            startExecution(this.workflowId);
-        } else if (this.instanceId != null && this.status != null) {
-            final InstanceModel instance = InstanceModel.findById(this.instanceId);
-            updateStatus(instance, this.status);
-            if (this.status.getStatus() != STATUS.STOPPED
-                    && this.status.getStatus() != STATUS.FINISHED) {
+
+            final WorkflowModel workflow = WorkflowModel.findById(this.workflowId);
+            if (workflow == null) {
                 return;
             }
-            final WorkflowModel workflow = instance.getWorkflowNode().getWorkflow();
+            executeNextInstancesFromNode(workflow, JsonGraph.START_OPERATOR_ID);
 
-            if (this.status.getPhase() != EXECUTION_PHASE.FINISHED) {
-                workflow.setExecutionMessage(MSG_NODE_EXECUTION_ERROR);
+        } else if (this.instanceId != null && this.instanceStatus != null) {
+
+            final InstanceModel instance = InstanceModel.findById(this.instanceId);
+            if (instance == null) {
+                return;
+            }
+            updateNodeStatus(instance, this.instanceStatus);
+
+            if (STATUS.STOPPED != this.instanceStatus.getStatus()
+                    && STATUS.FINISHED != this.instanceStatus.getStatus()) {
+                return;
+            }
+
+            final WorkflowModel workflow = instance.getWorkflowNode().getWorkflow();
+            // Cannot continues with a workflow already stopped
+            if (workflow.getStatus() == WORKFLOW_STATUS.STOPPED
+                    || workflow.getStatus() == WORKFLOW_STATUS.FINISHED) {
+                return;
+            }
+
+            if (this.instanceStatus.getPhase() != EXECUTION_PHASE.FINISHED) {
                 workflow.setStatus(WORKFLOW_STATUS.STOPPED);
                 workflow.save();
                 return;
@@ -82,65 +89,44 @@ public class WorkflowExecutionJob extends Job {
                 return;
             }
 
-            // Cannot continues with a workflow already stopped
-            if (workflow.getStatus() == WORKFLOW_STATUS.STOPPED
-                    || workflow.getStatus() == WORKFLOW_STATUS.FINISHED) {
-                return;
-            }
-
-            final GraphBidirectional<Long> graph = JsonGraph.getParseGraphBidirectional(
-                    workflow.getJsonGraph());
-            executeNextInstancesFromNode(
-                    workflow,
-                    graph,
-                    instance.getWorkflowNode().getId());
+            executeNextInstancesFromNode(workflow, instance.getWorkflowNode().getId());
         }
-    }
-
-    private static void startExecution(final Long workflowId) {
-
-        final WorkflowModel workflow = WorkflowModel.findById(workflowId);
-        if (workflow == null) {
-            return;
-        }
-
-        final GraphBidirectional<Long> graph = JsonGraph.getParseGraphBidirectional(workflow.getJsonGraph());
-        executeNextInstancesFromNode(
-                workflow,
-                graph,
-                JsonGraph.START_OPERATOR_ID);
     }
 
     private static void executeNextInstancesFromNode(
             final WorkflowModel workflow,
-            final GraphBidirectional<Long> graph,
             final Long fromNodeId) {
 
+        final GraphBidirectional<Long> graph = JsonGraph.getParseGraphBidirectional(workflow.getJsonGraph());
         final List<Long> listStartNodeIds = graph.getNextAdjacentNodes(fromNodeId);
         for (final Long nodeId : listStartNodeIds) {
+
             final List<Long> listDependents = graph.getDependenciesBackwards(nodeId);
-            if (!WorkflowNodeModel.hasDependentsFinished(listDependents)) {
+            if (WorkflowNodeModel.hasDependentsNotFinished(listDependents)) {
                 continue;
             }
+
             final InstanceModel instance = InstanceModel.findByWorkflowNodeId(nodeId);
             if (instance == null) {
                 continue;
             }
+
             if (!InstanceCreationJob.executeInstance(
                     instance.getId(),
                     workflow.getUser().getId())) {
 
                 workflow.setExecutionMessage(MSG_NODE_CREATION_ERROR);
                 workflow.setStatus(WORKFLOW_STATUS.STOPPED);
-                workflow.save();
-                return;
+                break;
             }
+            workflow.save();
         }
     }
 
-    private static void updateStatus(
+    private static void updateNodeStatus(
             final InstanceModel instance,
             final ExecutionStatus status) {
+
         instance.setStatus(status.getStatus());
         instance.setPhase(status.getPhase());
         instance.setExecutionObservation(status.getErrorMessage());
