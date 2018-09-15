@@ -317,6 +317,18 @@ workflow.unnamed=(Unnamed workflow)
 workflow.node.not.configured=(empty)
 workflow.execute=Execute
 
+# UserModel
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+RoleType.ADMIN=System Administrator
+RoleType.NORMAL=Normal User
+user.password=Change Password
+editing.user.password=Editing User Password
+user.data=Personal Data
+editing.user.data=Editing Personal Data
+object.role=Role
+passwd=Password
+passwdConfirmation=Confirmation
+
 # SpaceModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 SpaceModel=Space

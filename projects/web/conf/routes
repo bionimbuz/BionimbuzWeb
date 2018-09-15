@@ -61,6 +61,12 @@ DELETE  /user/groups/{id}                       guest.UserGroupController.delete
 GET     /user/groups                            guest.UserGroupController.blank
 POST    /user/groups                            guest.UserGroupController.create
 
+# UserController
+GET     /users                                  guest.UserController.show
+PUT     /users                                  guest.UserController.save
+GET     /pass                                   guest.UserController.showPassword
+PUT     /pass                                   guest.UserController.savePassword
+
 # ImageController
 GET     /adm/search/images                      adm.ImageController.searchImages
 GET     /adm/list/images                        adm.ImageController.list

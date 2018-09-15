@@ -50,8 +50,16 @@
                                             </div>
                                         </div>
                                     </li>
-                                    <li class="profile-menu"><a href="#"><span class="glyphicon glyphicon-edit"></span>&{'personal.data'}</a></li>
-                                    <li class="profile-menu"><a href="#"><span class="glyphicon glyphicon-lock"></span>&{'change.password'}</a></li>
+                                    <li class="profile-menu">
+                                        <a href="@{controllers.guest.UserController.show()}">
+                                            <span class="glyphicon glyphicon-edit"></span>&{'personal.data'}
+                                        </a>
+                                    </li>
+                                    <li class="profile-menu">
+                                        <a href="@{controllers.guest.UserController.showPassword()}">
+                                            <span class="glyphicon glyphicon-lock"></span>&{'change.password'}
+                                        </a>
+                                    </li>
                                     <li class="divider" style="margin-right: 15px; margin-left: 15px;"></li>
                                     <li class="profile-menu"><a href="@{Secure.logout}"><span class="glyphicon glyphicon-off"></span>&{'secure.signout'}</a></li>
                                 </ul>
@@ -64,10 +72,6 @@
             <!-- Main Menu -->
             <div class="side-menu-container">
                 <ul class="nav navbar-nav">
-
-
-
-
 
                 %{
                     menus = models.MenuModel.searchMenus();

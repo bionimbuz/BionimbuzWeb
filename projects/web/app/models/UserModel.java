@@ -15,6 +15,7 @@ import javax.persistence.Table;
 
 import common.utils.RandomString;
 import controllers.security.SecurityController;
+import play.data.binding.NoBinding;
 import play.data.validation.Email;
 import play.data.validation.MaxSize;
 import play.data.validation.MinSize;
@@ -40,15 +41,19 @@ public class UserModel extends GenericModel {
     @Email
     @MaxSize(100)
     @MinSize(5)
+    @NoBinding
     private String email;
     @Required
     @Password
     @MaxSize(256)
     @MinSize(6)
+    @NoBinding
     private String pass;
+    @NoBinding
     private boolean joined = false;
     @Required
     @ManyToOne(fetch = FetchType.LAZY)
+    @NoBinding
     private RoleModel role;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<UserGroupModel> listUserGroups;

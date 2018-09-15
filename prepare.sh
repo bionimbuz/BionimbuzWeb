@@ -62,7 +62,8 @@ if [ ! -z "$PREPARE_ALL" ]; then
         postgresql postgresql-client \
         maven \
         openjdk-8-jdk \
-        curl
+        curl \
+        zip
 
 	echo ""
 	echo "# ======================================="

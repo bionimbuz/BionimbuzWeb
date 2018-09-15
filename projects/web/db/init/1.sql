@@ -37,6 +37,8 @@ INSERT INTO tb_menu (id, parentmenu_id, menuorder, path, name, iconclass) VALUES
    ,(14,   13,  1, '/list/instances',       'menu.instances',                   NULL)
    ,(15,   13,  2, '/list/workflows',       'menu.workflows',                   NULL)
    ,(16, NULL,  8, '/adm/list/settings',    'menu.settings',                   'glyphicon glyphicon-wrench')
+   
+   ,(17, NULL,NULL,'/list/users',           NULL,                              NULL)
 ;
 
 -- TB_ROLE_MENU
@@ -65,6 +67,8 @@ INSERT INTO tb_role_menu (id_menu, id_role) VALUES
    ,(15, 'ADMIN')
    ,(15, 'NORMAL')
    ,(16, 'ADMIN')
+   ,(17, 'NORMAL')
+   ,(17, 'ADMIN')
 ;
 
 -- # --- !Downs

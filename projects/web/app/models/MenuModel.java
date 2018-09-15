@@ -58,8 +58,10 @@ public class MenuModel extends GenericModel {
                 + " LEFT JOIN FETCH menu.listChildrenMenus children"
                 + " JOIN menu.listRoles roles"
                 + " LEFT JOIN children.listRoles rolesChildren"
-                + " WHERE menu.parentMenu IS NULL AND ?1 = roles.id AND"
-                + "     ( rolesChildren IS NULL ) OR ( rolesChildren IS NOT NULL AND ?1 = rolesChildren.id )"
+                + " WHERE menu.menuOrder IS NOT NULL "
+                + "     AND menu.parentMenu IS NULL AND ?1 = roles.id "
+                + "     AND ( rolesChildren IS NULL ) "
+                + "     OR ( rolesChildren IS NOT NULL AND ?1 = rolesChildren.id )"
                 + " ORDER BY menu.menuOrder", user.getRole().getId()).fetch();
     }
 
