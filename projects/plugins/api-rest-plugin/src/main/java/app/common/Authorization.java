@@ -40,9 +40,9 @@ public class Authorization {
             final String cloudType,
             final String credentialContent) throws Exception {
         // TODO: to remove this dependency
-        if(cloudType == CLOUD_TYPE_GCE) {
+        if(cloudType.equals(CLOUD_TYPE_GCE)) {
             return new GoogleCredentialsFromJson(credentialContent);
-        } else if(cloudType == CLOUD_TYPE_AWS_EC2) {
+        } else if(cloudType.equals(CLOUD_TYPE_AWS_EC2)) {
             return new AWSAccessKeyFromContent(credentialContent);
         }
         return null;
@@ -51,9 +51,9 @@ public class Authorization {
     protected static Properties getProperties(
             final String cloudType) {
         // TODO: to remove this dependency
-        if(cloudType == CLOUD_TYPE_GCE) {
+        if(cloudType.equals(CLOUD_TYPE_GCE)) {
             return GoogleComputeEngineApiMetadata.defaultProperties();
-        } else if(cloudType == CLOUD_TYPE_AWS_EC2) {
+        } else if(cloudType.equals(CLOUD_TYPE_AWS_EC2)) {
             return AWSEC2ProviderMetadata.defaultProperties();
         }
         return null;
