@@ -6,6 +6,7 @@ import static app.common.SystemConstants.OUTPUT_PREFIX;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -22,8 +24,8 @@ import org.springframework.web.client.RestTemplate;
 import app.common.Pair;
 import app.common.SystemConstants;
 import app.common.utils.StringUtils;
-import app.execution.IApplicationExecution;
 import app.execution.CoordinatorServerAccess;
+import app.execution.IApplicationExecution;
 import app.models.ExecutionStatus.EXECUTION_PHASE;
 import app.models.RemoteFileInfo;
 import app.models.RemoteFileProcessingStatus;
@@ -84,12 +86,14 @@ public class UploaderJob {
         public void run() {
             try {
                 for (Uploader uploaderJob : uploaderJobs) {
-                    threadPool.execute(uploaderJob);
+                    threadPool.submit(uploaderJob);
                 }
                 threadPool.shutdown();
                 threadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
-                executor.onSuccess(
-                        EXECUTION_PHASE.UPLOADING);
+                if(uploadStatus.getFailed().size() == 0) {
+                    executor.onSuccess(
+                            EXECUTION_PHASE.UPLOADING);
+                }
             } catch (Exception e) {
                 executor.onError(
                         EXECUTION_PHASE.UPLOADING, 
@@ -138,16 +142,23 @@ public class UploaderJob {
                 LOGGER.info("######### Uploading: " + fileName);
                 RemoteFileInfo fileInfo =
                         CoordinatorServerAccess.get().getRemoteFileInfo(filePath);  
-                File file = new File(inputDir, fileName);
+                File file = new File(inputDir, fileName);                
+                HttpHeaders headers = new HttpHeaders();
+                if(fileInfo.getHeaders() != null) {
+                    for (Map.Entry<String, String> entry : fileInfo.getHeaders().entrySet()) {
+                        headers.add(entry.getKey(), entry.getValue());
+                    }                
+                }                
                 HttpEntity<FileSystemResource> requestEntity =
-                            new HttpEntity<>(new FileSystemResource(file));
+                        new HttpEntity<>(new FileSystemResource(file), headers);
+                
                 RestTemplate restTemplate = new RestTemplate();                
-                ResponseEntity<Boolean> response =
+                ResponseEntity<Object> response =
                         restTemplate.exchange(
                                 fileInfo.getUrl(),
                                 HttpMethod.valueOf(fileInfo.getMethod()),
                                 requestEntity,
-                                new ParameterizedTypeReference< Boolean >() {});                
+                                new ParameterizedTypeReference<Object>() {});                
                 this.callback.onSuccess(fileName);
             } catch (Exception e) {
                 this.callback.onError(fileName, e.getMessage());
