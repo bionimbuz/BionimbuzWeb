@@ -40,7 +40,7 @@ import play.mvc.Router;
 
 public class InstanceCreationJob extends Job {
 
-    private static final int MAX_ATTEMPTS = 30;
+    private static final int MAX_ATTEMPTS = 100;
     private static final String MACHINE_ID = "%s@machine";
     private static final String DEFAULT_EXECUTOR_PORT = Play.configuration.getProperty("executor.port", "8181");
     private static final String BASE_URL = SettingModel.getStringSetting(Name.setting_external_url);
@@ -199,7 +199,7 @@ public class InstanceCreationJob extends Job {
         int attempts = 0;
         while (attempts++ < MAX_ATTEMPTS) {
             try {
-                TimeUnit.SECONDS.sleep(1);
+                TimeUnit.SECONDS.sleep(5);
                 final Body<Boolean> body = executorApi.startExecution(command);
                 if (body != null && body.getContent() != null) {
                     return true;
