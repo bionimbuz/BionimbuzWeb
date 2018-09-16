@@ -24,6 +24,7 @@ import com.google.common.base.Optional;
 
 import app.common.AWSEC2Utils;
 import app.common.FirewallUtils;
+import app.common.utils.StringUtils;
 import app.models.Body;
 import app.models.PluginComputingInstanceModel;
 import app.models.PluginComputingRegionModel;
@@ -32,6 +33,8 @@ import app.models.PluginComputingZoneModel;
 @RestController
 public class ComputingController extends AbstractComputingController {
 
+    
+    private static Long MAX_ATTEMPTS = 10l;
     /*
      * Overwritten Methods
      */
@@ -202,16 +205,33 @@ public class ComputingController extends AbstractComputingController {
                     .asType(instance.getType())
                     .withUserData(instance.getStartupScript().getBytes()));   
         
-        updateInstanceModel(instance, runningInstance);
-        if(instance.getId() == null || instance.getId().isEmpty())
-            return;
         
-        Set<? extends Reservation<? extends RunningInstance>> remoteRunningInstance = 
-                instanceApi.describeInstancesInRegion(
-                instance.getRegion(), instance.getId());        
-        updateInstanceModel(
-                instance, 
-                remoteRunningInstance.iterator().next());
+        for(int i=0; i < MAX_ATTEMPTS; i++) {
+            updateInstanceModel(instance, runningInstance);
+            if(instance.getId() == null || instance.getId().isEmpty())
+                return;
+            
+            if(!StringUtils.isEmpty(instance.getExternalIp())) {
+                return;
+            }
+            
+            Set<? extends Reservation<? extends RunningInstance>> remoteRunningInstance = 
+                    instanceApi.describeInstancesInRegion(
+                    instance.getRegion(), instance.getId());        
+            updateInstanceModel(
+                    instance, 
+                    remoteRunningInstance.iterator().next());
+
+            if(!StringUtils.isEmpty(instance.getExternalIp())) {
+                return;
+            }
+            
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
     
     private void updateInstanceModel(
