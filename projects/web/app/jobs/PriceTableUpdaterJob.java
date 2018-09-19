@@ -31,7 +31,7 @@ import play.jobs.Every;
 import play.jobs.Job;
 import play.jobs.OnApplicationStart;
 
-@OnApplicationStart
+@OnApplicationStart(async = true)
 @Every("30min")
 public class PriceTableUpdaterJob extends Job {
 
@@ -63,52 +63,36 @@ public class PriceTableUpdaterJob extends Job {
         try {
             final PricingApi api = new PricingApi(plugin.getUrl());
             final Body<PluginPriceTableModel> price = api.getPricing();
-            if(price == null) {
-                updateOrCreatePriceTableStatus(
-                        plugin, recentPriceTable, now,
-                        SyncStatus.ERROR, 
-                        Messages.get("application.price.table.cannot.be.found"), 
-                        null, null);
-            } else if(price.getContent().getStatus().getStatus() != 
-                    PluginPriceTableStatusModel.Status.OK) {
-                updateOrCreatePriceTableStatus(
-                        plugin, recentPriceTable, now,
-                        SyncStatus.ERROR, price.getContent().getStatus().getErrorMessage(), 
-                        null, null);
+            if (price == null) {
+                updateOrCreatePriceTableStatus(plugin, recentPriceTable, now, SyncStatus.ERROR, Messages.get("application.price.table.cannot.be.found"), null, null);
+            } else if (price.getContent().getStatus().getStatus() != PluginPriceTableStatusModel.Status.OK) {
+                updateOrCreatePriceTableStatus(plugin, recentPriceTable, now, SyncStatus.ERROR, price.getContent().getStatus().getErrorMessage(), null, null);
                 return;
             }
             final PluginPriceModel princingRequested = price.getContent().getPrice();
             final PluginPriceTableStatusModel statusRequested = price.getContent().getStatus();
             if (!priceTableMustBeSync(recentPriceTable, princingRequested, statusRequested)) {
-                updateOrCreatePriceTableStatus(
-                        plugin, recentPriceTable, now,
-                        SyncStatus.OK, "OK", null, null);
+                updateOrCreatePriceTableStatus(plugin, recentPriceTable, now, SyncStatus.OK, "OK", null, null);
             } else {
                 processPriceTable(now, princingRequested, statusRequested, plugin);
             }
         } catch (final Exception e) {
-            Logger.error(e, "Price table for plugin [%s] cannot be retrieved [%s]", plugin.getName(), e.getMessage());  
-            
+            Logger.error(e, "Price table for plugin [%s] cannot be retrieved [%s]", plugin.getName(), e.getMessage());
+
             String message = null;
-            if(StringUtils.isNotEmpty(e.getMessage())) {
+            if (StringUtils.isNotEmpty(e.getMessage())) {
                 message = e.getMessage();
-            } else if(e.getCause() != null && StringUtils.isNotEmpty(e.getCause().getMessage())) {
+            } else if (e.getCause() != null && StringUtils.isNotEmpty(e.getCause().getMessage())) {
                 message = e.getCause().getMessage();
             } else {
                 message = Messages.get("application.unknow.error.synchronizing.process");
             }
-            
-            updateOrCreatePriceTableStatus(
-                    plugin, recentPriceTable, now,
-                    SyncStatus.ERROR, message, null, null);
+
+            updateOrCreatePriceTableStatus(plugin, recentPriceTable, now, SyncStatus.ERROR, message, null, null);
         }
     }
 
-    private static void processPriceTable(
-            final Date now,
-            final PluginPriceModel princingRequested,
-            final PluginPriceTableStatusModel princingStatusRequested,
-            final PluginModel plugin) {
+    private static void processPriceTable(final Date now, final PluginPriceModel princingRequested, final PluginPriceTableStatusModel princingStatusRequested, final PluginModel plugin) {
 
         // Clean current price table
         PriceTableModel priceTable = plugin.getPriceTable();
@@ -117,20 +101,14 @@ public class PriceTableUpdaterJob extends Job {
             priceTable = null;
         }
 
-        priceTable = updateOrCreatePriceTableStatus(
-                plugin, null, now,
-                PriceTableModel.getStatus(princingStatusRequested),
-                princingStatusRequested.getErrorMessage(),
-                princingRequested,
+        priceTable = updateOrCreatePriceTableStatus(plugin, null, now, PriceTableModel.getStatus(princingStatusRequested), princingStatusRequested.getErrorMessage(), princingRequested,
                 princingStatusRequested);
 
         createStoragePrices(princingRequested, priceTable);
         createInstancePrices(princingRequested, priceTable);
     }
 
-    private static void createStoragePrices(
-            final PluginPriceModel princingRequested,
-            final PriceTableModel priceTable) {
+    private static void createStoragePrices(final PluginPriceModel princingRequested, final PriceTableModel priceTable) {
         for (final Map.Entry<String, StoragePricing> entryInstance : princingRequested.getListStoragePricing().entrySet()) {
 
             final StoragePricing storagePrice = entryInstance.getValue();
@@ -149,9 +127,7 @@ public class PriceTableUpdaterJob extends Job {
         }
     }
 
-    private static void createInstancePrices(
-            final PluginPriceModel princingRequested,
-            final PriceTableModel priceTable) {
+    private static void createInstancePrices(final PluginPriceModel princingRequested, final PriceTableModel priceTable) {
         final HashMap<String, RegionModel> listRegions = new HashMap<>();
         for (final Map.Entry<String, InstanceTypePricing> entryInstance : princingRequested.getListInstancePricing().entrySet()) {
 
@@ -185,14 +161,8 @@ public class PriceTableUpdaterJob extends Job {
         }
     }
 
-    private static PriceTableModel updateOrCreatePriceTableStatus(
-            final PluginModel plugin,
-            PriceTableModel priceTable,
-            final Date now,
-            final SyncStatus status,
-            final String messageError,
-            final PluginPriceModel princingRequested,
-            final PluginPriceTableStatusModel princingStatusRequested) {
+    private static PriceTableModel updateOrCreatePriceTableStatus(final PluginModel plugin, PriceTableModel priceTable, final Date now, final SyncStatus status, final String messageError,
+            final PluginPriceModel princingRequested, final PluginPriceTableStatusModel princingStatusRequested) {
 
         priceTable = PriceTableModel.findByPluginId(plugin.getId());
         if (priceTable == null) {
@@ -212,15 +182,11 @@ public class PriceTableUpdaterJob extends Job {
         return priceTable;
     }
 
-    private static boolean priceTableMustBeSync(
-            final PriceTableModel recentPriceTable,
-            final PluginPriceModel princingRequested,
-            final PluginPriceTableStatusModel princingStatusRequested) {
+    private static boolean priceTableMustBeSync(final PriceTableModel recentPriceTable, final PluginPriceModel princingRequested, final PluginPriceTableStatusModel princingStatusRequested) {
         if (recentPriceTable == null || recentPriceTable.getPriceTableDate() == null) {
             return true;
         }
-        if (DateCompareUtil.is(princingRequested.getLastUpdate())
-                .greaterThan(recentPriceTable.getPriceTableDate())) {
+        if (DateCompareUtil.is(princingRequested.getLastUpdate()).greaterThan(recentPriceTable.getPriceTableDate())) {
             return true;
         }
         if (princingStatusRequested.getStatus() != Status.OK) {

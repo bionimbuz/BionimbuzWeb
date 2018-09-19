@@ -9,3 +9,5 @@
 /modules
 *.DS_Store
 /conf/credentials/
+/precompiled/
+/logs/
