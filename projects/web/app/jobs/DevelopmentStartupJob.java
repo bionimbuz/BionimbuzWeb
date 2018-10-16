@@ -121,12 +121,20 @@ public class DevelopmentStartupJob extends Job {
         final ExecutorModel executor = new ExecutorModel();
         executor.setName("Unix Application");
         executor.setStartupScript(
-                "#!/bin/bash\n" +
-                        "\n" +
-                        "COORDINATOR=executor-coordinator-0.1.jar\n" +
-                        "curl -o ${COORDINATOR} http://localhost:8282/spaces/test/file/${COORDINATOR}/download\n" +
-                        "apt-get install -y openjdk-8-jdk && java -jar ${COORDINATOR}" +
-                        "\n");
+                "#!/bin/bash\n" + 
+                "\n" + 
+                "COORDINATOR=executor-coordinator-0.1.jar\n" + 
+                "curl -o ${COORDINATOR} http://localhost:8282/spaces/test/file/${COORDINATOR}/download\n" + 
+                "apt-get update && apt-get install -y openjdk-8-jdk && java -jar ${COORDINATOR} &\n" + 
+                "\n" + 
+                "# Below is used to kill process when parent dies\n" + 
+                "PID=$!\n" + 
+                "trap \"kill -9 ${PID} && exit \" SIGHUP SIGINT SIGTERM\n" + 
+                "while :\n" + 
+                "do\n" + 
+                "    sleep 1\n" + 
+                "done\n" + 
+                "");
         executor.setExecutionScript(
                 "#!/bin/bash\n" +
                         "\n" +
