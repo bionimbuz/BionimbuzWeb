@@ -745,12 +745,11 @@ function saveModel(callback){
 	showPleaseWait("&{'modal.editor.saving'}");	
     var jsonModel = getJsonModel();
     var jsonGraph = getJsonGraph();    
-    var search = #{jsRoute @saveModel() /};
+    var search = #{jsRoute @saveModel(':id') /};
     $.ajax({
-        url: search.url(),
+        url: search.url({id: ${object.id}}),
         type: search.method,
         data:{ 
-        	id: ${object.id}, 
         	jsonModel: jsonModel, 
         	jsonGraph: jsonGraph
     	}

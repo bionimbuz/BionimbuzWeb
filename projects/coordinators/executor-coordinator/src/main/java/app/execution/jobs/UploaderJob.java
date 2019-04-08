@@ -19,6 +19,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import app.common.Pair;
@@ -152,7 +153,12 @@ public class UploaderJob {
                 HttpEntity<FileSystemResource> requestEntity =
                         new HttpEntity<>(new FileSystemResource(file), headers);
                 
-                RestTemplate restTemplate = new RestTemplate();                
+                RestTemplate restTemplate = new RestTemplate();      
+                
+                SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+                requestFactory.setBufferRequestBody(false);
+                restTemplate.setRequestFactory(requestFactory);
+                
                 ResponseEntity<Object> response =
                         restTemplate.exchange(
                                 fileInfo.getUrl(),
