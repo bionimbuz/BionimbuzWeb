@@ -51,7 +51,7 @@ echo "##################################################"
 echo "####### Preparing development environment"
 echo "##################################################"
 
-if [ ! -z "$PREPARE_ALL" ]; then 
+if [ ! -z "$PREPARE_ALL" ]; then
 
 	echo ""
 	echo "# ======================================="
@@ -79,12 +79,12 @@ if [ ! -z "$PREPARE_ALL" ]; then
 
     echo "# Downloading"
     curl https://downloads.typesafe.com/play/${VERSION}/${PACKAGE_ZIP} --output ${PACKAGE_ZIP}
-    
+
     echo "# Unzipping"
     unzip ${PACKAGE_ZIP}
-    rm -rf ${PACKAGE_ZIP} 
+    rm -rf ${PACKAGE_ZIP}
 
-    echo "# Creating directories"    
+    echo "# Creating directories"
     mkdir ${ROOT_DIR}/system
     mv ${PACKAGE} ${PLAY_FOLDER}
     
@@ -167,7 +167,7 @@ function prepareWeb {
     if [ -z `command -v ${PLAY_BIN}` ]; then
         echo "# Play folder from system not fount, setting default."
 	    PLAY_BIN=play
-    fi	
+    fi
 
     export PATH=$PATH:${PLAY_FOLDER}/python
 

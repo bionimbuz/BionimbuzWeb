@@ -1,9 +1,8 @@
 package app.common;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.util.Properties;
-
+import app.common.supliers.AWSAccessKeyFromContent;
+import app.models.security.TokenModel;
+import com.google.common.base.Supplier;
 import org.jclouds.ContextBuilder;
 import org.jclouds.aws.ec2.AWSEC2ProviderMetadata;
 import org.jclouds.domain.Credentials;
@@ -13,17 +12,23 @@ import org.jclouds.oauth.v2.AuthorizationApi;
 import org.jclouds.oauth.v2.config.OAuthProperties;
 import org.jclouds.oauth.v2.domain.Claims;
 import org.jclouds.oauth.v2.domain.Token;
+import org.openstack4j.api.OSClient;
+import org.openstack4j.core.transport.Config;
+import org.openstack4j.model.common.Identifier;
+import org.openstack4j.openstack.OSFactory;
 
-import com.google.common.base.Supplier;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.Properties;
 
-import app.common.supliers.AWSAccessKeyFromContent;
-import app.models.security.TokenModel;
+import static app.common.GlobalConstants.*;
 
 public class Authorization {
 
     public static final String CLOUD_TYPE_GCE = "google-compute-engine";
     public static final String CLOUD_TYPE_AWS_EC2 = "aws-ec2";
     public static final String CLOUD_TYPE_LOCAL = "local-machine";
+    public static final String CLOUD_TYPE_OPENSTACK = "openstack";
 
     public static AuthorizationApi createApi(
             final Supplier<Credentials> credentials,
@@ -67,6 +72,18 @@ public class Authorization {
 
         if(cloudType.equals(CLOUD_TYPE_LOCAL)) {
             return new TokenModel("","");
+        }
+
+        if (cloudType.equals(CLOUD_TYPE_OPENSTACK)) {
+            OSClient.OSClientV3 os = OSFactory.builderV3()
+                    .endpoint(KEYSTONE_HOST)
+                    .withConfig(Config.newConfig().withEndpointNATResolution(HOST))
+                    .credentials(TEST_PROJECT_USER, TEST_PROJECT_PASS, Identifier.byName(TEST_PROJECT_DOMAIN))
+                    .scopeToProject(Identifier.byId(TEST_PROJECT_ID))
+                    .authenticate();
+            TokenModel tokenModel = new TokenModel(null, null);
+            tokenModel.setOs4jToken(os.getToken());
+            return tokenModel;
         }
 
         Properties properties = getProperties(cloudType);

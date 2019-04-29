@@ -54,7 +54,7 @@ public class ComputingControllerTest {
         PluginComputingInstanceModel instance =
                     createInstance();
 
-        checkCurrentInstancesSize(0);        
+        checkCurrentInstancesSize(0);
         instance = createInstanceTest(instance);
         checkGetInstance(instance);
         checkCurrentInstancesSize(1);

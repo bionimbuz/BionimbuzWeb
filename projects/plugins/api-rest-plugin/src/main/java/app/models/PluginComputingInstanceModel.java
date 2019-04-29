@@ -20,6 +20,8 @@ public class PluginComputingInstanceModel extends Body<PluginComputingInstanceMo
     private String region = "";
     private String zone = "";
     private String imageUrl = "";
+    private String imageId = "";
+    private String flavorId = "";
     private String type = "";
     private List<Integer> firewallUdpPorts;
     private List<Integer> firewallTcpPorts;
@@ -136,6 +138,23 @@ public class PluginComputingInstanceModel extends Body<PluginComputingInstanceMo
     public void setType(String type) {
         this.type = type;
     }
+
+    public String getFlavorId() {
+        return this.flavorId;
+    }
+
+    public void setFlavorId(String flavorId) {
+        this.flavorId = flavorId;
+    }
+
+    public String getImageId() {
+        return this.imageId;
+    }
+
+    public void setImageId(String imageId) {
+        this.imageId = imageId;
+    }
+
     public String getRegion() {
         return region;
     }
