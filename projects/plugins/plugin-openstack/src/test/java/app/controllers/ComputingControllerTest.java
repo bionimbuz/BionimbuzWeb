@@ -43,8 +43,7 @@ public class ComputingControllerTest {
 
     @Test
     public void crud_instances() throws IOException {
-        PluginComputingInstanceModel instance =
-                createInstance();
+        PluginComputingInstanceModel instance = createInstance();
 
         int current_servers = count_current_servers();
         instance = createInstanceTest(instance);
@@ -111,7 +110,6 @@ public class ComputingControllerTest {
 
     private PluginComputingInstanceModel createInstance() {
         PluginComputingInstanceModel instance = new PluginComputingInstanceModel();
-        instance.setName("Hello " + (Math.random() * 49 + 1) + " Goodbye " + (Math.random() * 49 + 1));
         instance.setType(SystemConstants.CLOUD_TYPE);
         instance.setRegion(SystemConstants.PLUGIN_REGION);
         instance.setZone(SystemConstants.PLUGIN_ZONE);

@@ -4,6 +4,7 @@ import static app.common.OSClientHelper.getOSClient;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.openstack4j.api.Builders;
 import org.openstack4j.api.OSClient;
@@ -34,10 +35,20 @@ public class ComputingController extends AbstractComputingController {
 
         try {
             OSClient.OSClientV3 os = getOSClient(token);
+            int size = os.compute().servers().list().size() + 1;
+            String name = "bionimbuz-instance-openstack-" + size;
 
-            ServerCreate sc = Builders.server().name("VM name").flavor(model.getFlavorId()).image(model.getImageId()).build();
-            os.compute().servers().boot(sc);
+            ServerCreate sc = Builders.server().name(name).flavor(model.getFlavorId()).image(model.getImageId()).build();
+            Server server = os.compute().servers().boot(sc);
+
+            waitInstanceCreation(os, server);
+
+            server = os.compute().servers().get(server.getId());
+            String ip = server.getAddresses().getAddresses().get("public").get(0).getAddr();
             final PluginComputingInstanceModel res = model;
+            res.setName(name);
+            res.setExternalIp(ip);
+            res.setId(server.getId());
             return ResponseEntity.ok(Body.create(res));
         } catch (final Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -124,17 +135,10 @@ public class ComputingController extends AbstractComputingController {
     @Override
     protected ResponseEntity<Body<List<PluginComputingZoneModel>>> listRegionZones(final String token,
             final String identity, final String name) throws Exception {
-
-
-        if (SystemConstants.PLUGIN_REGION.equals(name)) {
-
-            final List<PluginComputingZoneModel> res = new ArrayList<>();
-            res.add(createZoneModel());
-            return ResponseEntity.ok(
-                    Body.create(res));
-        }
-
-        return new ResponseEntity<>(HttpStatus.OK);
+        final List<PluginComputingZoneModel> res = new ArrayList<>();
+        res.add(createZoneModel());
+        return ResponseEntity.ok(
+                Body.create(res));
     }
 
 
@@ -181,6 +185,17 @@ public class ComputingController extends AbstractComputingController {
 
     public static PluginComputingZoneModel createZoneModel() {
         return new PluginComputingZoneModel(SystemConstants.PLUGIN_ZONE);
+    }
+
+    private void waitInstanceCreation(OSClient.OSClientV3 os, Server server) throws InterruptedException {
+        int time = 0;
+        while (time <= 10) {
+            if (os.compute().servers().get(server.getId()).getStatus().equals("ACTIVE")) {
+                time = 11;
+            }
+            TimeUnit.SECONDS.sleep(1);
+            time++;
+        }
     }
 
 }
