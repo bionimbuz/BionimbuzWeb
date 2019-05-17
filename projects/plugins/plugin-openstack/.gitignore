@@ -3,4 +3,6 @@
 /.project
 /.settings/
 /pricing/
+/.idea
+/plugin-openstack.iml
 
