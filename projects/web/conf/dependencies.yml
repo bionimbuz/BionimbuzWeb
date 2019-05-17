@@ -12,7 +12,8 @@ require:
     - com.squareup.retrofit2 -> converter-jackson 2.3.0
     - com.google.code.gson -> gson 2.5:
         force: true
-    - com.google.guava -> guava 18.0
+    - com.google.guava -> guava 18.0:
+        force: true
     - io.jsonwebtoken -> jjwt 0.9.1
     
     - org.apache.jclouds -> jclouds-core 2.2.0-SNAPSHOT
@@ -22,7 +23,9 @@ require:
     - org.apache.jclouds.provider -> google-compute-engine 2.2.0-SNAPSHOT
     - org.postgresql -> postgresql 42.2.5.jre7:
         force: true
-repositories:        
+    - org.pacesys -> openstack4j-core 3.1.0
+    - org.pacesys.openstack4j.connectors -> openstack4j-okhttp 3.2.0
+repositories:
 - api-commons:
     type:       local
     artifact:   ${application.path}/../commons/api-commons/target/[module]-[revision].jar

@@ -81,7 +81,7 @@ public class Authorization {
                     .credentials(TEST_PROJECT_USER, TEST_PROJECT_PASS, Identifier.byName(TEST_PROJECT_DOMAIN))
                     .scopeToProject(Identifier.byId(TEST_PROJECT_ID))
                     .authenticate();
-            TokenModel tokenModel = new TokenModel(os.getToken().getId(), null);
+            TokenModel tokenModel = new TokenModel(os.getToken().getId(), TEST_PROJECT_USER);
             return tokenModel;
         }
 
