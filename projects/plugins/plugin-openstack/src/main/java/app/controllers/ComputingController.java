@@ -38,7 +38,7 @@ public class ComputingController extends AbstractComputingController {
             int size = os.compute().servers().list().size() + 1;
             String name = "bionimbuz-instance-openstack-" + size;
 
-            ServerCreate sc = Builders.server().name(name).flavor(model.getFlavorId()).image(model.getImageId()).build();
+            ServerCreate sc = Builders.server().name(name).flavor("1").image("9c795320-417c-4b15-9494-918209b3edf7").build();
             Server server = os.compute().servers().boot(sc);
 
             waitInstanceCreation(os, server);
@@ -48,7 +48,6 @@ public class ComputingController extends AbstractComputingController {
             final PluginComputingInstanceModel res = model;
             res.setName(name);
             res.setExternalIp(ip);
-            res.setId(server.getId());
             return ResponseEntity.ok(Body.create(res));
         } catch (final Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -191,8 +190,8 @@ public class ComputingController extends AbstractComputingController {
         int time = 0;
         while (time <= 10) {
             if (os.compute().servers().get(server.getId()).getStatus().equals("ACTIVE")) {
-                time = 11;
-            }
+                break;
+            }           
             TimeUnit.SECONDS.sleep(1);
             time++;
         }

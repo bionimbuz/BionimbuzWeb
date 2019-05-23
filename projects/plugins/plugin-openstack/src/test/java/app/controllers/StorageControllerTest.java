@@ -37,9 +37,6 @@ public class StorageControllerTest {
     private TestRestTemplate restTemplate;
     @Value("${local.server.port}")
     private int PORT;
-    private static String LOCATION = "us-central1";
-    private static String BUCKET_NAME = "bionimbuz_workflow_us_central1";
-    private static String VIRTUAL_NAME = "20180902161910883_662067847";
 
     @Test
     public void contexLoads() throws Exception {
@@ -47,29 +44,12 @@ public class StorageControllerTest {
     }
 
     @Test
-    public void CRUD_Test() throws IOException {
+    public void createStorageContainer() {
         TestUtils.setTimeout(restTemplate.getRestTemplate(), 0);
-        createSpaceTest();
-        
-        StorageApi api = new StorageApi("http://localhost:"+PORT);
-        Body<PluginStorageFileDownloadModel> bodyDownload = 
-                api.getDownloadUrl(BUCKET_NAME, VIRTUAL_NAME);
-        assertThat(bodyDownload).isNotNull();
-        
-        Body<PluginStorageFileUploadModel> bodyUpload = 
-                api.getUploadUrl(BUCKET_NAME, VIRTUAL_NAME);
-        assertThat(bodyUpload).isNotNull();
-        
-        deleteSpaceTest();
-    }
 
-    private void createSpaceTest() {
-        PluginStorageModel model = new PluginStorageModel(
-                BUCKET_NAME,
-                LOCATION);
+        PluginStorageModel model = new PluginStorageModel("Test Storage Container", null);
 
-        HttpEntity<PluginStorageModel> entity =
-                TestUtils.createEntity(null);
+        HttpEntity<PluginStorageModel> entity = TestUtils.createEntity(model);
 
         ResponseEntity<Body<PluginStorageModel>> response = this.restTemplate
                 .exchange(
@@ -77,21 +57,6 @@ public class StorageControllerTest {
                         HttpMethod.POST,
                         entity,
                         new ParameterizedTypeReference<Body<PluginStorageModel>>() {});
-        assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
-
-    public void deleteSpaceTest() {
-
-        HttpEntity<Void> entity = TestUtils.createEntity(null);
-
-        ResponseEntity<Body<Boolean>> response =
-                restTemplate
-                    .exchange(
-                            Routes.STORAGE_SPACES+"/"+BUCKET_NAME,
-                            HttpMethod.DELETE,
-                            entity,
-                            new ParameterizedTypeReference< Body<Boolean> >() {});
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }

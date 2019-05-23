@@ -126,8 +126,7 @@ public class ComputingControllerTest {
                         Routes.COMPUTING_INSTANCES,
                         HttpMethod.POST,
                         entity,
-                        new ParameterizedTypeReference<Body<PluginComputingInstanceModel>>() {
-                        });
+                        new ParameterizedTypeReference<Body<PluginComputingInstanceModel>>() {});
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
