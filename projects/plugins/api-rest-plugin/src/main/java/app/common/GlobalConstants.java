@@ -14,11 +14,5 @@ public class GlobalConstants {
     
     public static final int TOKEN_LIFETIME_SECONDS = 60 * 5; // 5 Minutes
 
-    public static final String KEYSTONE_HOST = "http://35.199.101.92:5000/v3";
-    public static final String HOST = "35.199.101.92";
-
-    public static final String TEST_PROJECT_ID = "42076358faee48b7ae723b06684e54d7";
     public static final String TEST_PROJECT_DOMAIN = "default";
-    public static final String TEST_PROJECT_USER = "admin";
-    public static final String TEST_PROJECT_PASS = "d7e7a361a0644179";
 }

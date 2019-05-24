@@ -3,6 +3,9 @@ package app.common;
 import app.common.supliers.AWSAccessKeyFromContent;
 import app.models.security.TokenModel;
 import com.google.common.base.Supplier;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import org.jclouds.ContextBuilder;
 import org.jclouds.aws.ec2.AWSEC2ProviderMetadata;
 import org.jclouds.domain.Credentials;
@@ -75,13 +78,17 @@ public class Authorization {
         }
 
         if (cloudType.equals(CLOUD_TYPE_OPENSTACK)) {
+        	JsonParser parser = new JsonParser();
+        	JsonObject json = (JsonObject) parser.parse(credentialContent);
+
             OSClient.OSClientV3 os = OSFactory.builderV3()
-                    .endpoint(KEYSTONE_HOST)
-                    .withConfig(Config.newConfig().withEndpointNATResolution(HOST))
-                    .credentials(TEST_PROJECT_USER, TEST_PROJECT_PASS, Identifier.byName(TEST_PROJECT_DOMAIN))
-                    .scopeToProject(Identifier.byId(TEST_PROJECT_ID))
+                    .endpoint("http://" + json.get("host").getAsString() + ":5000/v3")
+                    .withConfig(Config.newConfig().withEndpointNATResolution(json.get("host").getAsString()))
+                    .credentials(json.get("user").getAsString(), json.get("password").getAsString(), Identifier.byName(TEST_PROJECT_DOMAIN))
+                    .scopeToProject(Identifier.byId(json.get("project_id").getAsString()))
                     .authenticate();
-            TokenModel tokenModel = new TokenModel(os.getToken().getId(), TEST_PROJECT_USER);
+
+            TokenModel tokenModel = new TokenModel(os.getToken().getId(), json.get("user").getAsString());
             return tokenModel;
         }
 
