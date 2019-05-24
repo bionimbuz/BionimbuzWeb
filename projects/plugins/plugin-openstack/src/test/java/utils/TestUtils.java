@@ -5,30 +5,44 @@ import app.common.GlobalConstants;
 import app.common.HttpHeadersCustom;
 import app.common.SystemConstants;
 import app.models.security.TokenModel;
+import com.google.common.io.Files;
 import org.openstack4j.api.OSClient;
-import org.openstack4j.core.transport.Config;
-import org.openstack4j.model.common.Identifier;
 import org.openstack4j.openstack.OSFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+
 import static app.common.OSClientHelper.getOSClient;
-import static app.common.SystemConstants.*;
-import static app.common.SystemConstants.TEST_PROJECT_DOMAIN;
-import static app.common.SystemConstants.TEST_PROJECT_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class TestUtils {
+    private static String readCredential() {
+        String fileContents = null;
+        try {
+            fileContents =
+                    Files.toString(
+                            new File(CmdLineArgs.getCredentialFile()),
+                            Charset.defaultCharset());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assertThat(fileContents).isNotNull();
+        return fileContents;
+    }
+
+
     public static <T> HttpEntity<T> createEntity(T content) {
         OSFactory.enableHttpLoggingFilter(true);
+        String credential = readCredential();
 
         try {
-            TokenModel tokenModel = Authorization.getToken(SystemConstants.CLOUD_TYPE, null, null);
+            TokenModel tokenModel = Authorization.getToken(SystemConstants.CLOUD_TYPE, null, credential);
             OSClient.OSClientV3 os = getOSClient(tokenModel.getToken());
 
             HttpHeaders headers = new HttpHeaders();

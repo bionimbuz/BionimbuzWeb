@@ -189,7 +189,7 @@ public class ComputingController extends AbstractComputingController {
     private void waitInstanceCreation(OSClient.OSClientV3 os, Server server) throws InterruptedException {
         int time = 0;
         while (time <= 10) {
-            if (os.compute().servers().get(server.getId()).getStatus().equals("ACTIVE")) {
+            if (os.compute().servers().get(server.getId()).getStatus().name().equals("ACTIVE")) {
                 break;
             }           
             TimeUnit.SECONDS.sleep(1);
