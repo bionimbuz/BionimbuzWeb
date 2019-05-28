@@ -18,6 +18,7 @@ public class Routes {
      * AbstractPricingController
      */
     public static final String PRICING = "/pricing";
+    public static final String PRICING_TOKEN = "/pricingToken";
     public static final String PRICING_STATUS = PRICING+"/status";
 
     /*

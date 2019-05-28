@@ -1,15 +1,7 @@
 package jobs;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import org.apache.commons.lang.StringUtils;
-
 import app.client.PricingApi;
+import app.common.Authorization;
 import app.common.utils.DateCompareUtil;
 import app.models.Body;
 import app.models.PluginPriceModel;
@@ -18,18 +10,24 @@ import app.models.PluginPriceTableStatusModel;
 import app.models.PluginPriceTableStatusModel.Status;
 import app.models.pricing.InstanceTypePricing;
 import app.models.pricing.StoragePricing;
-import models.InstanceTypeModel;
-import models.InstanceTypeRegionModel;
-import models.PluginModel;
-import models.PriceTableModel;
+import app.models.security.TokenModel;
+import models.*;
 import models.PriceTableModel.SyncStatus;
-import models.RegionModel;
-import models.StorageRegionModel;
+import org.apache.commons.lang.StringUtils;
 import play.Logger;
 import play.i18n.Messages;
 import play.jobs.Every;
 import play.jobs.Job;
 import play.jobs.OnApplicationStart;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import static controllers.adm.BaseAdminController.getConnectedUser;
 
 @OnApplicationStart(async = true)
 @Every("30min")
@@ -62,7 +60,14 @@ public class PriceTableUpdaterJob extends Job {
         final Date now = new Date();
         try {
             final PricingApi api = new PricingApi(plugin.getUrl());
-            final Body<PluginPriceTableModel> price = api.getPricing();
+            final Body<PluginPriceTableModel> price;
+            if (plugin.getName().equals("OpenStack")) {
+                String token = getOpenStackToken();
+                price = api.getPricingWithToken(token);
+            } else {
+                price = api.getPricing();
+            }
+
             if (price == null) {
                 updateOrCreatePriceTableStatus(plugin, recentPriceTable, now, SyncStatus.ERROR, Messages.get("application.price.table.cannot.be.found"), null, null);
             } else if (price.getContent().getStatus().getStatus() != PluginPriceTableStatusModel.Status.OK) {
@@ -193,5 +198,24 @@ public class PriceTableUpdaterJob extends Job {
             return true;
         }
         return false;
+    }
+
+    private static String getOpenStackToken() {
+        UserModel currentUser = getConnectedUser();
+        for(CredentialModel credential : currentUser.getListCredentials()) {
+            try {
+                String credentialStr = credential.getCredentialData().getContentAsString();
+                if (credentialStr.indexOf("host") == -1){
+                	continue;
+                }                
+                TokenModel token = Authorization.getToken("openstack", null, credentialStr);
+                if (token.getToken() != null) {
+                    return token.getToken();
+                }
+            } catch (Exception e) {
+                Logger.warn(e, "Error with credentials: ", e.getMessage());
+            }
+        }
+        return null;
     }
 }

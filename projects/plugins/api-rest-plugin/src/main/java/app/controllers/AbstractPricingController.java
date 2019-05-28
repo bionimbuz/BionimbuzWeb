@@ -1,5 +1,6 @@
 package app.controllers;
 
+import com.google.common.net.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,12 @@ public abstract class AbstractPricingController extends BaseControllerVersioned{
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version) {
         return callImplementedMethod("getPricing", version);
     }
+    @RequestMapping(path = Routes.PRICING_TOKEN, method = RequestMethod.GET)
+    private ResponseEntity< Body< PluginPriceTableModel >> getPricingWithTokenAction(
+            @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
+            @RequestHeader(value= HttpHeaders.AUTHORIZATION) final String token) {
+        return callImplementedMethod("getPricingWithToken", version, token);
+    }
     @RequestMapping(path = Routes.PRICING_STATUS, method = RequestMethod.GET)
     private ResponseEntity< Body< PluginPriceTableStatusModel >> getPricingStatusAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version) {
@@ -35,6 +42,9 @@ public abstract class AbstractPricingController extends BaseControllerVersioned{
      */
     protected abstract ResponseEntity<Body<PluginPriceTableModel>>
                                 getPricing() throws Exception;
+
+    protected ResponseEntity<Body<PluginPriceTableModel>> getPricingWithToken(String token) throws Exception { return null; }
+
     protected abstract ResponseEntity<Body<PluginPriceTableStatusModel>>
                                 getPricingStatus() throws Exception;
 }

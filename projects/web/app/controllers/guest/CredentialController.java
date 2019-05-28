@@ -4,6 +4,7 @@ import controllers.CRUD.For;
 import controllers.Check;
 import controllers.Secure.Security;
 import controllers.adm.BaseAdminController;
+import jobs.PriceTableUpdaterJob;
 import models.CredentialModel;
 import models.UserModel;
 import play.data.binding.Binder;
@@ -44,6 +45,7 @@ public class CredentialController extends BaseAdminController {
         if (params.get("_save") != null) {
             redirect(VwCredentialController.ACTION_LIST);
         }
+        PriceTableUpdaterJob.processPlugins();
         redirect(request.controller + ".show", object._key());
     }
 

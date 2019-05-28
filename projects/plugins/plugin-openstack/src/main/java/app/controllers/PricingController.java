@@ -27,6 +27,14 @@ public class PricingController extends AbstractPricingController {
     }
 
     @Override
+    protected ResponseEntity<Body<PluginPriceTableModel>> getPricingWithToken(String token) throws Exception {
+        priceTable.updateSingleton(token);
+        PluginPriceTableModel res = new PluginPriceTableModel(priceTable.getStatus(), priceTable.getPrice());
+        return ResponseEntity.ok(Body.create(res));
+    }
+
+
+    @Override
     protected ResponseEntity<Body<PluginPriceTableStatusModel>> getPricingStatus() throws Exception {
         return ResponseEntity.ok(Body.create(priceTable.getStatus()));
     }

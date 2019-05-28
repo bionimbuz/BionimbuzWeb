@@ -7,6 +7,7 @@ public class InstanceTypePricing {
     private String name;
     private Short cores;
     private Double memory;
+    private String flavorId;
     private HashMap<String, Double> listRegionPricing;
 
     public InstanceTypePricing(
@@ -53,5 +54,13 @@ public class InstanceTypePricing {
     }
     public void setListRegionPricing(HashMap<String, Double> listRegionPricing) {
         this.listRegionPricing = listRegionPricing;
+    }
+
+    public String getFlavorId() {
+        return flavorId;
+    }
+
+    public void setFlavorId(String flavorId) {
+        this.flavorId = flavorId;
     }
 }
