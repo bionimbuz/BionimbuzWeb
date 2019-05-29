@@ -114,7 +114,7 @@ public class ComputingControllerTest {
         instance.setRegion(SystemConstants.PLUGIN_REGION);
         instance.setZone(SystemConstants.PLUGIN_ZONE);
         instance.setImageId("9c795320-417c-4b15-9494-918209b3edf7");
-        instance.setFlavorId("1");
+        instance.setMachineType("m1.tiny");
 
         return instance;
     }

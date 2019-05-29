@@ -55,11 +55,9 @@ public class InstanceTypePricing {
     public void setListRegionPricing(HashMap<String, Double> listRegionPricing) {
         this.listRegionPricing = listRegionPricing;
     }
-
     public String getFlavorId() {
         return flavorId;
     }
-
     public void setFlavorId(String flavorId) {
         this.flavorId = flavorId;
     }

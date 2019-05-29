@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.openstack4j.api.Builders;
 import org.openstack4j.api.OSClient;
+import org.openstack4j.model.compute.Flavor;
 import org.openstack4j.model.compute.Server;
 import org.openstack4j.model.compute.ServerCreate;
 import org.openstack4j.model.identity.v3.Region;
@@ -37,8 +38,17 @@ public class ComputingController extends AbstractComputingController {
             OSClient.OSClientV3 os = getOSClient(token);
             int size = os.compute().servers().list().size() + 1;
             String name = "bionimbuz-instance-openstack-" + size;
+            Flavor flavor = null;
 
-            ServerCreate sc = Builders.server().name(name).flavor("1").image("9c795320-417c-4b15-9494-918209b3edf7").build();
+            for (Flavor f : os.compute().flavors().list()) {
+                if (f.getName().equals(model.getMachineType())) {
+                    flavor = f;
+                    break;
+                }
+            }
+
+            //TODO retirar esse flavor e image daqui
+            ServerCreate sc = Builders.server().name(name).flavor(flavor.getId()).image("c65a409b-8d7f-4b11-8d7c-6deecec73e62").build();
             Server server = os.compute().servers().boot(sc);
 
             waitInstanceCreation(os, server);
@@ -188,7 +198,7 @@ public class ComputingController extends AbstractComputingController {
 
     private void waitInstanceCreation(OSClient.OSClientV3 os, Server server) throws InterruptedException {
         int time = 0;
-        while (time <= 10) {
+        while (time <= 100) {
             if (os.compute().servers().get(server.getId()).getStatus().name().equals("ACTIVE")) {
                 break;
             }           
