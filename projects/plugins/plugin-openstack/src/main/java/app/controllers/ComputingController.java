@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import org.openstack4j.api.Builders;
 import org.openstack4j.api.OSClient;
 import org.openstack4j.model.compute.Flavor;
+import org.openstack4j.model.compute.Image;
 import org.openstack4j.model.compute.Server;
 import org.openstack4j.model.compute.ServerCreate;
 import org.openstack4j.model.identity.v3.Region;
@@ -38,17 +39,10 @@ public class ComputingController extends AbstractComputingController {
             OSClient.OSClientV3 os = getOSClient(token);
             int size = os.compute().servers().list().size() + 1;
             String name = "bionimbuz-instance-openstack-" + size;
-            Flavor flavor = null;
+            Flavor flavor = retrieveFlavor(model, os);
+            Image image = retrieveImage(model, os);
 
-            for (Flavor f : os.compute().flavors().list()) {
-                if (f.getName().equals(model.getMachineType())) {
-                    flavor = f;
-                    break;
-                }
-            }
-
-            //TODO retirar esse flavor e image daqui
-            ServerCreate sc = Builders.server().name(name).flavor(flavor.getId()).image("c65a409b-8d7f-4b11-8d7c-6deecec73e62").build();
+            ServerCreate sc = Builders.server().name(name).flavor(flavor.getId()).image(image.getId()).build();
             Server server = os.compute().servers().boot(sc);
 
             waitInstanceCreation(os, server);
@@ -205,6 +199,24 @@ public class ComputingController extends AbstractComputingController {
             TimeUnit.SECONDS.sleep(1);
             time++;
         }
+    }
+
+    private Image retrieveImage(PluginComputingInstanceModel model, OSClient.OSClientV3 os) {
+        for (Image i : os.compute().images().list()) {
+            if (i.getLinks().get(0).getHref().equals(model.getImageUrl())) {
+                return i;
+            }
+        }
+        return null;
+    }
+
+    private Flavor retrieveFlavor(PluginComputingInstanceModel model, OSClient.OSClientV3 os) {
+        for (Flavor f : os.compute().flavors().list()) {
+            if (f.getName().equals(model.getMachineType())) {
+                return f;
+            }
+        }
+        return null;
     }
 
 }
