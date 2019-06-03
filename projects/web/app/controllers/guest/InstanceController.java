@@ -15,6 +15,7 @@ import controllers.CRUD.For;
 import controllers.Check;
 import controllers.adm.BaseAdminController;
 import jobs.InstanceCreationJob;
+import jobs.helpers.TokenHelper;
 import models.ApplicationArgumentsModel;
 import models.ApplicationFileInputModel;
 import models.ApplicationFileOutputModel;
@@ -189,7 +190,7 @@ public class InstanceController extends BaseAdminController {
                         object.getPlugin().getCloudType(),
                         object.getPlugin().getInstanceWriteScope(),
                         credentialData);
-
+                token = TokenHelper.update_identity(object.getPlugin().getCloudType(), token, credentialData);
                 final Body<Boolean> body = api.deleteInstance(
                         token.getToken(),
                         token.getIdentity(),
@@ -320,6 +321,8 @@ public class InstanceController extends BaseAdminController {
                             plugin.getCloudType(),
                             plugin.getInstanceReadScope(),
                             credentialData);
+
+                    token = TokenHelper.update_identity(plugin.getCloudType(), token, credentialData);
 
                     final Body<List<PluginComputingZoneModel>> body = api.listRegionZones(
                             token.getToken(),

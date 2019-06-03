@@ -11,6 +11,7 @@ import app.models.PluginPriceTableStatusModel.Status;
 import app.models.pricing.InstanceTypePricing;
 import app.models.pricing.StoragePricing;
 import app.models.security.TokenModel;
+import jobs.helpers.TokenHelper;
 import models.*;
 import models.PriceTableModel.SyncStatus;
 import org.apache.commons.lang.StringUtils;
@@ -61,9 +62,9 @@ public class PriceTableUpdaterJob extends Job {
         try {
             final PricingApi api = new PricingApi(plugin.getUrl());
             final Body<PluginPriceTableModel> price;
-            if (plugin.getName().equals("OpenStack")) {
-                String token = getOpenStackToken();
-                price = api.getPricingWithToken(token);
+            if (plugin.getCloudType().equals("openstack")) {
+                TokenModel token = getOpenStackToken();
+                price = api.getPricingWithToken(token.getToken(), token.getIdentity());
             } else {
                 price = api.getPricing();
             }
@@ -200,7 +201,7 @@ public class PriceTableUpdaterJob extends Job {
         return false;
     }
 
-    private static String getOpenStackToken() {
+    private static TokenModel getOpenStackToken() {
         UserModel currentUser = getConnectedUser();
         for(CredentialModel credential : currentUser.getListCredentials()) {
             try {
@@ -210,7 +211,7 @@ public class PriceTableUpdaterJob extends Job {
                 }                
                 TokenModel token = Authorization.getToken("openstack", null, credentialStr);
                 if (token.getToken() != null) {
-                    return token.getToken();
+                    return TokenHelper.update_identity("openstack", token, credentialStr);
                 }
             } catch (Exception e) {
                 Logger.warn(e, "Error with credentials: ", e.getMessage());

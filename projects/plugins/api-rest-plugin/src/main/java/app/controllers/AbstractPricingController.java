@@ -28,8 +28,9 @@ public abstract class AbstractPricingController extends BaseControllerVersioned{
     @RequestMapping(path = Routes.PRICING_TOKEN, method = RequestMethod.GET)
     private ResponseEntity< Body< PluginPriceTableModel >> getPricingWithTokenAction(
             @RequestHeader(value=HttpHeadersCustom.API_VERSION) final String version,
-            @RequestHeader(value= HttpHeaders.AUTHORIZATION) final String token) {
-        return callImplementedMethod("getPricingWithToken", version, token);
+            @RequestHeader(value= HttpHeaders.AUTHORIZATION) final String token,
+            @RequestHeader(value=HttpHeadersCustom.AUTHORIZATION_ID) final String identity) {
+        return callImplementedMethod("getPricingWithToken", version, token, identity);
     }
     @RequestMapping(path = Routes.PRICING_STATUS, method = RequestMethod.GET)
     private ResponseEntity< Body< PluginPriceTableStatusModel >> getPricingStatusAction(
@@ -43,7 +44,9 @@ public abstract class AbstractPricingController extends BaseControllerVersioned{
     protected abstract ResponseEntity<Body<PluginPriceTableModel>>
                                 getPricing() throws Exception;
 
-    protected ResponseEntity<Body<PluginPriceTableModel>> getPricingWithToken(String token) throws Exception { return null; }
+    protected abstract ResponseEntity<Body<PluginPriceTableModel>>
+                    getPricingWithToken(final String token, final String identity) throws Exception;
+
 
     protected abstract ResponseEntity<Body<PluginPriceTableStatusModel>>
                                 getPricingStatus() throws Exception;

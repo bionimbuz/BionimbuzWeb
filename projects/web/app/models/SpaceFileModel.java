@@ -24,6 +24,7 @@ import app.models.PluginStorageFileDownloadModel;
 import app.models.PluginStorageFileUploadModel;
 import app.models.RemoteFileInfo;
 import app.models.security.TokenModel;
+import jobs.helpers.TokenHelper;
 import play.Logger;
 import play.data.validation.MaxSize;
 import play.data.validation.Required;
@@ -150,6 +151,8 @@ public class SpaceFileModel extends GenericModel {
                     plugin.getStorageWriteScope(),
                     credentialStr);
 
+            token = TokenHelper.update_identity(plugin.getCloudType(), token, credentialStr);
+
             Body<PluginStorageFileDownloadModel> body =
                     api.getDownloadUrl(space.getName(), file.getVirtualName());
             PluginStorageFileDownloadModel content =
@@ -204,6 +207,8 @@ public class SpaceFileModel extends GenericModel {
                     plugin.getCloudType(),
                     plugin.getStorageWriteScope(),
                     credentialStr);
+
+            token = TokenHelper.update_identity(plugin.getCloudType(), token, credentialStr);
 
             Body<PluginStorageFileUploadModel> body =
                     api.getUploadUrl(space.getName(), virtualName);

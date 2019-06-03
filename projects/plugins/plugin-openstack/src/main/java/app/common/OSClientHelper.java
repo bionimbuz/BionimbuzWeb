@@ -5,20 +5,26 @@ import org.openstack4j.core.transport.Config;
 import org.openstack4j.model.common.Identifier;
 import org.openstack4j.openstack.OSFactory;
 
-import static app.common.SystemConstants.HOST;
-import static app.common.SystemConstants.KEYSTONE_HOST;
-import static app.common.SystemConstants.TEST_PROJECT_ID;
+import java.util.HashMap;
 
 public class OSClientHelper {
 
-    private static final Identifier PROJECT = Identifier.byId(TEST_PROJECT_ID);
-
-    public static OSClient.OSClientV3 getOSClient(String token) {
+    public static OSClient.OSClientV3 getOSClient(String token, String host, String project_id) {
         return OSFactory.builderV3()
-                .endpoint(KEYSTONE_HOST)
-                .withConfig(Config.newConfig().withEndpointNATResolution(HOST))
-                .scopeToProject(PROJECT)
+                .endpoint("http://" + host + ":5000/v3")
+                .withConfig(Config.newConfig().withEndpointNATResolution(host))
+                .scopeToProject(Identifier.byId(project_id))
                 .token(token)
                 .authenticate();
+    }
+
+    public static HashMap<String, String> retrieveCredentialData(String identity) {
+        HashMap<String, String> credentialData = new HashMap<>();
+
+        String[] parts = identity.split("/");
+        credentialData.put("host", parts[0]);
+        credentialData.put("project_id", parts[1]);
+
+        return credentialData;
     }
 }

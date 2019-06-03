@@ -6,6 +6,8 @@ import app.common.HttpHeadersCustom;
 import app.common.SystemConstants;
 import app.models.security.TokenModel;
 import com.google.common.io.Files;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.openstack4j.api.OSClient;
 import org.openstack4j.openstack.OSFactory;
 import org.springframework.http.HttpEntity;
@@ -17,8 +19,10 @@ import org.springframework.web.client.RestTemplate;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Map;
 
 import static app.common.OSClientHelper.getOSClient;
+import static app.common.OSClientHelper.retrieveCredentialData;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class TestUtils {
@@ -41,13 +45,21 @@ public class TestUtils {
         OSFactory.enableHttpLoggingFilter(true);
         String credential = readCredential();
 
+        JsonParser parser = new JsonParser();
+        JsonObject json = (JsonObject) parser.parse(credential);
+        String identity = json.get("host").getAsString() + "/" + json.get("project_id").getAsString();
+
+
         try {
             TokenModel tokenModel = Authorization.getToken(SystemConstants.CLOUD_TYPE, null, credential);
-            OSClient.OSClientV3 os = getOSClient(tokenModel.getToken());
+
+            Map<String,String> clientData = retrieveCredentialData(identity);
+
+            OSClient.OSClientV3 os = getOSClient(tokenModel.getToken(), clientData.get("host"), clientData.get("project_id"));
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.add(HttpHeadersCustom.AUTHORIZATION_ID, os.getToken().getId());
+            headers.add(HttpHeadersCustom.AUTHORIZATION_ID, identity);
             headers.add(HttpHeaders.AUTHORIZATION, os.getToken().getId());
             headers.add(HttpHeadersCustom.API_VERSION, GlobalConstants.API_VERSION);
 

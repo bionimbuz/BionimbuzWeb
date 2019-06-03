@@ -20,6 +20,16 @@ public class PricingControllerMock extends AbstractPricingController {
         return ResponseEntity.ok().body(
                 Body.create(Body.OK, model));
     }
+
+    @Override
+    protected ResponseEntity<Body<PluginPriceTableModel>> getPricingWithToken(String token, String identity) throws Exception {
+        PluginPriceTableModel model = new PluginPriceTableModel(
+                PluginPriceTableStatusModel.createProcessingStatus(),
+                new PluginPriceModel());
+        return ResponseEntity.ok().body(
+                Body.create(Body.OK, model));
+    }
+
     @Override
     protected ResponseEntity<Body<PluginPriceTableStatusModel>> getPricingStatus()
             throws Exception {

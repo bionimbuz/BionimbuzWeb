@@ -13,6 +13,7 @@ import common.constants.I18N;
 import controllers.CRUD.For;
 import controllers.Check;
 import controllers.adm.BaseAdminController;
+import jobs.helpers.TokenHelper;
 import models.InstanceModel.CredentialUsagePolicy;
 import models.PluginModel;
 import models.SpaceModel;
@@ -171,6 +172,8 @@ public class SpaceController extends BaseAdminController {
                             plugin.getCloudType(),
                             plugin.getStorageWriteScope(),
                             credentialData);
+
+                token = TokenHelper.update_identity(plugin.getCloudType(), token, credentialData);
 
                 Body<PluginStorageModel> body =
                         api.createSpace(

@@ -1,8 +1,5 @@
 package controllers.adm;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import app.client.ImageApi;
 import app.common.Authorization;
 import app.models.Body;
@@ -11,11 +8,15 @@ import app.models.security.TokenModel;
 import common.constants.I18N;
 import controllers.CRUD.For;
 import controllers.Check;
+import jobs.helpers.TokenHelper;
 import models.CredentialModel;
 import models.ImageModel;
 import models.PluginModel;
 import play.Logger;
 import play.i18n.Messages;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @For(ImageModel.class)
 @Check("/adm/list/images")
@@ -37,13 +38,14 @@ public class ImageController extends BaseAdminController {
                         plugin.getCloudType(),
                         plugin.getInstanceReadScope(),
                         credentialStr);
+                token = TokenHelper.update_identity(plugin.getCloudType(), token, credentialStr);
                 Body<List<PluginImageModel>> body =
                         imageApi.listImages(
                                 token.getToken(),
                                 token.getIdentity());
-                if(body == null || body.getContent() == null || body.getContent().isEmpty())
+                if (body == null || body.getContent() == null || body.getContent().isEmpty())
                     continue;
-                for(PluginImageModel image : body.getContent()) {
+                for (PluginImageModel image : body.getContent()) {
                     listModels.add(new ImageModel(
                             image.getName(),
                             image.getUrl()));

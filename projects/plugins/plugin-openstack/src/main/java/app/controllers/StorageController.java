@@ -9,7 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 import static app.common.OSClientHelper.getOSClient;
+import static app.common.OSClientHelper.retrieveCredentialData;
 
 @RestController
 public class StorageController extends AbstractStorageController {
@@ -19,7 +22,8 @@ public class StorageController extends AbstractStorageController {
             String identity, PluginStorageModel model) throws Exception {
 
         try {
-            OSClient.OSClientV3 os = getOSClient(token);
+            Map<String,String> clientData = retrieveCredentialData(identity);
+            OSClient.OSClientV3 os = getOSClient(token, clientData.get("host"), clientData.get("project_id"));
             os.objectStorage().containers().create(model.getName());
 
             return ResponseEntity.ok(Body.create(model));
@@ -34,7 +38,8 @@ public class StorageController extends AbstractStorageController {
     protected ResponseEntity<Body<Boolean>> deleteSpace(String token,
             String identity, String name) throws Exception {
         try {
-            OSClient.OSClientV3 os = getOSClient(token);
+            Map<String,String> clientData = retrieveCredentialData(identity);
+            OSClient.OSClientV3 os = getOSClient(token, clientData.get("host"), clientData.get("project_id"));
             os.objectStorage().containers().delete(name);
 
             return new ResponseEntity<>(

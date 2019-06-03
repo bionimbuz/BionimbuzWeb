@@ -113,7 +113,7 @@ public class ComputingControllerTest {
         instance.setType(SystemConstants.CLOUD_TYPE);
         instance.setRegion(SystemConstants.PLUGIN_REGION);
         instance.setZone(SystemConstants.PLUGIN_ZONE);
-        instance.setImageId("9c795320-417c-4b15-9494-918209b3edf7");
+        instance.setImageUrl("http://35.247.219.98:8774/v2.1/c5e3db7110734021875c9621541b3ab9/images/c65a409b-8d7f-4b11-8d7c-6deecec73e62");
         instance.setMachineType("m1.tiny");
 
         return instance;

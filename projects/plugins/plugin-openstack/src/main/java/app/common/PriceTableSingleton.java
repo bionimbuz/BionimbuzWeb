@@ -14,8 +14,10 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static app.common.OSClientHelper.getOSClient;
+import static app.common.OSClientHelper.retrieveCredentialData;
 
 
 @Component
@@ -52,11 +54,12 @@ public class PriceTableSingleton {
                 now, listInstancePricing, listStoragePricing);
     }
 
-    public void updateSingleton(String token) {
+    public void updateSingleton(String token, String identity) {
         Date now = new Date();
         status = PluginPriceTableStatusModel.createOkStatus(now);
 
-        OSClient.OSClientV3 os = getOSClient(token);
+        Map<String,String> clientData = retrieveCredentialData(identity);
+        OSClient.OSClientV3 os = getOSClient(token, clientData.get("host"), clientData.get("project_id"));
         List<? extends Flavor> flavors = os.compute().flavors().list();
 
         StoragePricing storagePricing =

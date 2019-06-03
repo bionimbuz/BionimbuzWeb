@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import jobs.helpers.TokenHelper;
 import org.apache.commons.io.FilenameUtils;
 
 import app.client.ComputingApi;
@@ -91,7 +92,7 @@ public class InstanceCreationJob extends Job {
                     instance.getPlugin().getCloudType(),
                     instance.getPlugin().getInstanceWriteScope(),
                     credentialData);
-
+            token = TokenHelper.update_identity(instance.getPlugin().getCloudType(), token, credentialData);
             final Body<Boolean> body = api.deleteInstance(
                     token.getToken(),
                     token.getIdentity(),
@@ -135,7 +136,7 @@ public class InstanceCreationJob extends Job {
                             instance.getPlugin().getCloudType(),
                             instance.getPlugin().getInstanceWriteScope(),
                             credentialData);
-
+                    token = TokenHelper.update_identity(instance.getPlugin().getCloudType(), token, credentialData);
                     final Body<PluginComputingInstanceModel> body = api.createInstance(
                             token.getToken(),
                             token.getIdentity(),

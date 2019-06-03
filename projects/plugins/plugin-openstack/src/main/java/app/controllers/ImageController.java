@@ -1,27 +1,21 @@
 package app.controllers;
 
 import app.models.Body;
-import app.models.PluginComputingInstanceModel;
 import app.models.PluginImageModel;
 import org.openstack4j.api.OSClient;
-import org.openstack4j.core.transport.Config;
-import org.openstack4j.model.common.Identifier;
 import org.openstack4j.model.compute.Image;
-import org.openstack4j.model.image.ContainerFormat;
-import org.openstack4j.openstack.OSFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static app.common.OSClientHelper.getOSClient;
-import static app.common.SystemConstants.*;
+import static app.common.OSClientHelper.retrieveCredentialData;
 
 @RestController
 public class ImageController extends AbstractImageController{
-
-    private static final Identifier PROJECT = Identifier.byId(TEST_PROJECT_ID);
 
     /*
      * Overwritten Methods
@@ -33,7 +27,9 @@ public class ImageController extends AbstractImageController{
 
         try {
 
-            OSClient.OSClientV3 os = getOSClient(token);
+            Map<String,String> clientData = retrieveCredentialData(identity);
+
+            OSClient.OSClientV3 os = getOSClient(token, clientData.get("host"), clientData.get("project_id"));
 
             Image image = os.compute().images().get(imageId);
             PluginImageModel res = new PluginImageModel(image.getId(), image.getName(), image.getLinks().get(0).getHref());
@@ -52,7 +48,9 @@ public class ImageController extends AbstractImageController{
             final String identity) throws Exception  {
         try {
 
-            OSClient.OSClientV3 os = getOSClient(token);
+            Map<String,String> clientData = retrieveCredentialData(identity);
+
+            OSClient.OSClientV3 os = getOSClient(token, clientData.get("host"), clientData.get("project_id"));
 
             List<? extends Image> images = os.compute().images().list();
             List<PluginImageModel> res = imagesToModel(images);

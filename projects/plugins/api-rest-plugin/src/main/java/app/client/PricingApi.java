@@ -26,10 +26,10 @@ public class PricingApi extends ClientApiVersioned<HttpMethods> {
                 .getPricing(GlobalConstants.API_VERSION)
                 .execute().body();
     }
-    public Body<PluginPriceTableModel> getPricingWithToken(final String token) throws IOException
+    public Body<PluginPriceTableModel> getPricingWithToken(final String token, final String identity) throws IOException
     {
         return getHttpMethods()
-                .getPricingWithToken(GlobalConstants.API_VERSION, token)
+                .getPricingWithToken(GlobalConstants.API_VERSION, token, identity)
                 .execute().body();
     }
     public Body<PluginPriceTableStatusModel> getPricingStatus() throws IOException
@@ -46,7 +46,8 @@ public class PricingApi extends ClientApiVersioned<HttpMethods> {
         @GET(Routes.PRICING_TOKEN)
         public Call< Body<PluginPriceTableModel> > getPricingWithToken(
                 @Header(HttpHeadersCustom.API_VERSION) final String version,
-                @Header(HttpHeaders.AUTHORIZATION) final String token);
+                @Header(HttpHeaders.AUTHORIZATION) final String token,
+                @Header(HttpHeadersCustom.AUTHORIZATION_ID) final String identity);
         @GET(Routes.PRICING_STATUS)
         public Call< Body<PluginPriceTableStatusModel> > getPricingStatus(
                 @Header(HttpHeadersCustom.API_VERSION) final String version);

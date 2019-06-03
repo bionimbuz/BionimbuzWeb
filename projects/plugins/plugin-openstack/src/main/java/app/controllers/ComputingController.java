@@ -1,9 +1,11 @@
 package app.controllers;
 
 import static app.common.OSClientHelper.getOSClient;
+import static app.common.OSClientHelper.retrieveCredentialData;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.openstack4j.api.Builders;
@@ -36,7 +38,9 @@ public class ComputingController extends AbstractComputingController {
             final String identity, final PluginComputingInstanceModel model) throws Exception {
 
         try {
-            OSClient.OSClientV3 os = getOSClient(token);
+
+            Map<String,String> clientData = retrieveCredentialData(identity);
+            OSClient.OSClientV3 os = getOSClient(token, clientData.get("host"), clientData.get("project_id"));
             int size = os.compute().servers().list().size() + 1;
             String name = "bionimbuz-instance-openstack-" + size;
             Flavor flavor = retrieveFlavor(model, os);
@@ -64,7 +68,8 @@ public class ComputingController extends AbstractComputingController {
             final String region, final String zone, final String instanceId) throws Exception {
         try {
 
-            OSClient.OSClientV3 os = getOSClient(token);
+            Map<String,String> clientData = retrieveCredentialData(identity);
+            OSClient.OSClientV3 os = getOSClient(token, clientData.get("host"), clientData.get("project_id"));
 
             Server server = os.compute().servers().get(instanceId);
             if (server == null) {
@@ -86,7 +91,8 @@ public class ComputingController extends AbstractComputingController {
             final String region, final String zone, final String name) throws Exception {
         try {
 
-            OSClient.OSClientV3 os = getOSClient(token);
+            Map<String,String> clientData = retrieveCredentialData(identity);
+            OSClient.OSClientV3 os = getOSClient(token, clientData.get("host"), clientData.get("project_id"));
 
             for (Server server : os.compute().servers().list()) {
                 if (server.getName().equals(name)) {
@@ -107,7 +113,8 @@ public class ComputingController extends AbstractComputingController {
             final String identity) throws Exception {
         try {
 
-            OSClient.OSClientV3 os = getOSClient(token);
+            Map<String,String> clientData = retrieveCredentialData(identity);
+            OSClient.OSClientV3 os = getOSClient(token, clientData.get("host"), clientData.get("project_id"));
 
             List<? extends Server> servers = os.compute().servers().list();
             return ResponseEntity.ok(Body.create(serversToPluginModel(servers)));
@@ -122,7 +129,8 @@ public class ComputingController extends AbstractComputingController {
             final String identity) throws Exception {
         try {
 
-            OSClient.OSClientV3 os = getOSClient(token);
+            Map<String,String> clientData = retrieveCredentialData(identity);
+            OSClient.OSClientV3 os = getOSClient(token, clientData.get("host"), clientData.get("project_id"));
 
             List<? extends Region> regionList = os.identity().regions().list();
 
