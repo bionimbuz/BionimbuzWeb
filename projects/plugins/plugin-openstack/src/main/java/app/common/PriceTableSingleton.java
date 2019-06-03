@@ -91,7 +91,7 @@ public class PriceTableSingleton {
                     new InstanceTypePricing(
                             flavor.getName(),
                             new Integer(flavor.getVcpus()).shortValue(),
-                            Double.valueOf(flavor.getRam()/1024) ,
+                            Double.valueOf(flavor.getRam()) ,
                             listRegionPricing);
             instanceTypes.put(instancePricing.getName(), instancePricing);
         }

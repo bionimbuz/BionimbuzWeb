@@ -1,14 +1,15 @@
 package controllers.guest;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import app.client.ComputingApi;
+import app.client.PricingApi;
 import app.common.Authorization;
 import app.common.utils.StringUtils;
-import app.models.Body;
-import app.models.PluginComputingZoneModel;
+import app.models.*;
 import app.models.security.TokenModel;
 import common.constants.I18N;
 import controllers.CRUD.For;
@@ -16,30 +17,19 @@ import controllers.Check;
 import controllers.adm.BaseAdminController;
 import jobs.InstanceCreationJob;
 import jobs.helpers.TokenHelper;
-import models.ApplicationArgumentsModel;
-import models.ApplicationFileInputModel;
-import models.ApplicationFileOutputModel;
-import models.ExecutorModel;
-import models.InstanceModel;
+import models.*;
 import models.InstanceModel.CredentialUsagePolicy;
-import models.InstanceTypeModel;
 import models.InstanceTypeModel.InstanceType;
 import models.InstanceTypeModel.InstanceTypeZone;
-import models.InstanceTypeRegionModel;
-import models.PluginModel;
-import models.RegionModel;
 import models.RegionModel.Region;
-import models.SpaceFileModel;
-import models.SpaceModel;
-import models.VwCredentialModel;
-import models.VwSpaceModel;
 import models.WorkflowModel.WORKFLOW_STATUS;
-import models.WorkflowNodeModel;
 import play.Logger;
 import play.data.binding.Binder;
 import play.data.validation.Validation;
 import play.exceptions.TemplateNotFoundException;
 import play.i18n.Messages;
+
+import static jobs.PriceTableUpdaterJob.processPriceTable;
 
 @For(InstanceModel.class)
 @Check("/list/instances")
@@ -227,6 +217,8 @@ public class InstanceController extends BaseAdminController {
     }
 
     public static void searchRegions(final Long pluginId) {
+        updatePriceTable(pluginId);
+
         try {
             final List<Region> listRegions = getInstanceRegions(pluginId);
             if (listRegions == null) {
@@ -396,4 +388,45 @@ public class InstanceController extends BaseAdminController {
                     workflowNodeId);
         }
     }
+
+    private static TokenModel getOpenStackToken() {
+        UserModel currentUser = getConnectedUser();
+        for (CredentialModel credential : currentUser.getListCredentials()) {
+            try {
+                String credentialStr = credential.getCredentialData().getContentAsString();
+                if (credentialStr.indexOf("host") == -1) {
+                    continue;
+                }
+                TokenModel token = Authorization.getToken("openstack", null, credentialStr);
+                if (token.getToken() != null) {
+                    return TokenHelper.update_identity("openstack", token, credentialStr);
+                }
+            } catch (Exception e) {
+                Logger.warn(e, "Error with credentials: ", e.getMessage());
+            }
+        }
+        return null;
+    }
+
+    private static void updatePriceTable(Long pluginId) {
+        PluginModel plugin = PluginModel.findById(pluginId);
+        final PricingApi api = new PricingApi(plugin.getUrl());
+
+        if (plugin.getCloudType().equals("openstack")) {
+            final Date now = new Date();
+            TokenModel token = getOpenStackToken();
+            try {
+                final Body<PluginPriceTableModel> price = api.getPricingWithToken(token.getToken(), token.getIdentity());
+
+                final PluginPriceModel princingRequested = price.getContent().getPrice();
+                final PluginPriceTableStatusModel statusRequested = price.getContent().getStatus();
+                processPriceTable(now, princingRequested, statusRequested, plugin);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
 }

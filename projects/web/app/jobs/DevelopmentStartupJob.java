@@ -55,6 +55,9 @@ public class DevelopmentStartupJob extends Job {
         final PluginModel pluginLocal = this.insertLocalPlugin();
         this.insertLocalImages(pluginLocal);
 
+        final PluginModel pluginOpenStack = this.insertOpenStackPlugin();
+        this.insertOpenStackImages(pluginOpenStack);
+
         this.insertTestModels(10);
         //        this.insertTempPlugins(2);
 
@@ -224,6 +227,14 @@ public class DevelopmentStartupJob extends Job {
         image.save();
     }
 
+    private void insertOpenStackImages(final PluginModel plugin) {
+        final ImageModel image = new ImageModel();
+        image.setName("ciros");
+        image.setUrl("http://35.247.219.98:8774/v2.1/c5e3db7110734021875c9621541b3ab9/images/c65a409b-8d7f-4b11-8d7c-6deecec73e62");
+        image.setPlugin(plugin);
+        image.save();
+    }
+
     private void insertGCECredential(final PluginModel plugin, final UserModel user) {
         final CredentialModel model = new CredentialModel();
         final EncryptedFileField data = new EncryptedFileField(
@@ -306,6 +317,18 @@ public class DevelopmentStartupJob extends Job {
         model.setInstanceWriteScope("");
         model.setStorageReadScope("");
         model.setStorageWriteScope("");
+        model.save();
+        return model;
+    }
+
+    private PluginModel insertOpenStackPlugin() {
+        final PluginModel model = new PluginModel();
+        model.setAuthType(app.models.PluginInfoModel.AuthenticationType.AUTH_SUPER_USER);
+        model.setCloudType("openstack");
+        model.setEnabled(true);
+        model.setName("OpenStack");
+        model.setPluginVersion("0.1");
+        model.setUrl("http://localhost:8686");
         model.save();
         return model;
     }

@@ -1,7 +1,6 @@
 package jobs;
 
 import app.client.PricingApi;
-import app.common.Authorization;
 import app.common.utils.DateCompareUtil;
 import app.models.Body;
 import app.models.PluginPriceModel;
@@ -10,8 +9,6 @@ import app.models.PluginPriceTableStatusModel;
 import app.models.PluginPriceTableStatusModel.Status;
 import app.models.pricing.InstanceTypePricing;
 import app.models.pricing.StoragePricing;
-import app.models.security.TokenModel;
-import jobs.helpers.TokenHelper;
 import models.*;
 import models.PriceTableModel.SyncStatus;
 import org.apache.commons.lang.StringUtils;
@@ -62,12 +59,7 @@ public class PriceTableUpdaterJob extends Job {
         try {
             final PricingApi api = new PricingApi(plugin.getUrl());
             final Body<PluginPriceTableModel> price;
-            if (plugin.getCloudType().equals("openstack")) {
-                TokenModel token = getOpenStackToken();
-                price = api.getPricingWithToken(token.getToken(), token.getIdentity());
-            } else {
-                price = api.getPricing();
-            }
+            price = api.getPricing();
 
             if (price == null) {
                 updateOrCreatePriceTableStatus(plugin, recentPriceTable, now, SyncStatus.ERROR, Messages.get("application.price.table.cannot.be.found"), null, null);
@@ -98,7 +90,7 @@ public class PriceTableUpdaterJob extends Job {
         }
     }
 
-    private static void processPriceTable(final Date now, final PluginPriceModel princingRequested, final PluginPriceTableStatusModel princingStatusRequested, final PluginModel plugin) {
+    public static void processPriceTable(final Date now, final PluginPriceModel princingRequested, final PluginPriceTableStatusModel princingStatusRequested, final PluginModel plugin) {
 
         // Clean current price table
         PriceTableModel priceTable = plugin.getPriceTable();
@@ -201,22 +193,4 @@ public class PriceTableUpdaterJob extends Job {
         return false;
     }
 
-    private static TokenModel getOpenStackToken() {
-        UserModel currentUser = getConnectedUser();
-        for(CredentialModel credential : currentUser.getListCredentials()) {
-            try {
-                String credentialStr = credential.getCredentialData().getContentAsString();
-                if (credentialStr.indexOf("host") == -1){
-                	continue;
-                }                
-                TokenModel token = Authorization.getToken("openstack", null, credentialStr);
-                if (token.getToken() != null) {
-                    return TokenHelper.update_identity("openstack", token, credentialStr);
-                }
-            } catch (Exception e) {
-                Logger.warn(e, "Error with credentials: ", e.getMessage());
-            }
-        }
-        return null;
-    }
 }

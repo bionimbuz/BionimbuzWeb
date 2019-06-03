@@ -204,7 +204,7 @@ public class ComputingController extends AbstractComputingController {
             if (os.compute().servers().get(server.getId()).getStatus().name().equals("ACTIVE")) {
                 break;
             }           
-            TimeUnit.SECONDS.sleep(1);
+            TimeUnit.SECONDS.sleep(3);
             time++;
         }
     }

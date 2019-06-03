@@ -44,10 +44,14 @@ public abstract class AbstractPricingController extends BaseControllerVersioned{
     protected abstract ResponseEntity<Body<PluginPriceTableModel>>
                                 getPricing() throws Exception;
 
-    protected abstract ResponseEntity<Body<PluginPriceTableModel>>
-                    getPricingWithToken(final String token, final String identity) throws Exception;
-
-
     protected abstract ResponseEntity<Body<PluginPriceTableStatusModel>>
                                 getPricingStatus() throws Exception;
+    
+    /*
+     * Implemented Methods
+     */
+
+    protected ResponseEntity<Body<PluginPriceTableModel>>
+    getPricingWithToken(final String token, final String identity) throws Exception { return null; };
+
 }
