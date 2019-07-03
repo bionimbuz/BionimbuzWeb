@@ -3,35 +3,35 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <name>executor-coordinator</name>
+    <name>api-rest-task-executor</name>
     
     <groupId>br.unb.cic.bionimbuz.coordinators</groupId>
-    <artifactId>executor-coordinator</artifactId>
+    <artifactId>api-rest-task-executor</artifactId>
     <version>0.1</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.6.RELEASE</version>
+        <version>2.1.6.RELEASE</version>
     </parent>
-
+    
     <properties>
         <maven.test.skip>true</maven.test.skip>
         <java.version>11</java.version>
-        <api-rest-executor.version>0.1</api-rest-executor.version>
+        <api-commons.version>0.1</api-commons.version>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>br.unb.cic.bionimbuz.coordinators</groupId>
-            <artifactId>api-rest-executor</artifactId>
-            <version>${api-rest-executor.version}</version>
+            <groupId>br.unb.cic.bionimbuz.commons</groupId>
+            <artifactId>api-commons</artifactId>
+            <version>${api-commons.version}</version>
             <type>pom</type>
         </dependency>        
         <dependency>
-            <groupId>br.unb.cic.bionimbuz.coordinators</groupId>
-            <artifactId>api-rest-executor</artifactId>
-            <version>${api-rest-executor.version}</version>
+            <groupId>br.unb.cic.bionimbuz.commons</groupId>
+            <artifactId>api-commons</artifactId>
+            <version>${api-commons.version}</version>
         </dependency>        
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -39,14 +39,5 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>

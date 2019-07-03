@@ -12,6 +12,6 @@ echo "echo \"Extra file execution time: \`date\`\" >> \$4" >> ${APP_NAME}
 chmod 777 ${APP_NAME}
 
 
-COORDINATOR=executor-coordinator-0.1.jar
-curl -o ${COORDINATOR} http://localhost:8282/spaces/test/file/${COORDINATOR}/download
-apt-get install -y openjdk-8-jdk && java -jar ${COORDINATOR}
+EXECUTOR=task-executor-0.1.jar
+curl -o ${EXECUTOR} http://localhost:8282/spaces/test/file/${EXECUTOR}/download
+apt-get install -y openjdk-8-jdk && java -jar ${EXECUTOR}

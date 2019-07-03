@@ -123,9 +123,9 @@ public class DevelopmentStartupJob extends Job {
         executor.setStartupScript(
                 "#!/bin/bash\n" + 
                 "\n" + 
-                "COORDINATOR=executor-coordinator-0.1.jar\n" + 
-                "curl -o ${COORDINATOR} http://localhost:8282/spaces/test/file/${COORDINATOR}/download\n" + 
-                "apt-get update && apt-get install -y openjdk-8-jdk && java -jar ${COORDINATOR} &\n" + 
+                "EXECUTOR=task-executor-0.1.jar\n" + 
+                "curl -o ${EXECUTOR} http://localhost:8282/spaces/test/file/${EXECUTOR}/download\n" + 
+                "apt-get update && apt-get install -y openjdk-8-jdk && java -jar ${EXECUTOR} &\n" + 
                 "\n" + 
                 "# Below is used to kill process when parent dies\n" + 
                 "PID=$!\n" + 
@@ -154,9 +154,9 @@ public class DevelopmentStartupJob extends Job {
 
         final ExecutorModel executor = new ExecutorModel();
         executor.setName("Windows Application");
-        executor.setStartupScript("SET COORDINATOR=executor-coordinator-0.1.jar\n" +
-                "curl -o %COORDINATOR% http://localhost:8282/spaces/test/file/%COORDINATOR%/download\n" +
-                "java -jar %COORDINATOR%" +
+        executor.setStartupScript("SET EXECUTOR=task-executor-0.1.jar\n" +
+                "curl -o %EXECUTOR% http://localhost:8282/spaces/test/file/%EXECUTOR%/download\n" +
+                "java -jar %EXECUTOR%" +
                 "\n");
         executor.setExecutionScript("type %1 > %3\n" +
                 "type %2 >> %3\n" +

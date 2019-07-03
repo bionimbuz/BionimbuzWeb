@@ -139,7 +139,7 @@ function prepareCoordinators {
     echo "# Preparing coordinators projects"
     echo "# ======================================="
     prepareProjectsFolder true ${COORDINATORS_FOLDER} "api-*/"
-    prepareProjectsFolder false ${COORDINATORS_FOLDER} "*-coordinator/"
+    prepareProjectsFolder false ${COORDINATORS_FOLDER} "task-*/"
 }
 
 ##################################################
