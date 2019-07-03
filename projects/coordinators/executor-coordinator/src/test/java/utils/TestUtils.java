@@ -19,11 +19,6 @@ import app.models.SecureCoordinatorAccess;
 
 public class TestUtils {
     protected static final Logger LOGGER = LoggerFactory.getLogger(TestUtils.class);
-
-    private static final String PLUGIN_LOCAL_DIR = "../../plugins/plugin-local/";
-    private static final String INSTANCES_DIR = PLUGIN_LOCAL_DIR + "instances/";
-    private static final String EXECUTION_DIR = INSTANCES_DIR + "bionimbuz-instance-0/";
-    public static final String URL_PLUGIN_LOCAL = "http://localhost:8282";
     
     public static String getUrl(int port) {
         return "http://localhost:"+port;
@@ -37,10 +32,6 @@ public class TestUtils {
                 baseUrl + CoordinatorAccessControllerMock.webRefreshTokenUrl);
         return secureFileAccess;
     }    
-
-    private static final String getAbsoluteCurrentDir() {
-        return System.getProperty("user.dir") + "/";        
-    }
     
     public static Command generateCommand(
             final String baseUrl,

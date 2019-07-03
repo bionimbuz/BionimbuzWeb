@@ -3,11 +3,11 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <name>plugin-aws</name>
+    
     <groupId>br.unb.cic.bionimbuz.plugins</groupId>
     <artifactId>plugin-aws</artifactId>
     <version>0.1</version>
-    
-    <name>plugin-aws</name>
 
     <parent>
         <groupId>org.springframework.boot</groupId>

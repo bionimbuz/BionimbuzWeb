@@ -23,11 +23,6 @@ import utils.TestUtils;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ExecutionControllerTest {
 
-    private static final String PLUGIN_LOCAL_DIR = "../../plugins/plugin-local/";
-    private static final String SPACES_DIR = PLUGIN_LOCAL_DIR + "spaces/";
-    private static final String INSTANCES_DIR = PLUGIN_LOCAL_DIR + "instances/";
-    private static final String EXECUTION_DIR = INSTANCES_DIR + "bionimbuz-instance-0/";
-
     @Autowired
     private ExecutionController controller;
     @Value("${local.server.port}")

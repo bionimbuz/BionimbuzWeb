@@ -4,11 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import app.controllers.mocks.CoordinatorAccessControllerMock;
@@ -25,10 +23,6 @@ public class RemoteFileInfoAccessTest {
 
     @Value("${local.server.port}")
     private int PORT;
-    @Autowired
-    private CoordinatorAccessControllerMock controller;
-    @Autowired
-    private TestRestTemplate restTemplate;
     
     @Test
     // For this test, plugin-local must be running

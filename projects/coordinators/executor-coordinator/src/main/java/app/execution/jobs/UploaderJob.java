@@ -164,7 +164,9 @@ public class UploaderJob {
                                 fileInfo.getUrl(),
                                 HttpMethod.valueOf(fileInfo.getMethod()),
                                 requestEntity,
-                                new ParameterizedTypeReference<Object>() {});                
+                                new ParameterizedTypeReference<Object>() {});             
+                if(!response.getStatusCode().is2xxSuccessful())
+                	throw new Exception("Error uploading file: " + response.getStatusCode().getReasonPhrase());
                 this.callback.onSuccess(fileName);
             } catch (Exception e) {
                 this.callback.onError(fileName, e.getMessage());

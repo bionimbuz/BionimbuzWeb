@@ -8,7 +8,6 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -31,8 +30,6 @@ public class DownloaderJobTest implements IApplicationExecution{
 
     @Value("${local.server.port}")
     private int PORT;
-    @Autowired
-    private CoordinatorAccessControllerMock controller;
     
     @Before
     public void init() {
