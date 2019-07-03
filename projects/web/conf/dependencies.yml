@@ -8,11 +8,9 @@ require:
     - br.unb.cic.bionimbuz.plugins -> api-rest-plugin 0.1
     - br.unb.cic.bionimbuz.coordinators -> api-rest-executor 0.1    
     
-    - com.squareup.retrofit2 -> retrofit 2.3.0
-    - com.squareup.retrofit2 -> converter-jackson 2.3.0
-    - com.google.code.gson -> gson 2.5:
-        force: true
-    - com.google.guava -> guava 18.0
+    - com.squareup.retrofit2 -> retrofit 2.6.0
+    - com.squareup.retrofit2 -> converter-jackson 2.6.0
+    - com.google.guava -> guava 28.0-jre
     - io.jsonwebtoken -> jjwt 0.9.1
     
     - org.apache.jclouds -> jclouds-core 2.1.2
@@ -21,7 +19,7 @@ require:
     - org.apache.jclouds.common -> googlecloud 2.1.2
     - org.apache.jclouds.provider -> google-compute-engine 2.1.2
     
-    - org.postgresql -> postgresql 42.2.5.jre7:
+    - org.postgresql -> postgresql 9.0:
         force: true
         
 repositories:        
