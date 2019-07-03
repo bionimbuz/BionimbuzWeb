@@ -362,7 +362,8 @@ public class DevelopmentStartupJob extends Job {
                 + "culpa qui officia deserunt mollit anim id est laborum.";
     }
 
-    private void insertTempPlugins(final int lenght) {
+    @SuppressWarnings("unused")
+	private void insertTempPlugins(final int lenght) {
         try {
             for (int i = 1; i <= lenght; i++) {
                 final PluginModel model = new PluginModel();
@@ -424,7 +425,8 @@ public class DevelopmentStartupJob extends Job {
         }
     }
 
-    private static String readCredential(final String property, final String defaultPath) {
+    @SuppressWarnings("deprecation")
+	private static String readCredential(final String property, final String defaultPath) {
         String fileContents = null;
         try {
             fileContents = Files.toString(

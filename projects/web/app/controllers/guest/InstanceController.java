@@ -47,7 +47,6 @@ public class InstanceController extends BaseAdminController {
     private static final String CONTROLLERS_GUEST_WORKFLOW_CONTROLLER_SHOW = "controllers.guest.WorkflowController.show";
     private static final String CONTROLLERS_GUEST_INSTANCE_CONTROLLER_BLANK = "controllers.guest.InstanceController.blank";
     private static final String CONTROLLERS_GUEST_INSTANCE_CONTROLLER_SHOW = "controllers.guest.InstanceController.show";
-    private static final String WORKFLOW_NODE_ID = "workflowNode.id";
     private static final String EXECUTOR_SELECTED_ID = "executorSelected.id";
     private static final String INSTANCE_TYPE_SELECTED = "instanceTypeSelected";
     private static final String INSTANCE_TYPE_SELECTED_ID = INSTANCE_TYPE_SELECTED + ".id";

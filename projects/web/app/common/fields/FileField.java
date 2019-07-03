@@ -12,7 +12,7 @@ import java.sql.Types;
 import java.util.Arrays;
 
 import org.hibernate.HibernateException;
-import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.type.BinaryType;
 import org.hibernate.usertype.UserType;
 
@@ -112,19 +112,6 @@ public class FileField implements Model.BinaryField, UserType {
         return o.hashCode();
     }
     @Override
-    public Object nullSafeGet(ResultSet resultSet, String[] names, SessionImplementor sessionImplementor, Object o) throws HibernateException, SQLException {
-        byte [] val = (byte []) BinaryType.INSTANCE.nullSafeGet(resultSet, names[0], sessionImplementor, o);
-        return new FileField(val);
-    }
-    @Override
-    public void nullSafeSet(PreparedStatement ps, Object o, int i, SessionImplementor sessionImplementor) throws HibernateException, SQLException {
-        if(o != null) {
-            ps.setBytes(i, ((FileField) o).file);
-        } else {
-            ps.setNull(i, Types.LONGVARBINARY);
-        }
-    }
-    @Override
     public Object deepCopy(Object o) throws HibernateException {
         if(o == null) {
             return null;
@@ -149,4 +136,19 @@ public class FileField implements Model.BinaryField, UserType {
     public Object replace(Object original, Object target, Object owner) throws HibernateException {
         return original;
     }
+	@Override
+	public Object nullSafeGet(ResultSet resultSet, String[] names, SharedSessionContractImplementor sessionImplementor, Object o)
+			throws HibernateException, SQLException {
+        byte [] val = (byte []) BinaryType.INSTANCE.nullSafeGet(resultSet, names[0], sessionImplementor, o);
+        return new FileField(val);
+	}
+	@Override
+	public void nullSafeSet(PreparedStatement ps, Object o, int i, SharedSessionContractImplementor sessionImplementor)
+			throws HibernateException, SQLException {		
+        if(o != null) {
+            ps.setBytes(i, ((FileField) o).file);
+        } else {
+            ps.setNull(i, Types.LONGVARBINARY);
+        }
+	}
 }

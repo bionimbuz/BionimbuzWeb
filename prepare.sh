@@ -70,7 +70,7 @@ if [ ! -z "$PREPARE_ALL" ]; then
     echo "# Downloading Playframework"
     echo "# ======================================="
 
-    VERSION=1.4.4
+    VERSION=1.5.3
     PACKAGE=play-${VERSION}
     PACKAGE_ZIP=${PACKAGE}.zip
 

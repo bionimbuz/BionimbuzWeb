@@ -11,7 +11,7 @@ import java.sql.Types;
 
 import org.apache.commons.io.IOUtils;
 import org.hibernate.HibernateException;
-import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.type.BinaryType;
 
 import common.security.DesEncrypter;
@@ -37,7 +37,7 @@ public class EncryptedFileField extends FileField {
     }
 
     @Override
-    public Object nullSafeGet(final ResultSet resultSet, final String[] names, final SessionImplementor sessionImplementor, final Object o) throws HibernateException, SQLException {
+    public Object nullSafeGet(final ResultSet resultSet, final String[] names, final SharedSessionContractImplementor sessionImplementor, final Object o) throws HibernateException, SQLException {
         try {
             final byte[] val = (byte[]) BinaryType.INSTANCE.nullSafeGet(resultSet, names[0], sessionImplementor, o);
             //            AESEncrypter cript = new AESEncrypter(Play.secretKey);
@@ -50,7 +50,7 @@ public class EncryptedFileField extends FileField {
     }
 
     @Override
-    public void nullSafeSet(final PreparedStatement ps, final Object o, final int i, final SessionImplementor sessionImplementor) throws HibernateException, SQLException {
+    public void nullSafeSet(final PreparedStatement ps, final Object o, final int i, final SharedSessionContractImplementor sessionImplementor) throws HibernateException, SQLException {
         try {
             if (o != null) {
                 //                AESEncrypter cript = new AESEncrypter(Play.secretKey);

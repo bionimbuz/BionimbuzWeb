@@ -16,7 +16,8 @@ import play.mvc.Scope.Params;
 @Global
 public class CustomBinaryBinder implements TypeBinder<FileField> {
 
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     public Object bind(String name, Annotation[] annotations, String value, Class actualClass, Type genericType) {
         if (value == null || value.trim().length() == 0) {
             return null;

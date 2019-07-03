@@ -79,10 +79,7 @@ public class PluginModel extends GenericModel {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Data access
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    public static List<PluginModel> searchPluginsForUserWithShared() {
-        
-        List<VwCredentialModel> all = VwCredentialModel.findAll();
-        
+    public static List<PluginModel> searchPluginsForUserWithShared() {        
         UserModel currentUser = BaseAdminController.getConnectedUser();
         List<PluginModel> res = find(
                 " SELECT DISTINCT plugins "

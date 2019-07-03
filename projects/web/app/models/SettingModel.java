@@ -14,8 +14,6 @@ import play.db.jpa.GenericModel;
 @Table(name = "tb_setting")
 public class SettingModel extends GenericModel {
 
-    private static final String STRING_FORMAT = "";  
-    
     public static enum Name {
         setting_external_url
     }

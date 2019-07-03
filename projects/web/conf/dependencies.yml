@@ -1,7 +1,7 @@
 # Application dependencies
 
 require:
-    - play 1.4.4
+    - play 1.5.3
     - play -> crud
     - play -> secure
     - br.unb.cic.bionimbuz.commons -> api-commons 0.1
@@ -19,8 +19,7 @@ require:
     - org.apache.jclouds.common -> googlecloud 2.1.2
     - org.apache.jclouds.provider -> google-compute-engine 2.1.2
     
-    - org.postgresql -> postgresql 9.0:
-        force: true
+    - org.postgresql -> postgresql 42.2.4
         
 repositories:        
 - local-api-commons:
