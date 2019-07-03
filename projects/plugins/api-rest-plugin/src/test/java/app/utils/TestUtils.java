@@ -21,6 +21,7 @@ public class TestUtils {
         rf.setConnectTimeout(timeout);
     }
 
+    @SuppressWarnings("deprecation")
     public static String readFileContent(final String path) {
         String fileContents = null;
         try {

@@ -29,7 +29,6 @@ import utils.TestUtils;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ComputingControllerTest {
 
-    private static final Integer LENGTH_CREATION = 2;
     private static final String INSTANCE_STARTUP_SCRIPT = "apt-get update && apt-get install -y apache2 && hostname > /var/www/index.html";
 
     @Autowired

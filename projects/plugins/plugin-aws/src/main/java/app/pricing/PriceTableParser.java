@@ -208,7 +208,7 @@ public class PriceTableParser {
     private void parseInstancePrices(
             JsonParser jsonParser,
             HashMap<String, InstanceTypePricing> instancePricing) throws IOException {
-        String name = "", value = "", sku = "", region = "", type = "";
+        String name = "", value = "", sku = "";
         Double price = -1d;
 
         jsonParser.nextToken();

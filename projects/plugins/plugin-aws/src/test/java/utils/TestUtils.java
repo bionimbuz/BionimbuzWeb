@@ -57,7 +57,8 @@ public class TestUtils {
         return awsSupplier;
     }
 
-    public static String readFileContent(final String path) {
+    @SuppressWarnings("deprecation")
+	public static String readFileContent(final String path) {
         String fileContents = null;
         try {
             fileContents =

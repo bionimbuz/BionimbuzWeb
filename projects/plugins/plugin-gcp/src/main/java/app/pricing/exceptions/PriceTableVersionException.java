@@ -1,6 +1,7 @@
 package app.pricing.exceptions;
 
 public class PriceTableVersionException extends Exception {
+	private static final long serialVersionUID = 1L;
 
     private String versionFound;
     private String versionExpected;    

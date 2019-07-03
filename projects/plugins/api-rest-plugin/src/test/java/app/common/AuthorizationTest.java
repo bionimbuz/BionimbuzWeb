@@ -1,5 +1,7 @@
 package app.common;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.jclouds.ContextBuilder;
 import org.jclouds.domain.Credentials;
 import org.jclouds.ec2.EC2ApiMetadata;
@@ -25,7 +27,7 @@ public class AuthorizationTest extends Authorization {
                         credentialContent);
         AuthorizationApi api =
                 createApi(supplierAws, CLOUD_TYPE_GCE);
-//        assertThat(api).isNotNull();
+        assertThat(api).isNotNull();
         }
 
 
@@ -42,6 +44,7 @@ public class AuthorizationTest extends Authorization {
                     .newBuilder(new EC2ApiMetadata())
                         .credentialsSupplier(supplierAws)
                         .buildApi(AuthorizationApi.class);
+        assertThat(oauth).isNotNull();
         }
     }
 

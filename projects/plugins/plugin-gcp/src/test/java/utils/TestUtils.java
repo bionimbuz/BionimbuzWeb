@@ -37,7 +37,8 @@ public class TestUtils {
                 new GoogleCredentialsFromJson(credentialContent);
     }
     
-    private static String readCredential() {
+    @SuppressWarnings("deprecation")
+	private static String readCredential() {
         String fileContents = null;        
         try {
             fileContents = 

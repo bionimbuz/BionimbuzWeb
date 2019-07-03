@@ -15,36 +15,29 @@ require:
     - com.google.guava -> guava 18.0
     - io.jsonwebtoken -> jjwt 0.9.1
     
-    - org.apache.jclouds -> jclouds-core 2.2.0-SNAPSHOT
-    - org.apache.jclouds.api -> oauth 2.2.0-SNAPSHOT
-    - org.apache.jclouds.provider -> aws-ec2 2.2.0-SNAPSHOT
-    - org.apache.jclouds.common -> googlecloud 2.2.0-SNAPSHOT
-    - org.apache.jclouds.provider -> google-compute-engine 2.2.0-SNAPSHOT
+    - org.apache.jclouds -> jclouds-core 2.1.2
+    - org.apache.jclouds.api -> oauth 2.1.2
+    - org.apache.jclouds.provider -> aws-ec2 2.1.2
+    - org.apache.jclouds.common -> googlecloud 2.1.2
+    - org.apache.jclouds.provider -> google-compute-engine 2.1.2
+    
     - org.postgresql -> postgresql 42.2.5.jre7:
         force: true
+        
 repositories:        
-- api-commons:
+- local-api-commons:
     type:       local
-    artifact:   ${application.path}/../commons/api-commons/target/[module]-[revision].jar
+    artifact:   ${user.home}/.m2/repository/br/unb/cic/bionimbuz/commons/[module]/[revision]/[module]-[revision].jar
     contains:
         - br.unb.cic.bionimbuz.commons -> * 
-- api-rest-plugin:
+- local-api-rest-plugins:
     type:       local
-    artifact:   ${application.path}/../plugins/api-rest-plugin/target/[module]-[revision].jar
+    artifact:   ${user.home}/.m2/repository/br/unb/cic/bionimbuz/plugins/[module]/[revision]/[module]-[revision].jar
     contains:
         - br.unb.cic.bionimbuz.plugins -> *       
-- api-rest-coordinators:
+- local-api-rest-coordinators:
     type:       local
-    artifact:   ${application.path}/../coordinators/api-rest-executor/target/[module]-[revision].jar
+    artifact:   ${user.home}/.m2/repository/br/unb/cic/bionimbuz/coordinators/[module]/[revision]/[module]-[revision].jar
     contains:
         - br.unb.cic.bionimbuz.coordinators -> *       
 
-- jclouds:
-    type: iBiblio
-    root: "https://repository.apache.org/content/repositories/snapshots/"
-    contains:
-        - org.apache.jclouds -> *
-        - org.apache.jclouds.api -> *
-        - org.apache.jclouds.provider -> *
-        - org.apache.jclouds.driver -> *
-        - org.apache.jclouds.common -> *

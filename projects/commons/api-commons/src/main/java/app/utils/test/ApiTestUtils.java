@@ -1,4 +1,4 @@
-package app.utils;
+package app.utils.test;
 
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;

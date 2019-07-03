@@ -2,10 +2,6 @@ package app.controllers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,8 +36,6 @@ public class ComputingControllerTest {
     private static final String INSTANCE_STARTUP_SCRIPT = "apt-get update && apt-get install -y apache2 && hostname > /var/www/index.html";
     private static final String INSTANCE_IMAGE_URL = "https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1604-xenial-v20170919";
     
-    private static final Integer STARTUP_SCRIPT_APACHE_PORT = 80;
-    private static final Integer WAIT_MS_TO_START_INSTANCE = 60 * 1000;
     private static final Integer LENGTH_CREATION = 2;
     
     @Autowired
@@ -103,35 +97,6 @@ public class ComputingControllerTest {
         
         assertThat(responseList.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseList.getBody()).isNotNull();
-    }
-    
-    private void doHttGetInInstancesTest(PluginComputingInstanceModel model) {
-        try {            
-            String url = "http://" + model.getExternalIp() + ":" + STARTUP_SCRIPT_APACHE_PORT;
-            URL obj = new URL(url);
-            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-            con.setRequestMethod("GET");
-
-            int responseCode = con.getResponseCode();
-            assertThat(responseCode).isEqualTo(200);
-            
-            try(BufferedReader in = new BufferedReader(
-                    new InputStreamReader(con.getInputStream()))) {
-                
-                String inputLine;
-                StringBuffer response = new StringBuffer();
-        
-                while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
-                }
-                
-                assertThat(response).isNotBlank();
-            }        
-        } catch (Exception e) {
-            e.printStackTrace();
-            assertThat(e).isNull();
-        }
-        
     }
     
     private void deleteInstanceTest(PluginComputingInstanceModel model) {
