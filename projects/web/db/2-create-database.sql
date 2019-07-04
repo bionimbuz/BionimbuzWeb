@@ -174,7 +174,7 @@ CREATE TABLE tb_region (
     name character varying(255)
 );
 
-CREATE TABLE b_role (
+CREATE TABLE tb_role (
     id character varying(255) NOT NULL
 );
 

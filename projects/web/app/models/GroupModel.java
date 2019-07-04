@@ -130,10 +130,10 @@ public class GroupModel extends GenericModel {
     public void setListUsers(List<UserModel> listUsers) {
         this.listUsers = listUsers;
     }
-    public final List<SpaceModel> getListSpaces() {
+    public List<SpaceModel> getListSpaces() {
         return listSpaces;
     }
-    public final void setListSpaces(List<SpaceModel> listSpaces) {
+    public void setListSpaces(List<SpaceModel> listSpaces) {
         this.listSpaces = listSpaces;
     }
     

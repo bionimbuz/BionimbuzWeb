@@ -17,10 +17,10 @@ public class ApplicationFileInputModel extends ApplicationFileModel {
     public ApplicationFileInputModel() {        
     }
     
-    public final ApplicationArgumentsModel getApplicationArguments() {
+    public ApplicationArgumentsModel getApplicationArguments() {
         return applicationArguments;
     }
-    public final void setApplicationArguments(
+    public void setApplicationArguments(
             ApplicationArgumentsModel applicationArguments) {
         this.applicationArguments = applicationArguments;
     }

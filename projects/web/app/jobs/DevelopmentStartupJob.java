@@ -1,30 +1,13 @@
 package jobs;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.io.Files;
-
-import common.fields.EncryptedFileField;
 import controllers.security.SecurityController;
-import models.CredentialModel;
-import models.ExecutorModel;
-import models.GroupModel;
-import models.ImageModel;
-import models.PluginModel;
-import models.RoleModel;
-import models.RoleModel.RoleType;
-import models.UserGroupModel;
 import models.UserModel;
-import play.Logger;
 import play.jobs.Job;
 import play.jobs.OnApplicationStart;
-import play.test.Fixtures;
 
 @OnApplicationStart
 public class DevelopmentStartupJob extends Job {
@@ -34,357 +17,28 @@ public class DevelopmentStartupJob extends Job {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @Override
     public void doJob() {
-
-    	if(true)
-    		return;
-        // Check if Job has already ran
-        if (UserModel.findByEmail("guest@bionimbuz.org.br") != null) {
-            return;
-        }
-
-        Fixtures.executeSQL(new File("db/init/1.sql"));
-
-        final PluginModel pluginGCE = this.insertGCEPlugin();
-        this.insertGCEImages(pluginGCE);
-
-        final PluginModel pluginAWS = this.insertAWSPlugin();
-        this.insertAWSImages(pluginAWS);
-
-        final PluginModel pluginLocal = this.insertLocalPlugin();
-        this.insertLocalImages(pluginLocal);
-
-        final UserModel userAdmin = UserModel.findByEmail("master@bionimbuz.org.br");
-        final UserModel userNormal = this.insertTempUserNormal();
-        this.insertTempGroup(
-                "UnB Group",
-                userAdmin,
-                userNormal);
-        this.insertTempGroup(
-                "UFRJ Group",
-                userAdmin,
-                userNormal);
-
-        this.insertTempGroup(
-                "CiC Group",
-                userAdmin);
-        this.insertTempGroup(
-                "Teachers Group",
-                userNormal);
-        this.insertGCECredential(pluginGCE, userAdmin);
-        this.insertGCECredential(pluginGCE, userNormal);
-        this.insertGCECredential(pluginGCE, userNormal);
-
-        this.insertAWSCredential(pluginAWS, userAdmin);
-        this.insertAWSCredential(pluginAWS, userNormal);
-
-        this.insertLocalCredential(pluginLocal, userAdmin);
-
-        this.insertFakeExecutor(pluginLocal);
-        this.insertExecutor(pluginGCE, pluginAWS, pluginLocal);
+    	UserModel masterUser = UserModel.findByEmail("master@bionimbuz.org.br");
+    	if(masterUser == null || masterUser.getPass() != null) {
+			return;
+    	}
+    	updatePasswords();
     }
+    
+    private static void updatePasswords() {
 
-    private void insertExecutor(final PluginModel... plugins) {
-        final ExecutorModel executor = new ExecutorModel();
-        final List<ImageModel> listImages = new ArrayList<>();
-        for (final PluginModel plugin : plugins) {
-            plugin.refresh();
-            listImages.add(
-                    plugin.getListImages().get(0));
-        }
-        executor.setName("Apache");
-        executor.setStartupScript(
-                "#!/bin/bash \n"
-                        + "apt-get update && apt-get install -y apache2 && hostname > /var/www/index.html");
-        executor.setExecutionScriptEnabled(false);
-        executor.setFirewallTcpRules("80,8080");
-        executor.setListImages(listImages);
-        executor.save();
+        final List<UserModel> listUsers = UserModel.findAll();
+    	
+    	for(UserModel user : listUsers) {
+    		try {
+				user.setPass(
+						SecurityController.getSHA512(user.getEmail()));
+				user.save();
+			} catch (NoSuchAlgorithmException e) {
+				e.printStackTrace();
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+    	}
     }
-
-    private void insertFakeExecutor(final PluginModel... plugins) {
-        final List<ImageModel> listImages = new ArrayList<>();
-        for (final PluginModel plugin : plugins) {
-            plugin.refresh();
-            listImages.add(
-                    plugin.getListImages().get(0));
-        }
-        saveUnixExecutor(listImages);
-        saveWindowsExecutor(listImages);
-    }
-
-    private static void saveUnixExecutor(final List<ImageModel> listImages) {
-        final ExecutorModel executor = new ExecutorModel();
-        executor.setName("Unix Application");
-        executor.setStartupScript(
-                "#!/bin/bash\n" + 
-                "\n" + 
-                "EXECUTOR=task-executor-0.1.jar\n" + 
-                "curl -o ${EXECUTOR} http://localhost:8282/spaces/test/file/${EXECUTOR}/download\n" + 
-                "apt-get update && apt-get install -y openjdk-8-jdk && java -jar ${EXECUTOR} &\n" + 
-                "\n" + 
-                "# Below is used to kill process when parent dies\n" + 
-                "PID=$!\n" + 
-                "trap \"kill -9 ${PID} && exit \" SIGHUP SIGINT SIGTERM\n" + 
-                "while :\n" + 
-                "do\n" + 
-                "    sleep 1\n" + 
-                "done\n" + 
-                "");
-        executor.setExecutionScript(
-                "#!/bin/bash\n" +
-                        "\n" +
-                        "cat $1 > $3\n" +
-                        "cat $2 >> $3\n" +
-                        "\n" +
-                        "echo \"Execution time: `date`\" >> $3\n" +
-                        "\n" +
-                        "echo \"Extra file execution time: `date`\" >> $4");
-        executor.setExecutionScriptEnabled(true);
-        executor.setCommandLine("{i} {i} {o} {o}");
-        executor.setListImages(listImages);
-        executor.save();
-    }
-
-    private static void saveWindowsExecutor(final List<ImageModel> listImages) {
-
-        final ExecutorModel executor = new ExecutorModel();
-        executor.setName("Windows Application");
-        executor.setStartupScript("SET EXECUTOR=task-executor-0.1.jar\n" +
-                "curl -o %EXECUTOR% http://localhost:8282/spaces/test/file/%EXECUTOR%/download\n" +
-                "java -jar %EXECUTOR%" +
-                "\n");
-        executor.setExecutionScript("type %1 > %3\n" +
-                "type %2 >> %3\n" +
-                "\n" +
-                "set h=%TIME:~0,2%\n" +
-                "set m=%TIME:~3,2%\n" +
-                "set s=%TIME:~6,2%\n" +
-                "set time=%h%%m%%s%\n" +
-                "\n" +
-                "echo \"Execution time: %time%\" >> %3\n" +
-                "\n" +
-                "echo \"Extra file execution time: %time%\" >> %4");
-        executor.setExecutionScriptEnabled(true);
-        executor.setCommandLine("{i} {i} {o} {o}");
-        executor.setListImages(listImages);
-        executor.save();
-    }
-
-    private void insertTempGroup(final String name, final UserModel... users) {
-        final GroupModel group = new GroupModel();
-        group.setName(name);
-        group.save();
-
-        for (final UserModel user : users) {
-            final UserGroupModel userGroup = new UserGroupModel(user, group);
-            userGroup.setJoined(true);
-            userGroup.setUserOwner(true);
-            userGroup.save();
-        }
-    }
-
-    private void insertGCEImages(final PluginModel plugin) {
-        ImageModel image = new ImageModel();
-        image.setName("ubuntu-1604-xenial-v20180627");
-        image.setUrl("https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1604-xenial-v20180627");
-        image.setPlugin(plugin);
-        image.save();
-        
-        image = new ImageModel();
-        image.setName("ubuntu-1204-precise-v20141028");
-        image.setUrl("https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1204-precise-v20141028");
-        image.setPlugin(plugin);
-        image.save();
-        
-        image = new ImageModel();
-        image.setName("ubuntu-1610-yakkety-v20170307");
-        image.setUrl("https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1610-yakkety-v20170307");
-        image.setPlugin(plugin);
-        image.save();
-   }
-
-    private void insertAWSImages(final PluginModel plugin) {
-        final ImageModel image = new ImageModel();
-        image.setName("ubuntu-xenial-16.04-amd64-server-20180627");
-        image.setUrl("ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-20180627");
-        image.setPlugin(plugin);
-        image.save();
-    }
-
-    private void insertLocalImages(final PluginModel plugin) {
-        final ImageModel image = new ImageModel();
-        image.setName("linux-4.13.0-45-generic-amd64");
-        image.setUrl("local-image-url");
-        image.setPlugin(plugin);
-        image.save();
-    }
-
-    private void insertGCECredential(final PluginModel plugin, final UserModel user) {
-        final CredentialModel model = new CredentialModel();
-        final EncryptedFileField data = new EncryptedFileField(
-                readCredential("credential.gce.file", "conf/credentials/credentials-gcp.json").getBytes());
-        model.setCredentialData(data);
-        model.setCredentialDataType("application/json");
-        model.setEnabled(true);
-        model.setName("Credential Google");
-        model.setPlugin(plugin);
-        model.setUser(user);
-        model.save();
-    }
-
-    private void insertAWSCredential(final PluginModel plugin, final UserModel user) {
-        final CredentialModel model = new CredentialModel();
-        final EncryptedFileField data = new EncryptedFileField(
-                readCredential("credential.aws.file", "conf/credentials/credentials-aws.csv").getBytes());
-        model.setCredentialData(data);
-        model.setCredentialDataType("text/csv");
-        model.setEnabled(true);
-        model.setName("Credential AWS");
-        model.setPlugin(plugin);
-        model.setUser(user);
-        model.save();
-    }
-
-    private void insertLocalCredential(final PluginModel plugin, final UserModel user) {
-        final CredentialModel model = new CredentialModel();
-        final EncryptedFileField data = new EncryptedFileField(new byte[] {});
-        model.setCredentialData(data);
-        model.setCredentialDataType("");
-        model.setEnabled(true);
-        model.setName("Local Machine");
-        model.setPlugin(plugin);
-        model.setUser(user);
-        model.save();
-    }
-
-    private PluginModel insertGCEPlugin() {
-        final PluginModel model = new PluginModel();
-        model.setAuthType(app.models.PluginInfoModel.AuthenticationType.AUTH_BEARER_TOKEN);
-        model.setCloudType("google-compute-engine");
-        model.setEnabled(true);
-        model.setName("Google Cloud Platform");
-        model.setPluginVersion("0.1");
-        model.setUrl("http://localhost:8080");
-        model.setInstanceReadScope("https://www.googleapis.com/auth/compute.readonly");
-        model.setInstanceWriteScope("https://www.googleapis.com/auth/compute");
-        model.setStorageReadScope("https://www.googleapis.com/auth/devstorage.read_only");
-        model.setStorageWriteScope("https://www.googleapis.com/auth/devstorage.read_write");
-        model.save();
-        return model;
-    }
-
-    private PluginModel insertAWSPlugin() {
-        final PluginModel model = new PluginModel();
-        model.setAuthType(app.models.PluginInfoModel.AuthenticationType.AUTH_AWS);
-        model.setCloudType("aws-ec2");
-        model.setEnabled(true);
-        model.setName("Amazon Web Services");
-        model.setPluginVersion("0.1");
-        model.setUrl("http://localhost:8484");
-        model.setInstanceReadScope("");
-        model.setInstanceWriteScope("");
-        model.setStorageReadScope("");
-        model.setStorageWriteScope("");
-        model.save();
-        return model;
-    }
-
-    private PluginModel insertLocalPlugin() {
-        final PluginModel model = new PluginModel();
-        model.setAuthType(app.models.PluginInfoModel.AuthenticationType.AUTH_SUPER_USER);
-        model.setCloudType("local-machine");
-        model.setEnabled(true);
-        model.setName("Local Machine");
-        model.setPluginVersion("0.1");
-        model.setUrl("http://localhost:8282");
-        model.setInstanceReadScope("");
-        model.setInstanceWriteScope("");
-        model.setStorageReadScope("");
-        model.setStorageWriteScope("");
-        model.save();
-        return model;
-    }
-
-    private String getLoremIpsum() {
-        return "Lorem ipsum dolor sit amet, consectetur adipiscing elit, " + "sed do eiusmod tempor incididunt ut labore et dolore " + "magna aliqua. Ut enim ad minim veniam, quis nostrud "
-                + "exercitation ullamco laboris nisi ut aliquip ex ea commodo " + "consequat. Duis aute irure dolor in reprehenderit in "
-                + "voluptate velit esse cillum dolore eu fugiat nulla pariatur. " + "Excepteur sint occaecat cupidatat non proident, sunt in "
-                + "culpa qui officia deserunt mollit anim id est laborum.";
-    }
-
-    @SuppressWarnings("unused")
-	private void insertTempPlugins(final int lenght) {
-        try {
-            for (int i = 1; i <= lenght; i++) {
-                final PluginModel model = new PluginModel();
-                model.setCloudType("cloud " + i);
-                model.setName("name " + i);
-                model.setPluginVersion("v" + i);
-                model.setUrl("http://localhost:" + i);
-                model.save();
-                this.insertGCEImages(model);
-            }
-        } catch (final Exception e) {
-            Logger.error(e, e.getMessage());
-        }
-    }
-
-    //    private UserModel insertTempUserAdmin() {
-    //        try {
-    //            UserModel user = UserModel.findByEmail("master@bionimbuz.org.br");
-    //            if (user != null) {
-    //                return null;
-    //            }
-    //
-    //            final RoleModel role = RoleModel.findById(RoleType.ADMIN);
-    //
-    //            user = new UserModel();
-    //            user.setRole(role);
-    //            user.setEmail("master@bionimbuz.org.br");
-    //            user.setName("Administrador do Sistema");
-    //            user.setPass(SecurityController.getSHA512("master"));
-    //            user.setJoined(true);
-    //            user.save();
-    //            return user;
-    //        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
-    //            Logger.error(e.getMessage(), e);
-    //            return null;
-    //        }
-    //    }
-
-    private UserModel insertTempUserNormal() {
-        try {
-            UserModel user = UserModel.findByEmail("guest@bionimbuz.org.br");
-            if (user != null) {
-                return null;
-            }
-
-            final RoleModel role = RoleModel.findById(RoleType.NORMAL);
-
-            user = new UserModel();
-            user.setRole(role);
-            user.setEmail("guest@bionimbuz.org.br");
-            user.setName("Usuário do Sistema");
-            user.setPass(SecurityController.getSHA512("guest"));
-            user.setJoined(true);
-            user.save();
-            return user;
-        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
-            Logger.error(e, e.getMessage());
-            return null;
-        }
-    }
-
-    @SuppressWarnings("deprecation")
-	private static String readCredential(final String property, final String defaultPath) {
-        String fileContents = null;
-        try {
-            fileContents = Files.toString(
-                    new File(System.getProperty(property, defaultPath)),
-                    Charset.defaultCharset());
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
-        return fileContents;
-    }
+    
 }

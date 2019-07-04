@@ -65,44 +65,44 @@ public class ApplicationArgumentsModel extends GenericModel {
     // Getters and Setters
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    public final Long getId() {
+    public Long getId() {
         return this.id;
     }
 
-    public final void setId(final Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
-    public final InstanceModel getInstance() {
+    public InstanceModel getInstance() {
         return this.instance;
     }
 
-    public final void setInstance(final InstanceModel instance) {
+    public void setInstance(final InstanceModel instance) {
         this.instance = instance;
     }
 
-    public final String getArguments() {
+    public String getArguments() {
         return this.arguments;
     }
 
-    public final void setArguments(final String arguments) {
+    public void setArguments(final String arguments) {
         this.arguments = arguments;
     }
 
-    public final List<ApplicationFileInputModel> getApplicationInputFiles() {
+    public List<ApplicationFileInputModel> getApplicationInputFiles() {
         return this.applicationInputFiles;
     }
 
-    public final void setApplicationInputFiles(
+    public void setApplicationInputFiles(
             final List<ApplicationFileInputModel> applicationInputFiles) {
         this.applicationInputFiles = applicationInputFiles;
     }
 
-    public final List<ApplicationFileOutputModel> getApplicationOutputFiles() {
+    public List<ApplicationFileOutputModel> getApplicationOutputFiles() {
         return this.applicationOutputFiles;
     }
 
-    public final void setApplicationOutputFiles(
+    public void setApplicationOutputFiles(
             final List<ApplicationFileOutputModel> applicationOuputFiles) {
         this.applicationOutputFiles = applicationOuputFiles;
     }

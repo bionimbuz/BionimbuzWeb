@@ -145,10 +145,10 @@ public class UserModel extends GenericModel {
     public void setListGroups(List<GroupModel> listGroups) {
         this.listGroups = listGroups;
     }    
-    public final List<SpaceModel> getListSpaces() {
+    public List<SpaceModel> getListSpaces() {
         return listSpaces;
     }
-    public final void setListSpaces(List<SpaceModel> listSpaces) {
+    public void setListSpaces(List<SpaceModel> listSpaces) {
         this.listSpaces = listSpaces;
     }    
     public List<WorkflowModel> getListWorkflows() {

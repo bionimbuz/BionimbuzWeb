@@ -60,7 +60,7 @@ public class InstanceModel extends GenericModel {
     @Required
     private PluginModel plugin;
     @Required
-    private boolean executionAfterCreation;
+    private boolean executionAfterCreation = true;
     @NoBinding
     private Date creationDate;
     @OneToOne(cascade = {

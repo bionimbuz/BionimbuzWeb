@@ -110,115 +110,115 @@ public class VwSpaceModel extends GenericModel {
     // Getters and Setters
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    public final Long getId() {
+    public Long getId() {
         return this.id;
     }
 
-    public final void setId(final Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
-    public final boolean isUserOwner() {
+    public boolean isUserOwner() {
         return this.userOwner;
     }
 
-    public final void setUserOwner(final boolean owner) {
+    public void setUserOwner(final boolean owner) {
         this.userOwner = owner;
     }
 
-    public final boolean isShared() {
+    public boolean isShared() {
         return this.shared;
     }
 
-    public final void setShared(final boolean shared) {
+    public void setShared(final boolean shared) {
         this.shared = shared;
     }
 
-    public final String getName() {
+    public String getName() {
         return this.name;
     }
 
-    public final void setName(final String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
-    public final Date getCreationDate() {
+    public Date getCreationDate() {
         return this.creationDate;
     }
 
-    public final void setCreationDate(final Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
-    public final PluginModel getPlugin() {
+    public PluginModel getPlugin() {
         return this.plugin;
     }
 
-    public final void setPlugin(final PluginModel plugin) {
+    public void setPlugin(final PluginModel plugin) {
         this.plugin = plugin;
     }
 
-    public final UserModel getUser() {
+    public UserModel getUser() {
         return this.user;
     }
 
-    public final void setUser(final UserModel user) {
+    public void setUser(final UserModel user) {
         this.user = user;
     }
 
-    public final List<GroupModel> getListSharedGroups() {
+    public List<GroupModel> getListSharedGroups() {
         return this.listSharedGroups;
     }
 
-    public final void setListSharedGroups(final List<GroupModel> listSharedGroups) {
+    public void setListSharedGroups(final List<GroupModel> listSharedGroups) {
         this.listSharedGroups = listSharedGroups;
     }
 
-    public final String getRegionName() {
+    public String getRegionName() {
         return this.regionName;
     }
 
-    public final void setRegionName(final String regionName) {
+    public void setRegionName(final String regionName) {
         this.regionName = regionName;
     }
 
-    public final Date getPriceTableDate() {
+    public Date getPriceTableDate() {
         return this.priceTableDate;
     }
 
-    public final void setPriceTableDate(final Date priceTableDate) {
+    public void setPriceTableDate(final Date priceTableDate) {
         this.priceTableDate = priceTableDate;
     }
 
-    public final Double getPricePerGB() {
+    public Double getPricePerGB() {
         return this.pricePerGB;
     }
 
-    public final void setPricePerGB(final Double pricePerGB) {
+    public void setPricePerGB(final Double pricePerGB) {
         this.pricePerGB = pricePerGB;
     }
 
-    public final Double getClassAPrice() {
+    public Double getClassAPrice() {
         return this.classAPrice;
     }
 
-    public final void setClassAPrice(final Double classAPrice) {
+    public void setClassAPrice(final Double classAPrice) {
         this.classAPrice = classAPrice;
     }
 
-    public final Double getClassBPrice() {
+    public Double getClassBPrice() {
         return this.classBPrice;
     }
 
-    public final void setClassBPrice(final Double classBPrice) {
+    public void setClassBPrice(final Double classBPrice) {
         this.classBPrice = classBPrice;
     }
 
-    public final UserModel getUserShared() {
+    public UserModel getUserShared() {
         return this.userShared;
     }
 
-    public final void setUserShared(final UserModel userShared) {
+    public void setUserShared(final UserModel userShared) {
         this.userShared = userShared;
     }
 }

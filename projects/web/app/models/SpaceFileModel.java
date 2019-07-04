@@ -63,16 +63,16 @@ public class SpaceFileModel extends GenericModel {
             this.name = name;
         }
         
-        public final String getName() {
+        public String getName() {
             return name;
         }
-        public final void setName(String name) {
+        public void setName(String name) {
             this.name = name;
         }
-        public final Long getId() {
+        public Long getId() {
             return id;
         }
-        public final void setId(Long id) {
+        public void setId(Long id) {
             this.id = id;
         }
     }

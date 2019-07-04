@@ -43,27 +43,27 @@ public class ApplicationFileModel extends GenericModel {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Getters and Setters
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    public final Long getId() {
+    public Long getId() {
         return this.id;
     }
 
-    public final SpaceFileModel getSpaceFile() {
+    public SpaceFileModel getSpaceFile() {
         return this.spaceFile;
     }
 
-    public final void setSpaceFile(final SpaceFileModel spaceFile) {
+    public void setSpaceFile(final SpaceFileModel spaceFile) {
         this.spaceFile = spaceFile;
     }
 
-    public final Integer getFileOrder() {
+    public Integer getFileOrder() {
         return this.fileOrder;
     }
 
-    public final void setFileOrder(final Integer order) {
+    public void setFileOrder(final Integer order) {
         this.fileOrder = order;
     }
 
-    public final void setId(final Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 }

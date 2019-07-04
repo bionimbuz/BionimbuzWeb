@@ -129,16 +129,16 @@ public class SpaceModel extends GenericModel {
     public void setAlocationAfterCreation(boolean alocationAfterCreation) {
         this.alocationAfterCreation = alocationAfterCreation;
     }
-    public final UserModel getUser() {
+    public UserModel getUser() {
         return user;
     }
-    public final void setUser(UserModel user) {
+    public void setUser(UserModel user) {
         this.user = user;
     }
-    public final List<GroupModel> getListSharedGroups() {
+    public List<GroupModel> getListSharedGroups() {
         return listSharedGroups;
     }
-    public final void setListSharedGroups(List<GroupModel> listSharedGroups) {
+    public void setListSharedGroups(List<GroupModel> listSharedGroups) {
         this.listSharedGroups = listSharedGroups;
     }
     public CredentialModel getCredential() {

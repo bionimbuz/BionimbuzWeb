@@ -14,7 +14,7 @@ INSERT INTO tb_role (id) VALUES
 -- TB_USER
 INSERT INTO tb_user (id, email, joined, name, role_id, pass) VALUES
     -- pass: master
-    (1, 'master@bionimbuz.org.br', TRUE, 'Administrador do Sistema', 'ADMIN', '353ba90f8c0b3e0f355a3d6c960b7caed5f2c1412992277c0669a04a62e7dfd35fba9f4631a7dc6d00fb44d93d305cc0b749c7501d9ce86f26148d05101b8324')
+    (1, 'master@bionimbuz.org.br', TRUE, 'Administrador do Sistema', 'ADMIN', NULL)
 ;
 
 -- TB_MENU
