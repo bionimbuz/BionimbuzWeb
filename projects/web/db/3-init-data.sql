@@ -1,6 +1,4 @@
 
--- # --- !Ups
-
 -- TB_SETTING
 INSERT INTO tb_setting 
      (settingName,            settingValue,             defaultValue,             minSize, maxSize, settingType, required) VALUES
@@ -37,7 +35,6 @@ INSERT INTO tb_menu (id, parentmenu_id, menuorder, path, name, iconclass) VALUES
    ,(14,   13,  1, '/list/instances',       'menu.instances',                   NULL)
    ,(15,   13,  2, '/list/workflows',       'menu.workflows',                   NULL)
    ,(16, NULL,  8, '/adm/list/settings',    'menu.settings',                   'glyphicon glyphicon-wrench')
-   
    ,(17, NULL,NULL,'/list/users',           NULL,                              NULL)
 ;
 
@@ -71,5 +68,4 @@ INSERT INTO tb_role_menu (id_menu, id_role) VALUES
    ,(17, 'ADMIN')
 ;
 
--- # --- !Downs
 

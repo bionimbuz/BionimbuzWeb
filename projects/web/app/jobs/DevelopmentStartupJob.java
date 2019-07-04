@@ -6,7 +6,6 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import com.google.common.io.Files;
@@ -20,9 +19,6 @@ import models.ImageModel;
 import models.PluginModel;
 import models.RoleModel;
 import models.RoleModel.RoleType;
-import models.TestModel;
-import models.TestModel.TestEnum;
-import models.TestRelationModel;
 import models.UserGroupModel;
 import models.UserModel;
 import play.Logger;
@@ -39,6 +35,8 @@ public class DevelopmentStartupJob extends Job {
     @Override
     public void doJob() {
 
+    	if(true)
+    		return;
         // Check if Job has already ran
         if (UserModel.findByEmail("guest@bionimbuz.org.br") != null) {
             return;
@@ -54,9 +52,6 @@ public class DevelopmentStartupJob extends Job {
 
         final PluginModel pluginLocal = this.insertLocalPlugin();
         this.insertLocalImages(pluginLocal);
-
-        this.insertTestModels(10);
-        //        this.insertTempPlugins(2);
 
         final UserModel userAdmin = UserModel.findByEmail("master@bionimbuz.org.br");
         final UserModel userNormal = this.insertTempUserNormal();
@@ -308,51 +303,6 @@ public class DevelopmentStartupJob extends Job {
         model.setStorageWriteScope("");
         model.save();
         return model;
-    }
-
-    @SuppressWarnings("deprecation")
-    private void insertTestModels(final int lenght) {
-        try {
-
-            Date date = null;
-            for (int i = 1; i <= lenght; i++) {
-                final TestRelationModel relation = new TestRelationModel(i + " - Relation");
-                relation.save();
-                final TestModel model = new TestModel();
-                model.setBooleanField(i % 2 == 0);
-                date = new Date();
-                date.setYear(date.getYear() + 1);
-                model.setDateFutureField(date);
-                date = new Date();
-                date.setYear(date.getYear() - 1);
-                model.setDatePastField(date);
-                model.setDecimalField(i + 2.4);
-                model.setEnumField(TestEnum.values()[i % 4]);
-                model.setFileField(null);
-                model.setHiddenField(i + "hiddenValue");
-                model.setIntField(i);
-                model.setLongTextField(i + this.getLoremIpsum().substring(0, 253));
-                model.setPasswordField(i + "#############");
-                model.setTextField(i + this.getLoremIpsum().substring(0, 50));
-                model.setRelationField(relation);
-                model.setEmailField(i + "test@test.com");
-                model.setUrlField("http://localhost.com/" + i);
-                model.setPhoneField("+55 61 99999999" + i);
-                model.setIpv4Field("1.1.1.1");
-                final List<TestRelationModel> options = new ArrayList<>();
-                options.add(relation);
-                model.setMultiSelectField(options);
-                final List<TestRelationModel> options2 = new ArrayList<>();
-                options2.add(relation);
-                model.setMultiSelectField2(options2);
-
-                model.save();
-            }
-
-            date = new Date();
-        } catch (final Exception e) {
-            Logger.error(e, e.getMessage());
-        }
     }
 
     private String getLoremIpsum() {
