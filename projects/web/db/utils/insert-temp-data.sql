@@ -90,47 +90,47 @@ apt-get update && apt-get install -y apache2 && hostname > /var/www/index.html
 
 (2, 'Unix Application', 'E', NULL, NULL, true, '{i} {i} {o} {o}', 
 '
-#!/bin/bash\n
-\n
-cat $1 > $3\n
-cat $2 >> $3\n
-\n
-echo "Execution time: `date`" >> $3\n
-\n
-echo "Extra file execution time: `date`" >> $4"\n
+#!/bin/bash
+
+cat $1 > $3
+cat $2 >> $3
+
+echo "Execution time: `date`" >> $3
+
+echo "Extra file execution time: `date`" >> $4"
 ', '
-#!/bin/bash\n
-\n
-EXECUTOR=task-executor-0.1.jar\n
-curl -o ${EXECUTOR} http://localhost:8282/spaces/test/file/${EXECUTOR}/download\n
-apt-get update && apt-get install -y openjdk-8-jdk && java -jar ${EXECUTOR} &\n
-\n 
-# Below is used to kill process when parent dies\n
-PID=$!\n
-trap "kill -9 ${PID} && exit " SIGHUP SIGINT SIGTERM\n
-while :\n
-do\n
-    sleep 1\n 
-done\n'),
+#!/bin/bash
+
+EXECUTOR=task-executor.jar
+curl -o ${EXECUTOR} http://localhost:9000/files/${EXECUTOR}
+apt-get update && apt-get install -y openjdk-8-jdk && java -jar ${EXECUTOR} &
+ 
+# Below is used to kill process when parent dies
+PID=$!
+trap "kill -9 ${PID} && exit " SIGHUP SIGINT SIGTERM
+while :
+do
+    sleep 1 
+done'),
 
 (3, 'Windows Application', 'E', NULL, NULL, true, NULL, 
 '
-type %1 > %3\n
-type %2 >> %3\n
-\n
-set h=%TIME:~0,2%\n
-set m=%TIME:~3,2%\n
-set s=%TIME:~6,2%\n
-set time=%h%%m%%s%\n
-\n
-echo "Execution time: %time%" >> %3\n
-\n
-echo "Extra file execution time: %time%" >> %4\n
+type %1 > %3
+type %2 >> %3
+
+set h=%TIME:~0,2%
+set m=%TIME:~3,2%
+set s=%TIME:~6,2%
+set time=%h%%m%%s%
+
+echo "Execution time: %time%" >> %3
+
+echo "Extra file execution time: %time%" >> %4
 ', '
-SET EXECUTOR=task-executor-0.1.jar\n
-curl -o %EXECUTOR% http://localhost:8282/spaces/test/file/%EXECUTOR%/download\n
-java -jar %EXECUTOR%\n
-\n');
+SET EXECUTOR=ttask-executor.jar
+curl -o %EXECUTOR% http://localhost:9000/files/%EXECUTOR%
+java -jar %EXECUTOR%
+');
 
 
 INSERT INTO public.tb_application_image(
