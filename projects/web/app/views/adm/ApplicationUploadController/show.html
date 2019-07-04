@@ -1,0 +1,178 @@
+
+#{extends 'CRUD/layout.html' /}
+#{set title:messages.get('crud.list.title', type.name) /}
+
+<div class="row crud-title">
+    <h1 class="col-xs-12"> &{'crud.list.title', type.name} </h1>
+    <pre class="col-xs-12"> &{'crud.list.title.desc', type.name+'.desc'} </pre>
+</div>
+
+<br>
+
+<div class="row" >
+#{form action:@save(), enctype:'multipart/form-data', class: 'submitForm'}
+
+	<div class="crudField">
+    
+        #{field 'coordinatorJar.fileData'}            
+    
+            #{set hasContent: (field.value && field.value.exists()) /}
+    
+            #{set fileName: null /} 
+                
+            #{if hasContent}   
+            
+                #{set clearFunction: "clearFile_" + field.id /}
+                #{set 'tempInnerScript' }
+                <script type="text/javascript">
+                 
+                $(function(){    
+                    function ${clearFunction}(){
+                        document.getElementById('${field.id}_delete_').checked = true;
+                        document.getElementById('${field.id}_download_button').style.display = "none";
+                        document.getElementById('${field.id}_delete_button').style.display = "none";
+                        document.getElementById('${field.id}_fileName').value = "";
+                    }     
+                    $('#${field.id}_delete_button').click(function(){
+                        ${clearFunction}();
+                    });    
+                });
+                
+                </script>        
+                #{/set}
+                
+                #{set 'moreInnerScripts'}
+                    #{get 'moreInnerScripts' /}
+                    #{get 'tempInnerScript' /}
+                #{/set}   
+            
+                #{set 'fileName'}&{'crud.field.file.size', field.value.length().formatSize()}#{/set}
+                
+            #{/if}     
+            
+            <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                <label for="${field.id}">&{field.name}</label>   
+                <div class="input-group file-input">
+                    <input name="${field.name}_fileName" id="${field.id}_fileName" type="text" class="form-control" disabled="disabled" value="${fileName}">            
+                    <span class="input-group-btn" id="${field.id}_download_button" style="${hasContent ? '' : 'display: none;'}" onclick="javascript: document.getElementById('${field.id}_download_').click();">
+                    <div class="btn btn-default" style="border-radius: 0px;border-left: 0px;">
+                        <span class="glyphicon glyphicon-download-alt">     
+                        <a id="${field.id}_download_" href="@{guest.FileController.download(coordinatorJar.name)}" download hidden>...</a>                           
+                        </span>
+                    </div>
+                    </span>
+                    <span class="input-group-btn " id="${field.id}_delete_button" style="${hasContent ? '' : 'display: none;'}">
+                    <div class="btn btn-default" style="border-radius: 0px;border-left: 0px;">
+                        <span class="glyphicon glyphicon-remove">                        
+                        <input id="${field.id}_delete_" ${hasContent ? '' : 'checked'} type="checkbox" name="${field.name}_delete_" value="true" style="display: none;visibility: hidden;" />
+                        </span>
+                    </div>
+                    </span>
+                    <span class="input-group-btn ">
+                        <div class="btn btn-default">
+                            <span class="glyphicon glyphicon-folder-open"></span>
+                            <span class="input-file-text">&{'crud.field.file.browse'}</span>
+                            <input id="${field.id}" type="file" name="${field.name}" accept=".jar" style="width: 100px;" onchange="javascript: setFileName(this, document.getElementById('${field.id}_fileName'));"/> 
+                        </div>
+                    </span>
+                </div>        
+                
+                #{ifError field.name}
+                    <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                #{/ifError} 
+            </div>  
+  
+        #{/field}
+        
+        #{field 'coordinatorJar.lastUpdate'}     
+            <div class="form-group row">
+                <label for="${field.id}">&{field.name}</label>
+                <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value}"/>
+            </div>
+        #{/field}
+	
+        #{field 'executorJar.fileData'}            
+
+            #{set hasContent: (field.value && field.value.exists()) /}
+    
+            #{set fileName: null /} 
+            
+            #{if hasContent}   
+            
+                #{set clearFunction: "clearFile_" + field.id /}
+                #{set 'tempInnerScript' }
+                <script type="text/javascript">
+                 
+                $(function(){    
+                    function ${clearFunction}(){
+                        document.getElementById('${field.id}_delete_').checked = true;
+                        document.getElementById('${field.id}_download_button').style.display = "none";
+                        document.getElementById('${field.id}_delete_button').style.display = "none";
+                        document.getElementById('${field.id}_fileName').value = "";
+                    }     
+                    $('#${field.id}_delete_button').click(function(){
+                        ${clearFunction}();
+                    });    
+                });
+                
+                </script>        
+                #{/set}
+                
+                #{set 'moreInnerScripts'}
+                    #{get 'moreInnerScripts' /}
+                    #{get 'tempInnerScript' /}
+                #{/set}   
+            
+                #{set 'fileName'}&{'crud.field.file.size', field.value.length().formatSize()}#{/set}
+                
+            #{/if}     
+            
+            <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                <label for="${field.id}">&{field.name}</label>   
+                <div class="input-group file-input">
+                    <input name="${field.name}_fileName" id="${field.id}_fileName" type="text" class="form-control" disabled="disabled" value="${fileName}">            
+                    <span class="input-group-btn" id="${field.id}_download_button" style="${hasContent ? '' : 'display: none;'}" onclick="javascript: document.getElementById('${field.id}_download_').click();">
+                    <div class="btn btn-default" style="border-radius: 0px;border-left: 0px;">
+                        <span class="glyphicon glyphicon-download-alt">     
+                        <a id="${field.id}_download_" href="@{guest.FileController.download(executorJar.name)}" download hidden>...</a>                           
+                        </span>
+                    </div>
+                    </span>
+                    <span class="input-group-btn " id="${field.id}_delete_button" style="${hasContent ? '' : 'display: none;'}">
+                    <div class="btn btn-default" style="border-radius: 0px;border-left: 0px;">
+                        <span class="glyphicon glyphicon-remove">                        
+                        <input id="${field.id}_delete_" ${hasContent ? '' : 'checked'} type="checkbox" name="${field.name}_delete_" value="true" style="display: none;visibility: hidden;" />
+                        </span>
+                    </div>
+                    </span>
+                    <span class="input-group-btn ">
+                        <div class="btn btn-default">
+                            <span class="glyphicon glyphicon-folder-open"></span>
+                            <span class="input-file-text">&{'crud.field.file.browse'}</span>
+                            <input id="${field.id}" type="file" name="${field.name}" accept=".jar" style="width: 100px;" onchange="javascript: setFileName(this, document.getElementById('${field.id}_fileName'));"/> 
+                        </div>
+                    </span>
+                </div>        
+                
+                #{ifError field.name}
+                    <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                #{/ifError} 
+            </div>  
+  
+        #{/field}
+        
+        #{field 'executorJar.lastUpdate'}     
+            <div class="form-group row">
+                <label for="${field.id}">&{field.name}</label>
+                <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value}"/>
+            </div>
+        #{/field}
+	
+	</div>
+
+    <div class="btn-row text-center">
+        <input class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_save" value="&{'crud.save', type.modelName}" />
+    </div>
+#{/form}
+</div>
+

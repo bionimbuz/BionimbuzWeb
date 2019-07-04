@@ -151,6 +151,9 @@ SpaceFileController.desc=Files available in spaces
 SettingController=Settings
 SettingController.desc=Platform general settings
 
+ApplicationUploadController=Uploads
+ApplicationUploadController.desc=Application jars for execution
+
 # Menus
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 menu.plugins=&{PluginController}
@@ -169,6 +172,7 @@ menu.instances=&{InstanceController}
 menu.execution=Executions
 menu.workflows=Workflows
 menu.settings=&{SettingController}
+menu.applications.uploads=&{ApplicationUploadController}
 
 # SettingModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -413,3 +417,7 @@ download.browser.support=\
             If that occurs, please access this page again with \
             another browser, or download from space provider \
             directly.
+coordinatorJar.fileData=Coordinator JAR
+coordinatorJar.lastUpdate=Last Coordinator Update
+executorJar.fileData=Executor JAR
+executorJar.lastUpdate=Last Executor Update

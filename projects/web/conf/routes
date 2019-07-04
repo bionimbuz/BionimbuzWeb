@@ -148,6 +148,13 @@ GET     /adm/list/settings                      adm.SettingController.list
 GET     /adm/settings/{id}                      adm.SettingController.show
 PUT     /adm/settings/{id}                      adm.SettingController.save
 
+# FileController
+GET     /files/{name}                           guest.FileController.download
+
+# ApplicationUploadController
+GET     /applications/uploads                   adm.ApplicationUploadController.show
+PUT     /applications/uploads                   adm.ApplicationUploadController.save
+
 # TODO: to remove below
 # Catch all
 *       /{controller}/{action}                  {controller}.{action}

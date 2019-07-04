@@ -258,6 +258,14 @@ CREATE TABLE tb_workflow_node (
     workflow_id bigint NOT NULL
 );
 
+CREATE TABLE tb_file
+(
+    id bigint NOT NULL,
+    name character varying(255),
+    filedata bytea,
+    lastupdate timestamp without time zone
+);
+
 --
 -- CONSTRAINTS PK
 --
@@ -327,6 +335,9 @@ ALTER TABLE ONLY tb_workflow_node
 
 ALTER TABLE ONLY tb_workflow
     ADD CONSTRAINT tb_workflow_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY tb_file
+    ADD CONSTRAINT tb_file_pkey PRIMARY KEY (id);
 
 --
 -- CONSTRAINTS FK
