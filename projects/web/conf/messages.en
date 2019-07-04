@@ -152,7 +152,7 @@ SettingController=Settings
 SettingController.desc=Platform general settings
 
 ApplicationUploadController=Uploads
-ApplicationUploadController.desc=Application jars for execution
+ApplicationUploadController.desc=Application JARs for execution
 
 # Menus
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
