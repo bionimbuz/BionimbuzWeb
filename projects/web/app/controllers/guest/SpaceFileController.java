@@ -1,6 +1,5 @@
 package controllers.guest;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import app.models.RemoteFileInfo;
@@ -19,7 +18,7 @@ public class SpaceFileController extends BaseAdminController {
     
     public static void searchFilesForSpace(final Long spaceId) {
         try {
-            List<SpaceFile> listSpaceFiles = getSpaceFiles(spaceId);
+            List<SpaceFile> listSpaceFiles = SpaceFileModel.getSpaceFiles(spaceId);
             if(listSpaceFiles == null)
                 notFound(Messages.get(I18N.not_found));
             renderJSON(listSpaceFiles);
@@ -27,14 +26,6 @@ public class SpaceFileController extends BaseAdminController {
             Logger.error(e, "Error searching files from space [%s]", e.getMessage());
             notFound(Messages.get(I18N.not_found));
         }
-    }
-    
-    public static List<SpaceFile> getSpaceFiles(final Long spaceId) {
-        List<SpaceFile> listSpaceFiles = new ArrayList<>();
-        for(SpaceFileModel region : SpaceFileModel.findBySpaceId(spaceId)) {
-            listSpaceFiles.add(new SpaceFile(region.getId(), region.getName()));
-        }
-        return listSpaceFiles;
     }
         
     public static void getFileLocationToDownload(final Long fileId) {        

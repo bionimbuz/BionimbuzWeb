@@ -53,6 +53,10 @@ public class InstanceController extends BaseAdminController {
     private static final String REGION_SELECTED = "regionSelected";
     private static final String REGION_SELECTED_ID = REGION_SELECTED + ".id";
 
+    public static void copy(final Long id) throws Exception {
+        redirect(request.controller.replace(".", "/") + "/blank.html");
+    }
+    
     public static void blank(
             final Long workflowNodeId,
             ExecutorModel executorSelected) throws Exception {
@@ -83,7 +87,8 @@ public class InstanceController extends BaseAdminController {
             RegionModel regionSelected,
             final String zoneSelected,
             InstanceTypeModel instanceTypeSelected,
-            final String applicationArguments,
+            final String applicationArguments,            
+            final List<Long> applicationInputFileSpaces,
             final List<Long> applicationInputFiles,
             final List<Long> applicationOutputFileSpaces,
             final List<String> applicationOutputFileNames) throws Exception {
@@ -125,9 +130,18 @@ public class InstanceController extends BaseAdminController {
             renderArgs.put("error", Messages.get("crud.hasErrors"));
             try {
                 render(request.controller.replace(".", "/") + "/blank.html",
-                        type, object, executorSelected, workflowNodeId, regionSelected, zoneSelected, instanceTypeSelected, listSpaces);
+                        type, object, executorSelected, workflowNodeId, 
+                        regionSelected, zoneSelected, instanceTypeSelected, 
+                        listSpaces, applicationArguments,
+                		applicationInputFileSpaces, applicationInputFiles, 
+                        applicationOutputFileSpaces, applicationOutputFileNames);
             } catch (final TemplateNotFoundException e) {
-                render("CRUD/blank.html", type, object, workflowNodeId, executorSelected, regionSelected, zoneSelected, instanceTypeSelected, listSpaces);
+                render("CRUD/blank.html", 
+                		type, object, workflowNodeId, executorSelected, 
+                		regionSelected, zoneSelected, instanceTypeSelected, 
+                		listSpaces, applicationArguments,
+                		applicationInputFileSpaces, applicationInputFiles, 
+                        applicationOutputFileSpaces, applicationOutputFileNames);   
             }
         }
         final InstanceTypeRegionModel instanceTypeRegion = InstanceTypeRegionModel.findByInstanceTypeAndRegion(instanceTypeSelected, regionSelected);

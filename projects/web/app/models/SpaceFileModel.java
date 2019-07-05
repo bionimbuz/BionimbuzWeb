@@ -1,6 +1,7 @@
 package models;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -86,6 +87,14 @@ public class SpaceFileModel extends GenericModel {
                 + " FROM SpaceFileModel spaceFile "
                 + " WHERE spaceFile.space.id = ?1"
                 + " ORDER BY spaceFile.name", spaceId).fetch();
+    }
+    
+    public static List<SpaceFile> getSpaceFiles(final Long spaceId) {
+        List<SpaceFile> listSpaceFiles = new ArrayList<>();
+        for(SpaceFileModel region : SpaceFileModel.findBySpaceId(spaceId)) {
+            listSpaceFiles.add(new SpaceFile(region.getId(), region.getName()));
+        }
+        return listSpaceFiles;
     }
     
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -13,7 +13,10 @@
 
 <br>
 
-#{crud.table fields: ['executor.name', 'workflowNode.workflow.name', 'cloudInstanceName', 'cloudInstanceIp',
+#{crud.table fields: 
+        ['executor.name', 'workflowNode.workflow.name', 'cloudInstanceName', 'cloudInstanceIp',
+            'plugin.name', 'price', 'creationDate', 'phase', 'status', 'copyInstance'], 
+        sort: ['executor.name', 'workflowNode.workflow.name', 'cloudInstanceName', 'cloudInstanceIp',
             'plugin.name', 'price', 'creationDate', 'phase', 'status']}
 
     #{crud.custom 'executor.name'}
@@ -29,6 +32,11 @@
     #{/crud.custom}
     #{crud.custom 'creationDate'}
         ${object.creationDate.format()}
+    #{/crud.custom}
+    #{crud.custom 'copyInstance'}        
+        <a href="@{copy(object._key())}">
+            <img class="copy-icon" src="@{'/public/images/copy-icon.png'}"/>
+        </a>
     #{/crud.custom}
 
 #{/crud.table}

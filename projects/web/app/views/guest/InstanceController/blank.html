@@ -53,267 +53,267 @@
     </div>
     #{/field} 
         
-#{if executorSelected != null}    
-
-    #{if workflowNodeId == null}
+    #{if executorSelected != null}    
     
-        #{field 'object.executionAfterCreation'}    
-        <div class="form-group row ${field.errorClass ? 'has-error' : ''}">            
-            <input type="checkbox" id="${field.id}" name="${field.name}" class="icheck" value="true" 
-                    ${ (field.value != null && field.value) ? 'checked="true" '.raw() : ''} /> 
-            <input type="hidden" name="${field.name}" value="false" />        
-            <label for="${field.id}" style="margin-left: 10px;">&{field.name}</label>        
-            #{ifError field.name}
-                <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
-            #{/ifError} 
+        #{if workflowNodeId == null}
+        
+            #{field 'object.executionAfterCreation'}    
+            <div class="form-group row ${field.errorClass ? 'has-error' : ''}">            
+                <input type="checkbox" id="${field.id}" name="${field.name}" class="icheck" value="true" 
+                        ${ (field.value != null && field.value) ? 'checked="true" '.raw() : ''} /> 
+                <input type="hidden" name="${field.name}" value="false" />        
+                <label for="${field.id}" style="margin-left: 10px;">&{field.name}</label>        
+                #{ifError field.name}
+                    <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                #{/ifError} 
+            </div>
+            #{/field} 
+        
+        #{/if}
+    
+        <ul class="nav nav-tabs" style="margin-bottom: 20px;">
+            <li class="active">
+                <a href="#tabApplication" data-toggle="tab">&{'tab.application'}</a>
+            </li>
+            <li>
+                <a href="#tabCloud" data-toggle="tab">&{'tab.cloud'}</a>
+            </li>
+        </ul>
+    
+        <div class="tab-content ">
+            <div class="tab-pane active" id="tabApplication">
+            
+    <!-- ############## BEGIN TAB APPLICATION ####################  -->      
+                
+                #{if executorSelected.hasArguments()}
+                    #{field 'applicationArguments'}
+                        <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                            <label for="${field.id}">&{field.name}</label>
+                            <input id="${field.id}" class="form-control"  type="text" name="${field.name}" 
+                                    value="${field.value}" />
+                            #{ifError field.name}
+                                <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                            #{/ifError} 
+                        </div>
+                    #{/field}
+                #{/if}
+                            
+                #{if executorSelected.countInputs() > 0}
+                    <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                        <label>&{'applicationArguments.inputs'}</label>
+                    </div>                                
+                    <div id="divInputs">                                
+                    </div>                
+                #{/if}
+                
+                #{if executorSelected.countOutputs() > 0} 
+                    <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                        <label>&{'applicationArguments.outputs'}</label>
+                    </div>                              
+                    <div id="divOutputs">                                
+                    </div>    
+                #{/if}                       
+                           
+                <div class="form-group row">
+                    <label for="commandLine">&{'object.commandLine'}</label>
+                    <textarea readonly class="form-control" rows="2">${executorSelected.getCommandLineWithDefault()}</textarea>                            
+                </div>        
+                           
+                <div class="form-group row">
+                    <label for="commandLine">&{'applicationArguments.commandLine.result'}</label>
+                    <textarea readonly data-command-line="${executorSelected.getCommandLineWithDefault()}" 
+                            id="commandLine" class="form-control" rows="5"></textarea>
+                </div>        
+                
+    <!-- ################ END TAB APPLICATION ####################  -->   
+          
+            </div>
+            <div class="tab-pane" id="tabCloud">        
+    
+    <!-- ############## BEGIN TAB CLOUD ##########################  -->    
+            
+                #{field 'object.credentialUsage'}
+            
+                <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                    <div class="div-label">
+                        <label for="${field.id}">
+                            &{field.name}
+                        </label>
+                    </div>
+                        %{
+                        models.InstanceModel.CredentialUsagePolicy.each() {
+                            selected = false;
+                            if((field.value == null && it == models.InstanceModel.CredentialUsagePolicy.SHARED_FIRST)
+                                || field.value == it) {
+                                selected = true;
+                            }
+                        }%
+                        <div style="padding-top: 5px;padding-bottom: 5px;">
+                            <input type="radio" name="${field.name}" value="${it}"
+                                ${selected ? 'checked'.raw() : ''}
+                                class="icheck icheckbox_table_list"/>&nbsp;&{it}<br/>
+                        </div>
+                        %{ } }%
+            
+                #{ifError field.name}
+                    <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                #{/ifError}
+                </div>
+            
+                #{/field}
+                
+                #{field 'object.plugin'}
+                <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                    <label for="${field.id}">&{field.name}</label>
+                    <div class="nav-container">
+                        <select class="form-control nav" id="${field.id}" name="${field.name}.id">
+                            <option value="">&{'crud.selectValue'}</option>
+                            %{
+                                plugins = models.PluginModel.searchPluginsForUserWithShared();
+                                plugins.each() {
+                                    selected = false;
+                                    if(field.value != null && field.value._key() == it._key()){
+                                        selected = true;
+                                    }
+                            }%
+            
+                            <option value="${it._key()}" ${selected ? 'selected="true"'.raw() : ''}>${it}</option>
+            
+                            %{ } }%
+            
+                        </select>
+                    </div>
+                    #{ifError field.name}
+                        <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                    #{/ifError}
+                </div>
+                #{/field}
+            
+                #{field 'regionSelected'}
+                <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                    <label for="${field.id}">&{field.name}</label>
+                    <div class="nav-container">
+                        <select class="form-control nav" id="${field.id}" name="${field.name}.id">
+                            <option value="">&{'crud.selectValue'}</option>
+                            %{
+                            if(object.plugin != null) {
+                                regions = controllers.guest.InstanceController.getInstanceRegions(object.plugin.id);
+                                regions.each(){
+                                    selected = false;
+                                    if(field.value != null && field.value.id == it.id){
+                                        selected = true;
+                                    }
+                            }%
+                            <option value="${it.id}" ${selected ? 'selected="true"'.raw() : ''}>${it.name}</option>
+                            %{ } } }%
+            
+                        </select>
+                    </div>
+                    #{ifError field.name}
+                        <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                    #{/ifError}
+                </div>
+                #{/field}
+            
+            %{
+                instanceTypesZones = null;
+                if(object.plugin != null && regionSelected != null) {
+                    instanceTypesZones =
+                        controllers.guest.InstanceController.getInstanceTypesZones(
+                                object.plugin.id, regionSelected.id);
+                }
+            }%
+            
+                #{field 'zoneSelected'}
+                <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                    <label for="${field.id}">&{field.name}</label>
+                    <div class="nav-container">
+                        <select class="form-control nav" id="${field.id}" name="${field.name}">
+                            <option value="">&{'crud.selectValue'}</option>
+                            %{
+                            if(instanceTypesZones != null) {
+                                zones = instanceTypesZones.listZones;
+                                zones.each(){
+                                    selected = false;
+                                    if(field.value != null && field.value == it){
+                                        selected = true;
+                                    }
+                            }%
+                            <option value="${it}" ${selected ? 'selected="true"'.raw() : ''}>${it}</option>
+                            %{ } } }%
+            
+                        </select>
+                    </div>
+                    #{ifError field.name}
+                        <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                    #{/ifError}
+                </div>
+                #{/field}
+            
+                #{field 'instanceTypeSelected'}
+                <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
+                    <label for="${field.id}">&{field.name}</label>
+                    <table id="tableInstanceTypes" class="table stripe table-bordered ${field.errorClass ? 'has-error' : ''}">
+                        <thead>
+                            <tr>
+                                <th style="width: 1px;">
+                                </th>
+                                <th style="cursor: pointer;">
+                                    &{'object.instanceTypeName'}
+                                </th>
+                                <th style="cursor: pointer;">
+                                    &{'object.cores'}
+                                </th>
+                                <th style="cursor: pointer;">
+                                    &{'object.memory'}
+                                </th>
+                                <th style="cursor: pointer;">
+                                    &{'object.price'}
+                                </th>
+                            </tr>
+                        </thead>
+                    %{
+                            if(instanceTypesZones != null) {
+                    }%
+                            <tbody>
+                    %{
+                                instanceTypes = instanceTypesZones.listInstanceTypes;
+                                instanceTypes.each() {
+                                    selected = false;
+                                    if(field.value != null && field.value.id == it.id){
+                                        selected = true;
+                                    }
+                    }%
+                                <tr>
+                                    <td>
+                                        <input name='${field.name}.id' type='radio'
+                                                class='icheck' value='${it.id}' ${selected ? 'checked'.raw() : ''} />
+                                    </td>
+                                    <td>${it.name}</td>
+                                    <td>${it.cores}</td>
+                                    <td>${it.memory}</td>
+                                    <td>${it.price}</td>
+                                </tr>
+                    %{
+                                }
+                    }%
+                            </tbody>
+                    %{
+                            }
+                    }%
+                    </table>
+                    #{ifError field.name}
+                        <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
+                    #{/ifError}
+                </div>
+                #{/field}
+            
+    <!-- ################ END TAB CLOUD ##########################  -->    
+            
+            </div>
         </div>
-        #{/field} 
     
     #{/if}
-
-    <ul class="nav nav-tabs" style="margin-bottom: 20px;">
-        <li class="active">
-            <a href="#tabApplication" data-toggle="tab">&{'tab.application'}</a>
-        </li>
-        <li>
-            <a href="#tabCloud" data-toggle="tab">&{'tab.cloud'}</a>
-        </li>
-    </ul>
-
-    <div class="tab-content ">
-        <div class="tab-pane active" id="tabApplication">
-        
-<!-- ############## BEGIN TAB APPLICATION ####################  -->      
-            
-            #{if executorSelected.hasArguments()}
-                #{field 'applicationArguments'}
-                    <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
-                        <label for="${field.id}">&{field.name}</label>
-                        <input id="${field.id}" class="form-control"  type="text" name="${field.name}" 
-                                value="${field.value}" />
-                        #{ifError field.name}
-                            <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
-                        #{/ifError} 
-                    </div>
-                #{/field}
-            #{/if}
-                        
-            #{if executorSelected.countInputs() > 0}
-                <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
-                    <label>&{'applicationArguments.inputs'}</label>
-                </div>                                
-                <div id="divInputs">                                
-                </div>                
-            #{/if}
-            
-            #{if executorSelected.countOutputs() > 0} 
-                <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
-                    <label>&{'applicationArguments.outputs'}</label>
-                </div>                              
-                <div id="divOutputs">                                
-                </div>    
-            #{/if}                       
-                       
-            <div class="form-group row">
-                <label for="commandLine">&{'object.commandLine'}</label>
-                <textarea readonly class="form-control" rows="2">${executorSelected.getCommandLineWithDefault()}</textarea>                            
-            </div>        
-                       
-            <div class="form-group row">
-                <label for="commandLine">&{'applicationArguments.commandLine.result'}</label>
-                <textarea readonly data-command-line="${executorSelected.getCommandLineWithDefault()}" 
-                        id="commandLine" class="form-control" rows="5"></textarea>
-            </div>        
-            
-<!-- ################ END TAB APPLICATION ####################  -->   
-      
-        </div>
-        <div class="tab-pane" id="tabCloud">        
-
-<!-- ############## BEGIN TAB CLOUD ##########################  -->    
-        
-            #{field 'object.credentialUsage'}
-        
-            <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
-                <div class="div-label">
-                    <label for="${field.id}">
-                        &{field.name}
-                    </label>
-                </div>
-                    %{
-                    models.InstanceModel.CredentialUsagePolicy.each() {
-                        selected = false;
-                        if((field.value == null && it == models.InstanceModel.CredentialUsagePolicy.SHARED_FIRST)
-                            || field.value == it) {
-                            selected = true;
-                        }
-                    }%
-                    <div style="padding-top: 5px;padding-bottom: 5px;">
-                        <input type="radio" name="${field.name}" value="${it}"
-                            ${selected ? 'checked'.raw() : ''}
-                            class="icheck icheckbox_table_list"/>&nbsp;&{it}<br/>
-                    </div>
-                    %{ } }%
-        
-            #{ifError field.name}
-                <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
-            #{/ifError}
-            </div>
-        
-            #{/field}
-            
-            #{field 'object.plugin'}
-            <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
-                <label for="${field.id}">&{field.name}</label>
-                <div class="nav-container">
-                    <select class="form-control nav" id="${field.id}" name="${field.name}.id">
-                        <option value="">&{'crud.selectValue'}</option>
-                        %{
-                            plugins = models.PluginModel.searchPluginsForUserWithShared();
-                            plugins.each() {
-                                selected = false;
-                                if(field.value != null && field.value._key() == it._key()){
-                                    selected = true;
-                                }
-                        }%
-        
-                        <option value="${it._key()}" ${selected ? 'selected="true"'.raw() : ''}>${it}</option>
-        
-                        %{ } }%
-        
-                    </select>
-                </div>
-                #{ifError field.name}
-                    <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
-                #{/ifError}
-            </div>
-            #{/field}
-        
-            #{field 'regionSelected'}
-            <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
-                <label for="${field.id}">&{field.name}</label>
-                <div class="nav-container">
-                    <select class="form-control nav" id="${field.id}" name="${field.name}.id">
-                        <option value="">&{'crud.selectValue'}</option>
-                        %{
-                        if(object.plugin != null) {
-                            regions = controllers.guest.InstanceController.getInstanceRegions(object.plugin.id);
-                            regions.each(){
-                                selected = false;
-                                if(field.value != null && field.value.id == it.id){
-                                    selected = true;
-                                }
-                        }%
-                        <option value="${it.id}" ${selected ? 'selected="true"'.raw() : ''}>${it.name}</option>
-                        %{ } } }%
-        
-                    </select>
-                </div>
-                #{ifError field.name}
-                    <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
-                #{/ifError}
-            </div>
-            #{/field}
-        
-        %{
-            instanceTypesZones = null;
-            if(object.plugin != null && regionSelected != null) {
-                instanceTypesZones =
-                    controllers.guest.InstanceController.getInstanceTypesZones(
-                            object.plugin.id, regionSelected.id);
-            }
-        }%
-        
-            #{field 'zoneSelected'}
-            <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
-                <label for="${field.id}">&{field.name}</label>
-                <div class="nav-container">
-                    <select class="form-control nav" id="${field.id}" name="${field.name}">
-                        <option value="">&{'crud.selectValue'}</option>
-                        %{
-                        if(instanceTypesZones != null) {
-                            zones = instanceTypesZones.listZones;
-                            zones.each(){
-                                selected = false;
-                                if(field.value != null && field.value == it){
-                                    selected = true;
-                                }
-                        }%
-                        <option value="${it}" ${selected ? 'selected="true"'.raw() : ''}>${it}</option>
-                        %{ } } }%
-        
-                    </select>
-                </div>
-                #{ifError field.name}
-                    <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
-                #{/ifError}
-            </div>
-            #{/field}
-        
-            #{field 'instanceTypeSelected'}
-            <div class="form-group row ${field.errorClass ? 'has-error' : ''}">
-                <label for="${field.id}">&{field.name}</label>
-                <table id="tableInstanceTypes" class="table stripe table-bordered ${field.errorClass ? 'has-error' : ''}">
-                    <thead>
-                        <tr>
-                            <th style="width: 1px;">
-                            </th>
-                            <th style="cursor: pointer;">
-                                &{'object.instanceTypeName'}
-                            </th>
-                            <th style="cursor: pointer;">
-                                &{'object.cores'}
-                            </th>
-                            <th style="cursor: pointer;">
-                                &{'object.memory'}
-                            </th>
-                            <th style="cursor: pointer;">
-                                &{'object.price'}
-                            </th>
-                        </tr>
-                    </thead>
-                %{
-                        if(instanceTypesZones != null) {
-                }%
-                        <tbody>
-                %{
-                            instanceTypes = instanceTypesZones.listInstanceTypes;
-                            instanceTypes.each() {
-                                selected = false;
-                                if(field.value != null && field.value.id == it.id){
-                                    selected = true;
-                                }
-                }%
-                            <tr>
-                                <td>
-                                    <input name='${field.name}.id' type='radio'
-                                            class='icheck' value='${it.id}' ${selected ? 'checked'.raw() : ''} />
-                                </td>
-                                <td>${it.name}</td>
-                                <td>${it.cores}</td>
-                                <td>${it.memory}</td>
-                                <td>${it.price}</td>
-                            </tr>
-                %{
-                            }
-                }%
-                        </tbody>
-                %{
-                        }
-                }%
-                </table>
-                #{ifError field.name}
-                    <span id="helpBlock2" class="help-block">${field.error.raw()}</span>
-                #{/ifError}
-            </div>
-            #{/field}
-        
-<!-- ################ END TAB CLOUD ##########################  -->    
-        
-        </div>
-    </div>
-
-#{/if}
 
     <div class="btn-row text-center">
         <button class="btn btn-primary btn-md btn-mobile margin-bottom" type="submit" name="_save">&{'crud.save'}</button>
@@ -328,13 +328,13 @@
     </div>
 #{/form}
 </div>
-
-#{field 'applicationInputFiles'}                        
+ 
 <div style="display:none;" id="divInputTemplate" class="form-group row">                    
     <div class="col-md-4 no-bootstrap-padding">                    
         <label style="font-weight: normal;">&{'applicationArguments.space'}</label>
         <div class="nav-container">
-            <select class="form-control nav select-space-input">
+            #{field 'applicationInputFileSpaces'}
+            <select name="${field.name}" class="form-control nav select-space-input">
                 <option value="">&{'crud.none'}</option>
                 %{ listSpaces.each() { }%
                 %{
@@ -343,18 +343,20 @@
                 <option value="${it.id}" ${selected ? 'selected="true"'.raw() : ''}>${it.name}</option>
                 %{ } }%
             </select>
+            #{/field}
         </div>
     </div>
     <div class="col-md-7 col-md-offset-1 no-bootstrap-padding">                    
         <label style="font-weight: normal;">&{'applicationArguments.file'}</label>
         <div class="nav-container">
-            <select name="${field.name}" id="${field.id}" class="form-control nav select-file-input">
-                <option value="">&{'crud.none'}</option>
-            </select>
+            #{field 'applicationInputFiles'}      
+                <select name="${field.name}" id="${field.id}" class="form-control nav select-file-input">
+                    <option value="">&{'crud.none'}</option>
+                </select>
+            #{/field}
         </div>
     </div>                        
 </div>
-#{/field}
 
 <div style="display:none;" id="divOutputTemplate" class="form-group row">
     <div class="col-md-4 no-bootstrap-padding">                    
@@ -386,15 +388,74 @@
 <script type="text/javascript">
 
 #{if executorSelected != null}
-var countInputs = ${executorSelected.countInputs()}; 
-var countOutputs = ${executorSelected.countOutputs()};
 
-if(countInputs > 0) {
-    addEmptyInput();
-}
-if(countOutputs > 0) {
-    addEmptyOutput();
-}
+    var countInputs = ${executorSelected.countInputs()}; 
+    var countOutputs = ${executorSelected.countOutputs()};    
+    var spaceFileDiv = {};
+    var spaceOption = {};    
+    var filesSelectInput = {};
+    var fileOption = {};    
+    var fileNameInput = {};
+
+    #{if applicationInputFileSpaces!= null && applicationInputFileSpaces.size() > 0}       
+        
+        #{list items:applicationInputFileSpaces, as:'space'}
+
+            #{if space != null}
+                spaceFileDiv=addEmptyInput();
+                spaceOption = spaceFileDiv.find(".select-space-input option[value=${space}]");
+                spaceOption.attr('selected','selected');   
+                filesSelectInput = spaceFileDiv.find(".select-file-input");
+                
+                #{list items:models.SpaceFileModel.getSpaceFiles(space), as:'spaceFile'}                
+                    addSelectItem(filesSelectInput, "${spaceFile.name}", "${spaceFile.id}");
+                #{/list}
+                
+                #{if space_index-1 < applicationInputFiles.size() }     
+                    %{ selectedFile = applicationInputFiles[space_index-1]; }%
+                    #{if selectedFile != null}
+                        fileOption = filesSelectInput.find("option[value=${selectedFile}]");
+                        fileOption.attr('selected','selected');   
+                    #{/if}
+                #{/if}
+                
+            #{/if}
+        
+        #{/list}
+    
+    #{/if}
+    #{else}    
+        if(countInputs > 0) {
+        }
+    #{/else}
+    
+    #{if applicationOutputFileSpaces!= null && applicationOutputFileSpaces.size() > 0}       
+    
+        #{list items:applicationOutputFileSpaces, as:'space'}
+    
+            #{if space != null}
+                spaceFileDiv=addEmptyOutput();
+                spaceOption = spaceFileDiv.find(".select-space-output option[value=${space}]");
+                spaceOption.attr('selected','selected');        
+                fileNameInput = spaceFileDiv.find(".name-file-output");
+                fileNameInput.prop("disabled", false);     
+                
+                #{if space_index-1 < applicationOutputFileNames.size() }       
+                    fileNameInput.val("${applicationOutputFileNames[space_index-1]}");    
+                #{/if}
+                
+            #{/if}
+        
+        #{/list}
+
+    #{/if}
+    #{else}    
+        if(countOutputs > 0) {
+        }   
+    #{/else}
+
+        addEmptyInput();
+        addEmptyOutput();
 #{/if}
 
 function addEmptyInput(){
@@ -415,6 +476,7 @@ function addEmptyInput(){
     divInput.removeAttr('id');
     $('#divInputs').append(divInput);
     divInput.show();
+    return divInput;
 }
 
 function addEmptyOutput(){
@@ -435,134 +497,171 @@ function addEmptyOutput(){
     divOutput.removeAttr('id');
     $('#divOutputs').append(divOutput);
     divOutput.show();
+    return divOutput;
+}
+
+function addSelectItem(field, content, value) {
+    if(value == null)
+        value = "";
+    field.append(
+            '<option value="'+value+'">'+content+'</option>');
+}
+
+function clearInstanceTypeOptions() {
+    var table = $('#tableInstanceTypes').DataTable();
+    table.clear().draw();
+}
+
+function clearRegionOptions() {
+    $("#regionSelected").empty();
+    addSelectItem($("#regionSelected"), "&{'crud.selectValue'}");
+}
+
+function clearZoneOptions() {
+    $("#zoneSelected").empty();
+    addSelectItem($("#zoneSelected"), "&{'crud.selectValue'}");
+}
+
+function reloadRegions() {
+
+    showPleaseWait();
+
+    clearRegionOptions();
+
+    clearInstanceTypeOptions();
+
+    clearZoneOptions();
+
+    plugin = $('#object_plugin').val();
+    var search = #{jsRoute @searchRegions() /};
+    if(plugin == ""){
+        hidePleaseWait();
+        return;
+    }
+
+    $.ajax({
+        url: search.url(),
+        type: search.method,
+        data:{ pluginId: plugin}
+       })
+    .done(function(data) {
+        for(var i in data) {
+            addSelectItem(
+                $("#regionSelected"),
+                data[i]['name'],
+                data[i]['id']);
+        }
+    })
+    .fail(function(data) {
+        flashError(data.responseText);
+    })
+    .always(function() {
+        hidePleaseWait();
+    });
+}
+
+function reloadInstanceTypes() {
+    var table = $('#tableInstanceTypes').DataTable();
+
+    showPleaseWait();
+
+    clearInstanceTypeOptions();
+
+    clearZoneOptions();
+
+    region = $('#regionSelected').val();
+    plugin = $('#object_plugin').val();
+    if(region == "" || plugin == ""){
+        hidePleaseWait();
+        return;
+    }
+
+    var search = #{jsRoute @searchInstanceTypesZones() /};
+    $.ajax({
+        url: search.url(),
+        type: search.method,
+        data:{ pluginId: plugin, regionId: region}
+       })
+    .done(function(data) {
+
+        listZones = data["listZones"];
+        for(var i in listZones) {
+            row = listZones[i];
+            addSelectItem(
+                $("#zoneSelected"),
+                row,
+                row);
+        }
+
+        listInstanceTypes = data["listInstanceTypes"];
+        for(var i in listInstanceTypes) {
+            row = listInstanceTypes[i];
+
+            inputColumn = "<input name='instanceTypeSelected.id' "+
+                          "type='radio' class='icheck' value='"+row["id"]+"'/>"
+            table.row.add( [
+                inputColumn,
+                row["name"],
+                row["cores"],
+                row["memory"],
+                row["price"],
+            ] );
+        }
+        table.draw();
+        update_iChecks();
+    })
+    .fail(function(data) {
+        flashError(data.responseText);
+    })
+    .always(function() {
+        hidePleaseWait();
+    });
+}
+
+function updateCommandLineArea(){
+    var commandLine = $('#commandLine').data('command-line');      
+    if(!commandLine) {
+        return;
+    }
+    
+    // Replace option arguments
+    var arguments = $('#applicationArguments').val();      
+    if(arguments) {
+        commandLine = commandLine.replace("{a}", arguments);
+    }
+    // Replace input file arguments
+    $('.select-file-input').each(function(){ 
+        var selectedFile = $(this).val();     
+        var fileName = "";
+        if(selectedFile != "") {
+            fileName = $(this).find(":selected").text().trim();
+        }
+        if(fileName){
+            commandLine = commandLine.replace(/\{i\}/, fileName);
+        }
+    });
+    commandLine = commandLine.replace(/\{i\}/g, "");  
+
+    // Replace output file arguments
+    $('.name-file-output').each(function(){ 
+        var fileName = $(this).val();     
+        if(fileName){
+            commandLine = commandLine.replace(/\{o\}/, fileName);  
+        }
+    });
+    commandLine = commandLine.replace(/\{o\}/g, "");  
+    
+    // Update textarea
+    $('#commandLine').val(commandLine);
 }
 
 $(function(){
     
-    $('#tableInstanceTypes').DataTable(
-    {
+    $('#tableInstanceTypes').DataTable({
         "paging":   false,
         "searching":   false,
         "info":   false,
     });
-
-    function addSelectItem(field, content, value) {
-        if(value == null)
-            value = "";
-        field.append(
-                '<option value="'+value+'">'+content+'</option>');
-    }
-
-    function clearInstanceTypeOptions() {
-        var table = $('#tableInstanceTypes').DataTable();
-        table.clear().draw();
-    }
-
-    function clearRegionOptions() {
-        $("#regionSelected").empty();
-        addSelectItem($("#regionSelected"), "&{'crud.selectValue'}");
-    }
-
-    function clearZoneOptions() {
-        $("#zoneSelected").empty();
-        addSelectItem($("#zoneSelected"), "&{'crud.selectValue'}");
-    }
-
-    function reloadRegions() {
-
-        showPleaseWait();
-
-        clearRegionOptions();
-
-        clearInstanceTypeOptions();
-
-        clearZoneOptions();
-
-        plugin = $('#object_plugin').val();
-        var search = #{jsRoute @searchRegions() /};
-        if(plugin == ""){
-            hidePleaseWait();
-            return;
-        }
-
-        $.ajax({
-            url: search.url(),
-            type: search.method,
-            data:{ pluginId: plugin}
-           })
-        .done(function(data) {
-            for(var i in data) {
-                addSelectItem(
-                    $("#regionSelected"),
-                    data[i]['name'],
-                    data[i]['id']);
-            }
-        })
-        .fail(function(data) {
-            flashError(data.responseText);
-        })
-        .always(function() {
-            hidePleaseWait();
-        });
-    }
-
-    function reloadInstanceTypes() {
-        var table = $('#tableInstanceTypes').DataTable();
-
-        showPleaseWait();
-
-        clearInstanceTypeOptions();
-
-        clearZoneOptions();
-
-        region = $('#regionSelected').val();
-        plugin = $('#object_plugin').val();
-        if(region == "" || plugin == ""){
-            hidePleaseWait();
-            return;
-        }
-
-        var search = #{jsRoute @searchInstanceTypesZones() /};
-        $.ajax({
-            url: search.url(),
-            type: search.method,
-            data:{ pluginId: plugin, regionId: region}
-           })
-        .done(function(data) {
-
-            listZones = data["listZones"];
-            for(var i in listZones) {
-                row = listZones[i];
-                addSelectItem(
-                    $("#zoneSelected"),
-                    row,
-                    row);
-            }
-
-            listInstanceTypes = data["listInstanceTypes"];
-            for(var i in listInstanceTypes) {
-                row = listInstanceTypes[i];
-
-                inputColumn = "<input name='instanceTypeSelected.id' "+
-                              "type='radio' class='icheck' value='"+row["id"]+"'/>"
-                table.row.add( [
-                    inputColumn,
-                    row["name"],
-                    row["cores"],
-                    row["memory"],
-                    row["price"],
-                ] );
-            }
-            table.draw();
-            update_iChecks();
-        })
-        .fail(function(data) {
-            flashError(data.responseText);
-        })
-        .always(function() {
-            hidePleaseWait();
-        });
-    }
 
     $('#object_plugin').change(reloadRegions);
 
@@ -573,43 +672,6 @@ $(function(){
         $('#executorSelected').val(selected);        
         $('#submitExecutor').submit();
     });
-    
-    function updateCommandLineArea(){
-        var commandLine = $('#commandLine').data('command-line');      
-        if(!commandLine) {
-        	return;
-        }
-        
-        // Replace option arguments
-        var arguments = $('#applicationArguments').val();      
-        if(arguments) {
-            commandLine = commandLine.replace("{a}", arguments);
-        }
-        // Replace input file arguments
-        $('.select-file-input').each(function(){ 
-            var selectedFile = $(this).val();     
-            var fileName = "";
-            if(selectedFile != "") {
-                fileName = $(this).find(":selected").text().trim();
-            }
-            if(fileName){
-                commandLine = commandLine.replace(/\{i\}/, fileName);
-            }
-        });
-        commandLine = commandLine.replace(/\{i\}/g, "");  
-
-        // Replace output file arguments
-        $('.name-file-output').each(function(){ 
-            var fileName = $(this).val();     
-            if(fileName){
-                commandLine = commandLine.replace(/\{o\}/, fileName);  
-            }
-        });
-        commandLine = commandLine.replace(/\{o\}/g, "");  
-        
-        // Update textarea
-        $('#commandLine').val(commandLine);
-    }
     
     updateCommandLineArea();
     

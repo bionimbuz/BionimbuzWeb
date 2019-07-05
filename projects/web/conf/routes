@@ -127,6 +127,7 @@ GET     /search/instance/types/zones            guest.InstanceController.searchI
 GET     /search/instance/regions                guest.InstanceController.searchRegions
 GET     /list/instances                         guest.InstanceController.list
 GET     /instances/{id}                         guest.InstanceController.show
+GET     /copy/instances/{id}                    guest.InstanceController.copy
 PUT     /instances/{id}                         guest.InstanceController.save
 DELETE  /instances/{id}                         guest.InstanceController.delete
 GET     /instances                              guest.InstanceController.blank

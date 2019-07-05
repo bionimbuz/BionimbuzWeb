@@ -306,6 +306,7 @@ object.creationDate=Creation Date
 object.phase=Phase
 tab.application=Application Arguments
 tab.cloud=Cloud Settings
+object.copyInstance=Copy
 
 # WorkflowModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
