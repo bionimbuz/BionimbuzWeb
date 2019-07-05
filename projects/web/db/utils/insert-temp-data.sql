@@ -127,7 +127,7 @@ echo "Execution time: %time%" >> %3
 
 echo "Extra file execution time: %time%" >> %4
 ', '
-SET EXECUTOR=ttask-executor.jar
+SET EXECUTOR=task-executor.jar
 curl -o %EXECUTOR% http://localhost:9000/files/%EXECUTOR%
 java -jar %EXECUTOR%
 ');
