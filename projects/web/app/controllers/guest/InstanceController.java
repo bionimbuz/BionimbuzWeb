@@ -54,7 +54,46 @@ public class InstanceController extends BaseAdminController {
     private static final String REGION_SELECTED_ID = REGION_SELECTED + ".id";
 
     public static void copy(final Long id) throws Exception {
-        redirect(request.controller.replace(".", "/") + "/blank.html");
+        final CustomObjectType type = CustomObjectType.get(getControllerClass());
+        notFoundIfNull(type);
+        InstanceModel objectFound = InstanceModel.findById(id);
+        notFoundIfNull(objectFound);
+        
+        InstanceModel object = new InstanceModel();        
+        object.setApplicationArguments(objectFound.getApplicationArguments());
+        object.setCredentialUsage(objectFound.getCredentialUsage());
+        object.setExecutionAfterCreation(objectFound.isExecutionAfterCreation());
+        object.setExecutor(objectFound.getExecutor());
+        object.setPlugin(objectFound.getPlugin());
+        object.setRegionName(objectFound.getRegionName());
+        object.setTypeName(objectFound.getTypeName());
+        object.setZoneName(objectFound.getZoneName());
+        
+        final ExecutorModel executorSelected = objectFound.getExecutor();   
+        final String zoneSelected = objectFound.getZoneName();
+        final String applicationArguments = objectFound.getApplicationArguments().getArguments();     
+
+        final List<Long> applicationInputFileSpaces = new ArrayList<Long>();
+        final List<Long> applicationInputFiles = new ArrayList<Long>();
+        for(ApplicationFileInputModel inputFile : objectFound.getApplicationArguments().getApplicationInputFiles()) {
+        	applicationInputFileSpaces.add(inputFile.getSpaceFile().getSpace().getId());
+        	applicationInputFiles.add(inputFile.getSpaceFile().getId());       	
+        }
+        final List<Long> applicationOutputFileSpaces = new ArrayList<Long>();
+        final List<String> applicationOutputFileNames = new ArrayList<String>();
+        for(ApplicationFileOutputModel outputFile : objectFound.getApplicationArguments().getApplicationOutputFiles()) {
+        	applicationOutputFileSpaces.add(outputFile.getSpaceFile().getSpace().getId());
+        	applicationOutputFileNames.add(outputFile.getSpaceFile().getName());       	
+        }        
+        final List<VwSpaceModel> listSpaces = VwSpaceModel.searchForCurrentUserWithShared();
+
+        render("guest/InstanceController/blank.html", 
+        		type, 
+        		object, 
+        		executorSelected, 
+                zoneSelected, listSpaces, applicationArguments,
+        		applicationInputFileSpaces, applicationInputFiles, 
+                applicationOutputFileSpaces, applicationOutputFileNames);
     }
     
     public static void blank(

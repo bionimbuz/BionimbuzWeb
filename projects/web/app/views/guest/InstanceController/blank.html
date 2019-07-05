@@ -424,10 +424,6 @@
         #{/list}
     
     #{/if}
-    #{else}    
-        if(countInputs > 0) {
-        }
-    #{/else}
     
     #{if applicationOutputFileSpaces!= null && applicationOutputFileSpaces.size() > 0}       
     
@@ -449,13 +445,10 @@
         #{/list}
 
     #{/if}
-    #{else}    
-        if(countOutputs > 0) {
-        }   
-    #{/else}
 
-        addEmptyInput();
-        addEmptyOutput();
+    addEmptyInput();
+    addEmptyOutput();
+    
 #{/if}
 
 function addEmptyInput(){

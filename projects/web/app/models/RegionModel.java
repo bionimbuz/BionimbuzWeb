@@ -87,7 +87,7 @@ public class RegionModel extends GenericModel {
               + "         FROM RegionModel region"
               + "         JOIN region.listStorageRegion storageRegion"
               + "         WHERE storageRegion.priceTable.id = ?1)", idPriceTable);
-      }
+    }
     public static List<RegionModel> searchInstanceRegionsForPlugin(final PluginModel plugin) {
         return find(
             " SELECT DISTINCT regions "
