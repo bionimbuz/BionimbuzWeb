@@ -1,6 +1,9 @@
 
+\c bnzdb 
+
 DROP SCHEMA public CASCADE;
-CREATE SCHEMA public;
+CREATE SCHEMA public AUTHORIZATION bnzusr;
+ALTER SCHEMA public OWNER TO bnzusr;
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -39,12 +42,12 @@ SET default_with_oids = false;
 CREATE TABLE tb_application (
     type character varying(31) NOT NULL,
     id bigint NOT NULL,
-    commandline character varying(255),
+    commandline text,
     executionscript character varying(1000),
     executionscriptenabled boolean NOT NULL,
-    firewalltcprules character varying(255),
-    firewalludprules character varying(255),
-    name character varying(255),
+    firewalltcprules text,
+    firewalludprules text,
+    name text,
     startupscript character varying(1000)
 );
 ALTER TABLE tb_application
@@ -52,7 +55,7 @@ ALTER TABLE tb_application
 
 CREATE TABLE tb_application_arguments (
     id bigint NOT NULL,
-    arguments character varying(255)
+    arguments text
 );
 ALTER TABLE tb_application_arguments
   OWNER TO bnzusr;
@@ -77,9 +80,9 @@ ALTER TABLE tb_application_image
 CREATE TABLE tb_credential (
     id bigint NOT NULL,
     credentialdata bytea,
-    credentialdatatype character varying(255),
+    credentialdatatype text,
     enabled boolean NOT NULL,
-    name character varying(255),
+    name text,
     plugin_id bigint,
     user_id bigint NOT NULL
 );
@@ -88,7 +91,7 @@ ALTER TABLE tb_credential
 
 CREATE TABLE tb_group (
     id bigint NOT NULL,
-    name character varying(255)
+    name text
 );
 ALTER TABLE tb_group
   OWNER TO bnzusr;
@@ -109,8 +112,8 @@ ALTER TABLE tb_group_space
 
 CREATE TABLE tb_image (
     id bigint NOT NULL,
-    name character varying(255),
-    url character varying(255),
+    name text,
+    url text,
     plugin_id bigint
 );
 ALTER TABLE tb_image
@@ -118,22 +121,22 @@ ALTER TABLE tb_image
 
 CREATE TABLE tb_instance (
     id bigint NOT NULL,
-    cloudinstanceip character varying(255),
-    cloudinstancename character varying(255),
+    cloudinstanceip text,
+    cloudinstancename text,
     cores smallint,
     creationdate timestamp without time zone,
-    credentialusage character varying(255),
+    credentialusage text,
     executionaftercreation boolean NOT NULL,
     executionobservation text,
-    instanceidentity character varying(255),
+    instanceidentity text,
     memory double precision,
-    phase character varying(255),
+    phase text,
     price double precision,
     pricetabledate timestamp without time zone,
-    regionname character varying(255),
-    status character varying(255),
-    typename character varying(255),
-    zonename character varying(255),
+    regionname text,
+    status text,
+    typename text,
+    zonename text,
     applicationarguments_id bigint,
     credential_id bigint,
     executor_id bigint,
@@ -146,7 +149,7 @@ CREATE TABLE tb_instance_type (
     id bigint NOT NULL,
     cores smallint,
     memory double precision,
-    name character varying(255)
+    name text
 );
 ALTER TABLE tb_instance_type
   OWNER TO bnzusr;
@@ -162,10 +165,10 @@ ALTER TABLE tb_instance_type_region
 
 CREATE TABLE tb_menu (
     id bigint NOT NULL,
-    iconclass character varying(255),
+    iconclass text,
     menuorder smallint,
-    name character varying(255),
-    path character varying(255),
+    name text,
+    path text,
     parentmenu_id bigint
 );
 ALTER TABLE tb_menu
@@ -173,16 +176,16 @@ ALTER TABLE tb_menu
 
 CREATE TABLE tb_plugin (
     id bigint NOT NULL,
-    authtype character varying(255),
-    cloudtype character varying(255),
+    authtype text,
+    cloudtype text,
     enabled boolean NOT NULL,
-    instancereadscope character varying(255),
-    instancewritescope character varying(255),
-    name character varying(255),
-    pluginversion character varying(255),
-    storagereadscope character varying(255),
-    storagewritescope character varying(255),
-    url character varying(255)
+    instancereadscope text,
+    instancewritescope text,
+    name text,
+    pluginversion text,
+    storagereadscope text,
+    storagewritescope text,
+    url text
 );
 ALTER TABLE tb_plugin
   OWNER TO bnzusr;
@@ -192,8 +195,8 @@ CREATE TABLE tb_price_table (
     lastsearchdate timestamp without time zone,
     lastsyncdate timestamp without time zone,
     pricetabledate timestamp without time zone,
-    syncmessage character varying(255),
-    syncstatus character varying(255),
+    syncmessage text,
+    syncstatus text,
     plugin_id bigint
 );
 ALTER TABLE tb_price_table
@@ -201,32 +204,32 @@ ALTER TABLE tb_price_table
 
 CREATE TABLE tb_region (
     id bigint NOT NULL,
-    name character varying(255)
+    name text
 );
 ALTER TABLE tb_region
   OWNER TO bnzusr;
 
 CREATE TABLE tb_role (
-    id character varying(255) NOT NULL
+    id text NOT NULL
 );
 ALTER TABLE tb_role
   OWNER TO bnzusr;
 
 CREATE TABLE tb_role_menu (
-    id_role character varying(255) NOT NULL,
+    id_role text NOT NULL,
     id_menu bigint NOT NULL
 );
 ALTER TABLE tb_role_menu
   OWNER TO bnzusr;
 
 CREATE TABLE tb_setting (
-    settingname character varying(255) NOT NULL,
-    defaultvalue character varying(255) NOT NULL,
-    maxsize character varying(255),
-    minsize character varying(255),
+    settingname text NOT NULL,
+    defaultvalue text NOT NULL,
+    maxsize text,
+    minsize text,
     required boolean NOT NULL,
-    settingtype character varying(255) NOT NULL,
-    settingvalue character varying(255) NOT NULL
+    settingtype text NOT NULL,
+    settingvalue text NOT NULL
 );
 ALTER TABLE tb_setting
   OWNER TO bnzusr;
@@ -237,10 +240,10 @@ CREATE TABLE tb_space (
     classaprice double precision,
     classbprice double precision,
     creationdate timestamp without time zone,
-    name character varying(255),
+    name text,
     pricepergb double precision,
     pricetabledate timestamp without time zone,
-    regionname character varying(255),
+    regionname text,
     credential_id bigint NOT NULL,
     plugin_id bigint,
     user_id bigint NOT NULL
@@ -250,9 +253,9 @@ ALTER TABLE tb_space
 
 CREATE TABLE tb_space_file (
     id bigint NOT NULL,
-    name character varying(255),
-    publicurl character varying(255),
-    virtualname character varying(255),
+    name text,
+    publicurl text,
+    virtualname text,
     space_id bigint
 );
 ALTER TABLE tb_space_file
@@ -271,11 +274,11 @@ ALTER TABLE tb_storage_region
 
 CREATE TABLE tb_user (
     id bigint NOT NULL,
-    email character varying(255),
+    email text,
     joined boolean NOT NULL,
-    name character varying(255),
-    pass character varying(255),
-    role_id character varying(255)
+    name text,
+    pass text,
+    role_id text
 );
 ALTER TABLE tb_user
   OWNER TO bnzusr;
@@ -292,11 +295,11 @@ ALTER TABLE tb_user_group
 CREATE TABLE tb_workflow (
     id bigint NOT NULL,
     creationdate timestamp without time zone,
-    executionmessage character varying(255),
+    executionmessage text,
     jsongraph character varying(3000),
     jsonmodel character varying(3000),
-    name character varying(255),
-    status character varying(255),
+    name text,
+    status text,
     user_id bigint NOT NULL
 );
 ALTER TABLE tb_workflow
@@ -313,7 +316,7 @@ ALTER TABLE tb_workflow_node
 CREATE TABLE tb_file
 (
     id bigint NOT NULL,
-    name character varying(255),
+    name text,
     filedata bytea,
     lastupdate timestamp without time zone
 );

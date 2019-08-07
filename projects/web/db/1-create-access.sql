@@ -28,7 +28,6 @@ DROP ROLE IF EXISTS bnzusr;
 
 CREATE ROLE bnzusr LOGIN PASSWORD 'bnzpass';
 CREATE DATABASE bnzdb;
-\c bnzdb 
 
 --
 -- GRANT access

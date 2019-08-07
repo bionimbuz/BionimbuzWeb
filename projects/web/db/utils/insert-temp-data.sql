@@ -103,7 +103,7 @@ echo "Extra file execution time: `date`" >> $4"
 
 EXECUTOR=task-executor.jar
 curl -o ${EXECUTOR} http://localhost:9000/files/${EXECUTOR}
-apt-get update && apt-get install -y openjdk-8-jdk && java -jar ${EXECUTOR} &
+apt-get update && apt-get install -y openjdk-8-jdk || true && java -jar ${EXECUTOR} &
  
 # Below is used to kill process when parent dies
 PID=$!
