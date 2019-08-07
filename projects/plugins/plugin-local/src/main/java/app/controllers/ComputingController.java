@@ -43,7 +43,7 @@ public class ComputingController extends AbstractComputingController {
             final String identity,
             final PluginComputingInstanceModel model) throws Exception {
 
-        checkOphanInstances();
+        checkOrphanInstances();
 
         final String instanceName = getNewName();
         final Integer id = PluginComputingInstanceModel.extractIdFromName(
@@ -84,7 +84,7 @@ public class ComputingController extends AbstractComputingController {
             final String zone,
             final String name) throws Exception {
 
-        checkOphanInstances();
+        checkOrphanInstances();
 
         if (!SystemConstants.PLUGIN_ZONE.equals(zone)) {
             return new ResponseEntity<>(
@@ -114,7 +114,7 @@ public class ComputingController extends AbstractComputingController {
             final String zone,
             final String name) throws Exception {
 
-        checkOphanInstances();
+        checkOrphanInstances();
 
         deleteInstanceDir(name);
 
@@ -123,7 +123,7 @@ public class ComputingController extends AbstractComputingController {
 
         if (!existsInstanceProcess(instanceId)) {
             return new ResponseEntity<>(
-                    Body.create(false),
+                    Body.create(true),
                     HttpStatus.OK);
         }
 
@@ -139,7 +139,7 @@ public class ComputingController extends AbstractComputingController {
             final String token,
             final String identity) throws Exception {
 
-        checkOphanInstances();
+        checkOrphanInstances();
 
         final List<PluginComputingInstanceModel> res = new ArrayList<>();
         for (final Map.Entry<Integer, InstanceProcess> entry : processes.entrySet()) {
@@ -219,11 +219,18 @@ public class ComputingController extends AbstractComputingController {
 
         @Override
         public void run() {
+
             final File stdoutFile = new File(this.workingDirPath, "stdout.txt");
+            try {
+                stdoutFile.createNewFile();
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
             try (
-                 BufferedWriter writer = new BufferedWriter(new FileWriter(stdoutFile))) {
-                final InputStream stdout = this.process.getInputStream();
-                final BufferedReader reader = new BufferedReader(new InputStreamReader(stdout));
+                    BufferedWriter writer = new BufferedWriter(new FileWriter(stdoutFile));
+                    final InputStream stdout = this.process.getInputStream();
+                    final BufferedReader reader = new BufferedReader(new InputStreamReader(stdout));) {
+
                 String line = "";
                 while ((line = reader.readLine()) != null) {
                     writer.write(line);
@@ -241,7 +248,7 @@ public class ComputingController extends AbstractComputingController {
         }
     }
 
-    private synchronized static void checkOphanInstances() throws Exception {
+    private synchronized static void checkOrphanInstances() throws Exception {
         final File instancesDir = new File(SystemConstants.INSTANCES_DIR);
         if (!instancesDir.exists()) {
             return;
@@ -300,7 +307,7 @@ public class ComputingController extends AbstractComputingController {
         final File scriptFile = new File(path, STARTUP_SCRIPT_NAME + "." + extension);
         final String absolutePath = scriptFile.getAbsolutePath();
         try (
-             BufferedWriter writer = new BufferedWriter(new FileWriter(scriptFile))) {
+                BufferedWriter writer = new BufferedWriter(new FileWriter(scriptFile))) {
             writer.write(content);
         }
         if (scriptFile.exists()) {
@@ -380,7 +387,7 @@ public class ComputingController extends AbstractComputingController {
         instProc.getProcess().destroy();
         try {
             Thread.sleep(3000);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             e.printStackTrace();
         }
         instProc.getProcess().destroyForcibly();

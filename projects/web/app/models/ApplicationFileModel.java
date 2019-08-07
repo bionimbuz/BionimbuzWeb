@@ -26,8 +26,7 @@ public class ApplicationFileModel extends GenericModel {
     @GeneratedValue
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY, cascade = {
-            CascadeType.PERSIST,
-            CascadeType.REMOVE
+            CascadeType.PERSIST
     })
     @JoinColumn(nullable = false)
     private SpaceFileModel spaceFile;

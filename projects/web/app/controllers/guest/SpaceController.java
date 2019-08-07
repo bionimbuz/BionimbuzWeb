@@ -35,7 +35,7 @@ public class SpaceController extends BaseAdminController {
     private static final String OBJECT_NAME = "object.name";
     private static final String STORAGE_REGION_SELECTED_ID = STORAGE_REGION_SELECTED + ".id";
 
-    public static void save(Long id) throws Exception {
+    public static void save(final Long id) throws Exception {
         final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);
         final SpaceModel object = SpaceModel.findById(id);
@@ -69,11 +69,11 @@ public class SpaceController extends BaseAdminController {
         notFoundIfNull(type);
 
         final SpaceModel object = new SpaceModel();
-        UserModel currentUser = BaseAdminController.getConnectedUser();
-        object.setUser(currentUser);        
+        final UserModel currentUser = BaseAdminController.getConnectedUser();
+        object.setUser(currentUser);
         Binder.bindBean(params.getRootParamNode(), "object", object);
         validation.valid(object);
-        String regionId = params.get(STORAGE_REGION_SELECTED_ID);
+        final String regionId = params.get(STORAGE_REGION_SELECTED_ID);
         if(regionId == null || regionId.isEmpty()) {
             storageRegionSelected = null;
             validation.addError(STORAGE_REGION_SELECTED, Messages.get("validation.required"));
@@ -116,26 +116,28 @@ public class SpaceController extends BaseAdminController {
 
     public static void searchStorageRegions(final Long pluginId) {
         try {
-            List<StorageRegion> listStorageRegions =
+            final List<StorageRegion> listStorageRegions =
                     getStorageRegions(pluginId);
-            if(listStorageRegions == null)
+            if(listStorageRegions == null) {
                 notFound(Messages.get(I18N.not_found));
+            }
             renderJSON(listStorageRegions);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Logger.error(e, "Error searching storage [%s]", e.getMessage());
             notFound(Messages.get(I18N.not_found));
         }
     }
 
     private static List<StorageRegion> getStorageRegions(final Long pluginId) {
-        PluginModel plugin = PluginModel.findById(pluginId);
-        if(plugin == null)
+        final PluginModel plugin = PluginModel.findById(pluginId);
+        if(plugin == null) {
             return null;
-        List<StorageRegionModel> listStorageRegionsFound =
+        }
+        final List<StorageRegionModel> listStorageRegionsFound =
                 StorageRegionModel.searchByPlugin(pluginId);
-        List<StorageRegion> listStorageRegions = new ArrayList<>();
+        final List<StorageRegion> listStorageRegions = new ArrayList<>();
 
-        for(StorageRegionModel storageRegion : listStorageRegionsFound) {
+        for(final StorageRegionModel storageRegion : listStorageRegionsFound) {
             listStorageRegions.add(
                     new StorageRegion(
                             storageRegion.getId(),
@@ -147,32 +149,32 @@ public class SpaceController extends BaseAdminController {
         return listStorageRegions;
     }
 
-    private static boolean createSpace(SpaceModel space) {
+    private static boolean createSpace(final SpaceModel space) {
 
-        PluginModel plugin = space.getPlugin();
-        StorageApi api = new StorageApi(plugin.getUrl());
-        PluginStorageModel spaceToCreate =
+        final PluginModel plugin = space.getPlugin();
+        final StorageApi api = new StorageApi(plugin.getUrl());
+        final PluginStorageModel spaceToCreate =
                 new PluginStorageModel(space.getName(), space.getRegionName());
 
-        List<VwCredentialModel> listCredentials = 
+        final List<VwCredentialModel> listCredentials =
                 VwCredentialModel.searchForCurrentUserAndPlugin(
                         plugin.getId(),
-                        CredentialUsagePolicy.ONLY_OWNER);   
+                        CredentialUsagePolicy.ONLY_OWNER);
 
-        for(VwCredentialModel vwCredential : listCredentials) {
-            
+        for(final VwCredentialModel vwCredential : listCredentials) {
+
             try {
-                String credentialData = vwCredential
+                final String credentialData = vwCredential
                         .getCredentialData()
                         .getContentAsString();
-                
-                TokenModel token;
-                    token = Authorization.getToken(
-                            plugin.getCloudType(),
-                            plugin.getStorageWriteScope(),
-                            credentialData);
 
-                Body<PluginStorageModel> body =
+                TokenModel token;
+                token = Authorization.getToken(
+                        plugin.getCloudType(),
+                        plugin.getStorageWriteScope(),
+                        credentialData);
+
+                final Body<PluginStorageModel> body =
                         api.createSpace(
                                 token.getToken(),
                                 token.getIdentity(),
@@ -180,10 +182,10 @@ public class SpaceController extends BaseAdminController {
                 if(body == null || body.getContent() == null) {
                     continue;
                 }
-                
+
                 space.setCredential(vwCredential.getCredential());
                 return true;
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 Logger.warn(e, "Operation cannot be completed with credential [%s]", e.getMessage());
             }
         }

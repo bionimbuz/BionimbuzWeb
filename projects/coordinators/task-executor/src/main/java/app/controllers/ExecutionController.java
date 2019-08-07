@@ -22,18 +22,17 @@ public class ExecutionController extends AbstractExecutionController {
     // * @see app.controllers.AbstractExecutionController#startExecution(app.models.Command)
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @Override
-    protected ResponseEntity<Body<Boolean>> startExecution(final Command command)
-            throws Exception {
+    protected ResponseEntity<Body<Boolean>> startExecution(final Command command)  throws Exception {
+
         if (ApplicationExecutionJob.isInitialized()) {
-            return ResponseEntity.ok(
-                    Body.create(false));
+            return ResponseEntity.ok(Body.create(false));
         }
         CoordinatorServerAccess.init(
                 command.getRefreshStatusUrl(),
                 command.getSecureFileAccess());
+
         ApplicationExecutionJob.init(command);
-        return ResponseEntity.ok(
-                Body.create(true));
+        return ResponseEntity.ok(Body.create(true));
     }
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

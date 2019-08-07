@@ -38,55 +38,51 @@ public class ComputingControllerTest {
 
     @Before
     public void init() {
-        File file = new File(SystemConstants.INSTANCES_DIR);
+        final File file = new File(SystemConstants.INSTANCES_DIR);
         FileUtils.deleteDir(file);
     }
 
     @Test
     public void contexLoads() throws Exception {
-        assertThat(controller).isNotNull();
+        assertThat(this.controller).isNotNull();
     }
 
     @Test
     public void CRUD_Instances() throws IOException {
 
         PluginComputingInstanceModel instance =
-                    createInstance();
+                this.createInstance();
 
-        checkCurrentInstancesSize(0);        
-        instance = createInstanceTest(instance);
-        checkGetInstance(instance);
-        checkCurrentInstancesSize(1);
-        deleteInstance(instance);
-        checkCurrentInstancesSize(0);
+        this.checkCurrentInstancesSize(0);
+        instance = this.createInstanceTest(instance);
+        this.checkGetInstance(instance);
+        this.checkCurrentInstancesSize(1);
+        this.deleteInstance(instance);
+        this.checkCurrentInstancesSize(0);
     }
-    
+
     @Test
-    public void regions_zones_test() throws IOException {    
-        ComputingApi api = new ComputingApi(TestUtils.getUrl(PORT));
-        Body<List<PluginComputingRegionModel>> body = api.listRegions("", "");
-        assertThat(body).isNotNull();   
+    public void regions_zones_test() throws IOException {
+        final ComputingApi api = new ComputingApi(TestUtils.getUrl(this.PORT));
+        final Body<List<PluginComputingRegionModel>> body = api.listRegions("", "");
+        assertThat(body).isNotNull();
         assertThat(body.getContent().isEmpty()).isFalse();
-        
-        PluginComputingRegionModel found = body.getContent().get(0);
 
-        ComputingApi api2 = new ComputingApi(TestUtils.getUrl(PORT));
+        final PluginComputingRegionModel found = body.getContent().get(0);
+
+        final ComputingApi api2 = new ComputingApi(TestUtils.getUrl(this.PORT));
         Body<List<PluginComputingZoneModel>> body2 = api2.listRegionZones("", "", found.getName());
-        assertThat(body2).isNotNull();   
+        assertThat(body2).isNotNull();
         assertThat(body2.getContent().isEmpty()).isFalse();
-        
+
         body2 = api2.listRegionZones("", "", "unknown");
-        assertThat(body2).isNull();      
+        assertThat(body2).isNull();
     }
 
-    @Test
-    public void list_zones_Test() throws IOException {    
-    }
+    private void deleteInstance(final PluginComputingInstanceModel instance) throws IOException {
 
-    private void deleteInstance(PluginComputingInstanceModel instance) throws IOException {
-
-        ComputingApi api = new ComputingApi(TestUtils.getUrl(PORT));
-        Body<Boolean> body = api.deleteInstance("", "",
+        final ComputingApi api = new ComputingApi(TestUtils.getUrl(this.PORT));
+        final Body<Boolean> body = api.deleteInstance("", "",
                 SystemConstants.PLUGIN_REGION,
                 SystemConstants.PLUGIN_ZONE,
                 instance.getName());
@@ -94,10 +90,10 @@ public class ComputingControllerTest {
         assertThat(body.getContent()).isTrue();
     }
 
-    private void checkGetInstance(PluginComputingInstanceModel instance) throws IOException {
+    private void checkGetInstance(final PluginComputingInstanceModel instance) throws IOException {
 
-        ComputingApi api = new ComputingApi(TestUtils.getUrl(PORT));
-        Body<PluginComputingInstanceModel> body =
+        final ComputingApi api = new ComputingApi(TestUtils.getUrl(this.PORT));
+        final Body<PluginComputingInstanceModel> body =
                 api.getInstance("", "",
                         SystemConstants.PLUGIN_REGION,
                         SystemConstants.PLUGIN_ZONE,
@@ -106,21 +102,21 @@ public class ComputingControllerTest {
         assertThat(body.getContent()).isNotNull();
     }
 
-    private void checkCurrentInstancesSize(int size) throws IOException {
+    private void checkCurrentInstancesSize(final int size) throws IOException {
 
-        ComputingApi api = new ComputingApi(TestUtils.getUrl(PORT));
-        Body<List<PluginComputingInstanceModel>> body =
+        final ComputingApi api = new ComputingApi(TestUtils.getUrl(this.PORT));
+        final Body<List<PluginComputingInstanceModel>> body =
                 api.listInstances("", "");
 
         assertThat(body.getContent().size()).isEqualTo(size);
     }
-    
-    private PluginComputingInstanceModel createInstanceTest(PluginComputingInstanceModel instance) throws IOException{
 
-        ComputingApi api = new ComputingApi(TestUtils.getUrl(PORT));
-        
-        
-        Body<PluginComputingInstanceModel> body =
+    private PluginComputingInstanceModel createInstanceTest(final PluginComputingInstanceModel instance) throws IOException{
+
+        final ComputingApi api = new ComputingApi(TestUtils.getUrl(this.PORT));
+
+
+        final Body<PluginComputingInstanceModel> body =
                 api.createInstance("", "", instance);
         assertThat(body).isNotNull();
         assertThat(body.getContent()).isNotNull();
@@ -129,7 +125,7 @@ public class ComputingControllerTest {
     }
 
     private PluginComputingInstanceModel createInstance() {
-        PluginComputingInstanceModel instance = new PluginComputingInstanceModel();
+        final PluginComputingInstanceModel instance = new PluginComputingInstanceModel();
         instance.setImageUrl("");
         instance.setStartupScript(INSTANCE_STARTUP_SCRIPT);
         instance.setType(SystemConstants.CLOUD_COMPUTE_TYPE);
@@ -142,10 +138,10 @@ public class ComputingControllerTest {
     @Test
     public void createInstanceBeforeExecution() throws Exception {
 
-        ComputingApi api = new ComputingApi(TestUtils.getUrl(PORT));
+        final ComputingApi api = new ComputingApi(TestUtils.getUrl(this.PORT));
         Body<PluginComputingInstanceModel> body = null;
-        Integer newId = 999;
-        String instanceName =
+        final Integer newId = 999;
+        final String instanceName =
                 PluginComputingInstanceModel.generateNameForId(
                         newId, GlobalConstants.BNZ_INSTANCE);
 

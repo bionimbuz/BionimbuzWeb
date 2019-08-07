@@ -130,9 +130,11 @@ GET     /instances/{id}                         guest.InstanceController.show
 GET     /copy/instances/{id}                    guest.InstanceController.copy
 PUT     /instances/{id}                         guest.InstanceController.save
 DELETE  /instances/{id}                         guest.InstanceController.delete
+POST    /instances/{id}                         guest.InstanceController.executeInstance
 GET     /instances                              guest.InstanceController.blank
 POST    /instances                              guest.InstanceController.create
 GET     /instance/node/{id}                     guest.InstanceController.createNode
+
 
 # WorkflowController
 GET     /list/workflows                         guest.WorkflowController.list

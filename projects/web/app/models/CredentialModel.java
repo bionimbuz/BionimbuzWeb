@@ -46,8 +46,8 @@ public class CredentialModel extends GenericModel  {
     private UserModel user;
     @ManyToMany
     @JoinTable(name = "tb_group_credential",
-        joinColumns = @JoinColumn(name = "id_credential", referencedColumnName = "id"),
-        inverseJoinColumns = @JoinColumn(name = "id_group", referencedColumnName = "id"))
+    joinColumns = @JoinColumn(name = "id_credential", referencedColumnName = "id"),
+    inverseJoinColumns = @JoinColumn(name = "id_group", referencedColumnName = "id"))
     private List<GroupModel> listSharedGroups;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "credential")
     private List<SpaceModel> listSpaces;
@@ -65,63 +65,71 @@ public class CredentialModel extends GenericModel  {
     // Getters and Setters
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public EncryptedFileField getCredentialData() {
-        return credentialData;
+        return this.credentialData;
     }
-    public void setCredentialData(EncryptedFileField credentialData) {
+    public void setCredentialData(final EncryptedFileField credentialData) {
         this.credentialData = credentialData;
     }
     public Long getId() {
-        return id;
+        return this.id;
     }
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
     public PluginModel getPlugin() {
-        return plugin;
+        return this.plugin;
     }
-    public void setPlugin(PluginModel plugin) {
+    public void setPlugin(final PluginModel plugin) {
         this.plugin = plugin;
     }
     public boolean isEnabled() {
-        return enabled;
+        return this.enabled;
     }
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(final boolean enabled) {
         this.enabled = enabled;
     }
     public String getName() {
-        return name;
+        return this.name;
     }
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
     public String getCredentialDataType() {
-        return credentialDataType;
+        return this.credentialDataType;
     }
-    public void setCredentialDataType(String credentialDataType) {
+    public void setCredentialDataType(final String credentialDataType) {
         this.credentialDataType = credentialDataType;
     }
     public UserModel getUser() {
-        return user;
+        return this.user;
     }
-    public void setUser(UserModel user) {
+    public void setUser(final UserModel user) {
         this.user = user;
     }
     public List<GroupModel> getListSharedGroups() {
-        return listSharedGroups;
+        return this.listSharedGroups;
     }
-    public void setListSharedGroups(List<GroupModel> listSharedGroups) {
+    public void setListSharedGroups(final List<GroupModel> listSharedGroups) {
         this.listSharedGroups = listSharedGroups;
     }
     public List<SpaceModel> getListSpaces() {
-        return listSpaces;
+        return this.listSpaces;
     }
-    public void setListSpaces(List<SpaceModel> listSpaces) {
+    public void setListSpaces(final List<SpaceModel> listSpaces) {
         this.listSpaces = listSpaces;
     }
     public List<InstanceModel> getListInstances() {
-        return listInstances;
+        return this.listInstances;
     }
-    public void setListInstances(List<InstanceModel> listInstances) {
+    public void setListInstances(final List<InstanceModel> listInstances) {
         this.listInstances = listInstances;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // * @see play.db.jpa.JPABase#toString()
+    // ---------------------------------------------------------------------------------------------
+    @Override
+    public String toString() {
+        return this.getName();
     }
 }

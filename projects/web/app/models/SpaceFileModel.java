@@ -53,81 +53,81 @@ public class SpaceFileModel extends GenericModel {
     private String name;
     @MaxSize(200)
     private String publicUrl;
-    
+
     public static class SpaceFile {
-        
+
         private Long id;
         private String name;
-        
-        public SpaceFile(Long id, String name) {
+
+        public SpaceFile(final Long id, final String name) {
             this.id = id;
             this.name = name;
         }
-        
+
         public String getName() {
-            return name;
+            return this.name;
         }
-        public void setName(String name) {
+        public void setName(final String name) {
             this.name = name;
         }
         public Long getId() {
-            return id;
+            return this.id;
         }
-        public void setId(Long id) {
+        public void setId(final Long id) {
             this.id = id;
         }
     }
-    
+
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Data accessing
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public static List<SpaceFileModel> findBySpaceId(final Long spaceId) {
         return SpaceFileModel.find(
                 " SELECT spaceFile "
-                + " FROM SpaceFileModel spaceFile "
-                + " WHERE spaceFile.space.id = ?1"
-                + " ORDER BY spaceFile.name", spaceId).fetch();
+                        + " FROM SpaceFileModel spaceFile "
+                        + " WHERE spaceFile.space.id = ?1"
+                        + " ORDER BY spaceFile.name", spaceId).fetch();
     }
-    
+
     public static List<SpaceFile> getSpaceFiles(final Long spaceId) {
-        List<SpaceFile> listSpaceFiles = new ArrayList<>();
-        for(SpaceFileModel region : SpaceFileModel.findBySpaceId(spaceId)) {
+        final List<SpaceFile> listSpaceFiles = new ArrayList<>();
+        for(final SpaceFileModel region : SpaceFileModel.findBySpaceId(spaceId)) {
             listSpaceFiles.add(new SpaceFile(region.getId(), region.getName()));
         }
         return listSpaceFiles;
     }
-    
+
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Getters and Setters
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public Long getId() {
-        return id;
+        return this.id;
     }
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
     public SpaceModel getSpace() {
-        return space;
+        return this.space;
     }
-    public void setSpace(SpaceModel space) {
+    public void setSpace(final SpaceModel space) {
         this.space = space;
     }
     public String getName() {
-        return name;
+        return this.name;
     }
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
     public String getVirtualName() {
-        return virtualName;
+        return this.virtualName;
     }
-    public void setVirtualName(String virtualName) {
+    public void setVirtualName(final String virtualName) {
         this.virtualName = virtualName;
     }
     public String getPublicUrl() {
-        return publicUrl;
+        return this.publicUrl;
     }
-    public void setPublicUrl(String publicUrl) {
+    public void setPublicUrl(final String publicUrl) {
         this.publicUrl = publicUrl;
     }
 
@@ -136,104 +136,108 @@ public class SpaceFileModel extends GenericModel {
         virtualName += "_" + Math.abs(fileName.hashCode());
         return virtualName;
     }
-    
+
     public static RemoteFileInfo getDownloadFileInfo(final Long fileId) {
 
         RemoteFileInfo res = null;
-        
+
         try {
-            SpaceFileModel file = SpaceFileModel.findById(fileId);
-            if(file == null)
+            final SpaceFileModel file = SpaceFileModel.findById(fileId);
+            if(file == null) {
                 return null;
-            SpaceModel space = file.getSpace();
-            PluginModel plugin = space.getPlugin();
-            StorageApi api = new StorageApi(plugin.getUrl());
-    
-            CredentialModel credential = space.getCredential();        
-        
-            String credentialStr =
+            }
+            final SpaceModel space = file.getSpace();
+            final PluginModel plugin = space.getPlugin();
+            final StorageApi api = new StorageApi(plugin.getUrl());
+
+            final CredentialModel credential = space.getCredential();
+
+            final String credentialStr =
                     credential.getCredentialData().getContentAsString();
 
-            TokenModel token = Authorization.getToken(
+            final TokenModel token = Authorization.getToken(
                     plugin.getCloudType(),
                     plugin.getStorageWriteScope(),
                     credentialStr);
 
-            Body<PluginStorageFileDownloadModel> body =
-                    api.getDownloadUrl(space.getName(), file.getVirtualName());
-            PluginStorageFileDownloadModel content =
-                    body.getContent();
+            final Body<PluginStorageFileDownloadModel> body = api.getDownloadUrl(
+                    space.getName(),
+                    file.getVirtualName());
+            final PluginStorageFileDownloadModel content = body.getContent();
 
-            if(body.getContent() == null)
+            if(content == null) {
                 return null;
+            }
 
             res = new RemoteFileInfo();
             res.setUrl(content.getUrl());
             res.setMethod(content.getMethod());
             res.setName(file.getName());
 
-            Map<String, String> headers =
+            final Map<String, String> headers =
                     new HashMap<>();
             if(plugin.getAuthType() == AuthenticationType.AUTH_BEARER_TOKEN) {
                 headers.put("Authorization", "Bearer " + token.getToken());
             } else if(plugin.getAuthType() == AuthenticationType.AUTH_SUPER_USER) {
             }
             res.setHeaders(headers);
-            
-        } catch (Exception e) {    
-            Logger.warn(e, "Operation cannot be completed with credential [%s]", e.getMessage());                
+
+        } catch (final Exception e) {
+            Logger.warn(e, "Operation cannot be completed with credential [%s]", e.getMessage());
         }
 
         return res;
-    }    
+    }
 
-    public static RemoteFileInfo getUploadFileInfo(final Long spaceId, final String fileName) {        
-        SpaceModel space = SpaceModel.findById(spaceId);
-        if(space == null)
+    public static RemoteFileInfo getUploadFileInfo(final Long spaceId, final String fileName) {
+        final SpaceModel space = SpaceModel.findById(spaceId);
+        if(space == null) {
             return null;
-        String virtualName = SpaceFileModel.generateVirtualName(fileName);
+        }
+        final String virtualName = SpaceFileModel.generateVirtualName(fileName);
         return getUploadFileInfo(space, virtualName);
     }
-    
-    public static RemoteFileInfo getUploadFileInfo(SpaceModel space, final String virtualName) {
+
+    public static RemoteFileInfo getUploadFileInfo(final SpaceModel space, final String virtualName) {
 
         RemoteFileInfo res = null;
-        
+
         try {
-    
-            PluginModel plugin = space.getPlugin();
-            StorageApi api = new StorageApi(plugin.getUrl());
-    
-            CredentialModel credential = space.getCredential(); 
-    
-            String credentialStr =
+
+            final PluginModel plugin = space.getPlugin();
+            final StorageApi api = new StorageApi(plugin.getUrl());
+
+            final CredentialModel credential = space.getCredential();
+
+            final String credentialStr =
                     credential.getCredentialData().getContentAsString();
 
-            TokenModel token = Authorization.getToken(
+            final TokenModel token = Authorization.getToken(
                     plugin.getCloudType(),
                     plugin.getStorageWriteScope(),
                     credentialStr);
 
-            Body<PluginStorageFileUploadModel> body =
+            final Body<PluginStorageFileUploadModel> body =
                     api.getUploadUrl(space.getName(), virtualName);
-            PluginStorageFileUploadModel content =
+            final PluginStorageFileUploadModel content =
                     body.getContent();
 
-            if(body.getContent() == null)
+            if(body.getContent() == null) {
                 return null;
+            }
 
             res = new RemoteFileInfo();
             res.setUrl(content.getUrl());
             res.setMethod(content.getMethod());
             res.setName(virtualName);
 
-            Map<String, String> headers = new HashMap<>();
+            final Map<String, String> headers = new HashMap<>();
             if(plugin.getAuthType() == AuthenticationType.AUTH_BEARER_TOKEN) {
                 headers.put("Authorization", "Bearer " + token.getToken());
             }
             res.setHeaders(headers);
-        } catch (Exception e) {
-            Logger.warn(e, "Operation cannot be completed with credential [%s]", e.getMessage());                
+        } catch (final Exception e) {
+            Logger.warn(e, "Operation cannot be completed with credential [%s]", e.getMessage());
         }
 
         return res;

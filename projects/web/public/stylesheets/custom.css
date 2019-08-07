@@ -225,3 +225,13 @@ th {
     margin-right: auto;
     width: 50%;
 }
+
+.mg-r {
+    margin-right: 1em;
+}
+
+@media ( max-width : 990px) {
+    .mg-r {
+        margin-right: 0;
+    }
+}

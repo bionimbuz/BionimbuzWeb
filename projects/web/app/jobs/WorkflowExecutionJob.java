@@ -71,33 +71,35 @@ public class WorkflowExecutionJob extends Job {
                 return;
             }
 
-            final WorkflowModel workflow = instance.getWorkflowNode().getWorkflow();
-            
-            if(!InstanceCreationJob.removeCloudInstance(
-                    instance, workflow.getUser().getId())) {
-                workflow.setExecutionMessage(MSG_NODE_REMOVE_ERROR);
-                workflow.save();
-            }
-            
-            // Cannot continues with a workflow already stopped
-            if (workflow.getStatus() == WORKFLOW_STATUS.STOPPED
-                    || workflow.getStatus() == WORKFLOW_STATUS.FINISHED) {
-                return;
-            }
+            if (instance.getWorkflowNode() != null) {
 
-            if (this.instanceStatus.getPhase() != EXECUTION_PHASE.FINISHED) {
-                workflow.setStatus(WORKFLOW_STATUS.STOPPED);
-                workflow.save();
-                return;
-            }
+                final WorkflowModel workflow = instance.getWorkflowNode().getWorkflow();
 
-            if (WorkflowModel.hasWorkflowFinished(workflow.getId())) {
-                workflow.setStatus(WORKFLOW_STATUS.FINISHED);
-                workflow.save();
-                return;
-            }
+                if(!InstanceCreationJob.removeCloudInstance(instance, workflow.getUser().getId())) {
+                    workflow.setExecutionMessage(MSG_NODE_REMOVE_ERROR);
+                    workflow.save();
+                }
 
-            executeNextInstancesFromNode(workflow, instance.getWorkflowNode().getId());
+                // Cannot continues with a workflow already stopped
+                if (workflow.getStatus() == WORKFLOW_STATUS.STOPPED
+                        || workflow.getStatus() == WORKFLOW_STATUS.FINISHED) {
+                    return;
+                }
+
+                if (this.instanceStatus.getPhase() != EXECUTION_PHASE.FINISHED) {
+                    workflow.setStatus(WORKFLOW_STATUS.STOPPED);
+                    workflow.save();
+                    return;
+                }
+
+                if (WorkflowModel.hasWorkflowFinished(workflow.getId())) {
+                    workflow.setStatus(WORKFLOW_STATUS.FINISHED);
+                    workflow.save();
+                    return;
+                }
+
+                executeNextInstancesFromNode(workflow, instance.getWorkflowNode().getId());
+            }
         }
     }
 
@@ -120,7 +122,7 @@ public class WorkflowExecutionJob extends Job {
             }
 
             if (!InstanceCreationJob.executeInstance(
-                    instance.getId(),
+                    instance,
                     workflow.getUser().getId())) {
 
                 workflow.setExecutionMessage(MSG_NODE_CREATION_ERROR);

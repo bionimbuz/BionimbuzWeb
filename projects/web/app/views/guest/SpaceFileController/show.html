@@ -69,6 +69,28 @@
 #{/form}
 </div>
 
+<div id="deleteModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">&{'modal.confirm'}</h4>
+            </div>
+            <div class="modal-body">
+                <p>&{'modal.confirm.delete'}</p>
+                <p class="text-warning"><small>&{'modal.confirm.delete.desc'}</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">&{'modal.button.cancel'}</button>
+                #{form @delete(object._key()), style: 'display:inline;', class: 'submitForm'}
+                    <button type="submit" class="btn btn-primary">&{'modal.button.confirm'}</button>
+                #{/form}
+            </div>
+        </div>
+    </div>
+</div>
+
+
 #{set 'moreScripts' }
 
 <script type="text/javascript">

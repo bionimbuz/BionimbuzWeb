@@ -25,9 +25,9 @@ CREATE SEQUENCE hibernate_sequence
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+ALTER TABLE hibernate_sequence
+  OWNER TO bnzusr;
 
-
-ALTER TABLE hibernate_sequence OWNER TO bnzusr;
 
 SET default_tablespace = '';
 SET default_with_oids = false;
@@ -47,11 +47,15 @@ CREATE TABLE tb_application (
     name character varying(255),
     startupscript character varying(1000)
 );
+ALTER TABLE tb_application
+  OWNER TO bnzusr;
 
 CREATE TABLE tb_application_arguments (
     id bigint NOT NULL,
     arguments character varying(255)
 );
+ALTER TABLE tb_application_arguments
+  OWNER TO bnzusr;
 
 CREATE TABLE tb_application_file (
     file_type character varying(31) NOT NULL,
@@ -60,11 +64,15 @@ CREATE TABLE tb_application_file (
     spacefile_id bigint NOT NULL,
     applicationarguments_id bigint NOT NULL
 );
+ALTER TABLE tb_application_file
+  OWNER TO bnzusr;
 
 CREATE TABLE tb_application_image (
     id_application bigint NOT NULL,
     id_image bigint NOT NULL
 );
+ALTER TABLE tb_application_image
+  OWNER TO bnzusr;
 
 CREATE TABLE tb_credential (
     id bigint NOT NULL,
@@ -75,21 +83,29 @@ CREATE TABLE tb_credential (
     plugin_id bigint,
     user_id bigint NOT NULL
 );
+ALTER TABLE tb_credential
+  OWNER TO bnzusr;
 
 CREATE TABLE tb_group (
     id bigint NOT NULL,
     name character varying(255)
 );
+ALTER TABLE tb_group
+  OWNER TO bnzusr;
 
 CREATE TABLE tb_group_credential (
     id_credential bigint NOT NULL,
     id_group bigint NOT NULL
 );
+ALTER TABLE tb_group_credential
+  OWNER TO bnzusr;
 
 CREATE TABLE tb_group_space (
     id_space bigint NOT NULL,
     id_group bigint NOT NULL
 );
+ALTER TABLE tb_group_space
+  OWNER TO bnzusr;
 
 CREATE TABLE tb_image (
     id bigint NOT NULL,
@@ -97,6 +113,8 @@ CREATE TABLE tb_image (
     url character varying(255),
     plugin_id bigint
 );
+ALTER TABLE tb_image
+  OWNER TO bnzusr;
 
 CREATE TABLE tb_instance (
     id bigint NOT NULL,
@@ -106,7 +124,7 @@ CREATE TABLE tb_instance (
     creationdate timestamp without time zone,
     credentialusage character varying(255),
     executionaftercreation boolean NOT NULL,
-    executionobservation character varying(255),
+    executionobservation text,
     instanceidentity character varying(255),
     memory double precision,
     phase character varying(255),
@@ -121,6 +139,8 @@ CREATE TABLE tb_instance (
     executor_id bigint,
     plugin_id bigint
 );
+ALTER TABLE tb_instance
+  OWNER TO bnzusr;
 
 CREATE TABLE tb_instance_type (
     id bigint NOT NULL,
@@ -128,6 +148,8 @@ CREATE TABLE tb_instance_type (
     memory double precision,
     name character varying(255)
 );
+ALTER TABLE tb_instance_type
+  OWNER TO bnzusr;
 
 CREATE TABLE tb_instance_type_region (
     id_instance_type bigint NOT NULL,
@@ -135,6 +157,8 @@ CREATE TABLE tb_instance_type_region (
     price double precision,
     pricetable_id bigint NOT NULL
 );
+ALTER TABLE tb_instance_type_region
+  OWNER TO bnzusr;
 
 CREATE TABLE tb_menu (
     id bigint NOT NULL,
@@ -144,6 +168,8 @@ CREATE TABLE tb_menu (
     path character varying(255),
     parentmenu_id bigint
 );
+ALTER TABLE tb_menu
+  OWNER TO bnzusr;
 
 CREATE TABLE tb_plugin (
     id bigint NOT NULL,
@@ -158,6 +184,8 @@ CREATE TABLE tb_plugin (
     storagewritescope character varying(255),
     url character varying(255)
 );
+ALTER TABLE tb_plugin
+  OWNER TO bnzusr;
 
 CREATE TABLE tb_price_table (
     id bigint NOT NULL,
@@ -168,20 +196,28 @@ CREATE TABLE tb_price_table (
     syncstatus character varying(255),
     plugin_id bigint
 );
+ALTER TABLE tb_price_table
+  OWNER TO bnzusr;
 
 CREATE TABLE tb_region (
     id bigint NOT NULL,
     name character varying(255)
 );
+ALTER TABLE tb_region
+  OWNER TO bnzusr;
 
 CREATE TABLE tb_role (
     id character varying(255) NOT NULL
 );
+ALTER TABLE tb_role
+  OWNER TO bnzusr;
 
 CREATE TABLE tb_role_menu (
     id_role character varying(255) NOT NULL,
     id_menu bigint NOT NULL
 );
+ALTER TABLE tb_role_menu
+  OWNER TO bnzusr;
 
 CREATE TABLE tb_setting (
     settingname character varying(255) NOT NULL,
@@ -192,6 +228,8 @@ CREATE TABLE tb_setting (
     settingtype character varying(255) NOT NULL,
     settingvalue character varying(255) NOT NULL
 );
+ALTER TABLE tb_setting
+  OWNER TO bnzusr;
 
 CREATE TABLE tb_space (
     id bigint NOT NULL,
@@ -207,6 +245,8 @@ CREATE TABLE tb_space (
     plugin_id bigint,
     user_id bigint NOT NULL
 );
+ALTER TABLE tb_space
+  OWNER TO bnzusr;
 
 CREATE TABLE tb_space_file (
     id bigint NOT NULL,
@@ -215,6 +255,8 @@ CREATE TABLE tb_space_file (
     virtualname character varying(255),
     space_id bigint
 );
+ALTER TABLE tb_space_file
+  OWNER TO bnzusr;
 
 CREATE TABLE tb_storage_region (
     id bigint NOT NULL,
@@ -224,6 +266,8 @@ CREATE TABLE tb_storage_region (
     pricetable_id bigint NOT NULL,
     id_region bigint NOT NULL
 );
+ALTER TABLE tb_storage_region
+  OWNER TO bnzusr;
 
 CREATE TABLE tb_user (
     id bigint NOT NULL,
@@ -233,6 +277,8 @@ CREATE TABLE tb_user (
     pass character varying(255),
     role_id character varying(255)
 );
+ALTER TABLE tb_user
+  OWNER TO bnzusr;
 
 CREATE TABLE tb_user_group (
     id_group bigint NOT NULL,
@@ -240,6 +286,8 @@ CREATE TABLE tb_user_group (
     joined boolean NOT NULL,
     userowner boolean NOT NULL
 );
+ALTER TABLE tb_user_group
+  OWNER TO bnzusr;
 
 CREATE TABLE tb_workflow (
     id bigint NOT NULL,
@@ -251,12 +299,16 @@ CREATE TABLE tb_workflow (
     status character varying(255),
     user_id bigint NOT NULL
 );
+ALTER TABLE tb_workflow
+  OWNER TO bnzusr;
 
 CREATE TABLE tb_workflow_node (
     id bigint NOT NULL,
     instance_id bigint,
     workflow_id bigint NOT NULL
 );
+ALTER TABLE tb_workflow_node
+  OWNER TO bnzusr;
 
 CREATE TABLE tb_file
 (
@@ -265,6 +317,8 @@ CREATE TABLE tb_file
     filedata bytea,
     lastupdate timestamp without time zone
 );
+ALTER TABLE tb_file
+  OWNER TO bnzusr;
 
 --
 -- CONSTRAINTS PK

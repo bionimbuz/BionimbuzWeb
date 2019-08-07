@@ -1,21 +1,22 @@
 package app.models;
 
 public class ExecutionStatus extends Body<ExecutionStatus> {
-    
+
     public static enum STATUS {
         IDDLE,
         RUNNING,
         STOPPED,
         FINISHED
     }
-    
+
     public static enum EXECUTION_PHASE {
         WAITING,
         STARTING,
         DOWNLOADING,
         EXECUTING,
         UPLOADING,
-        FINISHED
+        FINISHED,
+        ERROR
     }
 
     private STATUS status;
@@ -24,13 +25,13 @@ public class ExecutionStatus extends Body<ExecutionStatus> {
     private RemoteFileProcessingStatus uploadStatus;
     private String errorMessage;
     private boolean hasError;
-    
+
     public ExecutionStatus() {
         super();
     }
     public ExecutionStatus(
-            RemoteFileProcessingStatus downloadStatus,
-            RemoteFileProcessingStatus uploadStatus) {
+            final RemoteFileProcessingStatus downloadStatus,
+            final RemoteFileProcessingStatus uploadStatus) {
         super();
         this.phase = EXECUTION_PHASE.WAITING;
         this.downloadStatus = downloadStatus;
@@ -38,35 +39,35 @@ public class ExecutionStatus extends Body<ExecutionStatus> {
         this.errorMessage = "";
         this.hasError = false;
     }
-    
+
     public RemoteFileProcessingStatus getDownloadStatus() {
-        return downloadStatus;
+        return this.downloadStatus;
     }
     public RemoteFileProcessingStatus getUploadStatus() {
-        return uploadStatus;
+        return this.uploadStatus;
     }
     public EXECUTION_PHASE getPhase() {
-        return phase;
+        return this.phase;
     }
     public void setPhase(final EXECUTION_PHASE phase) {
         this.phase = phase;
     }
     public String getErrorMessage() {
-        return errorMessage;
+        return this.errorMessage;
     }
     public void setErrorMessage(final String errorMessage) {
         this.errorMessage = errorMessage;
     }
     public boolean isHasError() {
-        return hasError;
+        return this.hasError;
     }
-    public void setHasError(boolean hasError) {
+    public void setHasError(final boolean hasError) {
         this.hasError = hasError;
     }
     public STATUS getStatus() {
-        return status;
+        return this.status;
     }
-    public void setStatus(STATUS status) {
+    public void setStatus(final STATUS status) {
         this.status = status;
     }
 }

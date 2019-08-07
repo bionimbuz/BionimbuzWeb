@@ -4,14 +4,27 @@
 
 <div class="row crud-title">
     <h1 class="col-xs-12"> &{'crud.show.title', type.modelName} </h1>
-    <pre class="col-xs-12 col-sm-12 col-md-9"> &{'crud.show.title.desc', type.modelName} </pre>
-    <input data-toggle="modal" data-target="#deleteModal"
-        class="col-xs-12 col-sm-12 col-md-2 btn btn-danger pull-right" type="button" value="&{'crud.delete', type.modelName}" />
+    <pre class="col-xs-12 col-sm-12 col-md-6"> &{'crud.show.title.desc', type.modelName} </pre>
+    <div class="col-xs-12 col-sm-12 col-md-6 margin-bottom  no-bootstrap-padding">
+        <input data-toggle="modal" data-target="#deleteModal" class="btn btn-danger margin-bottom col-xs-12 col-sm-12 col-md-5 pull-right" type="button" value="&{'crud.delete', type.modelName}" />
+        #{if !object.executionAfterCreation}
+            #{form @executeInstance(object._key())}
+                <input class="btn btn-primary margin-bottom col-xs-12 col-sm-12 col-md-5 mg-r pull-right" type="submit" value="&{'crud.execute'}" />
+            #{/form} 
+        #{/if}
+    </div>
+    
 </div>
 
 <br>
 
 <div class="row" >
+    #{field 'object.executionObservation' }
+        <div class="form-group row">
+            <label for="${field.id}">&{field.name}</label>
+            <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value}"/>
+        </div>
+    #{/field}
     #{field 'object.executor' }
         <div class="form-group row">
             <label for="${field.id}">&{field.name}</label>
@@ -101,7 +114,7 @@
             <label for="${field.id}">&{field.name}</label>
             <input id="${field.id}" class="form-control" readonly type="text" name="${field.name}" value="${field.value}"/>
         </div>
-    #{/field}    
+    #{/field}
 
     <div class="btn-row text-center">
         <a href="@{list()}" class="btn btn-primary btn-md btn-mobile margin-bottom">&{'crud.cancel'}</a>

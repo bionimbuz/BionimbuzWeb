@@ -9,11 +9,9 @@ import static app.common.SystemConstants.OUTPUT_LINE_CMD_REGEX;
 import static app.common.SystemConstants.OUTPUT_PREFIX;
 
 import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import app.common.LineCmdUtils;
 import app.common.Pair;
+import app.common.RuntimeUtil;
 import app.common.utils.FileUtils;
 import app.common.utils.OsUtil;
 import app.common.utils.StringUtils;
@@ -68,43 +67,22 @@ public class ExecutorJob {
                 createOutDir();
                 final File applicationFile = this.generateApplicationFile();
                 final String lineCommand = this.generateLineCommand(applicationFile);
-                final Process process = Runtime.getRuntime().exec(lineCommand);
 
-                if (process.waitFor() == 0) {
-                    if (this.allOutputFilesGenerated()) {
-                        this.executor.onSuccess(
-                                EXECUTION_PHASE.EXECUTING);
-                    } else {
-                        this.executor.onError(
-                                EXECUTION_PHASE.EXECUTING, "Some of output files was not generated");
-                    }
-                    return;
-                }
+                final String processOutput = RuntimeUtil.execAndGetResponseString(new RuntimeUtil.Command(lineCommand));
 
-                try (
-                     ByteArrayOutputStream output = new ByteArrayOutputStream()) {
-                    final byte[] buffer = new byte[1024];
-                    int length;
-                    while ((length = process.getErrorStream().read(buffer)) != -1) {
-                        output.write(buffer, 0, length);
-                    }
-                    final String error = output.toString(StandardCharsets.UTF_8.name());
+                if (this.allOutputFilesGenerated()) {
+                    this.executor.onSuccess(EXECUTION_PHASE.EXECUTING);
+                } else {
                     this.executor.onError(
-                            EXECUTION_PHASE.EXECUTING, error);
+                            EXECUTION_PHASE.EXECUTING,
+                            String.format(
+                                    "Some of output files was not generated \n %s",
+                                    processOutput));
                 }
 
             } catch (final Exception e) {
-                this.executor.onError(
-                        EXECUTION_PHASE.EXECUTING, e.getMessage());
+                this.executor.onError(EXECUTION_PHASE.EXECUTING, e.getMessage());
             }
-        }
-
-        private static boolean createOutDir() {
-            final File dir = new File(OUTPUTS_FOLDER);
-            if (dir.exists()) {
-                return true;
-            }
-            return dir.mkdir();
         }
 
         private boolean allOutputFilesGenerated() {
@@ -118,13 +96,21 @@ public class ExecutorJob {
             return true;
         }
 
+        private static boolean createOutDir() {
+            final File dir = new File(OUTPUTS_FOLDER);
+            if (dir.exists()) {
+                return true;
+            }
+            return dir.mkdir();
+        }
+
         private File generateApplicationFile() throws IOException {
             if (StringUtils.isEmpty(this.command.getExecutionScript())) {
                 return null;
             }
             final File scriptFile = new File(getApplicationFileName());
             try (
-                 BufferedWriter writer = new BufferedWriter(new FileWriter(scriptFile))) {
+                    BufferedWriter writer = new BufferedWriter(new FileWriter(scriptFile))) {
                 writer.write(this.command.getExecutionScript());
             }
             if (scriptFile.exists()) {

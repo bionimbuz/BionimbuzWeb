@@ -17,28 +17,26 @@ public class DevelopmentStartupJob extends Job {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @Override
     public void doJob() {
-    	UserModel masterUser = UserModel.findByEmail("master@bionimbuz.org.br");
-    	if(masterUser == null || masterUser.getPass() != null) {
-			return;
-    	}
-    	updatePasswords();
+        final UserModel masterUser = UserModel.findByEmail("master@bionimbuz.org.br");
+        if (masterUser == null || masterUser.getPass() != null) {
+            return;
+        }
+        updatePasswords();
     }
-    
+
     private static void updatePasswords() {
 
         final List<UserModel> listUsers = UserModel.findAll();
-    	
-    	for(UserModel user : listUsers) {
-    		try {
-				user.setPass(
-						SecurityController.getSHA512(user.getEmail()));
-				user.save();
-			} catch (NoSuchAlgorithmException e) {
-				e.printStackTrace();
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
-    	}
+
+        for (final UserModel user : listUsers) {
+            try {
+                final String emailPrefix = user.getEmail().substring(0, user.getEmail().indexOf("@"));
+                user.setPass(SecurityController.getSHA512(emailPrefix));
+                user.save();
+            } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
     }
-    
+
 }

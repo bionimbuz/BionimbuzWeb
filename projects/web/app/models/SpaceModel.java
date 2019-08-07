@@ -35,17 +35,17 @@ public class SpaceModel extends GenericModel {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private UserModel user;
+    @Required
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
+    private CredentialModel credential;
     @ManyToMany
     @JoinTable(name = "tb_group_space",
-        joinColumns = @JoinColumn(name = "id_space", referencedColumnName = "id"),
-        inverseJoinColumns = @JoinColumn(name = "id_group", referencedColumnName = "id"))
+    joinColumns = @JoinColumn(name = "id_space", referencedColumnName = "id"),
+    inverseJoinColumns = @JoinColumn(name = "id_group", referencedColumnName = "id"))
     private List<GroupModel> listSharedGroups;
     @Required
     private boolean alocationAfterCreation;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
-    @NoBinding
-    private CredentialModel credential;
 
     // ---- Redundant Data for price table exclusion/update
     @NoBinding
@@ -65,86 +65,86 @@ public class SpaceModel extends GenericModel {
     public SpaceModel() {
         super();
     }
-    
+
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Getters and Setters
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public Long getId() {
-        return id;
+        return this.id;
     }
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
     public String getName() {
-        return name;
+        return this.name;
     }
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
     public String getRegionName() {
-        return regionName;
+        return this.regionName;
     }
-    public void setRegionName(String regionName) {
+    public void setRegionName(final String regionName) {
         this.regionName = regionName;
     }
     public Date getPriceTableDate() {
-        return priceTableDate;
+        return this.priceTableDate;
     }
-    public void setPriceTableDate(Date priceTableDate) {
+    public void setPriceTableDate(final Date priceTableDate) {
         this.priceTableDate = priceTableDate;
     }
     public Double getPricePerGB() {
-        return pricePerGB;
+        return this.pricePerGB;
     }
-    public void setPricePerGB(Double pricePerGB) {
+    public void setPricePerGB(final Double pricePerGB) {
         this.pricePerGB = pricePerGB;
     }
     public Double getClassAPrice() {
-        return classAPrice;
+        return this.classAPrice;
     }
-    public void setClassAPrice(Double classAPrice) {
+    public void setClassAPrice(final Double classAPrice) {
         this.classAPrice = classAPrice;
     }
     public Double getClassBPrice() {
-        return classBPrice;
+        return this.classBPrice;
     }
-    public void setClassBPrice(Double classBPrice) {
+    public void setClassBPrice(final Double classBPrice) {
         this.classBPrice = classBPrice;
     }
     public Date getCreationDate() {
-        return creationDate;
+        return this.creationDate;
     }
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
     public PluginModel getPlugin() {
-        return plugin;
+        return this.plugin;
     }
-    public void setPlugin(PluginModel plugin) {
+    public void setPlugin(final PluginModel plugin) {
         this.plugin = plugin;
     }
     public boolean isAlocationAfterCreation() {
-        return alocationAfterCreation;
+        return this.alocationAfterCreation;
     }
-    public void setAlocationAfterCreation(boolean alocationAfterCreation) {
+    public void setAlocationAfterCreation(final boolean alocationAfterCreation) {
         this.alocationAfterCreation = alocationAfterCreation;
     }
     public UserModel getUser() {
-        return user;
+        return this.user;
     }
-    public void setUser(UserModel user) {
+    public void setUser(final UserModel user) {
         this.user = user;
     }
     public List<GroupModel> getListSharedGroups() {
-        return listSharedGroups;
+        return this.listSharedGroups;
     }
-    public void setListSharedGroups(List<GroupModel> listSharedGroups) {
+    public void setListSharedGroups(final List<GroupModel> listSharedGroups) {
         this.listSharedGroups = listSharedGroups;
     }
     public CredentialModel getCredential() {
-        return credential;
+        return this.credential;
     }
-    public void setCredential(CredentialModel credential) {
+    public void setCredential(final CredentialModel credential) {
         this.credential = credential;
     }
 

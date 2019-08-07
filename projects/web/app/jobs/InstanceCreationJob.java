@@ -19,6 +19,8 @@ import app.common.Pair;
 import app.common.utils.StringUtils;
 import app.models.Body;
 import app.models.Command;
+import app.models.ExecutionStatus.EXECUTION_PHASE;
+import app.models.ExecutionStatus.STATUS;
 import app.models.PluginComputingInstanceModel;
 import app.models.SecureCoordinatorAccess;
 import app.models.security.TokenModel;
@@ -40,12 +42,13 @@ import play.mvc.Router;
 
 public class InstanceCreationJob extends Job {
 
-    private static final int MAX_ATTEMPTS = 100;
+    private static final int MAX_ATTEMPTS = 50;
     private static final String MACHINE_ID = "%s@machine";
     private static final String DEFAULT_EXECUTOR_PORT = Play.configuration.getProperty("executor.port", "8181");
     private static final String BASE_URL = SettingModel.getStringSetting(Name.setting_external_url);
     private static final String REFRESH_STATUS_URL = BASE_URL + Router.reverse("guest.ExternalAccessController.refreshStatus").url;
     private static final String REFRESH_TOKEN_URL = BASE_URL + Router.reverse("guest.ExternalAccessController.refreshToken").url;
+    private static final String MSG_NODE_CREATION_ERROR = "The system could not run your task.";
 
     private final Long instanceId;
     private final Long userId;
@@ -64,22 +67,29 @@ public class InstanceCreationJob extends Job {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @Override
     public void doJob() {
-        executeInstance(this.instanceId, this.userId);
+
+        final InstanceModel instance = InstanceModel.findById(this.instanceId);
+        if (!executeInstance(instance, this.userId)) {
+            instance.setStatus(STATUS.STOPPED);
+            instance.setPhase(EXECUTION_PHASE.ERROR);
+            instance.setExecutionObservation(MSG_NODE_CREATION_ERROR);
+            instance.save();
+        }
     }
 
-    public static boolean executeInstance(final Long instanceId, final Long userId) {
-        final InstanceModel instance = InstanceModel.findById(instanceId);
+    public static boolean executeInstance(final InstanceModel instance, final Long userId) {
+
         if (!createCloudInstance(instance, userId)) {
             return false;
         }
         final Command command = InstanceCreationJob.generateCommandToExecute(instance);
         return InstanceCreationJob.executeCommand(instance, command);
     }
-    
+
     public static boolean removeCloudInstance(
             final InstanceModel instance,
             final Long userId) {
-        
+
         try {
             final ComputingApi api = new ComputingApi(instance.getPlugin().getUrl());
             final String credentialData = instance.getCredential()
@@ -98,16 +108,16 @@ public class InstanceCreationJob extends Job {
                     instance.getRegionName(),
                     instance.getZoneName(),
                     instance.getCloudInstanceName());
-            
+
             if (body == null || body.getContent() == null) {
                 return false;
             }
-            
+
             return body.getContent();
         } catch (final Exception e) {
             Logger.warn(e, "Instance cannot be deleted [%s]", e.getMessage());
         }
-        return false;        
+        return false;
     }
 
     private static boolean createCloudInstance(

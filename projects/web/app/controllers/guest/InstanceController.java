@@ -8,6 +8,8 @@ import app.client.ComputingApi;
 import app.common.Authorization;
 import app.common.utils.StringUtils;
 import app.models.Body;
+import app.models.ExecutionStatus.EXECUTION_PHASE;
+import app.models.ExecutionStatus.STATUS;
 import app.models.PluginComputingZoneModel;
 import app.models.security.TokenModel;
 import common.constants.I18N;
@@ -56,10 +58,10 @@ public class InstanceController extends BaseAdminController {
     public static void copy(final Long id) throws Exception {
         final CustomObjectType type = CustomObjectType.get(getControllerClass());
         notFoundIfNull(type);
-        InstanceModel objectFound = InstanceModel.findById(id);
+        final InstanceModel objectFound = InstanceModel.findById(id);
         notFoundIfNull(objectFound);
-        
-        InstanceModel object = new InstanceModel();        
+
+        final InstanceModel object = new InstanceModel();
         object.setApplicationArguments(objectFound.getApplicationArguments());
         object.setCredentialUsage(objectFound.getCredentialUsage());
         object.setExecutionAfterCreation(objectFound.isExecutionAfterCreation());
@@ -68,34 +70,34 @@ public class InstanceController extends BaseAdminController {
         object.setRegionName(objectFound.getRegionName());
         object.setTypeName(objectFound.getTypeName());
         object.setZoneName(objectFound.getZoneName());
-        
-        final ExecutorModel executorSelected = objectFound.getExecutor();   
-        final String zoneSelected = objectFound.getZoneName();
-        final String applicationArguments = objectFound.getApplicationArguments().getArguments();     
 
-        final List<Long> applicationInputFileSpaces = new ArrayList<Long>();
-        final List<Long> applicationInputFiles = new ArrayList<Long>();
-        for(ApplicationFileInputModel inputFile : objectFound.getApplicationArguments().getApplicationInputFiles()) {
-        	applicationInputFileSpaces.add(inputFile.getSpaceFile().getSpace().getId());
-        	applicationInputFiles.add(inputFile.getSpaceFile().getId());       	
+        final ExecutorModel executorSelected = objectFound.getExecutor();
+        final String zoneSelected = objectFound.getZoneName();
+        final String applicationArguments = objectFound.getApplicationArguments().getArguments();
+
+        final List<Long> applicationInputFileSpaces = new ArrayList<>();
+        final List<Long> applicationInputFiles = new ArrayList<>();
+        for(final ApplicationFileInputModel inputFile : objectFound.getApplicationArguments().getApplicationInputFiles()) {
+            applicationInputFileSpaces.add(inputFile.getSpaceFile().getSpace().getId());
+            applicationInputFiles.add(inputFile.getSpaceFile().getId());
         }
-        final List<Long> applicationOutputFileSpaces = new ArrayList<Long>();
-        final List<String> applicationOutputFileNames = new ArrayList<String>();
-        for(ApplicationFileOutputModel outputFile : objectFound.getApplicationArguments().getApplicationOutputFiles()) {
-        	applicationOutputFileSpaces.add(outputFile.getSpaceFile().getSpace().getId());
-        	applicationOutputFileNames.add(outputFile.getSpaceFile().getName());       	
-        }        
+        final List<Long> applicationOutputFileSpaces = new ArrayList<>();
+        final List<String> applicationOutputFileNames = new ArrayList<>();
+        for(final ApplicationFileOutputModel outputFile : objectFound.getApplicationArguments().getApplicationOutputFiles()) {
+            applicationOutputFileSpaces.add(outputFile.getSpaceFile().getSpace().getId());
+            applicationOutputFileNames.add(outputFile.getSpaceFile().getName());
+        }
         final List<VwSpaceModel> listSpaces = VwSpaceModel.searchForCurrentUserWithShared();
 
-        render("guest/InstanceController/blank.html", 
-        		type, 
-        		object, 
-        		executorSelected, 
+        render("guest/InstanceController/blank.html",
+                type,
+                object,
+                executorSelected,
                 zoneSelected, listSpaces, applicationArguments,
-        		applicationInputFileSpaces, applicationInputFiles, 
+                applicationInputFileSpaces, applicationInputFiles,
                 applicationOutputFileSpaces, applicationOutputFileNames);
     }
-    
+
     public static void blank(
             final Long workflowNodeId,
             ExecutorModel executorSelected) throws Exception {
@@ -126,7 +128,7 @@ public class InstanceController extends BaseAdminController {
             RegionModel regionSelected,
             final String zoneSelected,
             InstanceTypeModel instanceTypeSelected,
-            final String applicationArguments,            
+            final String applicationArguments,
             final List<Long> applicationInputFileSpaces,
             final List<Long> applicationInputFiles,
             final List<Long> applicationOutputFileSpaces,
@@ -169,18 +171,18 @@ public class InstanceController extends BaseAdminController {
             renderArgs.put("error", Messages.get("crud.hasErrors"));
             try {
                 render(request.controller.replace(".", "/") + "/blank.html",
-                        type, object, executorSelected, workflowNodeId, 
-                        regionSelected, zoneSelected, instanceTypeSelected, 
+                        type, object, executorSelected, workflowNodeId,
+                        regionSelected, zoneSelected, instanceTypeSelected,
                         listSpaces, applicationArguments,
-                		applicationInputFileSpaces, applicationInputFiles, 
+                        applicationInputFileSpaces, applicationInputFiles,
                         applicationOutputFileSpaces, applicationOutputFileNames);
             } catch (final TemplateNotFoundException e) {
-                render("CRUD/blank.html", 
-                		type, object, workflowNodeId, executorSelected, 
-                		regionSelected, zoneSelected, instanceTypeSelected, 
-                		listSpaces, applicationArguments,
-                		applicationInputFileSpaces, applicationInputFiles, 
-                        applicationOutputFileSpaces, applicationOutputFileNames);   
+                render("CRUD/blank.html",
+                        type, object, workflowNodeId, executorSelected,
+                        regionSelected, zoneSelected, instanceTypeSelected,
+                        listSpaces, applicationArguments,
+                        applicationInputFileSpaces, applicationInputFiles,
+                        applicationOutputFileSpaces, applicationOutputFileNames);
             }
         }
         final InstanceTypeRegionModel instanceTypeRegion = InstanceTypeRegionModel.findByInstanceTypeAndRegion(instanceTypeSelected, regionSelected);
@@ -204,6 +206,10 @@ public class InstanceController extends BaseAdminController {
         }
         if (object.isExecutionAfterCreation()) {
             new InstanceCreationJob(object.getId(), getConnectedUser().getId()).now();
+        } else {
+            object.setStatus(STATUS.STOPPED);
+            object.setPhase(EXECUTION_PHASE.WAITING);
+            object.save();
         }
 
         flash.success(Messages.get("crud.created", type.modelName));
@@ -236,8 +242,7 @@ public class InstanceController extends BaseAdminController {
             } else {
                 final ComputingApi api = new ComputingApi(object.getPlugin().getUrl());
                 final String credentialData = object.getCredential().getCredentialData().getContentAsString();
-                TokenModel token;
-                token = Authorization.getToken(
+                final TokenModel token = Authorization.getToken(
                         object.getPlugin().getCloudType(),
                         object.getPlugin().getInstanceWriteScope(),
                         credentialData);
@@ -252,6 +257,7 @@ public class InstanceController extends BaseAdminController {
                 if (body != null
                         && body.getContent() != null
                         && body.getContent()) {
+
                     object.delete();
                     flash.success(Messages.get("crud.deleted", type.modelName));
                     redirect(request.controller + ".list");
@@ -445,4 +451,18 @@ public class InstanceController extends BaseAdminController {
                     workflowNodeId);
         }
     }
+
+    public static void executeInstance(final Long id) {
+
+        final InstanceModel object = InstanceModel.findById(id);
+        if (!object.isExecutionAfterCreation()) {
+            object.setExecutionAfterCreation(true);
+            object.setStatus(STATUS.IDDLE);
+            object.setPhase(EXECUTION_PHASE.WAITING);
+            object.save();
+            new InstanceCreationJob(object.getId(), getConnectedUser().getId()).now();
+        }
+        redirect(request.controller + ".list");
+    }
+
 }

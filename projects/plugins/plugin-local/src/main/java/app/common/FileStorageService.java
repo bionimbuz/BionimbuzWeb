@@ -16,8 +16,7 @@ public class FileStorageService {
     private final Path fileStorageLocation;
 
     public FileStorageService(final String path) throws IOException {
-        this.fileStorageLocation = Paths.get(path)
-                .toAbsolutePath().normalize();
+        this.fileStorageLocation = Paths.get(path).toAbsolutePath().normalize();
         Files.createDirectories(this.fileStorageLocation);
     }
 

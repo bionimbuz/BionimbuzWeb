@@ -61,6 +61,7 @@ crud.field.check.none=Uncheck all
 crud.wait=Please wait...
 crud.yes=Yes
 crud.no=No
+crud.execute=Start Execution
 
 crud.help.required=Required.
 crud.help.minlength=Min length is %d.
@@ -307,6 +308,7 @@ object.phase=Phase
 tab.application=Application Arguments
 tab.cloud=Cloud Settings
 object.copyInstance=Copy
+object.executionObservation=Execution Notes
 
 # WorkflowModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -341,10 +343,11 @@ SpaceModel=Space
 object.classAPrice=Class A Price
 object.classBPrice=Class B Price
 object.region=Region
+object.credential=Credential
 object.pricePerGB=Price per GB per Month
 name.must.be.unique.on.platform=The name informed must be unique on platform selected
 error.space.not.created=The space cannot be created, please try again with another name
-object.alocationAfterCreation=Request space alocation after creation
+object.alocationAfterCreation=Request space allocation after creation
 
 # VwSpaceModel
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
