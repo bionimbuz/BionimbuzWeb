@@ -45,7 +45,7 @@ public class SpaceModel extends GenericModel {
     inverseJoinColumns = @JoinColumn(name = "id_group", referencedColumnName = "id"))
     private List<GroupModel> listSharedGroups;
     @Required
-    private boolean alocationAfterCreation;
+    private boolean alocationAfterCreation = true;
 
     // ---- Redundant Data for price table exclusion/update
     @NoBinding

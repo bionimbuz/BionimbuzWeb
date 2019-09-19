@@ -12,19 +12,19 @@ import app.models.ExecutionStatus.STATUS;
 import app.models.RemoteFileProcessingStatus;
 
 public class ApplicationExecutionJob {
-    
+
     private static ApplicationExecutionJob inst = null;
     private static Thread job = null;
-    private Core core;
-    
+    private final Core core;
+
     /*
      * Singleton Methods
      */
-    
+
     public static void init(final Command command)
             throws SingletonAlreadyInitializedException {
         assertNotInitialized();
-        Core core = new Core(command);
+        final Core core = new Core(command);
         inst = new ApplicationExecutionJob(core);
         job = new Thread(core);
         job.start();
@@ -34,7 +34,7 @@ public class ApplicationExecutionJob {
         return inst;
     }
     public static boolean isInitialized() {
-        return inst != null;        
+        return inst != null;
     }
     private static void assertNotInitialized()
             throws SingletonAlreadyInitializedException {
@@ -50,114 +50,111 @@ public class ApplicationExecutionJob {
                     ApplicationExecutionJob.class);
         }
     }
-    
+
     /*
      * Constructors
      */
-    
+
     public ApplicationExecutionJob(final Core core) {
         this.core = core;
-    }    
+    }
 
     /*
      * Methods
      */
-    
+
     public STATUS getStatus(){
-        return core.getExecutionStatus().getStatus();
+        return this.core.getExecutionStatus().getStatus();
     }
     public ExecutionStatus getExecutionStatus(){
-        return core.getExecutionStatus();
+        return this.core.getExecutionStatus();
     }
-    
+
     /*
      * Thread class
      */
 
     private static class Core implements Runnable, IApplicationExecution {
-        
-        private Command command;
+
+        private final Command command;
         private volatile ExecutionStatus executionStatus;
-        private RemoteFileProcessingStatus downloadStatus;
-        private RemoteFileProcessingStatus uploadStatus;
+        private final RemoteFileProcessingStatus downloadStatus;
+        private final RemoteFileProcessingStatus uploadStatus;
 
         public Core(final Command command) {
             this.command = command;
-            this.downloadStatus = new RemoteFileProcessingStatus(
-                    command.getListInputPathsWithExtension().size());
-            this.uploadStatus = new RemoteFileProcessingStatus(
-                    command.getListOutputPathsWithExtension().size());
-            this.executionStatus = new ExecutionStatus(
-                    downloadStatus, uploadStatus);
+            this.downloadStatus = new RemoteFileProcessingStatus(command.getListInputPathsWithExtension().size());
+            this.uploadStatus = new RemoteFileProcessingStatus(command.getListOutputPathsWithExtension().size());
+            this.executionStatus = new ExecutionStatus(this.downloadStatus, this.uploadStatus);
         }
 
         public ExecutionStatus getExecutionStatus() {
-            return executionStatus;
-        }
-        
-        @Override
-        public void run() {     
-            onSuccess(EXECUTION_PHASE.STARTING);   
+            return this.executionStatus;
         }
 
         @Override
-        public void onError(EXECUTION_PHASE phase, String message) {   
-            executionStatus.setStatus(STATUS.STOPPED);
-            executionStatus.setErrorMessage(message);
-            executionStatus.setHasError(true);
+        public void run() {
+            this.onSuccess(EXECUTION_PHASE.STARTING);
+        }
+
+        @Override
+        public void onError(final EXECUTION_PHASE phase, final String message) {
+            this.executionStatus.setStatus(STATUS.STOPPED);
+            this.executionStatus.setErrorMessage(message);
+            this.executionStatus.setHasError(true);
             StatusNotifierJob.waitNotification();
         }
 
         @Override
-        public void onSuccess(EXECUTION_PHASE phase) { 
+        public void onSuccess(final EXECUTION_PHASE phase) {
             switch (phase) {
-                case STARTING:       
-                    executionStatus.setStatus(STATUS.RUNNING);
-                    executionStatus.setPhase(EXECUTION_PHASE.DOWNLOADING);
+                case STARTING:
+                    this.executionStatus.setStatus(STATUS.RUNNING);
+                    this.executionStatus.setPhase(EXECUTION_PHASE.DOWNLOADING);
                     StatusNotifierJob.tryNotification();
-                    startDownloadPhase();
+                    this.startDownloadPhase();
                     break;
                 case DOWNLOADING:
-                    executionStatus.setPhase(EXECUTION_PHASE.EXECUTING);
+                    this.executionStatus.setPhase(EXECUTION_PHASE.EXECUTING);
                     StatusNotifierJob.tryNotification();
-                    startExecutionPhase();
+                    this.startExecutionPhase();
                     break;
                 case EXECUTING:
-                    executionStatus.setPhase(EXECUTION_PHASE.UPLOADING);
+                    this.executionStatus.setPhase(EXECUTION_PHASE.UPLOADING);
                     StatusNotifierJob.tryNotification();
-                    startUploadPhase();
+                    this.startUploadPhase();
                     break;
                 case UPLOADING:
-                    executionStatus.setPhase(EXECUTION_PHASE.FINISHED);
-                    executionStatus.setStatus(STATUS.STOPPED);
+                    this.executionStatus.setPhase(EXECUTION_PHASE.FINISHED);
+                    this.executionStatus.setStatus(STATUS.STOPPED);
                     StatusNotifierJob.waitNotification();
                     break;
                 default :
                     break;
             }
-        }        
-        
+        }
+
         private void startDownloadPhase() {
-            DownloaderJob job = new DownloaderJob(
+            final DownloaderJob job = new DownloaderJob(
                     this,
-                    downloadStatus,
-                    command.getListInputPathsWithExtension(),
+                    this.downloadStatus,
+                    this.command.getListInputPathsWithExtension(),
                     INPUTS_FOLDER);
             job.start();
-        }        
-        
+        }
+
         private void startExecutionPhase() {
-            ExecutorJob job = new ExecutorJob(
+            final ExecutorJob job = new ExecutorJob(
                     this,
-                    command);
+                    this.command);
             job.start();
         }
-        
+
         private void startUploadPhase() {
-            UploaderJob job = new UploaderJob(
+            final UploaderJob job = new UploaderJob(
                     this,
-                    uploadStatus,
-                    command.getListOutputPathsWithExtension(),
+                    this.uploadStatus,
+                    this.command.getListOutputPathsWithExtension(),
                     OUTPUTS_FOLDER);
             job.start();
         }

@@ -6,7 +6,8 @@ public class ExecutionStatus extends Body<ExecutionStatus> {
         IDDLE,
         RUNNING,
         STOPPED,
-        FINISHED
+        FINISHED,
+        WAITING
     }
 
     public static enum EXECUTION_PHASE {

@@ -207,7 +207,7 @@ public class InstanceController extends BaseAdminController {
         if (object.isExecutionAfterCreation()) {
             new InstanceCreationJob(object.getId(), getConnectedUser().getId()).now();
         } else {
-            object.setStatus(STATUS.STOPPED);
+            object.setStatus(STATUS.WAITING);
             object.setPhase(EXECUTION_PHASE.WAITING);
             object.save();
         }
