@@ -1,11 +1,13 @@
 package controllers.guest;
 
 import java.io.InputStreamReader;
+import java.util.Date;
 
 import com.google.gson.GsonBuilder;
 
 import app.common.utils.StringUtils;
 import app.models.ExecutionStatus;
+import app.models.ExecutionStatus.EXECUTION_PHASE;
 import app.models.ExecutionStatus.STATUS;
 import app.models.RemoteFileInfo;
 import app.security.AccessSecurity;
@@ -125,6 +127,11 @@ public class ExternalAccessController extends Controller {
         ExecutionStatus status = new GsonBuilder().create().fromJson(
                 new InputStreamReader(request.body), ExecutionStatus.class);
         instance.setStatus(status.getStatus());
+        
+        if(status.getPhase() == EXECUTION_PHASE.FINISHED && status.getStatus() == STATUS.STOPPED && instance.getExecutionEnd() == null) {
+        	instance.setExecutionEnd(new Date());
+        }   
+
         instance.setPhase(status.getPhase());
         instance.setExecutionObservation(status.getErrorMessage());
         instance.save();

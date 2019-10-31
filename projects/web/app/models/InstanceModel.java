@@ -1,5 +1,6 @@
 package models;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
@@ -61,8 +62,16 @@ public class InstanceModel extends GenericModel {
     private PluginModel plugin;
     @Required
     private boolean executionAfterCreation = true;
+    
     @NoBinding
     private Date creationDate;
+    
+    @NoBinding
+    private Date executionStart;
+    
+    @NoBinding
+    private Date executionEnd;
+    
     @OneToOne(cascade = {
             CascadeType.PERSIST,
             CascadeType.REMOVE
@@ -298,7 +307,23 @@ public class InstanceModel extends GenericModel {
         this.workflowNode = workflowNode;
     }
 
-    @Transient
+	public Date getExecutionStart() {
+		return this.executionStart;
+	}
+
+	public void setExecutionStart(final Date executionStart) {
+		this.executionStart = executionStart;
+	}
+
+	public Date getExecutionEnd() {
+		return this.executionEnd;
+	}
+
+	public void setExecutionEnd(final Date executionEnd) {
+		this.executionEnd = executionEnd;
+	}
+	
+	@Transient
     public StatusPresentation getStatusPresentation() {
         if (this.status == STATUS.STOPPED || this.status == STATUS.FINISHED) {
             if (this.phase == EXECUTION_PHASE.FINISHED) {
