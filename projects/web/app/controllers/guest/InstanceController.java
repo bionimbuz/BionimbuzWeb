@@ -1,6 +1,6 @@
 package controllers.guest;
 
-import java.sql.Timestamp;
+//import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -461,8 +461,8 @@ public class InstanceController extends BaseAdminController {
             object.setExecutionAfterCreation(true);
             object.setStatus(STATUS.IDDLE);
             object.setPhase(EXECUTION_PHASE.WAITING);
-            object.setExecutionStart(new Date());
-            object.setExecutionEnd(null);
+//             object.setExecutionStart(new Date());
+//             object.setExecutionEnd(null);
             
             object.save();
             new InstanceCreationJob(object.getId(), getConnectedUser().getId()).now();
