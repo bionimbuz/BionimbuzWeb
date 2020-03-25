@@ -66,7 +66,8 @@ public class InstanceController extends BaseAdminController {
         final InstanceModel object = new InstanceModel();
         object.setApplicationArguments(objectFound.getApplicationArguments());
         object.setCredentialUsage(objectFound.getCredentialUsage());
-        object.setExecutionAfterCreation(objectFound.isExecutionAfterCreation());
+        //object.setExecutionAfterCreation(objectFound.isExecutionAfterCreation());
+        object.setExecutionAfterCreation(false); // TODO: Erro ao criar uma instância no Workflow, comentando para teste (Augusto e Fabiana)
         object.setExecutor(objectFound.getExecutor());
         object.setPlugin(objectFound.getPlugin());
         object.setRegionName(objectFound.getRegionName());
@@ -206,6 +207,8 @@ public class InstanceController extends BaseAdminController {
             workflowNode.setInstance(object);
             workflowNode.save();
         }
+        // TODO: Erro ao criar uma instância no Workflow, comentando para teste (Augusto e Fabiana)
+        object.setExecutionAfterCreation(false);
         if (object.isExecutionAfterCreation()) {
             new InstanceCreationJob(object.getId(), getConnectedUser().getId()).now();
         } else {
@@ -457,16 +460,17 @@ public class InstanceController extends BaseAdminController {
     public static void executeInstance(final Long id) {
 
         final InstanceModel object = InstanceModel.findById(id);
-        if (!object.isExecutionAfterCreation()) {
+        // TODO: Erro ao criar uma instância no Workflow, comentando para teste (Augusto e Fabiana)
+        // if (!object.isExecutionAfterCreation()) {
             object.setExecutionAfterCreation(true);
             object.setStatus(STATUS.IDDLE);
             object.setPhase(EXECUTION_PHASE.WAITING);
-//             object.setExecutionStart(new Date());
-//             object.setExecutionEnd(null);
+            //object.setExecutionStart(new Date());
+            //object.setExecutionEnd(null);
             
             object.save();
             new InstanceCreationJob(object.getId(), getConnectedUser().getId()).now();
-        }
+        //}
         redirect(request.controller + ".list");
     }
 
