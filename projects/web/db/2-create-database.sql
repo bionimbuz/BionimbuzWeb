@@ -119,6 +119,7 @@ CREATE TABLE tb_image (
 ALTER TABLE tb_image
   OWNER TO bnzusr;
 
+-- executionobservation character varying(3000), -- Dependendo do tamanho do erro apresentado, a aplicação não persiste a instância.
 CREATE TABLE tb_instance (
     id bigint NOT NULL,
     cloudinstanceip text,
