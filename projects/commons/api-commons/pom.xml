@@ -19,7 +19,7 @@
         <maven.test.skip>true</maven.test.skip>
         <java.version>11</java.version>
         <retrofit.version>2.6.0</retrofit.version>
-        <guava.version>28.0-jre</guava.version>
+        <guava.version>29.0-jre</guava.version>
         <jjwt.version>0.9.1</jjwt.version>
     </properties>
     
